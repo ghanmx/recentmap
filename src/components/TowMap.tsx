@@ -101,9 +101,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           center={defaultCenter}
           zoom={13}
           style={{ height: "100%", width: "100%" }}
-          whenReady={(e) => {
-            mapRef.current = e.target;
-          }}
+          ref={mapRef}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
