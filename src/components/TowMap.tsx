@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import { Button } from "@/components/ui/button"; // Add Button import
+import { Button } from "@/components/ui/button";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -103,6 +103,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           style={{ height: "100%", width: "100%" }}
           whenReady={(map) => {
             mapRef.current = map.target;
+            return undefined;
           }}
         >
           <TileLayer
