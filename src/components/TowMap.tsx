@@ -52,6 +52,23 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
     }
   }, [pickupLocation, dropLocation]);
 
+  const defaultCenter: L.LatLngTuple = [51.505, -0.09];
+  const greenIcon = new L.Icon({
+    iconUrl: "/marker-icon-green.png",
+    iconRetinaUrl: "/marker-icon-2x-green.png",
+    shadowUrl: "/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+  });
+
+  const redIcon = new L.Icon({
+    iconUrl: "/marker-icon-red.png",
+    iconRetinaUrl: "/marker-icon-2x-red.png",
+    shadowUrl: "/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex gap-4">
@@ -77,38 +94,28 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
       
       <div className="h-[500px] rounded-lg overflow-hidden border">
         <MapContainer
-          center={[51.505, -0.09] as L.LatLngExpression}
+          center={defaultCenter}
           zoom={13}
           style={{ height: "100%", width: "100%" }}
-          ref={mapRef}
+          whenCreated={(map) => {
+            mapRef.current = map;
+          }}
         >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           <LocationMarker onLocationSelect={handleLocationSelect} />
           {pickupLocation && (
             <Marker 
-              position={[pickupLocation.lat, pickupLocation.lng] as L.LatLngExpression}
-              icon={new L.Icon({
-                iconUrl: "/marker-icon-green.png",
-                iconRetinaUrl: "/marker-icon-2x-green.png",
-                shadowUrl: "/marker-shadow.png",
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-              })}
+              position={[pickupLocation.lat, pickupLocation.lng] as L.LatLngTuple}
+              icon={greenIcon}
             />
           )}
           {dropLocation && (
             <Marker 
-              position={[dropLocation.lat, dropLocation.lng] as L.LatLngExpression}
-              icon={new L.Icon({
-                iconUrl: "/marker-icon-red.png",
-                iconRetinaUrl: "/marker-icon-2x-red.png",
-                shadowUrl: "/marker-shadow.png",
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-              })}
+              position={[dropLocation.lat, dropLocation.lng] as L.LatLngTuple}
+              icon={redIcon}
             />
           )}
         </MapContainer>
