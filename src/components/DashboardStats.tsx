@@ -1,4 +1,5 @@
 import { ArrowUpRight, ArrowDownRight, Users, Mail, MousePointerClick, Target } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const stats = [
   {
