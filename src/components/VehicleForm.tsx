@@ -8,12 +8,12 @@ import { useServiceRequest } from "@/hooks/useServiceRequest";
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
   dropLocation: { lat: number; lng: number } | null;
-  serviceType: string;
+  serviceType: ServiceRequest['serviceType'];
 }
 
 const VehicleForm = ({ pickupLocation, dropLocation, serviceType }: VehicleFormProps) => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const { mutate: submitRequest, isLoading } = useServiceRequest();
+  const { mutate: submitRequest, isPending } = useServiceRequest();
 
   const onSubmit = (data: any) => {
     if (!pickupLocation || !dropLocation) {
@@ -22,7 +22,7 @@ const VehicleForm = ({ pickupLocation, dropLocation, serviceType }: VehicleFormP
 
     const serviceRequest: Omit<ServiceRequest, 'id' | 'status' | 'createdAt'> = {
       ...data,
-      serviceType: serviceType as ServiceRequest['serviceType'],
+      serviceType,
       pickupLocation,
       dropLocation,
     };

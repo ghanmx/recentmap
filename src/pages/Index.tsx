@@ -8,10 +8,12 @@ import { MapPin } from "lucide-react";
 import { useState } from "react";
 import TowMap from "@/components/TowMap";
 import VehicleForm from "@/components/VehicleForm";
+import { ServiceRequest } from "@/types/service";
 
 const Index = () => {
   const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [dropLocation, setDropLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [serviceType, setServiceType] = useState<ServiceRequest['serviceType']>('standard');
   const { toast } = useToast();
 
   const handleLocationSelect = (type: "pickup" | "drop", location: { lat: number; lng: number }) => {
@@ -41,11 +43,18 @@ const Index = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card className="p-6">
-          <VehicleForm />
+          <VehicleForm 
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            serviceType={serviceType}
+          />
           
           <div className="mt-6">
             <Label>Service Type</Label>
-            <Select defaultValue="standard">
+            <Select 
+              defaultValue="standard"
+              onValueChange={(value) => setServiceType(value as ServiceRequest['serviceType'])}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select service type" />
               </SelectTrigger>
