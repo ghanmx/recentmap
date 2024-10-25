@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { Button } from "@/components/ui/button"; // Add Button import
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -47,8 +48,8 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
       const bounds = L.latLngBounds([]);
       if (pickupLocation) bounds.extend([pickupLocation.lat, pickupLocation.lng]);
       if (dropLocation) bounds.extend([dropLocation.lat, dropLocation.lng]);
-      if (bounds.getNorthEast().equals(bounds.getSouthWest())) {
-        mapRef.current.setView(bounds.getNorthEast(), 13);
+      if (!bounds.isValid()) {
+        mapRef.current.setView(bounds.getCenter(), 13);
       } else {
         mapRef.current.fitBounds(bounds);
       }
