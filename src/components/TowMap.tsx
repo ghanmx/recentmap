@@ -101,8 +101,10 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           center={defaultCenter}
           zoom={13}
           style={{ height: "100%", width: "100%" }}
-          whenReady={(e) => {
-            mapRef.current = e.target;
+          ref={(map) => {
+            if (map) {
+              mapRef.current = map;
+            }
           }}
         >
           <TileLayer
