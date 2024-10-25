@@ -19,6 +19,30 @@ interface TowMapProps {
   dropLocation: { lat: number; lng: number } | null;
 }
 
+const DraggableMarker = ({ 
+  position, 
+  onDragEnd,
+  icon
+}: { 
+  position: L.LatLngExpression; 
+  onDragEnd: (latlng: L.LatLng) => void;
+  icon?: L.Icon;
+}) => {
+  return (
+    <Marker 
+      position={position} 
+      draggable={true}
+      icon={icon}
+      eventHandlers={{
+        dragend: (e) => {
+          const marker = e.target;
+          onDragEnd(marker.getLatLng());
+        },
+      }}
+    />
+  );
+};
+
 const LocationMarker = ({ onLocationSelect }: { onLocationSelect: (location: { lat: number; lng: number }) => void }) => {
   useMapEvents({
     click(e) {
@@ -109,14 +133,16 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           />
           <LocationMarker onLocationSelect={handleLocationSelect} />
           {pickupLocation && (
-            <Marker 
-              position={[pickupLocation.lat, pickupLocation.lng] as L.LatLngTuple}
+            <DraggableMarker 
+              position={[pickupLocation.lat, pickupLocation.lng]}
+              onDragEnd={(latlng) => onPickupSelect({ lat: latlng.lat, lng: latlng.lng })}
               icon={greenIcon}
             />
           )}
           {dropLocation && (
-            <Marker 
-              position={[dropLocation.lat, dropLocation.lng] as L.LatLngTuple}
+            <DraggableMarker 
+              position={[dropLocation.lat, dropLocation.lng]}
+              onDragEnd={(latlng) => onDropSelect({ lat: latlng.lat, lng: latlng.lng })}
               icon={redIcon}
             />
           )}
