@@ -77,7 +77,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
       
       <div className="h-[500px] rounded-lg overflow-hidden border">
         <MapContainer
-          center={[51.505, -0.09]}
+          center={[51.505, -0.09] as L.LatLngExpression}
           zoom={13}
           style={{ height: "100%", width: "100%" }}
           ref={mapRef}
@@ -89,7 +89,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           <LocationMarker onLocationSelect={handleLocationSelect} />
           {pickupLocation && (
             <Marker 
-              position={[pickupLocation.lat, pickupLocation.lng]}
+              position={[pickupLocation.lat, pickupLocation.lng] as L.LatLngExpression}
               icon={new L.Icon({
                 iconUrl: "/marker-icon-green.png",
                 iconRetinaUrl: "/marker-icon-2x-green.png",
@@ -101,7 +101,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           )}
           {dropLocation && (
             <Marker 
-              position={[dropLocation.lat, dropLocation.lng]}
+              position={[dropLocation.lat, dropLocation.lng] as L.LatLngExpression}
               icon={new L.Icon({
                 iconUrl: "/marker-icon-red.png",
                 iconRetinaUrl: "/marker-icon-2x-red.png",
