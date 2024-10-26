@@ -7,6 +7,7 @@ import VehicleForm from "@/components/VehicleForm";
 import { ServiceRequest } from "@/types/service";
 import { FloatingPanel } from "@/components/map/FloatingPanel";
 import { calculateTotalCost, getTowTruckType } from "@/utils/towTruckPricing";
+import { calculateRoadDistance } from "@/utils/routeCalculator";
 
 const Index = () => {
   const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -36,12 +37,21 @@ const Index = () => {
     }
   };
 
-  const updatePrice = (pickup: { lat: number; lng: number } | null, drop: { lat: number; lng: number } | null) => {
+  const updatePrice = async (pickup: { lat: number; lng: number } | null, drop: { lat: number; lng: number } | null) => {
     if (pickup && drop && selectedVehicleModel) {
-      const towTruckType = getTowTruckType(selectedVehicleModel);
-      const distance = calculateDistance(pickup, drop); // You'll need to implement this
-      const cost = calculateTotalCost(distance, towTruckType, requiresManeuver);
-      setTotalCost(cost);
+      try {
+        const towTruckType = getTowTruckType(selectedVehicleModel);
+        const distance = await calculateRoadDistance(pickup, drop);
+        const cost = calculateTotalCost(distance, towTruckType, requiresManeuver);
+        setTotalCost(cost);
+      } catch (error) {
+        console.error('Error updating price:', error);
+        toast({
+          title: "Error calculating route",
+          description: "Failed to calculate accurate route distance. Using approximate distance.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -49,9 +59,7 @@ const Index = () => {
     setRequiresManeuver(maneuver);
     if (pickupLocation && dropLocation && selectedVehicleModel) {
       const towTruckType = getTowTruckType(selectedVehicleModel);
-      const distance = calculateDistance(pickupLocation, dropLocation);
-      const cost = calculateTotalCost(distance, towTruckType, maneuver);
-      setTotalCost(cost);
+      updatePrice(pickupLocation, dropLocation);
     }
   };
 
@@ -59,23 +67,8 @@ const Index = () => {
     setSelectedVehicleModel(model);
     if (pickupLocation && dropLocation) {
       const towTruckType = getTowTruckType(model);
-      const distance = calculateDistance(pickupLocation, dropLocation);
-      const cost = calculateTotalCost(distance, towTruckType, requiresManeuver);
-      setTotalCost(cost);
+      updatePrice(pickupLocation, dropLocation);
     }
-  };
-
-  const calculateDistance = (point1: { lat: number; lng: number }, point2: { lat: number; lng: number }): number => {
-    // Simple distance calculation (you might want to use a more accurate method)
-    const R = 6371; // Earth's radius in km
-    const dLat = (point2.lat - point1.lat) * Math.PI / 180;
-    const dLon = (point2.lng - point1.lng) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(point1.lat * Math.PI / 180) * Math.cos(point2.lat * Math.PI / 180) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
   };
 
   return (
