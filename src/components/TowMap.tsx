@@ -6,14 +6,13 @@ import { LocationMarker } from "./map/LocationMarker";
 import { DraggableMarker } from "./map/DraggableMarker";
 import { MapControls } from "./map/MapControls";
 import { BorderControls } from "./map/BorderControls";
-import { FloatingPanel } from "./map/FloatingPanel";
 import { RouteStreetInfo } from "./map/RouteStreetInfo";
 import { useToast } from "@/components/ui/use-toast";
 import PaymentWindow from "./payment/PaymentWindow";
 import { Button } from "@/components/ui/button";
 import { RouteDisplay } from "./map/RouteDisplay";
-import { Menu as MenuIcon, Calendar as CalendarIcon } from "lucide-react";
 import { calculateTowingPrice } from "@/utils/priceCalculator";
+import { TopNavMenu } from "./navigation/TopNavMenu";
 
 const enterpriseIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
@@ -45,13 +44,6 @@ const dropIcon = new L.Icon({
 const ENTERPRISE_LOCATIONS = [
   { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
 ];
-
-interface TowMapProps {
-  onPickupSelect: (location: { lat: number; lng: number }) => void;
-  onDropSelect: (location: { lat: number; lng: number }) => void;
-  pickupLocation: { lat: number; lng: number } | null;
-  dropLocation: { lat: number; lng: number } | null;
-}
 
 const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: TowMapProps) => {
   const [selectingPickup, setSelectingPickup] = useState(false);
@@ -111,15 +103,8 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
 
   return (
     <div className="fixed inset-0">
-      <div className="absolute inset-x-0 top-0 z-[1000] bg-white/95 shadow-md">
-        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
-          <Button variant="outline" size="sm">
-            <MenuIcon className="w-4 h-4 mr-2" /> Menu
-          </Button>
-          <Button variant="outline" size="sm">
-            <CalendarIcon className="w-4 h-4 mr-2" /> Schedule
-          </Button>
-        </div>
+      <div className="absolute inset-x-0 top-0 z-[1000] bg-white/95 shadow-md backdrop-blur-sm">
+        <TopNavMenu />
       </div>
 
       <div className="absolute inset-x-0 top-16 z-[1000] px-4 flex flex-col items-center gap-4 pointer-events-none">
@@ -207,7 +192,10 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           <RouteDisplay pickupLocation={pickupLocation} dropLocation={dropLocation} />
           {pickupLocation && dropLocation && (
             <Button 
-              className="w-full bg-primary hover:bg-primary/90 text-white shadow-lg"
+              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 
+                         hover:to-blue-700 text-white shadow-lg hover:shadow-xl 
+                         transition-all duration-300 transform hover:-translate-y-1 
+                         active:translate-y-0 animate-pulse-slow"
               onClick={() => setShowPayment(true)}
             >
               Request Tow Truck
