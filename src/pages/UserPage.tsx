@@ -30,7 +30,8 @@ const UserPage = () => {
         { lat: 26.510272, lng: -100.006323 }, // Enterprise location
         pickupLocation,
         dropLocation,
-        'standard'
+        'Toyota Corolla', // Default vehicle model
+        false // Default maneuver requirement
       )
     : { totalPrice: 0 };
 
