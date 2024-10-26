@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -13,6 +13,7 @@ import PaymentWindow from "./payment/PaymentWindow";
 import { Button } from "@/components/ui/button";
 import { RouteDisplay } from "./map/RouteDisplay";
 import { Menu as MenuIcon, Calendar as CalendarIcon } from "lucide-react";
+import { calculateTowingPrice } from "@/utils/priceCalculator";
 
 const enterpriseIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
@@ -56,6 +57,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [totalCost, setTotalCost] = useState(0);
   const mapRef = useRef<L.Map | null>(null);
   const { toast } = useToast();
 
@@ -85,6 +87,27 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
       });
     }
   };
+
+  useEffect(() => {
+    const updatePrice = async () => {
+      if (pickupLocation && dropLocation) {
+        try {
+          const result = await calculateTowingPrice(
+            { lat: 26.510272, lng: -100.006323 },
+            pickupLocation,
+            dropLocation,
+            'Toyota Corolla',
+            false
+          );
+          setTotalCost(result.totalPrice);
+        } catch (error) {
+          console.error('Error calculating price:', error);
+        }
+      }
+    };
+
+    updatePrice();
+  }, [pickupLocation, dropLocation]);
 
   return (
     <div className="fixed inset-0">
@@ -197,7 +220,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         isOpen={showPayment}
         onClose={() => setShowPayment(false)}
         onPaymentSubmit={handlePaymentSubmit}
-        totalCost={0}
+        totalCost={totalCost}
       />
     </div>
   );
