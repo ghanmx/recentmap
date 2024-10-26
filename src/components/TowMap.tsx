@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 import PaymentWindow from "./payment/PaymentWindow";
 import { Button } from "@/components/ui/button";
 import { RouteDisplay } from "./map/RouteDisplay";
+import { Menu as MenuIcon, Calendar as CalendarIcon } from "lucide-react";
 
 const enterpriseIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
@@ -87,7 +88,18 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
 
   return (
     <div className="fixed inset-0">
-      <div className="absolute inset-x-0 top-4 z-[1000] px-4 flex flex-col items-center gap-4 pointer-events-none">
+      <div className="absolute inset-x-0 top-0 z-[1000] bg-white/95 shadow-md">
+        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+          <Button variant="outline" size="sm">
+            <MenuIcon className="w-4 h-4 mr-2" /> Menu
+          </Button>
+          <Button variant="outline" size="sm">
+            <CalendarIcon className="w-4 h-4 mr-2" /> Schedule
+          </Button>
+        </div>
+      </div>
+
+      <div className="absolute inset-x-0 top-16 z-[1000] px-4 flex flex-col items-center gap-4 pointer-events-none">
         <div className="w-full max-w-md pointer-events-auto">
           <MapControls 
             selectingPickup={selectingPickup}
@@ -172,7 +184,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           <RouteDisplay pickupLocation={pickupLocation} dropLocation={dropLocation} />
           {pickupLocation && dropLocation && (
             <Button 
-              className="w-full bg-primary hover:bg-primary/90 text-white"
+              className="w-full bg-primary hover:bg-primary/90 text-white shadow-lg"
               onClick={() => setShowPayment(true)}
             >
               Request Tow Truck
