@@ -10,9 +10,8 @@ interface FloatingPanelProps {
 export const FloatingPanel = ({ children, className, position = "bottom" }: FloatingPanelProps) => {
   return (
     <div className={cn(
-      "fixed left-4 right-4 bg-white/95 p-4 rounded-lg shadow-lg backdrop-blur-sm transition-all duration-300",
+      "fixed left-4 right-4 bg-white/95 p-4 rounded-lg shadow-lg z-[1000] backdrop-blur-sm",
       position === "top" ? "top-4" : "bottom-4",
-      "z-[1000] hover:z-[1001]",
       className
     )}>
       {children}

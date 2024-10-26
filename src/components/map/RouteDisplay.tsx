@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { useToast } from "@/components/ui/use-toast";
-import { Card } from "@/components/ui/card";
 
 interface RouteDisplayProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -27,11 +26,11 @@ export const RouteDisplay = ({ pickupLocation, dropLocation }: RouteDisplayProps
       if (pickupLocation && dropLocation) {
         try {
           const result = await calculateTowingPrice(
-            { lat: 26.510272, lng: -100.006323 },
+            { lat: 26.510272, lng: -100.006323 }, // Enterprise location
             pickupLocation,
             dropLocation,
-            'Toyota Corolla',
-            false
+            'Toyota Corolla', // Default vehicle model
+            false // Default maneuver requirement
           );
           setPriceDetails(result);
         } catch (error) {
@@ -50,19 +49,17 @@ export const RouteDisplay = ({ pickupLocation, dropLocation }: RouteDisplayProps
   if (!priceDetails) return null;
 
   return (
-    <Card className="p-6 space-y-4 bg-white/95 backdrop-blur-md shadow-xl border border-gray-200">
-      <div className="text-lg font-semibold text-gray-900">Estimated Price</div>
-      <div className="text-3xl font-bold text-primary bg-primary/5 p-3 rounded-lg">
+    <div className="space-y-4">
+      <div className="text-lg font-semibold">Estimated Price</div>
+      <div className="text-3xl font-bold text-primary">
         ${priceDetails.totalPrice.toFixed(2)}
       </div>
-      <div className="space-y-2 bg-gray-50 p-3 rounded-lg">
-        <p className="text-sm text-gray-700">
-          Price is calculated based on actual road distance and service type
-        </p>
-        <p className="text-sm text-gray-700 font-medium">
-          Total route distance: {priceDetails.totalDistance.toFixed(2)} km
-        </p>
-      </div>
-    </Card>
+      <p className="text-sm text-gray-500">
+        Price is calculated based on actual road distance and service type
+      </p>
+      <p className="text-sm text-gray-500">
+        Total route distance: {priceDetails.totalDistance.toFixed(2)} km
+      </p>
+    </div>
   );
 };
