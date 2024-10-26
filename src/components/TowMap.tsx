@@ -72,6 +72,16 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
   const [price, setPrice] = useState(0);
   const mapRef = useRef<L.Map | null>(null);
 
+  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+    if (selectingPickup) {
+      onPickupSelect(location);
+      setSelectingPickup(false);
+    } else if (selectingDrop) {
+      onDropSelect(location);
+      setSelectingDrop(false);
+    }
+  };
+
   const calculateDistanceAndPrice = () => {
     if (pickupLocation && dropLocation) {
       const R = 6371; // Earth's radius in km
