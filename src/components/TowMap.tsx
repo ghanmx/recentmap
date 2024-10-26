@@ -10,8 +10,8 @@ import { BorderControls } from "./map/BorderControls";
 import { FloatingPanel } from "./map/FloatingPanel";
 import { MapMetrics } from "./map/MapMetrics";
 import { useToast } from "@/components/ui/use-toast";
+import PaymentWindow from "./payment/PaymentWindow";
 
-// Create custom icons
 const enterpriseIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -55,8 +55,9 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [distance, setDistance] = useState(0);
   const [price, setPrice] = useState(0);
+  const [showPayment, setShowPayment] = useState(false);
   const mapRef = useRef<L.Map | null>(null);
-  const toast = useToast();
+  const { toast } = useToast();
 
   const handleLocationSelect = useCallback((location: { lat: number; lng: number }) => {
     if (selectingPickup) {
@@ -89,6 +90,15 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
     }
   }, [pickupLocation, dropLocation]);
 
+  const handlePaymentSubmit = (result: { success: boolean; error?: string }) => {
+    if (result.success) {
+      toast({
+        title: "Success",
+        description: "Your tow truck request has been confirmed!",
+      });
+    }
+  };
+
   useEffect(() => {
     calculatePriceAndDistance();
     
@@ -98,7 +108,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         [pickupLocation.lat, pickupLocation.lng],
         [dropLocation.lat, dropLocation.lng]
       );
-      mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+      mapRef.current.fitBounds(bounds);
     }
   }, [pickupLocation, dropLocation, calculatePriceAndDistance]);
 
@@ -140,7 +150,6 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         <LocationMarker onLocationSelect={handleLocationSelect} />
         <BorderControls />
         
-        {/* Company location marker - not draggable */}
         <DraggableMarker
           position={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
           onDragEnd={() => {}}
@@ -171,8 +180,25 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
       </MapContainer>
 
       <FloatingPanel position="bottom" className="max-w-xl mx-auto">
-        <MapMetrics distance={distance} price={price} />
+        <div className="space-y-4">
+          <MapMetrics distance={distance} price={price} />
+          {pickupLocation && dropLocation && (
+            <Button 
+              className="w-full" 
+              onClick={() => setShowPayment(true)}
+            >
+              Request Tow Truck
+            </Button>
+          )}
+        </div>
       </FloatingPanel>
+
+      <PaymentWindow
+        isOpen={showPayment}
+        onClose={() => setShowPayment(false)}
+        onPaymentSubmit={handlePaymentSubmit}
+        totalCost={price}
+      />
     </div>
   );
 };
