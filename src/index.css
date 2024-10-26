@@ -74,7 +74,7 @@ h1, h2, h3, h4, h5, h6 {
       transparent 100%
     );
     transform: rotate(30deg);
-    animation: shine 3s infinite linear;
+    animation: shine-metal 3s infinite linear;
   }
 
   .animate-pulse-slow {
@@ -115,11 +115,11 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .card-shine-effect-metal:hover:after {
-    animation: shine 1s infinite ease-in;
+    animation: shine-card 1s infinite ease-in;
   }
 }
 
-@keyframes shine {
+@keyframes shine-metal {
   from {
     transform: translateX(-100%) rotate(30deg);
   }
@@ -134,5 +134,14 @@ h1, h2, h3, h4, h5, h6 {
   }
   100% {
     transform: translateX(-100%) rotate(var(--shine-deg));
+  }
+}
+
+@keyframes pulseSlow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
   }
 }
