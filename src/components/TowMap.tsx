@@ -7,7 +7,7 @@ import { LocationMarker } from "./map/LocationMarker";
 import { DraggableMarker } from "./map/DraggableMarker";
 import { MapControls } from "./map/MapControls";
 import { useToast } from "@/components/ui/use-toast";
-import { MapPin, Navigation } from "lucide-react";
+import { MapPin, Navigation, Maximize2, Minimize2 } from "lucide-react";
 
 // Fix Leaflet marker icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -34,6 +34,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [distance, setDistance] = useState(0);
   const [price, setPrice] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
   const mapRef = useRef<L.Map | null>(null);
   const { toast } = useToast();
 
@@ -70,6 +71,13 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
       setPrice(calculateTowingPrice(pickupLocation, dropLocation, 'standard'));
     }
   }, [pickupLocation, dropLocation]);
+
+  const toggleMapSize = () => {
+    setIsExpanded(!isExpanded);
+    setTimeout(() => {
+      mapRef.current?.invalidateSize();
+    }, 100);
+  };
 
   useEffect(() => {
     calculateDistanceAndPrice();
@@ -111,29 +119,39 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
 
   return (
     <div className="space-y-4">
-      <MapControls 
-        selectingPickup={selectingPickup}
-        selectingDrop={selectingDrop}
-        onPickupClick={() => {
-          setSelectingPickup(true);
-          setSelectingDrop(false);
-          toast({
-            title: "Select Pickup Location",
-            description: "Click on the map to set pickup location",
-          });
-        }}
-        onDropClick={() => {
-          setSelectingDrop(true);
-          setSelectingPickup(false);
-          toast({
-            title: "Select Drop-off Location",
-            description: "Click on the map to set drop-off location",
-          });
-        }}
-      />
+      <div className="flex justify-between items-center">
+        <MapControls 
+          selectingPickup={selectingPickup}
+          selectingDrop={selectingDrop}
+          onPickupClick={() => {
+            setSelectingPickup(true);
+            setSelectingDrop(false);
+            toast({
+              title: "Select Pickup Location",
+              description: "Click on the map to set pickup location",
+            });
+          }}
+          onDropClick={() => {
+            setSelectingDrop(true);
+            setSelectingPickup(false);
+            toast({
+              title: "Select Drop-off Location",
+              description: "Click on the map to set drop-off location",
+            });
+          }}
+        />
+        <button
+          onClick={toggleMapSize}
+          className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+        >
+          {isExpanded ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+        </button>
+      </div>
       
       <div className="relative">
-        <div className="h-[500px] rounded-lg overflow-hidden border">
+        <div className={`transition-all duration-300 rounded-lg overflow-hidden border relative ${
+          isExpanded ? 'fixed top-4 left-4 right-4 bottom-4 z-50' : 'h-[500px]'
+        }`}>
           <MapContainer
             center={[26.510272, -100.006323]}
             zoom={13}
@@ -145,6 +163,26 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             <LocationMarker onLocationSelect={handleLocationSelect} />
+            
+            {/* Hidden border controls */}
+            <div className="absolute inset-0 pointer-events-none">
+              <button 
+                className="absolute top-0 left-0 w-full h-8 opacity-0 cursor-n-resize pointer-events-auto"
+                onClick={() => mapRef.current?.panBy([0, -50])}
+              />
+              <button 
+                className="absolute bottom-0 left-0 w-full h-8 opacity-0 cursor-s-resize pointer-events-auto"
+                onClick={() => mapRef.current?.panBy([0, 50])}
+              />
+              <button 
+                className="absolute top-0 left-0 h-full w-8 opacity-0 cursor-w-resize pointer-events-auto"
+                onClick={() => mapRef.current?.panBy([-50, 0])}
+              />
+              <button 
+                className="absolute top-0 right-0 h-full w-8 opacity-0 cursor-e-resize pointer-events-auto"
+                onClick={() => mapRef.current?.panBy([50, 0])}
+              />
+            </div>
             
             {ENTERPRISE_LOCATIONS.map((location, index) => (
               <Marker
@@ -178,7 +216,9 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           </MapContainer>
         </div>
         
-        <div className="absolute bottom-4 left-4 right-4 bg-white p-4 rounded-lg shadow-lg z-[1000] bg-opacity-90">
+        <div className={`absolute bottom-4 left-4 right-4 bg-white p-4 rounded-lg shadow-lg z-[1000] bg-opacity-90 ${
+          isExpanded ? 'mb-4' : ''
+        }`}>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <MapPin className="text-green-500" />
