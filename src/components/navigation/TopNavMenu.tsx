@@ -1,26 +1,27 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu as MenuIcon, X } from "lucide-react";
+import { Menu as MenuIcon, X, HelpCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export const TopNavMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="container mx-auto px-4 py-2">
+    <div className="container mx-auto px-4 py-2 flex justify-between items-center">
       <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
         <DropdownMenuTrigger asChild>
           <Button 
             variant="outline" 
             size="sm"
-            className="bg-gradient-to-r from-slate-200 to-slate-300 hover:from-slate-300 hover:to-slate-400 
-                       border border-slate-300 shadow-lg transition-all duration-300 
-                       hover:shadow-xl active:scale-95 animate-in fade-in-50"
+            className="bg-white/90 hover:bg-white/95 border border-gray-200 shadow-sm 
+                     transition-all duration-300 hover:shadow active:scale-95"
           >
             {isMenuOpen ? (
               <X className="w-4 h-4 mr-2" />
@@ -30,13 +31,25 @@ export const TopNavMenu = () => {
             Menu
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-48 animate-in fade-in-50 zoom-in-95">
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>History</DropdownMenuItem>
-          <DropdownMenuItem>Help</DropdownMenuItem>
+        <DropdownMenuContent className="w-56 animate-in fade-in-50 zoom-in-95">
+          <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">Settings</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="cursor-pointer">History</DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">Help</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Tooltip content="Need help?">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="p-2"
+          onClick={() => window.open('/help', '_blank')}
+        >
+          <HelpCircle className="w-5 h-5" />
+        </Button>
+      </Tooltip>
     </div>
   );
 };
