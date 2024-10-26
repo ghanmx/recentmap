@@ -7,22 +7,40 @@ import { useForm } from "react-hook-form";
 import { ServiceRequest } from "@/types/service";
 import { useServiceRequest } from "@/hooks/useServiceRequest";
 import { Card } from "@/components/ui/card";
-import { CreditCard, Car, Calendar, MapPin, Wrench, AlertTriangle } from "lucide-react";
+import { CreditCard, Car, MapPin, Wrench, AlertTriangle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { vehicleBrands, vehicleModels, vehicleWeights, towTruckTypes } from "@/data/vehicleData";
+import { vehicleBrands, vehicleModels } from "@/data/vehicleData";
 import { Switch } from "@/components/ui/switch";
 
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
   dropLocation: { lat: number; lng: number } | null;
   serviceType: ServiceRequest['serviceType'];
+  onManeuverChange?: (requiresManeuver: boolean) => void;
+  onVehicleModelChange?: (model: string) => void;
 }
 
-const VehicleForm = ({ pickupLocation, dropLocation, serviceType }: VehicleFormProps) => {
-  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm();
+const VehicleForm = ({ 
+  pickupLocation, 
+  dropLocation, 
+  serviceType,
+  onManeuverChange,
+  onVehicleModelChange 
+}: VehicleFormProps) => {
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
   const { mutate: submitRequest, isPending } = useServiceRequest();
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [requiresManeuver, setRequiresManeuver] = useState(false);
+
+  const handleManeuverChange = (checked: boolean) => {
+    setRequiresManeuver(checked);
+    onManeuverChange?.(checked);
+  };
+
+  const handleModelChange = (value: string) => {
+    setValue("vehicleModel", value);
+    onVehicleModelChange?.(value);
+  };
 
   const onSubmit = (data: any) => {
     if (!pickupLocation || !dropLocation) return;
@@ -67,7 +85,7 @@ const VehicleForm = ({ pickupLocation, dropLocation, serviceType }: VehicleFormP
 
             <div>
               <Label className="text-gray-600">Model</Label>
-              <Select onValueChange={(value) => setValue("vehicleModel", value)}>
+              <Select onValueChange={handleModelChange}>
                 <SelectTrigger className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20">
                   <SelectValue placeholder="Select model" />
                 </SelectTrigger>
@@ -107,7 +125,7 @@ const VehicleForm = ({ pickupLocation, dropLocation, serviceType }: VehicleFormP
               <Label className="text-gray-600">Requires Special Maneuver</Label>
               <Switch
                 checked={requiresManeuver}
-                onCheckedChange={setRequiresManeuver}
+                onCheckedChange={handleManeuverChange}
               />
             </div>
 

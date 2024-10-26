@@ -138,7 +138,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
               disabled={!stripe || isProcessing}
               className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white min-w-[120px]"
             >
-              {isProcessing ? "Processing..." : "Pay Now"}
+              {isProcessing ? "Processing..." : `Pay $${totalCost.toFixed(2)}`}
             </Button>
           </DialogFooter>
         </form>
