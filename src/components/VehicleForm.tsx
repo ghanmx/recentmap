@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { ServiceRequest } from "@/types/service";
 import { useServiceRequest } from "@/hooks/useServiceRequest";
 import { Card } from "@/components/ui/card";
-import { CreditCard, Car, Calendar, MapPin, Tools, Alert } from "lucide-react";
+import { CreditCard, Car, Calendar, MapPin, Wrench, AlertTriangle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { vehicleBrands, vehicleModels, vehicleWeights, towTruckTypes } from "@/data/vehicleData";
 import { Switch } from "@/components/ui/switch";
@@ -98,7 +98,7 @@ const VehicleForm = ({ pickupLocation, dropLocation, serviceType }: VehicleFormP
 
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold text-gray-700">
-            <Tools className="w-5 h-5 text-secondary animate-spin-slow" />
+            <Wrench className="w-5 h-5 text-secondary animate-spin-slow" />
             <h2>Service Requirements</h2>
           </div>
 
@@ -122,7 +122,7 @@ const VehicleForm = ({ pickupLocation, dropLocation, serviceType }: VehicleFormP
             </div>
 
             <div className="flex items-center gap-2 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-              <Alert className="w-5 h-5 text-yellow-600" />
+              <AlertTriangle className="w-5 h-5 text-yellow-600" />
               <p className="text-sm text-yellow-700">
                 Additional fees may apply based on vehicle type and service requirements
               </p>
