@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import TowMap from "@/components/TowMap";
@@ -13,7 +12,6 @@ const Index = () => {
   const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [dropLocation, setDropLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [serviceType, setServiceType] = useState<ServiceRequest['serviceType']>('standard');
-  const [showForm, setShowForm] = useState(false);
   const [requiresManeuver, setRequiresManeuver] = useState(false);
   const [selectedVehicleModel, setSelectedVehicleModel] = useState<string>('');
   const [totalCost, setTotalCost] = useState(0);
@@ -80,26 +78,17 @@ const Index = () => {
         dropLocation={dropLocation}
       />
 
-      <Button
-        className="fixed top-4 right-4 z-[1001]"
-        onClick={() => setShowForm(!showForm)}
-      >
-        {showForm ? "Hide Form" : "Show Form"}
-      </Button>
-
-      {showForm && (
-        <FloatingPanel className="right-4 top-20 w-96 ml-auto">
-          <Card className="bg-transparent border-none shadow-none">
-            <VehicleForm 
-              pickupLocation={pickupLocation}
-              dropLocation={dropLocation}
-              serviceType={serviceType}
-              onManeuverChange={handleManeuverChange}
-              onVehicleModelChange={handleVehicleModelChange}
-            />
-          </Card>
-        </FloatingPanel>
-      )}
+      <FloatingPanel className="right-4 top-20 w-96 ml-auto">
+        <Card className="bg-transparent border-none shadow-none">
+          <VehicleForm 
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            serviceType={serviceType}
+            onManeuverChange={handleManeuverChange}
+            onVehicleModelChange={handleVehicleModelChange}
+          />
+        </Card>
+      </FloatingPanel>
     </div>
   );
 };
