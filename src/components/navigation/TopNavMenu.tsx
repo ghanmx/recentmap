@@ -8,7 +8,12 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Tooltip } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const TopNavMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,15 +45,20 @@ export const TopNavMenu = () => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Tooltip content="Need help?">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="p-2"
-          onClick={() => window.open('/help', '_blank')}
-        >
-          <HelpCircle className="w-5 h-5" />
-        </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="p-2"
+            onClick={() => window.open('/help', '_blank')}
+          >
+            <HelpCircle className="w-5 h-5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Need help?</p>
+        </TooltipContent>
       </Tooltip>
     </div>
   );
