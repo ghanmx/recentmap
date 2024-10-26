@@ -25,7 +25,14 @@ const UserPage = () => {
     }
   };
 
-  const estimatedPrice = calculateTowingPrice(pickupLocation, dropLocation, 'standard');
+  const { totalPrice } = pickupLocation && dropLocation
+    ? calculateTowingPrice(
+        { lat: 26.510272, lng: -100.006323 }, // Enterprise location
+        pickupLocation,
+        dropLocation,
+        'standard'
+      )
+    : { totalPrice: 0 };
 
   return (
     <div className="p-8">
@@ -41,7 +48,7 @@ const UserPage = () => {
           <div className="space-y-4">
             <div className="text-lg font-semibold">Estimated Price</div>
             <div className="text-3xl font-bold text-primary">
-              ${estimatedPrice}
+              ${totalPrice}
             </div>
             <p className="text-sm text-gray-500">
               Price is calculated based on distance and service type
