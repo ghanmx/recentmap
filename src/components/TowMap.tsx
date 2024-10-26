@@ -45,6 +45,13 @@ const ENTERPRISE_LOCATIONS = [
   { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
 ];
 
+interface TowMapProps {
+  onPickupSelect: (location: { lat: number; lng: number }) => void;
+  onDropSelect: (location: { lat: number; lng: number }) => void;
+  pickupLocation: { lat: number; lng: number } | null;
+  dropLocation: { lat: number; lng: number } | null;
+}
+
 const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: TowMapProps) => {
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
