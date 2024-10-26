@@ -11,6 +11,7 @@ import { FloatingPanel } from "./map/FloatingPanel";
 import { MapMetrics } from "./map/MapMetrics";
 import { useToast } from "@/components/ui/use-toast";
 import PaymentWindow from "./payment/PaymentWindow";
+import { Button } from "@/components/ui/button";
 
 const enterpriseIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
@@ -104,10 +105,10 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
     
     if (mapRef.current && pickupLocation && dropLocation) {
       const bounds = L.latLngBounds(
-        [ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng],
-        [pickupLocation.lat, pickupLocation.lng],
-        [dropLocation.lat, dropLocation.lng]
-      );
+        L.latLng(ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng),
+        L.latLng(pickupLocation.lat, pickupLocation.lng)
+      ).extend(L.latLng(dropLocation.lat, dropLocation.lng));
+      
       mapRef.current.fitBounds(bounds);
     }
   }, [pickupLocation, dropLocation, calculatePriceAndDistance]);

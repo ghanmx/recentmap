@@ -14,19 +14,19 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <StripeProvider>
-        <div className="flex">
-          <BrowserRouter>
+        <BrowserRouter>
+          <div className="flex min-h-screen bg-gray-50">
             <Sidebar />
-            <main className="flex-1 min-h-screen bg-gray-50">
+            <main className="flex-1 p-8 lg:ml-64">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/user" element={<UserPage />} />
               </Routes>
             </main>
-          </BrowserRouter>
-        </div>
-        <Toaster />
-        <Sonner />
+          </div>
+          <Toaster />
+          <Sonner />
+        </BrowserRouter>
       </StripeProvider>
     </TooltipProvider>
   </QueryClientProvider>
