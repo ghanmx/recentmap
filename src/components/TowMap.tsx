@@ -14,7 +14,7 @@ import { RouteDisplay } from "./map/RouteDisplay";
 import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { TopNavMenu } from "./navigation/TopNavMenu";
 import { MapLocationHandler } from "./map/MapLocationHandler";
-import { showRouteNotification, showPaymentNotification } from "@/utils/notificationUtils";
+import { showRouteNotification, showPaymentNotification, showLocationNotification } from "@/utils/notificationUtils";
 
 const ENTERPRISE_LOCATIONS = [
   { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
@@ -47,18 +47,25 @@ const dropIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }) => {
+interface TowMapProps {
+  onPickupSelect: (location: { lat: number; lng: number }) => void;
+  onDropSelect: (location: { lat: number; lng: number }) => void;
+  pickupLocation: { lat: number; lng: number } | null;
+  dropLocation: { lat: number; lng: number } | null;
+}
+
+const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: TowMapProps) => {
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [totalCost, setTotalCost] = useState(0);
   const mapRef = useRef<L.Map | null>(null);
 
-  const handleRouteCalculated = (distance) => {
+  const handleRouteCalculated = (distance: number) => {
     showRouteNotification(distance);
   };
 
-  const handlePaymentSubmit = (result) => {
+  const handlePaymentSubmit = (result: { success: boolean; error?: string }) => {
     showPaymentNotification(result.success, result.error);
   };
 
@@ -137,7 +144,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }) 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        <LocationMarker onLocationSelect={handleLocationSelect} />
+        <LocationMarker onLocationSelect={onPickupSelect} />
         <BorderControls />
         
         {ENTERPRISE_LOCATIONS.map((location, index) => (
