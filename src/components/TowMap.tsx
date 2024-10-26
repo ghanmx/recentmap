@@ -12,6 +12,13 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "/marker-shadow.png",
 });
 
+// Enterprise locations
+const ENTERPRISE_LOCATIONS = [
+  { lat: 51.505, lng: -0.09, name: "Downtown Service Center" },
+  { lat: 51.51, lng: -0.1, name: "North Service Hub" },
+  { lat: 51.49, lng: -0.08, name: "South Service Point" },
+];
+
 interface TowMapProps {
   onPickupSelect: (location: { lat: number; lng: number }) => void;
   onDropSelect: (location: { lat: number; lng: number }) => void;
@@ -81,6 +88,16 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
   }, [pickupLocation, dropLocation]);
 
   const defaultCenter: L.LatLngTuple = [51.505, -0.09];
+  
+  const enterpriseIcon = new L.Icon({
+    iconUrl: "/marker-icon-blue.png",
+    iconRetinaUrl: "/marker-icon-2x-blue.png",
+    shadowUrl: "/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+  });
+
   const greenIcon = new L.Icon({
     iconUrl: "/marker-icon-green.png",
     iconRetinaUrl: "/marker-icon-2x-green.png",
@@ -132,6 +149,21 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           <LocationMarker onLocationSelect={handleLocationSelect} />
+          
+          {/* Enterprise Service Locations */}
+          {ENTERPRISE_LOCATIONS.map((location, index) => (
+            <Marker
+              key={index}
+              position={[location.lat, location.lng]}
+              icon={enterpriseIcon}
+            >
+              <L.Popup>
+                <div className="font-semibold">{location.name}</div>
+                <div className="text-sm text-gray-600">Service Center</div>
+              </L.Popup>
+            </Marker>
+          ))}
+
           {pickupLocation && (
             <DraggableMarker 
               position={[pickupLocation.lat, pickupLocation.lng]}
