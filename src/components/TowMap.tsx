@@ -1,13 +1,15 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect, useRef, useCallback, useState } from "react";
+import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { LocationMarker } from "./map/LocationMarker";
 import { DraggableMarker } from "./map/DraggableMarker";
 import { MapControls } from "./map/MapControls";
+import { BorderControls } from "./map/BorderControls";
+import { FloatingPanel } from "./map/FloatingPanel";
+import { MapMetrics } from "./map/MapMetrics";
 import { useToast } from "@/components/ui/use-toast";
-import { MapPin, Navigation, Maximize2, Minimize2 } from "lucide-react";
 
 // Fix Leaflet marker icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -34,7 +36,6 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [distance, setDistance] = useState(0);
   const [price, setPrice] = useState(0);
-  const [isExpanded, setIsExpanded] = useState(false);
   const mapRef = useRef<L.Map | null>(null);
   const { toast } = useToast();
 
@@ -72,17 +73,9 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
     }
   }, [pickupLocation, dropLocation]);
 
-  const toggleMapSize = () => {
-    setIsExpanded(!isExpanded);
-    setTimeout(() => {
-      mapRef.current?.invalidateSize();
-    }, 100);
-  };
-
   useEffect(() => {
     calculateDistanceAndPrice();
     
-    // Center map on markers when they're both set
     if (mapRef.current && pickupLocation && dropLocation) {
       const bounds = L.latLngBounds(
         [pickupLocation.lat, pickupLocation.lng],
@@ -92,34 +85,9 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
     }
   }, [pickupLocation, dropLocation, calculateDistanceAndPrice]);
 
-  const enterpriseIcon = new L.Icon({
-    iconUrl: "/marker-icon-blue.png",
-    iconRetinaUrl: "/marker-icon-2x-blue.png",
-    shadowUrl: "/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-  });
-
-  const pickupIcon = new L.Icon({
-    iconUrl: "/marker-icon-green.png",
-    iconRetinaUrl: "/marker-icon-2x-green.png",
-    shadowUrl: "/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-  });
-
-  const dropIcon = new L.Icon({
-    iconUrl: "/marker-icon-red.png",
-    iconRetinaUrl: "/marker-icon-2x-red.png",
-    shadowUrl: "/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-  });
-
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
+    <div className="fixed inset-0">
+      <FloatingPanel position="top" className="max-w-md mx-auto">
         <MapControls 
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
@@ -140,97 +108,49 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
             });
           }}
         />
-        <button
-          onClick={toggleMapSize}
-          className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-        >
-          {isExpanded ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
-        </button>
-      </div>
-      
-      <div className="relative">
-        <div className={`transition-all duration-300 rounded-lg overflow-hidden border relative ${
-          isExpanded ? 'fixed top-4 left-4 right-4 bottom-4 z-50' : 'h-[500px]'
-        }`}>
-          <MapContainer
-            center={[26.510272, -100.006323]}
-            zoom={13}
-            style={{ height: "100%", width: "100%" }}
-            ref={mapRef}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            <LocationMarker onLocationSelect={handleLocationSelect} />
-            
-            {/* Hidden border controls */}
-            <div className="absolute inset-0 pointer-events-none">
-              <button 
-                className="absolute top-0 left-0 w-full h-8 opacity-0 cursor-n-resize pointer-events-auto"
-                onClick={() => mapRef.current?.panBy([0, -50])}
-              />
-              <button 
-                className="absolute bottom-0 left-0 w-full h-8 opacity-0 cursor-s-resize pointer-events-auto"
-                onClick={() => mapRef.current?.panBy([0, 50])}
-              />
-              <button 
-                className="absolute top-0 left-0 h-full w-8 opacity-0 cursor-w-resize pointer-events-auto"
-                onClick={() => mapRef.current?.panBy([-50, 0])}
-              />
-              <button 
-                className="absolute top-0 right-0 h-full w-8 opacity-0 cursor-e-resize pointer-events-auto"
-                onClick={() => mapRef.current?.panBy([50, 0])}
-              />
-            </div>
-            
-            {ENTERPRISE_LOCATIONS.map((location, index) => (
-              <Marker
-                key={index}
-                position={[location.lat, location.lng]}
-                icon={enterpriseIcon}
-              >
-                <Popup>
-                  <div className="font-semibold">{location.name}</div>
-                  <div className="text-sm text-gray-600">Service Center</div>
-                </Popup>
-              </Marker>
-            ))}
+      </FloatingPanel>
 
-            {pickupLocation && (
-              <DraggableMarker 
-                position={[pickupLocation.lat, pickupLocation.lng]}
-                onDragEnd={(latlng) => onPickupSelect({ lat: latlng.lat, lng: latlng.lng })}
-                icon={pickupIcon}
-                label="Pickup Location"
-              />
-            )}
-            {dropLocation && (
-              <DraggableMarker 
-                position={[dropLocation.lat, dropLocation.lng]}
-                onDragEnd={(latlng) => onDropSelect({ lat: latlng.lat, lng: latlng.lng })}
-                icon={dropIcon}
-                label="Drop-off Location"
-              />
-            )}
-          </MapContainer>
-        </div>
+      <MapContainer
+        center={[26.510272, -100.006323]}
+        zoom={13}
+        style={{ height: "100vh", width: "100vw" }}
+        ref={mapRef}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        <LocationMarker onLocationSelect={handleLocationSelect} />
+        <BorderControls />
         
-        <div className={`absolute bottom-4 left-4 right-4 bg-white p-4 rounded-lg shadow-lg z-[1000] bg-opacity-90 ${
-          isExpanded ? 'mb-4' : ''
-        }`}>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <MapPin className="text-green-500" />
-              <span className="font-semibold">Distance:</span> {distance.toFixed(2)} km
-            </div>
-            <div className="flex items-center gap-2">
-              <Navigation className="text-primary" />
-              <span className="font-semibold">Estimated Cost:</span> ${price}
-            </div>
-          </div>
-        </div>
-      </div>
+        {ENTERPRISE_LOCATIONS.map((location, index) => (
+          <DraggableMarker
+            key={index}
+            position={[location.lat, location.lng]}
+            onDragEnd={() => {}}
+            label={location.name}
+          />
+        ))}
+
+        {pickupLocation && (
+          <DraggableMarker 
+            position={[pickupLocation.lat, pickupLocation.lng]}
+            onDragEnd={(latlng) => onPickupSelect({ lat: latlng.lat, lng: latlng.lng })}
+            label="Pickup Location"
+          />
+        )}
+        {dropLocation && (
+          <DraggableMarker 
+            position={[dropLocation.lat, dropLocation.lng]}
+            onDragEnd={(latlng) => onDropSelect({ lat: latlng.lat, lng: latlng.lng })}
+            label="Drop-off Location"
+          />
+        )}
+      </MapContainer>
+
+      <FloatingPanel position="bottom" className="max-w-xl mx-auto">
+        <MapMetrics distance={distance} price={price} />
+      </FloatingPanel>
     </div>
   );
 };
