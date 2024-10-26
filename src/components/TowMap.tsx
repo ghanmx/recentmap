@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -6,6 +6,8 @@ import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { LocationMarker } from "./map/LocationMarker";
 import { DraggableMarker } from "./map/DraggableMarker";
 import { MapControls } from "./map/MapControls";
+import { useToast } from "@/components/ui/use-toast";
+import { MapPin, Navigation } from "lucide-react";
 
 // Fix Leaflet marker icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -15,7 +17,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "/marker-shadow.png",
 });
 
-// Enterprise locations
 const ENTERPRISE_LOCATIONS = [
   { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
   { lat: 26.512272, lng: -100.008323, name: "Secondary Service Point" },
@@ -34,18 +35,27 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
   const [distance, setDistance] = useState(0);
   const [price, setPrice] = useState(0);
   const mapRef = useRef<L.Map | null>(null);
+  const { toast } = useToast();
 
-  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+  const handleLocationSelect = useCallback((location: { lat: number; lng: number }) => {
     if (selectingPickup) {
       onPickupSelect(location);
       setSelectingPickup(false);
+      toast({
+        title: "Pickup Location Set",
+        description: "Click and drag the marker to adjust the location",
+      });
     } else if (selectingDrop) {
       onDropSelect(location);
       setSelectingDrop(false);
+      toast({
+        title: "Drop-off Location Set",
+        description: "Click and drag the marker to adjust the location",
+      });
     }
-  };
+  }, [selectingPickup, selectingDrop, onPickupSelect, onDropSelect, toast]);
 
-  const calculateDistanceAndPrice = () => {
+  const calculateDistanceAndPrice = useCallback(() => {
     if (pickupLocation && dropLocation) {
       const R = 6371;
       const dLat = (dropLocation.lat - pickupLocation.lat) * Math.PI / 180;
@@ -59,14 +69,21 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
       setDistance(dist);
       setPrice(calculateTowingPrice(pickupLocation, dropLocation, 'standard'));
     }
-  };
+  }, [pickupLocation, dropLocation]);
 
   useEffect(() => {
     calculateDistanceAndPrice();
-  }, [pickupLocation, dropLocation]);
+    
+    // Center map on markers when they're both set
+    if (mapRef.current && pickupLocation && dropLocation) {
+      const bounds = L.latLngBounds(
+        [pickupLocation.lat, pickupLocation.lng],
+        [dropLocation.lat, dropLocation.lng]
+      );
+      mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }, [pickupLocation, dropLocation, calculateDistanceAndPrice]);
 
-  const defaultCenter: L.LatLngTuple = [26.510272, -100.006323];
-  
   const enterpriseIcon = new L.Icon({
     iconUrl: "/marker-icon-blue.png",
     iconRetinaUrl: "/marker-icon-2x-blue.png",
@@ -100,17 +117,25 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         onPickupClick={() => {
           setSelectingPickup(true);
           setSelectingDrop(false);
+          toast({
+            title: "Select Pickup Location",
+            description: "Click on the map to set pickup location",
+          });
         }}
         onDropClick={() => {
           setSelectingDrop(true);
           setSelectingPickup(false);
+          toast({
+            title: "Select Drop-off Location",
+            description: "Click on the map to set drop-off location",
+          });
         }}
       />
       
       <div className="relative">
         <div className="h-[500px] rounded-lg overflow-hidden border">
           <MapContainer
-            center={defaultCenter}
+            center={[26.510272, -100.006323]}
             zoom={13}
             style={{ height: "100%", width: "100%" }}
             ref={mapRef}
@@ -155,10 +180,12 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         
         <div className="absolute bottom-4 left-4 right-4 bg-white p-4 rounded-lg shadow-lg z-[1000] bg-opacity-90">
           <div className="flex justify-between items-center">
-            <div>
+            <div className="flex items-center gap-2">
+              <MapPin className="text-green-500" />
               <span className="font-semibold">Distance:</span> {distance.toFixed(2)} km
             </div>
-            <div>
+            <div className="flex items-center gap-2">
+              <Navigation className="text-primary" />
               <span className="font-semibold">Estimated Cost:</span> ${price}
             </div>
           </div>
