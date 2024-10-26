@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { CreditCard, Calendar, CheckCircle } from "lucide-react";
 
 interface PaymentWindowProps {
   isOpen: boolean;
@@ -52,8 +53,6 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
         throw error;
       }
 
-      // Here you would typically make an API call to your backend
-      // For now, we'll simulate a successful payment
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast({
@@ -77,12 +76,16 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
         <DialogHeader>
-          <DialogTitle>Payment Details</DialogTitle>
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <CreditCard className="w-5 h-5 text-primary" />
+            Secure Payment
+          </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="p-4 border rounded-md">
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
             <CardElement 
               options={{
                 style: {
@@ -97,24 +100,43 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
                     color: '#9e2146',
                   },
                 },
+                hidePostalCode: true,
               }}
             />
           </div>
-          <div className="text-lg font-semibold">
-            Total Amount: ${totalCost.toFixed(2)}
+
+          <div className="flex items-center justify-between px-2 text-gray-700">
+            <span className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-secondary" />
+              Service Date
+            </span>
+            <span className="font-semibold">Today</span>
           </div>
-          <DialogFooter>
+
+          <div className="flex items-center justify-between px-2 text-gray-700">
+            <span className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-secondary" />
+              Total Amount
+            </span>
+            <span className="text-lg font-bold text-primary">
+              ${totalCost.toFixed(2)}
+            </span>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               disabled={isProcessing}
+              className="border-gray-300 hover:bg-gray-100"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={!stripe || isProcessing}
+              className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white min-w-[120px]"
             >
               {isProcessing ? "Processing..." : "Pay Now"}
             </Button>
