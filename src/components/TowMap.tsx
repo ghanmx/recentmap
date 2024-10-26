@@ -1,17 +1,16 @@
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useRef, useCallback, useState } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { LocationMarker } from "./map/LocationMarker";
 import { DraggableMarker } from "./map/DraggableMarker";
 import { MapControls } from "./map/MapControls";
 import { BorderControls } from "./map/BorderControls";
 import { FloatingPanel } from "./map/FloatingPanel";
-import { MapMetrics } from "./map/MapMetrics";
 import { useToast } from "@/components/ui/use-toast";
 import PaymentWindow from "./payment/PaymentWindow";
 import { Button } from "@/components/ui/button";
+import { RouteDisplay } from "./map/RouteDisplay";
 
 const enterpriseIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
@@ -54,8 +53,6 @@ interface TowMapProps {
 const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: TowMapProps) => {
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
-  const [distance, setDistance] = useState(0);
-  const [price, setPrice] = useState(0);
   const [showPayment, setShowPayment] = useState(false);
   const mapRef = useRef<L.Map | null>(null);
   const { toast } = useToast();
@@ -78,19 +75,6 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
     }
   }, [selectingPickup, selectingDrop, onPickupSelect, onDropSelect, toast]);
 
-  const calculatePriceAndDistance = useCallback(() => {
-    if (pickupLocation && dropLocation) {
-      const { totalPrice, totalDistance } = calculateTowingPrice(
-        ENTERPRISE_LOCATIONS[0],
-        pickupLocation,
-        dropLocation,
-        'standard'
-      );
-      setDistance(totalDistance);
-      setPrice(totalPrice);
-    }
-  }, [pickupLocation, dropLocation]);
-
   const handlePaymentSubmit = (result: { success: boolean; error?: string }) => {
     if (result.success) {
       toast({
@@ -99,19 +83,6 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
       });
     }
   };
-
-  useEffect(() => {
-    calculatePriceAndDistance();
-    
-    if (mapRef.current && pickupLocation && dropLocation) {
-      const bounds = L.latLngBounds(
-        L.latLng(ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng),
-        L.latLng(pickupLocation.lat, pickupLocation.lng)
-      ).extend(L.latLng(dropLocation.lat, dropLocation.lng));
-      
-      mapRef.current.fitBounds(bounds);
-    }
-  }, [pickupLocation, dropLocation, calculatePriceAndDistance]);
 
   return (
     <div className="fixed inset-0">
@@ -151,13 +122,16 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         <LocationMarker onLocationSelect={handleLocationSelect} />
         <BorderControls />
         
-        <DraggableMarker
-          position={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
-          onDragEnd={() => {}}
-          icon={enterpriseIcon}
-          label={ENTERPRISE_LOCATIONS[0].name}
-          draggable={false}
-        />
+        {ENTERPRISE_LOCATIONS.map((location, index) => (
+          <DraggableMarker
+            key={index}
+            position={[location.lat, location.lng]}
+            onDragEnd={() => {}}
+            icon={enterpriseIcon}
+            label={location.name}
+            draggable={false}
+          />
+        ))}
 
         {pickupLocation && (
           <DraggableMarker 
@@ -182,7 +156,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
 
       <FloatingPanel position="bottom" className="max-w-xl mx-auto">
         <div className="space-y-4">
-          <MapMetrics distance={distance} price={price} />
+          <RouteDisplay pickupLocation={pickupLocation} dropLocation={dropLocation} />
           {pickupLocation && dropLocation && (
             <Button 
               className="w-full" 
@@ -198,7 +172,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         isOpen={showPayment}
         onClose={() => setShowPayment(false)}
         onPaymentSubmit={handlePaymentSubmit}
-        totalCost={price}
+        totalCost={0} // This will be updated when payment is initiated
       />
     </div>
   );
