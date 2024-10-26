@@ -69,6 +69,16 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
     showPaymentNotification(result.success, result.error);
   };
 
+  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+    if (selectingPickup) {
+      onPickupSelect(location);
+      setSelectingPickup(false);
+    } else if (selectingDrop) {
+      onDropSelect(location);
+      setSelectingDrop(false);
+    }
+  };
+
   useEffect(() => {
     const updatePrice = async () => {
       if (pickupLocation && dropLocation) {
@@ -113,12 +123,12 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
             onPickupClick={() => {
               setSelectingPickup(true);
               setSelectingDrop(false);
-              showLocationNotification('pickup', { lat: 0, lng: 0 }); // Placeholder
+              showLocationNotification('pickup', { lat: 0, lng: 0 });
             }}
             onDropClick={() => {
               setSelectingDrop(true);
               setSelectingPickup(false);
-              showLocationNotification('drop', { lat: 0, lng: 0 }); // Placeholder
+              showLocationNotification('drop', { lat: 0, lng: 0 });
             }}
           />
         </div>
@@ -144,7 +154,11 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        <LocationMarker onLocationSelect={onPickupSelect} />
+        <LocationMarker 
+          onLocationSelect={handleLocationSelect}
+          selectingPickup={selectingPickup}
+          selectingDrop={selectingDrop}
+        />
         <BorderControls />
         
         {ENTERPRISE_LOCATIONS.map((location, index) => (
