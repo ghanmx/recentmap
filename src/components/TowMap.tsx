@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -8,23 +8,17 @@ import { MapControls } from "./map/MapControls";
 import { BorderControls } from "./map/BorderControls";
 import { RouteStreetInfo } from "./map/RouteStreetInfo";
 import { RoutePolyline } from "./map/RoutePolyline";
-import { useToast } from "@/components/ui/use-toast";
 import PaymentWindow from "./payment/PaymentWindow";
 import { Button } from "@/components/ui/button";
 import { RouteDisplay } from "./map/RouteDisplay";
 import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { TopNavMenu } from "./navigation/TopNavMenu";
+import { MapLocationHandler } from "./map/MapLocationHandler";
+import { showRouteNotification, showPaymentNotification } from "@/utils/notificationUtils";
 
 const ENTERPRISE_LOCATIONS = [
   { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
 ];
-
-interface TowMapProps {
-  onPickupSelect: (location: { lat: number; lng: number }) => void;
-  onDropSelect: (location: { lat: number; lng: number }) => void;
-  pickupLocation: { lat: number; lng: number } | null;
-  dropLocation: { lat: number; lng: number } | null;
-}
 
 const enterpriseIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
@@ -53,46 +47,19 @@ const dropIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: TowMapProps) => {
+const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }) => {
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [totalCost, setTotalCost] = useState(0);
   const mapRef = useRef<L.Map | null>(null);
-  const { toast } = useToast();
 
-  const handleLocationSelect = useCallback((location: { lat: number; lng: number }) => {
-    if (selectingPickup) {
-      onPickupSelect(location);
-      setSelectingPickup(false);
-      toast({
-        title: "Pickup Location Set",
-        description: "Click and drag the marker to adjust the location",
-      });
-    } else if (selectingDrop) {
-      onDropSelect(location);
-      setSelectingDrop(false);
-      toast({
-        title: "Drop-off Location Set",
-        description: "Click and drag the marker to adjust the location",
-      });
-    }
-  }, [selectingPickup, selectingDrop, onPickupSelect, onDropSelect, toast]);
-
-  const handlePaymentSubmit = (result: { success: boolean; error?: string }) => {
-    if (result.success) {
-      toast({
-        title: "Success",
-        description: "Your tow truck request has been confirmed!",
-      });
-    }
+  const handleRouteCalculated = (distance) => {
+    showRouteNotification(distance);
   };
 
-  const handleRouteCalculated = (distance: number) => {
-    toast({
-      title: "Route calculated",
-      description: `Total distance: ${distance.toFixed(2)} km`,
-    });
+  const handlePaymentSubmit = (result) => {
+    showPaymentNotification(result.success, result.error);
   };
 
   useEffect(() => {
@@ -122,6 +89,15 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         <TopNavMenu />
       </div>
 
+      <MapLocationHandler
+        onPickupSelect={onPickupSelect}
+        onDropSelect={onDropSelect}
+        selectingPickup={selectingPickup}
+        selectingDrop={selectingDrop}
+        setSelectingPickup={setSelectingPickup}
+        setSelectingDrop={setSelectingDrop}
+      />
+
       <div className="absolute inset-x-0 top-16 z-[1000] px-4 flex flex-col items-center gap-4 pointer-events-none">
         <div className="w-full max-w-md pointer-events-auto">
           <MapControls 
@@ -130,18 +106,12 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
             onPickupClick={() => {
               setSelectingPickup(true);
               setSelectingDrop(false);
-              toast({
-                title: "Select Pickup Location",
-                description: "Click on the map to set pickup location",
-              });
+              showLocationNotification('pickup', { lat: 0, lng: 0 }); // Placeholder
             }}
             onDropClick={() => {
               setSelectingDrop(true);
               setSelectingPickup(false);
-              toast({
-                title: "Select Drop-off Location",
-                description: "Click on the map to set drop-off location",
-              });
+              showLocationNotification('drop', { lat: 0, lng: 0 }); // Placeholder
             }}
           />
         </div>
