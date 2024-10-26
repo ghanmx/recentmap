@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents, Popup } from "react-leaflet";
-import { Button } from "@/components/ui/button";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { calculateTowingPrice } from "@/utils/priceCalculator";
+import { LocationMarker } from "./map/LocationMarker";
+import { DraggableMarker } from "./map/DraggableMarker";
+import { MapControls } from "./map/MapControls";
 
 // Fix Leaflet marker icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -26,45 +28,6 @@ interface TowMapProps {
   dropLocation: { lat: number; lng: number } | null;
 }
 
-const DraggableMarker = ({ 
-  position, 
-  onDragEnd,
-  icon,
-  label
-}: { 
-  position: L.LatLngExpression; 
-  onDragEnd: (latlng: L.LatLng) => void;
-  icon?: L.Icon;
-  label: string;
-}) => {
-  return (
-    <Marker 
-      position={position} 
-      draggable={true}
-      icon={icon}
-      eventHandlers={{
-        dragend: (e) => {
-          const marker = e.target;
-          onDragEnd(marker.getLatLng());
-        },
-      }}
-    >
-      <Popup>
-        <div className="font-semibold">{label}</div>
-      </Popup>
-    </Marker>
-  );
-};
-
-const LocationMarker = ({ onLocationSelect }: { onLocationSelect: (location: { lat: number; lng: number }) => void }) => {
-  useMapEvents({
-    click(e) {
-      onLocationSelect(e.latlng);
-    },
-  });
-  return null;
-};
-
 const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: TowMapProps) => {
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
@@ -84,7 +47,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
 
   const calculateDistanceAndPrice = () => {
     if (pickupLocation && dropLocation) {
-      const R = 6371; // Earth's radius in km
+      const R = 6371;
       const dLat = (dropLocation.lat - pickupLocation.lat) * Math.PI / 180;
       const dLon = (dropLocation.lng - pickupLocation.lng) * Math.PI / 180;
       const a = 
@@ -131,26 +94,18 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-4">
-        <Button 
-          variant={selectingPickup ? "secondary" : "outline"}
-          onClick={() => {
-            setSelectingPickup(true);
-            setSelectingDrop(false);
-          }}
-        >
-          Select Pickup
-        </Button>
-        <Button 
-          variant={selectingDrop ? "secondary" : "outline"}
-          onClick={() => {
-            setSelectingDrop(true);
-            setSelectingPickup(false);
-          }}
-        >
-          Select Drop-off
-        </Button>
-      </div>
+      <MapControls 
+        selectingPickup={selectingPickup}
+        selectingDrop={selectingDrop}
+        onPickupClick={() => {
+          setSelectingPickup(true);
+          setSelectingDrop(false);
+        }}
+        onDropClick={() => {
+          setSelectingDrop(true);
+          setSelectingPickup(false);
+        }}
+      />
       
       <div className="relative">
         <div className="h-[500px] rounded-lg overflow-hidden border">
