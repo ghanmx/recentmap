@@ -77,16 +77,6 @@ h1, h2, h3, h4, h5, h6 {
     animation: shine 3s infinite linear;
   }
 
-  @keyframes shine {
-    from {
-      transform: translateX(-100%) rotate(30deg);
-    }
-    to {
-      transform: translateX(100%) rotate(30deg);
-    }
-}
-
-@layer utilities {
   .animate-pulse-slow {
     animation: pulseSlow 3s infinite;
   }
@@ -127,12 +117,22 @@ h1, h2, h3, h4, h5, h6 {
   .card-shine-effect-metal:hover:after {
     animation: shine 1s infinite ease-in;
   }
+}
 
-  @-webkit-keyframes shine {
-    0% {
-      transform: translateX(100%) rotate(var(--shine-deg));
-    }
-    100% {
-      transform: translateX(-100%) rotate(var(--shine-deg));
-    }
+@keyframes shine {
+  from {
+    transform: translateX(-100%) rotate(30deg);
+  }
+  to {
+    transform: translateX(100%) rotate(30deg);
+  }
+}
+
+@keyframes shine-card {
+  0% {
+    transform: translateX(100%) rotate(var(--shine-deg));
+  }
+  100% {
+    transform: translateX(-100%) rotate(var(--shine-deg));
+  }
 }
