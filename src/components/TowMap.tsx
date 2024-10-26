@@ -7,6 +7,7 @@ import { DraggableMarker } from "./map/DraggableMarker";
 import { MapControls } from "./map/MapControls";
 import { BorderControls } from "./map/BorderControls";
 import { FloatingPanel } from "./map/FloatingPanel";
+import { RouteStreetInfo } from "./map/RouteStreetInfo";
 import { useToast } from "@/components/ui/use-toast";
 import PaymentWindow from "./payment/PaymentWindow";
 import { Button } from "@/components/ui/button";
@@ -86,34 +87,46 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
 
   return (
     <div className="fixed inset-0">
-      <FloatingPanel position="top" className="max-w-md mx-auto">
-        <MapControls 
-          selectingPickup={selectingPickup}
-          selectingDrop={selectingDrop}
-          onPickupClick={() => {
-            setSelectingPickup(true);
-            setSelectingDrop(false);
-            toast({
-              title: "Select Pickup Location",
-              description: "Click on the map to set pickup location",
-            });
-          }}
-          onDropClick={() => {
-            setSelectingDrop(true);
-            setSelectingPickup(false);
-            toast({
-              title: "Select Drop-off Location",
-              description: "Click on the map to set drop-off location",
-            });
-          }}
-        />
-      </FloatingPanel>
+      <div className="absolute inset-x-0 top-4 z-[1000] px-4 flex flex-col items-center gap-4 pointer-events-none">
+        <div className="w-full max-w-md pointer-events-auto">
+          <MapControls 
+            selectingPickup={selectingPickup}
+            selectingDrop={selectingDrop}
+            onPickupClick={() => {
+              setSelectingPickup(true);
+              setSelectingDrop(false);
+              toast({
+                title: "Select Pickup Location",
+                description: "Click on the map to set pickup location",
+              });
+            }}
+            onDropClick={() => {
+              setSelectingDrop(true);
+              setSelectingPickup(false);
+              toast({
+                title: "Select Drop-off Location",
+                description: "Click on the map to set drop-off location",
+              });
+            }}
+          />
+        </div>
+        
+        {(pickupLocation || dropLocation) && (
+          <div className="w-full max-w-md pointer-events-auto">
+            <RouteStreetInfo 
+              pickupLocation={pickupLocation}
+              dropLocation={dropLocation}
+            />
+          </div>
+        )}
+      </div>
 
       <MapContainer
         center={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
         zoom={13}
         style={{ height: "100vh", width: "100vw" }}
         ref={mapRef}
+        className="z-0"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -154,25 +167,25 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         )}
       </MapContainer>
 
-      <FloatingPanel position="bottom" className="max-w-xl mx-auto">
-        <div className="space-y-4">
+      <div className="absolute inset-x-0 bottom-4 z-[1000] px-4">
+        <div className="max-w-xl mx-auto space-y-4">
           <RouteDisplay pickupLocation={pickupLocation} dropLocation={dropLocation} />
           {pickupLocation && dropLocation && (
             <Button 
-              className="w-full" 
+              className="w-full bg-primary hover:bg-primary/90 text-white"
               onClick={() => setShowPayment(true)}
             >
               Request Tow Truck
             </Button>
           )}
         </div>
-      </FloatingPanel>
+      </div>
 
       <PaymentWindow
         isOpen={showPayment}
         onClose={() => setShowPayment(false)}
         onPaymentSubmit={handlePaymentSubmit}
-        totalCost={0} // This will be updated when payment is initiated
+        totalCost={0}
       />
     </div>
   );
