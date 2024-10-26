@@ -11,12 +11,32 @@ import { FloatingPanel } from "./map/FloatingPanel";
 import { MapMetrics } from "./map/MapMetrics";
 import { useToast } from "@/components/ui/use-toast";
 
-// Fix Leaflet marker icon issue
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "/marker-icon-2x.png",
-  iconUrl: "/marker-icon.png",
-  shadowUrl: "/marker-shadow.png",
+// Create custom icons
+const enterpriseIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const pickupIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const dropIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 
 const ENTERPRISE_LOCATIONS = [
@@ -128,6 +148,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
             key={index}
             position={[location.lat, location.lng]}
             onDragEnd={() => {}}
+            icon={enterpriseIcon}
             label={location.name}
           />
         ))}
@@ -136,6 +157,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           <DraggableMarker 
             position={[pickupLocation.lat, pickupLocation.lng]}
             onDragEnd={(latlng) => onPickupSelect({ lat: latlng.lat, lng: latlng.lng })}
+            icon={pickupIcon}
             label="Pickup Location"
           />
         )}
@@ -143,6 +165,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           <DraggableMarker 
             position={[dropLocation.lat, dropLocation.lng]}
             onDragEnd={(latlng) => onDropSelect({ lat: latlng.lat, lng: latlng.lng })}
+            icon={dropIcon}
             label="Drop-off Location"
           />
         )}
