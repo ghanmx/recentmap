@@ -6,18 +6,21 @@ interface DraggableMarkerProps {
   onDragEnd: (latlng: L.LatLng) => void;
   icon?: L.Icon;
   label: string;
+  draggable?: boolean;
 }
 
-export const DraggableMarker = ({ position, onDragEnd, icon, label }: DraggableMarkerProps) => {
+export const DraggableMarker = ({ position, onDragEnd, icon, label, draggable = true }: DraggableMarkerProps) => {
   return (
     <Marker 
       position={position} 
-      draggable={true}
+      draggable={draggable}
       icon={icon}
       eventHandlers={{
         dragend: (e) => {
-          const marker = e.target;
-          onDragEnd(marker.getLatLng());
+          if (draggable) {
+            const marker = e.target;
+            onDragEnd(marker.getLatLng());
+          }
         },
       }}
     >

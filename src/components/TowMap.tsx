@@ -41,7 +41,6 @@ const dropIcon = new L.Icon({
 
 const ENTERPRISE_LOCATIONS = [
   { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
-  { lat: 26.512272, lng: -100.008323, name: "Secondary Service Point" },
 ];
 
 interface TowMapProps {
@@ -57,7 +56,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
   const [distance, setDistance] = useState(0);
   const [price, setPrice] = useState(0);
   const mapRef = useRef<L.Map | null>(null);
-  const { toast } = useToast();
+  const toast = useToast();
 
   const handleLocationSelect = useCallback((location: { lat: number; lng: number }) => {
     if (selectingPickup) {
@@ -77,33 +76,31 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
     }
   }, [selectingPickup, selectingDrop, onPickupSelect, onDropSelect, toast]);
 
-  const calculateDistanceAndPrice = useCallback(() => {
+  const calculatePriceAndDistance = useCallback(() => {
     if (pickupLocation && dropLocation) {
-      const R = 6371;
-      const dLat = (dropLocation.lat - pickupLocation.lat) * Math.PI / 180;
-      const dLon = (dropLocation.lng - pickupLocation.lng) * Math.PI / 180;
-      const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(pickupLocation.lat * Math.PI / 180) * Math.cos(dropLocation.lat * Math.PI / 180) * 
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      const dist = R * c;
-      setDistance(dist);
-      setPrice(calculateTowingPrice(pickupLocation, dropLocation, 'standard'));
+      const { totalPrice, totalDistance } = calculateTowingPrice(
+        ENTERPRISE_LOCATIONS[0],
+        pickupLocation,
+        dropLocation,
+        'standard'
+      );
+      setDistance(totalDistance);
+      setPrice(totalPrice);
     }
   }, [pickupLocation, dropLocation]);
 
   useEffect(() => {
-    calculateDistanceAndPrice();
+    calculatePriceAndDistance();
     
     if (mapRef.current && pickupLocation && dropLocation) {
       const bounds = L.latLngBounds(
+        [ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng],
         [pickupLocation.lat, pickupLocation.lng],
         [dropLocation.lat, dropLocation.lng]
       );
       mapRef.current.fitBounds(bounds, { padding: [50, 50] });
     }
-  }, [pickupLocation, dropLocation, calculateDistanceAndPrice]);
+  }, [pickupLocation, dropLocation, calculatePriceAndDistance]);
 
   return (
     <div className="fixed inset-0">
@@ -131,7 +128,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
       </FloatingPanel>
 
       <MapContainer
-        center={[26.510272, -100.006323]}
+        center={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
         zoom={13}
         style={{ height: "100vh", width: "100vw" }}
         ref={mapRef}
@@ -143,15 +140,14 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         <LocationMarker onLocationSelect={handleLocationSelect} />
         <BorderControls />
         
-        {ENTERPRISE_LOCATIONS.map((location, index) => (
-          <DraggableMarker
-            key={index}
-            position={[location.lat, location.lng]}
-            onDragEnd={() => {}}
-            icon={enterpriseIcon}
-            label={location.name}
-          />
-        ))}
+        {/* Company location marker - not draggable */}
+        <DraggableMarker
+          position={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
+          onDragEnd={() => {}}
+          icon={enterpriseIcon}
+          label={ENTERPRISE_LOCATIONS[0].name}
+          draggable={false}
+        />
 
         {pickupLocation && (
           <DraggableMarker 
@@ -159,14 +155,17 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
             onDragEnd={(latlng) => onPickupSelect({ lat: latlng.lat, lng: latlng.lng })}
             icon={pickupIcon}
             label="Pickup Location"
+            draggable={true}
           />
         )}
+        
         {dropLocation && (
           <DraggableMarker 
             position={[dropLocation.lat, dropLocation.lng]}
             onDragEnd={(latlng) => onDropSelect({ lat: latlng.lat, lng: latlng.lng })}
             icon={dropIcon}
             label="Drop-off Location"
+            draggable={true}
           />
         )}
       </MapContainer>
