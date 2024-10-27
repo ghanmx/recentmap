@@ -40,11 +40,9 @@ const VehicleForm = ({
   onManeuverChange,
   onVehicleModelChange
 }: VehicleFormProps) => {
-  const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [requiresManeuver, setRequiresManeuver] = useState(false);
   const { toast } = useToast();
   const { mutate: submitRequest, isPending } = useServiceRequest();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -89,10 +87,12 @@ const VehicleForm = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <VehicleDetails
-            form={form}
-            selectedBrand={selectedBrand}
-            setSelectedBrand={setSelectedBrand}
-            onVehicleModelChange={onVehicleModelChange}
+            onBrandChange={(brand) => form.setValue('vehicleMake', brand)}
+            onModelChange={(model) => {
+              form.setValue('vehicleModel', model);
+              onVehicleModelChange?.(model);
+            }}
+            onYearChange={(year) => form.setValue('vehicleYear', year)}
           />
 
           <ServiceRequirements

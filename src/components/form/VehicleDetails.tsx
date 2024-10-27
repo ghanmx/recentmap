@@ -1,25 +1,33 @@
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { vehicleBrands, vehicleModels } from "@/data/vehicleData";
 import { useState } from "react";
 
-interface VehicleDetailsFormData {
-  year: string;
-  brand: string;
-  model: string;
+interface VehicleDetailsProps {
+  onBrandChange?: (brand: string) => void;
+  onModelChange?: (model: string) => void;
+  onYearChange?: (year: string) => void;
 }
 
-export const VehicleDetails = () => {
+export const VehicleDetails = ({ 
+  onBrandChange,
+  onModelChange,
+  onYearChange 
+}: VehicleDetailsProps) => {
   const [selectedBrand, setSelectedBrand] = useState<string>("");
-  const form = useForm<VehicleDetailsFormData>();
+  const form = useForm<{
+    year: string;
+    brand: string;
+    model: string;
+  }>();
   
   const years = Array.from({ length: 30 }, (_, i) => (new Date().getFullYear() - i).toString());
 
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const brand = e.target.value;
     setSelectedBrand(brand);
-    form.setValue('model', ''); // Reset model when brand changes
+    form.setValue('model', '');
+    onBrandChange?.(brand);
   };
 
   return (
@@ -35,6 +43,10 @@ export const VehicleDetails = () => {
                 <select 
                   className="w-full p-2 border rounded-md bg-background"
                   {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    onYearChange?.(e.target.value);
+                  }}
                 >
                   <option value="">Select year</option>
                   {years.map((year) => (
@@ -82,6 +94,10 @@ export const VehicleDetails = () => {
                   className="w-full p-2 border rounded-md bg-background"
                   {...field}
                   disabled={!selectedBrand}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    onModelChange?.(e.target.value);
+                  }}
                 >
                   <option value="">Select model</option>
                   {selectedBrand && vehicleModels[selectedBrand]?.map((model) => (
