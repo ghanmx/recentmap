@@ -24,7 +24,7 @@ export const VehicleDetails = ({
   );
 
   return (
-    <div className="space-y-4 bg-white/80 rounded-lg p-4 shadow-sm">
+    <div className="space-y-4 bg-white rounded-lg p-4 shadow-sm">
       <div className="flex items-center gap-2 text-lg font-semibold text-gray-700">
         <Car className="w-5 h-5 text-primary" />
         <h2>Vehicle Details</h2>
@@ -40,17 +40,16 @@ export const VehicleDetails = ({
               onValueChange={(value) => {
                 field.onChange(value);
                 setSelectedBrand(value);
-                // Reset model when brand changes
                 form.setValue('vehicleModel', '');
               }}
               value={field.value}
             >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder="Select brand" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent className="max-h-[300px]">
+              <SelectContent className="max-h-[300px] overflow-y-auto">
                 {vehicleBrands.map((brand) => (
                   <SelectItem key={brand} value={brand}>{brand}</SelectItem>
                 ))}
@@ -76,11 +75,11 @@ export const VehicleDetails = ({
               disabled={!selectedBrand}
             >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder={selectedBrand ? "Select model" : "Select brand first"} />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent className="max-h-[300px]">
+              <SelectContent className="max-h-[300px] overflow-y-auto">
                 {selectedBrand && vehicleModels[selectedBrand]?.map((model) => (
                   <SelectItem key={model} value={model}>{model}</SelectItem>
                 ))}
@@ -102,11 +101,11 @@ export const VehicleDetails = ({
               value={field.value}
             >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent className="max-h-[300px]">
+              <SelectContent className="max-h-[300px] overflow-y-auto">
                 {years.map((year) => (
                   <SelectItem key={year} value={year}>{year}</SelectItem>
                 ))}

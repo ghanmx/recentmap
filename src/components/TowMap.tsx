@@ -4,19 +4,16 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { DraggableMarker } from "./map/DraggableMarker";
 import { LocationMarker } from "./map/LocationMarker";
-import { MapControls } from "./map/MapControls";
-import { BorderControls } from "./map/BorderControls";
-import { RouteStreetInfo } from "./map/RouteStreetInfo";
+import { Button } from "@/components/ui/button";
 import { RoutePolyline } from "./map/RoutePolyline";
 import PaymentWindow from "./payment/PaymentWindow";
-import { Button } from "@/components/ui/button";
 import { RouteDisplay } from "./map/RouteDisplay";
 import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { TopNavMenu } from "./navigation/TopNavMenu";
-import { MapLocationHandler } from "./map/MapLocationHandler";
 import { showRouteNotification, showPaymentNotification } from "@/utils/notificationUtils";
 import VehicleForm from "./VehicleForm";
 import { FloatingPanel } from "./map/FloatingPanel";
+import { MapControlPanel } from "./map/MapControlPanel";
 
 const ENTERPRISE_LOCATIONS = [
   { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
@@ -49,14 +46,9 @@ const dropIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-interface TowMapProps {
-  onPickupSelect: (location: { lat: number; lng: number }) => void;
-  onDropSelect: (location: { lat: number; lng: number }) => void;
-  pickupLocation: { lat: number; lng: number } | null;
-  dropLocation: { lat: number; lng: number } | null;
-}
-
-const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: TowMapProps) => {
+const TowMap = () => {
+  const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [dropLocation, setDropLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
@@ -73,10 +65,10 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
 
   const handleLocationSelect = (location: { lat: number; lng: number }) => {
     if (selectingPickup) {
-      onPickupSelect(location);
+      setPickupLocation(location);
       setSelectingPickup(false);
     } else if (selectingDrop) {
-      onDropSelect(location);
+      setDropLocation(location);
       setSelectingDrop(false);
     }
   };
@@ -108,6 +100,15 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         <TopNavMenu />
       </div>
 
+      <MapControlPanel
+        selectingPickup={selectingPickup}
+        selectingDrop={selectingDrop}
+        setSelectingPickup={setSelectingPickup}
+        setSelectingDrop={setSelectingDrop}
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+      />
+
       <MapContainer
         center={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
         zoom={13}
@@ -124,7 +125,6 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
         />
-        <BorderControls />
         
         {ENTERPRISE_LOCATIONS.map((location, index) => (
           <DraggableMarker
@@ -140,7 +140,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         {pickupLocation && (
           <DraggableMarker 
             position={[pickupLocation.lat, pickupLocation.lng]}
-            onDragEnd={(latlng) => onPickupSelect({ lat: latlng.lat, lng: latlng.lng })}
+            onDragEnd={(latlng) => setPickupLocation({ lat: latlng.lat, lng: latlng.lng })}
             icon={pickupIcon}
             label="Pickup Location"
             draggable={true}
@@ -150,7 +150,7 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         {dropLocation && (
           <DraggableMarker 
             position={[dropLocation.lat, dropLocation.lng]}
-            onDragEnd={(latlng) => onDropSelect({ lat: latlng.lat, lng: latlng.lng })}
+            onDragEnd={(latlng) => setDropLocation({ lat: latlng.lat, lng: latlng.lng })}
             icon={dropIcon}
             label="Drop-off Location"
             draggable={true}
@@ -173,12 +173,8 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
           serviceType="standard"
-          onManeuverChange={(maneuver) => {
-            // Handle maneuver change
-          }}
-          onVehicleModelChange={(model) => {
-            // Handle model change
-          }}
+          onManeuverChange={() => {}}
+          onVehicleModelChange={() => {}}
         />
       </FloatingPanel>
 
