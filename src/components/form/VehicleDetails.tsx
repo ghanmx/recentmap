@@ -48,7 +48,7 @@ export const VehicleDetails = ({
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className="max-h-[300px]">
+                <SelectContent position="item-aligned" side="top" align="start" className="max-h-[300px]">
                   {years.map((year) => (
                     <SelectItem key={year} value={year}>{year}</SelectItem>
                   ))}
@@ -78,7 +78,7 @@ export const VehicleDetails = ({
                     <SelectValue placeholder="Select brand" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className="max-h-[300px]">
+                <SelectContent position="item-aligned" side="top" align="start" className="max-h-[300px]">
                   {vehicleBrands.map((brand) => (
                     <SelectItem key={brand} value={brand}>{brand}</SelectItem>
                   ))}
@@ -113,7 +113,7 @@ export const VehicleDetails = ({
                     />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className="max-h-[300px]">
+                <SelectContent position="item-aligned" side="top" align="start" className="max-h-[300px]">
                   {selectedBrand && vehicleModels[selectedBrand]?.map((model) => (
                     <SelectItem key={model} value={model}>{model}</SelectItem>
                   ))}
