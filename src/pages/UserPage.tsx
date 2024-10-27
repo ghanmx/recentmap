@@ -1,55 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import TowMap from "@/components/TowMap";
 import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { useToast } from "@/components/ui/use-toast";
 
 const UserPage = () => {
-  const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [dropLocation, setDropLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [priceDetails, setPriceDetails] = useState<{ totalPrice: number; totalDistance: number } | null>(null);
   const { toast } = useToast();
-
-  const handleLocationSelect = (type: "pickup" | "drop", location: { lat: number; lng: number }) => {
-    if (type === "pickup") {
-      setPickupLocation(location);
-      toast({
-        title: "Pickup location updated",
-        description: `Latitude: ${location.lat.toFixed(4)}, Longitude: ${location.lng.toFixed(4)}`,
-      });
-    } else {
-      setDropLocation(location);
-      toast({
-        title: "Drop location updated",
-        description: `Latitude: ${location.lat.toFixed(4)}, Longitude: ${location.lng.toFixed(4)}`,
-      });
-    }
-  };
-
-  useEffect(() => {
-    const updatePrice = async () => {
-      if (pickupLocation && dropLocation) {
-        try {
-          const result = await calculateTowingPrice(
-            { lat: 26.510272, lng: -100.006323 }, // Enterprise location
-            pickupLocation,
-            dropLocation,
-            'Toyota Corolla', // Default vehicle model
-            false // Default maneuver requirement
-          );
-          setPriceDetails(result);
-        } catch (error) {
-          toast({
-            title: "Error calculating price",
-            description: "Failed to calculate route and price. Please try again.",
-            variant: "destructive",
-          });
-        }
-      }
-    };
-
-    updatePrice();
-  }, [pickupLocation, dropLocation, toast]);
 
   return (
     <div className="p-8">
@@ -79,12 +36,7 @@ const UserPage = () => {
         </Card>
 
         <Card className="p-6">
-          <TowMap 
-            onPickupSelect={(location) => handleLocationSelect("pickup", location)}
-            onDropSelect={(location) => handleLocationSelect("drop", location)}
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-          />
+          <TowMap />
         </Card>
       </div>
     </div>
