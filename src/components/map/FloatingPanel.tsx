@@ -68,7 +68,7 @@ export const FloatingPanel = ({
         position === "left" && "left-4 top-20",
         position === "top" && "top-4 inset-x-4",
         position === "bottom" && "bottom-4 inset-x-4",
-        "z-[1000] hover:z-[1001]",
+        "z-[1000]",
         isDragging && "cursor-grabbing shadow-2xl",
         className
       )}>
