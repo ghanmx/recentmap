@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Polyline } from "react-leaflet";
 import { getRouteDetails } from "@/services/routeService";
 import { decode } from "@mapbox/polyline";
@@ -12,6 +12,7 @@ interface RoutePolylineProps {
 
 export const RoutePolyline = ({ pickupLocation, dropLocation, onRouteCalculated }: RoutePolylineProps) => {
   const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
+  const lastDistance = useRef<number>(0);
 
   useEffect(() => {
     const fetchRoute = async () => {
@@ -21,10 +22,11 @@ export const RoutePolyline = ({ pickupLocation, dropLocation, onRouteCalculated 
           const decodedCoordinates = decode(route.geometry).map(([lat, lng]) => [lat, lng] as [number, number]);
           setRouteCoordinates(decodedCoordinates);
           
-          // Solo mostrar una notificación cuando la ruta cambie
-          if (route.distance > 0) {
+          // Only show notification if distance has changed significantly (more than 0.1 km)
+          if (Math.abs(route.distance - lastDistance.current) > 0.1) {
             showRouteNotification(route.distance);
             onRouteCalculated?.(route.distance);
+            lastDistance.current = route.distance;
           }
         } catch (error) {
           console.error('Error obteniendo la ruta:', error);
