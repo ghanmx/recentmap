@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { vehicleBrands, vehicleModels } from "@/data/vehicleData";
 import { Car } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-import * as z from "zod";
 
 interface VehicleDetailsProps {
   form: UseFormReturn<any>;
@@ -19,6 +18,12 @@ export const VehicleDetails = ({
   setSelectedBrand, 
   onVehicleModelChange 
 }: VehicleDetailsProps) => {
+  const currentYear = new Date().getFullYear();
+  const years = Array.from(
+    { length: 50 },
+    (_, i) => (currentYear - i).toString()
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-lg font-semibold text-gray-700">
@@ -37,6 +42,7 @@ export const VehicleDetails = ({
                 field.onChange(value);
                 setSelectedBrand(value);
               }}
+              value={field.value}
             >
               <FormControl>
                 <SelectTrigger className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20">
@@ -65,10 +71,12 @@ export const VehicleDetails = ({
                 field.onChange(value);
                 onVehicleModelChange?.(value);
               }}
+              value={field.value}
+              disabled={!selectedBrand}
             >
               <FormControl>
                 <SelectTrigger className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20">
-                  <SelectValue placeholder="Select model" />
+                  <SelectValue placeholder={selectedBrand ? "Select model" : "Select brand first"} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -88,14 +96,21 @@ export const VehicleDetails = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel>Year</FormLabel>
-            <FormControl>
-              <Input
-                {...field}
-                type="number"
-                placeholder="e.g., 2020"
-                className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20"
-              />
-            </FormControl>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value}
+            >
+              <FormControl>
+                <SelectTrigger className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20">
+                  <SelectValue placeholder="Select year" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {years.map((year) => (
+                  <SelectItem key={year} value={year}>{year}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <FormMessage />
           </FormItem>
         )}
