@@ -1,7 +1,7 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { vehicleBrands, vehicleModels } from "@/data/vehicleData";
-import { Car, Filter, Eye } from "lucide-react";
+import { Car } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
 interface VehicleDetailsProps {
@@ -38,10 +38,7 @@ export const VehicleDetails = ({
           name="vehicleYear"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                Year
-              </FormLabel>
+              <FormLabel className="text-gray-700">Year</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
@@ -53,14 +50,7 @@ export const VehicleDetails = ({
                 </FormControl>
                 <SelectContent className="max-h-[300px]">
                   {years.map((year) => (
-                    <SelectItem 
-                      key={year} 
-                      value={year}
-                      className="flex items-center gap-2"
-                    >
-                      <Eye className="w-4 h-4 opacity-50" />
-                      {year}
-                    </SelectItem>
+                    <SelectItem key={year} value={year}>{year}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -74,10 +64,7 @@ export const VehicleDetails = ({
           name="vehicleMake"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                Brand
-              </FormLabel>
+              <FormLabel className="text-gray-700">Brand</FormLabel>
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
@@ -93,14 +80,7 @@ export const VehicleDetails = ({
                 </FormControl>
                 <SelectContent className="max-h-[300px]">
                   {vehicleBrands.map((brand) => (
-                    <SelectItem 
-                      key={brand} 
-                      value={brand}
-                      className="flex items-center gap-2"
-                    >
-                      <Eye className="w-4 h-4 opacity-50" />
-                      {brand}
-                    </SelectItem>
+                    <SelectItem key={brand} value={brand}>{brand}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -114,10 +94,7 @@ export const VehicleDetails = ({
           name="vehicleModel"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                Model
-              </FormLabel>
+              <FormLabel className="text-gray-700">Model</FormLabel>
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
@@ -138,14 +115,7 @@ export const VehicleDetails = ({
                 </FormControl>
                 <SelectContent className="max-h-[300px]">
                   {selectedBrand && vehicleModels[selectedBrand]?.map((model) => (
-                    <SelectItem 
-                      key={model} 
-                      value={model}
-                      className="flex items-center gap-2"
-                    >
-                      <Eye className="w-4 h-4 opacity-50" />
-                      {model}
-                    </SelectItem>
+                    <SelectItem key={model} value={model}>{model}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
