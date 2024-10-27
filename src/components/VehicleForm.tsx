@@ -71,8 +71,10 @@ const VehicleForm = ({
     }
 
     const serviceRequest: Omit<ServiceRequest, 'id' | 'status' | 'createdAt'> = {
-      ...data,
+      vehicleMake: data.vehicleMake,
+      vehicleModel: data.vehicleModel,
       vehicleYear: parseInt(data.vehicleYear),
+      issueDescription: data.issueDescription,
       serviceType,
       pickupLocation,
       dropLocation,
