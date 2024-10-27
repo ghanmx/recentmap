@@ -78,7 +78,7 @@ const VehicleForm = ({
       serviceType,
       pickupLocation,
       dropLocation,
-      requiresManeuver,
+      requiresManeuver
     };
 
     submitRequest(serviceRequest);
