@@ -13,6 +13,7 @@ export interface ServiceRequest {
     lat: number;
     lng: number;
   };
+  requiresManeuver: boolean;
   status: 'pending' | 'accepted' | 'in_progress' | 'completed';
   createdAt?: Date;
 }
