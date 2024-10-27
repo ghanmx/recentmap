@@ -40,7 +40,6 @@ export const TopNavMenu = () => {
           <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer">Settings</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer">History</DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer">Help</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
