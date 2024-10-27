@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 interface FloatingPanelProps {
   children: ReactNode;
   className?: string;
-  position?: "top" | "bottom";
+  position?: "left" | "right" | "top" | "bottom";
   title?: string;
 }
 
 export const FloatingPanel = ({ 
   children, 
   className, 
-  position = "bottom",
+  position = "right",
   title = "Panel" 
 }: FloatingPanelProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -25,17 +25,26 @@ export const FloatingPanel = ({
         variant="secondary"
         size="sm"
         onClick={() => setIsVisible(true)}
-        className="fixed right-4 bottom-4 z-[1000] bg-white/95 shadow-lg"
+        className={cn(
+          "fixed z-[1000] bg-white/95 shadow-lg",
+          position === "right" && "right-4 top-20",
+          position === "left" && "left-4 top-20",
+          position === "top" && "top-4 right-4",
+          position === "bottom" && "bottom-4 right-4"
+        )}
       >
-        Show Panel
+        Show {title}
       </Button>
     );
   }
 
   return (
     <div className={cn(
-      "fixed left-4 right-4 bg-white/95 rounded-lg shadow-lg backdrop-blur-sm transition-all duration-300",
-      position === "top" ? "top-4" : "bottom-4",
+      "fixed bg-white/95 rounded-lg shadow-lg backdrop-blur-sm transition-all duration-300",
+      position === "right" && "right-4 top-20",
+      position === "left" && "left-4 top-20",
+      position === "top" && "top-4 inset-x-4",
+      position === "bottom" && "bottom-4 inset-x-4",
       "z-[1000] hover:z-[1001]",
       className
     )}>

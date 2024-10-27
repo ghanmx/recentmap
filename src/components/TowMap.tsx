@@ -14,7 +14,9 @@ import { RouteDisplay } from "./map/RouteDisplay";
 import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { TopNavMenu } from "./navigation/TopNavMenu";
 import { MapLocationHandler } from "./map/MapLocationHandler";
-import { showRouteNotification, showPaymentNotification, showLocationNotification } from "@/utils/notificationUtils";
+import { showRouteNotification, showPaymentNotification } from "@/utils/notificationUtils";
+import VehicleForm from "./VehicleForm";
+import { FloatingPanel } from "./map/FloatingPanel";
 
 const ENTERPRISE_LOCATIONS = [
   { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
@@ -101,46 +103,9 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
   }, [pickupLocation, dropLocation]);
 
   return (
-    <div className="fixed inset-0">
+    <div className="relative h-screen overflow-hidden">
       <div className="absolute inset-x-0 top-0 z-[1000] bg-white/95 shadow-md backdrop-blur-sm">
         <TopNavMenu />
-      </div>
-
-      <MapLocationHandler
-        onPickupSelect={onPickupSelect}
-        onDropSelect={onDropSelect}
-        selectingPickup={selectingPickup}
-        selectingDrop={selectingDrop}
-        setSelectingPickup={setSelectingPickup}
-        setSelectingDrop={setSelectingDrop}
-      />
-
-      <div className="absolute inset-x-0 top-16 z-[1000] px-4 flex flex-col items-center gap-4 pointer-events-none">
-        <div className="w-full max-w-md pointer-events-auto">
-          <MapControls 
-            selectingPickup={selectingPickup}
-            selectingDrop={selectingDrop}
-            onPickupClick={() => {
-              setSelectingPickup(true);
-              setSelectingDrop(false);
-              showLocationNotification('pickup', { lat: 0, lng: 0 });
-            }}
-            onDropClick={() => {
-              setSelectingDrop(true);
-              setSelectingPickup(false);
-              showLocationNotification('drop', { lat: 0, lng: 0 });
-            }}
-          />
-        </div>
-        
-        {(pickupLocation || dropLocation) && (
-          <div className="w-full max-w-md pointer-events-auto">
-            <RouteStreetInfo 
-              pickupLocation={pickupLocation}
-              dropLocation={dropLocation}
-            />
-          </div>
-        )}
       </div>
 
       <MapContainer
@@ -199,15 +164,32 @@ const TowMap = ({ onPickupSelect, onDropSelect, pickupLocation, dropLocation }: 
         />
       </MapContainer>
 
+      <FloatingPanel 
+        position="right" 
+        className="w-[400px] max-h-[80vh] overflow-y-auto"
+        title="Vehicle Information"
+      >
+        <VehicleForm
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+          serviceType="standard"
+          onManeuverChange={(maneuver) => {
+            // Handle maneuver change
+          }}
+          onVehicleModelChange={(model) => {
+            // Handle model change
+          }}
+        />
+      </FloatingPanel>
+
       <div className="absolute inset-x-0 bottom-4 z-[1000] px-4">
         <div className="max-w-xl mx-auto space-y-4">
           <RouteDisplay pickupLocation={pickupLocation} dropLocation={dropLocation} />
           {pickupLocation && dropLocation && (
             <Button 
               className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 
-                         hover:to-blue-700 text-white shadow-lg hover:shadow-xl 
-                         transition-all duration-300 transform hover:-translate-y-1 
-                         active:translate-y-0 animate-pulse-slow"
+                       hover:to-blue-700 text-white shadow-lg hover:shadow-xl 
+                       transition-all duration-300"
               onClick={() => setShowPayment(true)}
             >
               Request Tow Truck

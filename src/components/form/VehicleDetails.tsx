@@ -1,6 +1,5 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { vehicleBrands, vehicleModels } from "@/data/vehicleData";
 import { Car } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
@@ -25,9 +24,9 @@ export const VehicleDetails = ({
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 bg-white/80 rounded-lg p-4 shadow-sm">
       <div className="flex items-center gap-2 text-lg font-semibold text-gray-700">
-        <Car className="w-5 h-5 text-primary animate-pulse" />
+        <Car className="w-5 h-5 text-primary" />
         <h2>Vehicle Details</h2>
       </div>
 
@@ -35,21 +34,23 @@ export const VehicleDetails = ({
         control={form.control}
         name="vehicleMake"
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="space-y-2">
             <FormLabel>Brand</FormLabel>
             <Select
               onValueChange={(value) => {
                 field.onChange(value);
                 setSelectedBrand(value);
+                // Reset model when brand changes
+                form.setValue('vehicleModel', '');
               }}
               value={field.value}
             >
               <FormControl>
-                <SelectTrigger className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20">
+                <SelectTrigger>
                   <SelectValue placeholder="Select brand" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              <SelectContent className="max-h-[300px]">
                 {vehicleBrands.map((brand) => (
                   <SelectItem key={brand} value={brand}>{brand}</SelectItem>
                 ))}
@@ -64,7 +65,7 @@ export const VehicleDetails = ({
         control={form.control}
         name="vehicleModel"
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="space-y-2">
             <FormLabel>Model</FormLabel>
             <Select
               onValueChange={(value) => {
@@ -75,11 +76,11 @@ export const VehicleDetails = ({
               disabled={!selectedBrand}
             >
               <FormControl>
-                <SelectTrigger className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20">
+                <SelectTrigger>
                   <SelectValue placeholder={selectedBrand ? "Select model" : "Select brand first"} />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              <SelectContent className="max-h-[300px]">
                 {selectedBrand && vehicleModels[selectedBrand]?.map((model) => (
                   <SelectItem key={model} value={model}>{model}</SelectItem>
                 ))}
@@ -94,18 +95,18 @@ export const VehicleDetails = ({
         control={form.control}
         name="vehicleYear"
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="space-y-2">
             <FormLabel>Year</FormLabel>
             <Select
               onValueChange={field.onChange}
               value={field.value}
             >
               <FormControl>
-                <SelectTrigger className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20">
+                <SelectTrigger>
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              <SelectContent className="max-h-[300px]">
                 {years.map((year) => (
                   <SelectItem key={year} value={year}>{year}</SelectItem>
                 ))}
