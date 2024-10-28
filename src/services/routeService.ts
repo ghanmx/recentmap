@@ -30,3 +30,5 @@ export const getRouteDetails = async (start: Location, end: Location): Promise<R
     geometry: data.routes[0].geometry
   };
 };
+
+export const COMPANY_LOCATION = { lat: 26.510272, lng: -100.006323 };
