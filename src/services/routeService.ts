@@ -13,6 +13,9 @@ interface RouteResponse {
 let requestQueue: (() => Promise<void>)[] = [];
 let isProcessingQueue = false;
 
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY = 2000; // 2 seconds
+
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const processQueue = async () => {
@@ -30,29 +33,42 @@ const processQueue = async () => {
   isProcessingQueue = false;
 };
 
+const fetchWithRetry = async (url: string, retryCount = 0): Promise<Response> => {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'TowTruckService/1.0',
+        'Referer': window.location.origin
+      }
+    });
+
+    if (response.status === 429 && retryCount < MAX_RETRIES) {
+      // Calculate exponential backoff delay
+      const backoffDelay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
+      await delay(backoffDelay);
+      return fetchWithRetry(url, retryCount + 1);
+    }
+
+    return response;
+  } catch (error) {
+    if (retryCount < MAX_RETRIES) {
+      const backoffDelay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
+      await delay(backoffDelay);
+      return fetchWithRetry(url, retryCount + 1);
+    }
+    throw error;
+  }
+};
+
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
   return new Promise((resolve, reject) => {
     const makeRequest = async () => {
       try {
-        const response = await fetch(
-          `https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`,
-          {
-            headers: {
-              'User-Agent': 'TowTruckService/1.0',
-              'Referer': window.location.origin
-            }
-          }
-        );
-
-        if (response.status === 429) {
-          // If rate limited, add back to queue and try again later
-          requestQueue.push(makeRequest);
-          processQueue();
-          return;
-        }
+        const url = `https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`;
+        const response = await fetchWithRetry(url);
 
         if (!response.ok) {
-          throw new Error('Failed to fetch route');
+          throw new Error(`Failed to fetch route: ${response.status}`);
         }
 
         const data = await response.json();
@@ -67,31 +83,13 @@ export const getRouteDetails = async (start: Location, end: Location): Promise<R
           geometry: data.routes[0].geometry
         });
       } catch (error) {
-        // For other errors, fall back to straight-line distance
-        const straightLineDistance = calculateStraightLineDistance(start, end);
-        resolve({
-          distance: straightLineDistance,
-          duration: straightLineDistance * 60, // Rough estimate: 1 km/minute
-          geometry: '' // Empty geometry for straight line
-        });
+        reject(new Error(`Failed to calculate route: ${error.message}`));
       }
     };
 
     requestQueue.push(makeRequest);
     processQueue();
   });
-};
-
-const calculateStraightLineDistance = (point1: Location, point2: Location): number => {
-  const R = 6371; // Earth's radius in km
-  const dLat = (point2.lat - point1.lat) * Math.PI / 180;
-  const dLon = (point2.lng - point1.lng) * Math.PI / 180;
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(point1.lat * Math.PI / 180) * Math.cos(point2.lat * Math.PI / 180) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return Number((R * c).toFixed(2));
 };
 
 export const COMPANY_LOCATION = { lat: 26.510272, lng: -100.006323 };
