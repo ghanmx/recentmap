@@ -1,7 +1,7 @@
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { CreditCard, Calendar, CheckCircle } from "lucide-react";
 
@@ -17,9 +17,39 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
   const elements = useElements();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = React.useState(false);
+  const [cardComplete, setCardComplete] = React.useState(false);
+
+  // Reset card state when dialog opens
+  React.useEffect(() => {
+    if (isOpen) {
+      setCardComplete(false);
+    }
+  }, [isOpen]);
+
+  const handleClose = () => {
+    if (isProcessing) {
+      toast({
+        title: "Payment in Progress",
+        description: "Please wait while we process your payment",
+        variant: "destructive",
+      });
+      return;
+    }
+    onClose();
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (!cardComplete) {
+      toast({
+        title: "Incomplete Card Details",
+        description: "Please fill in all card information before proceeding",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsProcessing(true);
 
     if (!stripe || !elements) {
@@ -53,6 +83,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
         throw error;
       }
 
+      // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast({
@@ -75,7 +106,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
@@ -87,6 +118,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
             <CardElement 
+              onChange={(e) => setCardComplete(e.complete)}
               options={{
                 style: {
                   base: {
@@ -127,7 +159,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
             <Button
               type="button"
               variant="outline"
-              onClick={onClose}
+              onClick={handleClose}
               disabled={isProcessing}
               className="border-gray-300 hover:bg-gray-100"
             >
@@ -135,7 +167,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
             </Button>
             <Button
               type="submit"
-              disabled={!stripe || isProcessing}
+              disabled={!stripe || isProcessing || !cardComplete}
               className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white min-w-[120px]"
             >
               {isProcessing ? "Processing..." : `Pay $${totalCost.toFixed(2)}`}

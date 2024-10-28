@@ -13,6 +13,7 @@ import { FloatingPanel } from "./map/FloatingPanel";
 import { MapControlPanel } from "./map/MapControlPanel";
 import { MapHeader } from "./map/MapHeader";
 import { MapBottomControls } from "./map/MapBottomControls";
+import { useToast } from "@/hooks/use-toast";
 
 const ENTERPRISE_LOCATIONS = [
   { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
@@ -52,7 +53,21 @@ const TowMap = () => {
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [totalCost, setTotalCost] = useState(0);
+  const [isPaymentComplete, setIsPaymentComplete] = useState(false);
   const mapRef = useRef<L.Map | null>(null);
+  const { toast } = useToast();
+
+  const validateLocations = () => {
+    if (!pickupLocation || !dropLocation) {
+      toast({
+        title: "Missing Locations",
+        description: "Please select both pickup and drop-off locations before proceeding",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
 
   const handleRouteCalculated = (distance: number) => {
     showRouteNotification(distance);
@@ -60,6 +75,23 @@ const TowMap = () => {
 
   const handlePaymentSubmit = (result: { success: boolean; error?: string }) => {
     showPaymentNotification(result.success, result.error);
+    if (result.success) {
+      setIsPaymentComplete(true);
+    }
+  };
+
+  const handleRequestTow = () => {
+    if (!validateLocations()) return;
+    
+    if (isPaymentComplete) {
+      toast({
+        title: "Payment Already Completed",
+        description: "Your tow truck request is already being processed",
+      });
+      return;
+    }
+    
+    setShowPayment(true);
   };
 
   useEffect(() => {
@@ -69,12 +101,16 @@ const TowMap = () => {
           const result = await calculateTowingPrice(
             pickupLocation,
             dropLocation,
-            'Toyota Corolla',
-            false
+            'Toyota Corolla'
           );
           setTotalCost(result.totalPrice);
         } catch (error) {
           console.error('Error calculating price:', error);
+          toast({
+            title: "Price Calculation Error",
+            description: "Unable to calculate price. Please try again.",
+            variant: "destructive",
+          });
         }
       }
     };
@@ -175,7 +211,7 @@ const TowMap = () => {
       <MapBottomControls
         pickupLocation={pickupLocation}
         dropLocation={dropLocation}
-        onRequestTow={() => setShowPayment(true)}
+        onRequestTow={handleRequestTow}
       />
 
       <PaymentWindow
