@@ -67,7 +67,6 @@ const TowMap = () => {
       if (pickupLocation && dropLocation) {
         try {
           const result = await calculateTowingPrice(
-            ENTERPRISE_LOCATIONS[0],
             pickupLocation,
             dropLocation,
             'Toyota Corolla',

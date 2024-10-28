@@ -27,7 +27,6 @@ export const RouteDisplay = ({ pickupLocation, dropLocation }: RouteDisplayProps
       if (pickupLocation && dropLocation) {
         try {
           const result = await calculateTowingPrice(
-            { lat: 26.510272, lng: -100.006323 },
             pickupLocation,
             dropLocation,
             'Toyota Corolla',
