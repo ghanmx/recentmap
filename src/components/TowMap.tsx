@@ -161,7 +161,7 @@ const TowMap = () => {
 
       <FloatingPanel 
         position="right" 
-        className="w-[400px] max-h-[80vh] overflow-y-auto z-40"
+        className="w-[450px] max-h-[calc(100vh-12rem)] overflow-y-auto z-40"
         title="Vehicle Information"
       >
         <VehicleForm

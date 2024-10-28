@@ -63,18 +63,18 @@ export const FloatingPanel = ({
       bounds="parent"
     >
       <div className={cn(
-        "fixed bg-white/95 rounded-lg shadow-lg backdrop-blur-sm transition-all duration-300",
-        position === "right" && "right-4 top-20",
-        position === "left" && "left-4 top-20",
-        position === "top" && "top-4 inset-x-4",
-        position === "bottom" && "bottom-4 inset-x-4",
+        "fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300",
+        position === "right" && "right-6 top-24",
+        position === "left" && "left-6 top-24",
+        position === "top" && "top-6 inset-x-6",
+        position === "bottom" && "bottom-6 inset-x-6",
         "z-[1000]",
         isDragging && "cursor-grabbing shadow-2xl",
         className
       )}>
-        <div className="flex items-center justify-between p-2 border-b bg-primary/5 rounded-t-lg">
+        <div className="flex items-center justify-between p-3 border-b bg-primary/5 rounded-t-lg">
           <div className="flex items-center gap-2">
-            <div className="drag-handle cursor-grab active:cursor-grabbing p-1 hover:bg-primary/10 rounded-md">
+            <div className="drag-handle cursor-grab active:cursor-grabbing p-1.5 hover:bg-primary/10 rounded-md">
               <GripVertical className="h-4 w-4 text-primary/70" />
             </div>
             <h3 className="font-semibold text-sm text-primary/90">{title}</h3>
@@ -84,7 +84,7 @@ export const FloatingPanel = ({
               variant="ghost"
               size="sm"
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-1 h-8 w-8 hover:bg-primary/10"
+              className="p-1.5 h-8 w-8 hover:bg-primary/10"
             >
               {isCollapsed ? 
                 <ChevronUp className="h-4 w-4 text-primary/70" /> : 
@@ -102,7 +102,7 @@ export const FloatingPanel = ({
                   duration: 2000,
                 });
               }}
-              className="p-1 h-8 w-8 hover:bg-primary/10"
+              className="p-1.5 h-8 w-8 hover:bg-primary/10"
             >
               <X className="h-4 w-4 text-primary/70" />
             </Button>
