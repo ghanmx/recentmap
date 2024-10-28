@@ -4,15 +4,15 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { DraggableMarker } from "./map/DraggableMarker";
 import { LocationMarker } from "./map/LocationMarker";
-import { Button } from "@/components/ui/button";
-import { RoutePolyline } from "./map/RoutePolyline";
 import PaymentWindow from "./payment/PaymentWindow";
-import { RouteDisplay } from "./map/RouteDisplay";
+import { RoutePolyline } from "./map/RoutePolyline";
 import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { showRouteNotification, showPaymentNotification } from "@/utils/notificationUtils";
 import VehicleForm from "./VehicleForm";
 import { FloatingPanel } from "./map/FloatingPanel";
 import { MapControlPanel } from "./map/MapControlPanel";
+import { MapHeader } from "./map/MapHeader";
+import { MapBottomControls } from "./map/MapBottomControls";
 
 const ENTERPRISE_LOCATIONS = [
   { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
@@ -62,16 +62,6 @@ const TowMap = () => {
     showPaymentNotification(result.success, result.error);
   };
 
-  const handleLocationSelect = (location: { lat: number; lng: number }) => {
-    if (selectingPickup) {
-      setPickupLocation(location);
-      setSelectingPickup(false);
-    } else if (selectingDrop) {
-      setDropLocation(location);
-      setSelectingDrop(false);
-    }
-  };
-
   useEffect(() => {
     const updatePrice = async () => {
       if (pickupLocation && dropLocation) {
@@ -95,12 +85,8 @@ const TowMap = () => {
 
   return (
     <div className="relative h-screen overflow-hidden">
-      <div className="absolute inset-x-0 top-0 z-[1000] bg-white/95 shadow-md backdrop-blur-sm">
-        <nav className="px-4 py-2">
-          <h1 className="text-lg font-semibold">Tow Truck Service</h1>
-        </nav>
-      </div>
-
+      <MapHeader />
+      
       <MapControlPanel
         selectingPickup={selectingPickup}
         selectingDrop={selectingDrop}
@@ -115,14 +101,22 @@ const TowMap = () => {
         zoom={13}
         style={{ height: "100vh", width: "100vw" }}
         ref={mapRef}
-        className="z-0"
+        className="z-10"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         <LocationMarker 
-          onLocationSelect={handleLocationSelect}
+          onLocationSelect={(location) => {
+            if (selectingPickup) {
+              setPickupLocation(location);
+              setSelectingPickup(false);
+            } else if (selectingDrop) {
+              setDropLocation(location);
+              setSelectingDrop(false);
+            }
+          }}
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
         />
@@ -167,7 +161,7 @@ const TowMap = () => {
 
       <FloatingPanel 
         position="right" 
-        className="w-[400px] max-h-[80vh] overflow-y-auto"
+        className="w-[400px] max-h-[80vh] overflow-y-auto z-40"
         title="Vehicle Information"
       >
         <VehicleForm
@@ -179,21 +173,11 @@ const TowMap = () => {
         />
       </FloatingPanel>
 
-      <div className="absolute inset-x-0 bottom-4 z-[1000] px-4">
-        <div className="max-w-xl mx-auto space-y-4">
-          <RouteDisplay pickupLocation={pickupLocation} dropLocation={dropLocation} />
-          {pickupLocation && dropLocation && (
-            <Button 
-              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 
-                       hover:to-blue-700 text-white shadow-lg hover:shadow-xl 
-                       transition-all duration-300"
-              onClick={() => setShowPayment(true)}
-            >
-              Request Tow Truck
-            </Button>
-          )}
-        </div>
-      </div>
+      <MapBottomControls
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+        onRequestTow={() => setShowPayment(true)}
+      />
 
       <PaymentWindow
         isOpen={showPayment}
