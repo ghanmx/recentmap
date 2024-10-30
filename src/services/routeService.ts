@@ -50,8 +50,7 @@ export const getRouteDetails = async (start: Location, end: Location): Promise<R
           'Content-Type': 'application/json'
         },
         mode: 'cors',
-        cache: 'no-cache',
-        timeout: 5000
+        cache: 'no-cache'
       }
     );
     
