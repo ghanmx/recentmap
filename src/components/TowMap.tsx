@@ -14,6 +14,7 @@ import { BookingProgress } from "./map/BookingProgress";
 import { useToast } from "@/hooks/use-toast";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
 import { MapPin } from "lucide-react";
+import { LocationFields } from "./form/LocationFields";
 
 const TowMap = () => {
   const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -54,6 +55,16 @@ const TowMap = () => {
       return false;
     }
     return true;
+  };
+
+  const handleLocationSearch = async (location: { lat: number; lng: number; address: string }, type: 'pickup' | 'drop') => {
+    if (type === 'pickup') {
+      setPickupLocation({ lat: location.lat, lng: location.lng });
+      setPickupAddress(location.address);
+    } else {
+      setDropLocation({ lat: location.lat, lng: location.lng });
+      setDropAddress(location.address);
+    }
   };
 
   const handleLocationSelect = (location: { lat: number; lng: number }) => {
@@ -131,9 +142,13 @@ const TowMap = () => {
           <VehicleForm
             pickupLocation={pickupLocation}
             dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
             serviceType="standard"
             onManeuverChange={() => {}}
             onVehicleModelChange={() => {}}
+            onPickupSelect={(location) => handleLocationSearch(location, 'pickup')}
+            onDropSelect={(location) => handleLocationSearch(location, 'drop')}
           />
         </FloatingPanel>
 

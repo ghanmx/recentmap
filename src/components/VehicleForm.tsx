@@ -12,6 +12,7 @@ import { downloadServiceInfo, FormData } from "@/utils/downloadUtils";
 import { VehicleFormHeader } from "./form/VehicleFormHeader";
 import { VehicleFormActions } from "./form/VehicleFormActions";
 import { TowTruckSelector } from "./form/TowTruckSelector";
+import { LocationFields } from "./form/LocationFields";
 import { useState } from "react";
 import { TowTruckType } from "@/utils/downloadUtils";
 
@@ -31,17 +32,25 @@ type FormValues = z.infer<typeof formSchema>;
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
   dropLocation: { lat: number; lng: number } | null;
+  pickupAddress: string;
+  dropAddress: string;
   serviceType: ServiceRequest['serviceType'];
   onManeuverChange?: (requiresManeuver: boolean) => void;
   onVehicleModelChange?: (model: string) => void;
+  onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
+  onDropSelect: (location: { lat: number; lng: number; address: string }) => void;
 }
 
 const VehicleForm = ({
   pickupLocation,
   dropLocation,
+  pickupAddress,
+  dropAddress,
   serviceType,
   onManeuverChange,
-  onVehicleModelChange
+  onVehicleModelChange,
+  onPickupSelect,
+  onDropSelect
 }: VehicleFormProps) => {
   const [requiresManeuver, setRequiresManeuver] = useState(false);
   const [truckType, setTruckType] = useState<TowTruckType>('A');
@@ -165,6 +174,15 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
       <VehicleFormHeader />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <LocationFields
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
+            onPickupSelect={onPickupSelect}
+            onDropSelect={onDropSelect}
+          />
+
           <VehicleDetails
             onBrandChange={(brand) => form.setValue('vehicleMake', brand)}
             onModelChange={(model) => {
