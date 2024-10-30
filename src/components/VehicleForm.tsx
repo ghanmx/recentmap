@@ -22,6 +22,7 @@ const formSchema = z.object({
       const year = parseInt(val);
       return year >= 1900 && year <= new Date().getFullYear() + 1;
     }, "Invalid year"),
+  vehicleColor: z.string().min(1, "Color is required"),
   issueDescription: z.string().min(10, "Please provide more details about the issue"),
 });
 
@@ -49,14 +50,10 @@ const VehicleForm = ({
       vehicleMake: "",
       vehicleModel: "",
       vehicleYear: "",
+      vehicleColor: "",
       issueDescription: "",
     },
   });
-
-  const handleManeuverChange = (checked: boolean) => {
-    setRequiresManeuver(checked);
-    onManeuverChange?.(checked);
-  };
 
   const downloadServiceInfo = () => {
     const formData = form.getValues();
@@ -82,6 +79,7 @@ const VehicleForm = ({
 • Make: ${formData.vehicleMake}
 • Model: ${formData.vehicleModel}
 • Year: ${formData.vehicleYear}
+• Color: ${formData.vehicleColor}
 
 🔧 SERVICE DETAILS
 ──────────────────
@@ -127,6 +125,7 @@ Please keep this information for your records.
       vehicleMake: data.vehicleMake,
       vehicleModel: data.vehicleModel,
       vehicleYear: parseInt(data.vehicleYear),
+      vehicleColor: data.vehicleColor,
       issueDescription: data.issueDescription,
       serviceType,
       pickupLocation,
@@ -148,6 +147,7 @@ Please keep this information for your records.
               onVehicleModelChange?.(model);
             }}
             onYearChange={(year) => form.setValue('vehicleYear', year)}
+            onColorChange={(color) => form.setValue('vehicleColor', color)}
           />
 
           <ServiceRequirements

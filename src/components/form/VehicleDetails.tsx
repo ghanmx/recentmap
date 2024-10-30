@@ -7,18 +7,26 @@ interface VehicleDetailsProps {
   onBrandChange?: (brand: string) => void;
   onModelChange?: (model: string) => void;
   onYearChange?: (year: string) => void;
+  onColorChange?: (color: string) => void;
 }
+
+const commonColors = [
+  "Black", "White", "Silver", "Gray", "Red", "Blue", 
+  "Green", "Yellow", "Brown", "Gold", "Orange", "Purple"
+];
 
 export const VehicleDetails = ({ 
   onBrandChange,
   onModelChange,
-  onYearChange 
+  onYearChange,
+  onColorChange 
 }: VehicleDetailsProps) => {
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const form = useForm<{
     year: string;
     brand: string;
     model: string;
+    color: string;
   }>();
   
   const years = Array.from({ length: 30 }, (_, i) => (new Date().getFullYear() - i).toString());
@@ -102,6 +110,31 @@ export const VehicleDetails = ({
                   <option value="">Select model</option>
                   {selectedBrand && vehicleModels[selectedBrand]?.map((model) => (
                     <option key={model} value={model}>{model}</option>
+                  ))}
+                </select>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="color"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Color</FormLabel>
+              <FormControl>
+                <select 
+                  className="w-full p-2 border rounded-md bg-background"
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    onColorChange?.(e.target.value);
+                  }}
+                >
+                  <option value="">Select color</option>
+                  {commonColors.map((color) => (
+                    <option key={color} value={color}>{color}</option>
                   ))}
                 </select>
               </FormControl>
