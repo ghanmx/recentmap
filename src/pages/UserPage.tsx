@@ -1,43 +1,58 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import TowMap from "@/components/TowMap";
-import { calculateTowingPrice } from "@/utils/priceCalculator";
-import { useToast } from "@/components/ui/use-toast";
+import { ServiceSummary } from "@/components/analytics/ServiceSummary";
+import { OperatorProfile } from "@/components/user/OperatorProfile";
 
 const UserPage = () => {
-  const [priceDetails, setPriceDetails] = useState<{ totalPrice: number; totalDistance: number } | null>(null);
-  const { toast } = useToast();
+  const [isPanelExpanded, setIsPanelExpanded] = useState(true);
+  const [activeTab, setActiveTab] = useState<'profile' | 'analytics'>('profile');
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Request a Tow Truck</h1>
-          <p className="text-gray-600">Drag markers to adjust pickup and drop-off locations</p>
+    <div className="flex h-screen overflow-hidden">
+      {/* Panel lateral colapsable */}
+      <div className={`
+        relative bg-white border-r transition-all duration-300
+        ${isPanelExpanded ? 'w-[400px]' : 'w-0'}
+      `}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute -right-10 top-4 bg-white border shadow-md"
+          onClick={() => setIsPanelExpanded(!isPanelExpanded)}
+        >
+          {isPanelExpanded ? <ChevronLeft /> : <ChevronRight />}
+        </Button>
+
+        <div className="p-4 h-full overflow-y-auto">
+          <div className="flex gap-2 mb-4">
+            <Button
+              variant={activeTab === 'profile' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('profile')}
+            >
+              Perfil
+            </Button>
+            <Button
+              variant={activeTab === 'analytics' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('analytics')}
+            >
+              Analytics
+            </Button>
+          </div>
+
+          {activeTab === 'profile' ? (
+            <OperatorProfile />
+          ) : (
+            <ServiceSummary />
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="p-6">
-          <div className="space-y-4">
-            <div className="text-lg font-semibold">Estimated Price</div>
-            <div className="text-3xl font-bold text-primary">
-              ${priceDetails?.totalPrice || 0}
-            </div>
-            <p className="text-sm text-gray-500">
-              Price is calculated based on actual road distance and service type
-            </p>
-            {priceDetails?.totalDistance && (
-              <p className="text-sm text-gray-500">
-                Total route distance: {priceDetails.totalDistance.toFixed(2)} km
-              </p>
-            )}
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <TowMap />
-        </Card>
+      {/* Mapa */}
+      <div className="flex-1">
+        <TowMap />
       </div>
     </div>
   );
