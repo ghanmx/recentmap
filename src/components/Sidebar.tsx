@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { LayoutDashboard, Menu } from "lucide-react";
+import { LayoutDashboard, Menu, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -7,6 +7,7 @@ import { useState } from "react";
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isDesktopSidebarVisible, setIsDesktopSidebarVisible] = useState(true);
 
   const NavContent = () => (
     <>
@@ -14,7 +15,7 @@ const Sidebar = () => {
         <h1 className="text-2xl font-heading font-bold text-primary">TowTruck</h1>
       </div>
 
-      <nav className="flex-1 px-4 hidden">
+      <nav className="flex-1 px-4">
         <ul className="space-y-2">
           <li>
             <Link
@@ -40,7 +41,7 @@ const Sidebar = () => {
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="hidden">
+            <Button variant="outline" size="icon">
               <Menu className="h-4 w-4" />
             </Button>
           </SheetTrigger>
@@ -50,13 +51,35 @@ const Sidebar = () => {
         </Sheet>
       </div>
 
+      {/* Desktop Sidebar Toggle Button */}
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => setIsDesktopSidebarVisible(!isDesktopSidebarVisible)}
+        className="fixed bottom-4 left-4 z-50 hidden lg:flex"
+      >
+        {isDesktopSidebarVisible ? (
+          <ChevronLeft className="h-4 w-4" />
+        ) : (
+          <ChevronRight className="h-4 w-4" />
+        )}
+      </Button>
+
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex flex-col h-screen w-64 bg-white border-r fixed left-0 top-0">
+      <div
+        className={cn(
+          "hidden lg:flex flex-col h-screen bg-white border-r fixed left-0 top-0 transition-all duration-300",
+          isDesktopSidebarVisible ? "w-64" : "w-0 overflow-hidden"
+        )}
+      >
         <NavContent />
       </div>
 
       {/* Spacer for content */}
-      <div className="hidden lg:block w-64" />
+      <div className={cn(
+        "hidden lg:block transition-all duration-300",
+        isDesktopSidebarVisible ? "w-64" : "w-0"
+      )} />
     </>
   );
 };
