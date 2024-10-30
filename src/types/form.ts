@@ -12,4 +12,4 @@ export const vehicleFormSchema = z.object({
 });
 
 export type VehicleFormValues = z.infer<typeof vehicleFormSchema>;
-export type FormData = VehicleFormValues;
+export type FormData = Required<VehicleFormValues>;
