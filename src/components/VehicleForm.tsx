@@ -1,18 +1,19 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { vehicleBrands, vehicleModels } from "@/data/vehicleData";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { CreditCard } from "lucide-react";
 import { ServiceRequest } from "@/types/service";
 import { useServiceRequest } from "@/hooks/useServiceRequest";
-import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { VehicleDetails } from "./form/VehicleDetails";
 import { ServiceRequirements } from "./form/ServiceRequirements";
 import { DownloadButtons } from "./form/DownloadButtons";
-import { downloadServiceInfo } from "@/utils/downloadUtils";
+import { downloadServiceInfo, FormData } from "@/utils/downloadUtils";
 
 const formSchema = z.object({
   vehicleMake: z.string().min(1, "Brand is required"),
@@ -66,12 +67,11 @@ const VehicleForm = ({
 
   const handleDownload = async (format: 'csv' | 'txt') => {
     const formData = form.getValues();
-    // Only proceed if all required fields are filled
     if (formData.vehicleMake && formData.vehicleModel && formData.vehicleYear && 
         formData.vehicleColor && formData.issueDescription) {
       await downloadServiceInfo(
         format,
-        formData,
+        formData as FormData, // Type assertion since we've verified all required fields exist
         pickupLocation,
         dropLocation,
         serviceType,

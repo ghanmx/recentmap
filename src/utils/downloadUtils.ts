@@ -1,17 +1,17 @@
 import { getAddressFromCoordinates } from "@/services/geocodingService";
 import { toast } from "@/components/ui/use-toast";
 
-interface Location {
-  lat: number;
-  lng: number;
-}
-
-interface FormData {
+export interface FormData {
   vehicleMake: string;
   vehicleModel: string;
   vehicleYear: string;
   vehicleColor: string;
   issueDescription: string;
+}
+
+interface Location {
+  lat: number;
+  lng: number;
 }
 
 export const generateServiceInfo = async (
