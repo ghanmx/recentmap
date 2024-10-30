@@ -17,5 +17,7 @@ export interface ServiceRequest {
   };
   requiresManeuver: boolean;
   status: 'pending' | 'accepted' | 'in_progress' | 'completed';
+  truckType: "A" | "B" | "C" | "D";
+  tollFees: number;
   createdAt?: Date;
 }

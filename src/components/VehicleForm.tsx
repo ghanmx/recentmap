@@ -13,6 +13,7 @@ import { VehicleFormHeader } from "./form/VehicleFormHeader";
 import { VehicleFormActions } from "./form/VehicleFormActions";
 import { TowTruckSelector } from "./form/TowTruckSelector";
 import { useState } from "react";
+import { TowTruckType } from "@/utils/downloadUtils";
 
 const formSchema = z.object({
   username: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -21,7 +22,7 @@ const formSchema = z.object({
   vehicleYear: z.string().min(4, "Year must be 4 digits"),
   vehicleColor: z.string().min(1, "Color is required"),
   issueDescription: z.string().min(10, "Please provide more details about the issue"),
-  truckType: z.string().min(1, "Truck type is required"),
+  truckType: z.enum(["A", "B", "C", "D"]),
   tollFees: z.number().min(0, "Toll fees cannot be negative"),
 });
 
@@ -43,7 +44,7 @@ const VehicleForm = ({
   onVehicleModelChange
 }: VehicleFormProps) => {
   const [requiresManeuver, setRequiresManeuver] = useState(false);
-  const [truckType, setTruckType] = useState('A');
+  const [truckType, setTruckType] = useState<TowTruckType>('A');
   const [tollFees, setTollFees] = useState(0);
   const { toast } = useToast();
   const { mutate: submitRequest, isPending } = useServiceRequest();
@@ -73,7 +74,7 @@ const VehicleForm = ({
         formData.vehicleColor && formData.issueDescription) {
       await downloadServiceInfo(
         format,
-        { ...formData, tollFees, truckType },
+        formData,
         pickupLocation,
         dropLocation,
         serviceType,
@@ -128,7 +129,7 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
       return;
     }
 
-    submitRequest({
+    const serviceRequest: ServiceRequest = {
       ...data,
       vehicleYear: parseInt(data.vehicleYear),
       pickupLocation,
@@ -136,7 +137,9 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
       serviceType,
       requiresManeuver,
       status: 'pending'
-    });
+    };
+
+    submitRequest(serviceRequest);
   };
 
   return (

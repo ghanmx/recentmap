@@ -3,6 +3,8 @@ import { calculateTotalCost } from "./towTruckPricing";
 import { getRouteDetails } from "@/services/routeService";
 import { toast } from "@/components/ui/use-toast";
 
+export type TowTruckType = "A" | "B" | "C" | "D";
+
 export interface FormData {
   username: string;
   vehicleMake: string;
@@ -10,7 +12,7 @@ export interface FormData {
   vehicleYear: string;
   vehicleColor: string;
   issueDescription: string;
-  truckType: string;
+  truckType: TowTruckType;
   tollFees: number;
 }
 
