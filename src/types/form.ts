@@ -11,13 +11,4 @@ export const vehicleFormSchema = z.object({
   tollFees: z.number().min(0, "Toll fees cannot be negative"),
 });
 
-export type VehicleFormValues = {
-  username: string;
-  vehicleMake: string;
-  vehicleModel: string;
-  vehicleYear: string;
-  vehicleColor: string;
-  issueDescription: string;
-  truckType: "A" | "B" | "C" | "D";
-  tollFees: number;
-};
+export type VehicleFormValues = z.infer<typeof vehicleFormSchema>;

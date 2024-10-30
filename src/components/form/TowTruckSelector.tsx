@@ -4,10 +4,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { towTruckTypes } from "@/utils/towTruckPricing";
 import { TowTruckType } from "@/utils/downloadUtils";
 import { UseFormReturn } from "react-hook-form";
-import { FormData } from "@/types/service";
+import { VehicleFormValues } from "@/types/form";
 
 interface TowTruckSelectorProps {
-  form: UseFormReturn<FormData>;
+  form: UseFormReturn<VehicleFormValues>;
   onTruckTypeChange: (type: TowTruckType) => void;
   onTollFeesChange: (fees: number) => void;
 }

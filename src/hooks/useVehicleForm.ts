@@ -24,10 +24,10 @@ export const useVehicleForm = (
       issueDescription: "",
       truckType: "A",
       tollFees: 0,
-    } as VehicleFormValues,
+    },
   });
 
-  const onSubmit = (data: VehicleFormValues) => {
+  const onSubmit = async (data: VehicleFormValues) => {
     if (!pickupLocation || !dropLocation) {
       toast({
         title: "Missing Location",
@@ -37,7 +37,7 @@ export const useVehicleForm = (
       return;
     }
 
-    const serviceRequest: ServiceRequest = {
+    const serviceRequest: Omit<ServiceRequest, 'id' | 'status' | 'createdAt'> = {
       username: data.username,
       vehicleMake: data.vehicleMake,
       vehicleModel: data.vehicleModel,
@@ -50,7 +50,6 @@ export const useVehicleForm = (
       requiresManeuver: false,
       truckType: data.truckType,
       tollFees: data.tollFees,
-      status: 'pending'
     };
 
     submitRequest(serviceRequest);
