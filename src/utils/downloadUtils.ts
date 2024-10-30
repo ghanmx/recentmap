@@ -1,4 +1,6 @@
 import { getAddressFromCoordinates } from "@/services/geocodingService";
+import { calculateTotalCost } from "./towTruckPricing";
+import { getRouteDetails } from "@/services/routeService";
 import { toast } from "@/components/ui/use-toast";
 
 export interface FormData {
@@ -8,6 +10,8 @@ export interface FormData {
   vehicleYear: string;
   vehicleColor: string;
   issueDescription: string;
+  truckType: string;
+  tollFees: number;
 }
 
 interface Location {
@@ -30,6 +34,20 @@ export const generateServiceInfo = async (
   const dropAddress = dropLocation
     ? await getAddressFromCoordinates(dropLocation.lat, dropLocation.lng)
     : 'Not specified';
+
+  let totalDistance = 0;
+  let totalCost = 0;
+
+  if (pickupLocation && dropLocation) {
+    try {
+      const route = await getRouteDetails(pickupLocation, dropLocation);
+      totalDistance = route.distance;
+      totalCost = calculateTotalCost(totalDistance, formData.truckType, requiresManeuver);
+      totalCost += formData.tollFees;
+    } catch (error) {
+      console.error('Error calculating route:', error);
+    }
+  }
 
   return [
     'SERVICE REQUEST INFORMATION',
@@ -55,8 +73,15 @@ export const generateServiceInfo = async (
     '',
     'SERVICE DETAILS',
     `Service Type: ${serviceType}`,
+    `Tow Truck Type: ${formData.truckType}`,
     `Requires Special Maneuver: ${requiresManeuver ? 'Yes' : 'No'}`,
-    `Issue Description: ${formData.issueDescription}`
+    `Issue Description: ${formData.issueDescription}`,
+    '',
+    'COST DETAILS',
+    `Total Distance: ${totalDistance.toFixed(2)} km`,
+    `Toll Fees: $${formData.tollFees.toFixed(2)}`,
+    `Service Cost: $${(totalCost - formData.tollFees).toFixed(2)}`,
+    `Total Cost: $${totalCost.toFixed(2)}`
   ];
 };
 
