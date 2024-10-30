@@ -28,6 +28,8 @@ const formSchema = z.object({
   issueDescription: z.string().min(10, "Please provide more details about the issue"),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
   dropLocation: { lat: number; lng: number } | null;
@@ -46,7 +48,7 @@ const VehicleForm = ({
   const [requiresManeuver, setRequiresManeuver] = useState(false);
   const { toast } = useToast();
   const { mutate: submitRequest, isPending } = useServiceRequest();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       vehicleMake: "",
@@ -63,17 +65,28 @@ const VehicleForm = ({
   };
 
   const handleDownload = async (format: 'csv' | 'txt') => {
-    await downloadServiceInfo(
-      format,
-      form.getValues(),
-      pickupLocation,
-      dropLocation,
-      serviceType,
-      requiresManeuver
-    );
+    const formData = form.getValues();
+    // Only proceed if all required fields are filled
+    if (formData.vehicleMake && formData.vehicleModel && formData.vehicleYear && 
+        formData.vehicleColor && formData.issueDescription) {
+      await downloadServiceInfo(
+        format,
+        formData,
+        pickupLocation,
+        dropLocation,
+        serviceType,
+        requiresManeuver
+      );
+    } else {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all vehicle details before downloading.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = (data: FormValues) => {
     if (!pickupLocation || !dropLocation) {
       toast({
         title: "Missing Location",
