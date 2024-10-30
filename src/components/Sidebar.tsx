@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
-import { LayoutDashboard, Menu } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 
@@ -14,7 +13,7 @@ const Sidebar = () => {
         <h1 className="text-2xl font-heading font-bold text-primary">TowTruck</h1>
       </div>
 
-      <nav className="flex-1 px-4">
+      <nav className="flex-1 px-4 hidden">
         <ul className="space-y-2">
           <li>
             <Link
@@ -40,7 +39,7 @@ const Sidebar = () => {
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" className="hidden">
               <Menu className="h-4 w-4" />
             </Button>
           </SheetTrigger>
