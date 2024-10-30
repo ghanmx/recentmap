@@ -13,6 +13,7 @@ import { useTowingCost } from "@/hooks/useTowingCost";
 import { CostBreakdown } from "./form/CostBreakdown";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
+import { FormData } from "@/types/form";
 
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
