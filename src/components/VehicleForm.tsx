@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Download } from "lucide-react";
 import { ServiceRequest } from "@/types/service";
 import { useServiceRequest } from "@/hooks/useServiceRequest";
 import { Form } from "@/components/ui/form";
@@ -58,6 +58,44 @@ const VehicleForm = ({
     onManeuverChange?.(checked);
   };
 
+  const downloadServiceInfo = () => {
+    const formData = form.getValues();
+    const serviceInfo = `
+Service Request Information
+-------------------------
+Vehicle Details:
+- Make: ${formData.vehicleMake}
+- Model: ${formData.vehicleModel}
+- Year: ${formData.vehicleYear}
+
+Location Details:
+- Pickup Location: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocation.lng}` : 'Not set'}
+- Drop Location: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'Not set'}
+
+Service Details:
+- Service Type: ${serviceType}
+- Requires Maneuver: ${requiresManeuver ? 'Yes' : 'No'}
+- Issue Description: ${formData.issueDescription}
+
+Generated on: ${new Date().toLocaleString()}
+    `;
+
+    const blob = new Blob([serviceInfo], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'service-request-info.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: "Information Downloaded",
+      description: "Service request information has been saved to a text file.",
+    });
+  };
+
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     if (!pickupLocation || !dropLocation) {
       toast({
@@ -101,20 +139,32 @@ const VehicleForm = ({
             onManeuverChange={handleManeuverChange}
           />
 
-          <Button
-            type="submit"
-            disabled={isPending}
-            className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            {isPending ? (
-              "Processing..."
-            ) : (
-              <div className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4" />
-                Continue to Payment
-              </div>
-            )}
-          </Button>
+          <div className="flex gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={downloadServiceInfo}
+              className="flex-1"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download Info
+            </Button>
+
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              {isPending ? (
+                "Processing..."
+              ) : (
+                <div className="flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" />
+                  Continue to Payment
+                </div>
+              )}
+            </Button>
+          </div>
         </form>
       </Form>
     </Card>
