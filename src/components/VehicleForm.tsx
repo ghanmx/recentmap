@@ -60,31 +60,47 @@ const VehicleForm = ({
 
   const downloadServiceInfo = () => {
     const formData = form.getValues();
+    const currentDate = new Date().toLocaleString();
+    
     const serviceInfo = `
-Service Request Information
--------------------------
-Vehicle Details:
-- Make: ${formData.vehicleMake}
-- Model: ${formData.vehicleModel}
-- Year: ${formData.vehicleYear}
+╔════════════════════════════════════════════════════════════════╗
+║                   SERVICE REQUEST INFORMATION                   ║
+╚════════════════════════════════════════════════════════════════╝
 
-Location Details:
-- Pickup Location: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocation.lng}` : 'Not set'}
-- Drop Location: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'Not set'}
+📍 LOCATION DETAILS
+──────────────────
+🚗 Pickup Location: ${pickupLocation ? `
+   • Latitude: ${pickupLocation.lat.toFixed(6)}
+   • Longitude: ${pickupLocation.lng.toFixed(6)}` : 'Not set'}
 
-Service Details:
-- Service Type: ${serviceType}
-- Requires Maneuver: ${requiresManeuver ? 'Yes' : 'No'}
-- Issue Description: ${formData.issueDescription}
+🎯 Drop-off Location: ${dropLocation ? `
+   • Latitude: ${dropLocation.lat.toFixed(6)}
+   • Longitude: ${dropLocation.lng.toFixed(6)}` : 'Not set'}
 
-Generated on: ${new Date().toLocaleString()}
+🚘 VEHICLE DETAILS
+──────────────────
+• Make: ${formData.vehicleMake}
+• Model: ${formData.vehicleModel}
+• Year: ${formData.vehicleYear}
+
+🔧 SERVICE DETAILS
+──────────────────
+• Service Type: ${serviceType}
+• Requires Special Maneuver: ${requiresManeuver ? 'Yes' : 'No'}
+• Issue Description: ${formData.issueDescription}
+
+📅 Request Generated: ${currentDate}
+
+Note: This is an automated service request summary.
+Please keep this information for your records.
+──────────────────────────────────────────────────
     `;
 
     const blob = new Blob([serviceInfo], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'service-request-info.txt';
+    link.download = `service-request-${currentDate.replace(/[/:\\]/g, '-')}.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -93,6 +109,7 @@ Generated on: ${new Date().toLocaleString()}
     toast({
       title: "Information Downloaded",
       description: "Service request information has been saved to a text file.",
+      className: "bg-green-50 border-green-200",
     });
   };
 
@@ -121,7 +138,7 @@ Generated on: ${new Date().toLocaleString()}
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 shadow-lg backdrop-blur-sm animate-fade-in hover:shadow-xl transition-all duration-300">
+    <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 shadow-lg backdrop-blur-sm animate-fade-in hover:shadow-xl transition-all duration-300">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <VehicleDetails
@@ -144,16 +161,16 @@ Generated on: ${new Date().toLocaleString()}
               type="button"
               variant="outline"
               onClick={downloadServiceInfo}
-              className="flex-1"
+              className="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 hover:border-emerald-300 hover:bg-emerald-100 transition-all duration-300"
             >
-              <Download className="w-4 h-4 mr-2" />
+              <Download className="w-4 h-4 mr-2 text-emerald-600" />
               Download Info
             </Button>
 
             <Button
               type="submit"
               disabled={isPending}
-              className="flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all duration-300"
             >
               {isPending ? (
                 "Processing..."
