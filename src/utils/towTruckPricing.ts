@@ -1,5 +1,6 @@
 export const towTruckTypes = {
   A: { perKm: 18.82, basePrice: 528.69, maneuverCharge: 1219.55, maxWeight: 2000 },
+  B: { perKm: 20.62, basePrice: 607.43, maneuverCharge: 1350.00, maxWeight: 3000 },
   C: { perKm: 23.47, basePrice: 721.79, maneuverCharge: 1524.21, maxWeight: 4000 },
   D: { perKm: 32.35, basePrice: 885.84, maneuverCharge: 2101.65, maxWeight: 8000 },
 };
@@ -51,10 +52,11 @@ export const getVehicleSize = (vehicleModel: string): 'small' | 'medium' | 'larg
   return 'small';
 };
 
-export const getTowTruckType = (vehicleModel: string): 'A' | 'C' | 'D' => {
+export const getTowTruckType = (vehicleModel: string): 'A' | 'B' | 'C' | 'D' => {
   if (customPrices[vehicleModel]) {
     const weight = customPrices[vehicleModel].weight;
     if (weight <= towTruckTypes.A.maxWeight) return 'A';
+    if (weight <= towTruckTypes.B.maxWeight) return 'B';
     if (weight <= towTruckTypes.C.maxWeight) return 'C';
     return 'D';
   }
@@ -62,6 +64,7 @@ export const getTowTruckType = (vehicleModel: string): 'A' | 'C' | 'D' => {
   const weight = vehicleWeights[vehicleModel];
   if (weight) {
     if (weight <= towTruckTypes.A.maxWeight) return 'A';
+    if (weight <= towTruckTypes.B.maxWeight) return 'B';
     if (weight <= towTruckTypes.C.maxWeight) return 'C';
     return 'D';
   }
@@ -69,13 +72,13 @@ export const getTowTruckType = (vehicleModel: string): 'A' | 'C' | 'D' => {
   const vehicleSize = getVehicleSize(vehicleModel);
   switch (vehicleSize) {
     case 'small': return 'A';
-    case 'medium': return 'C';
+    case 'medium': return 'B';
     case 'large': return 'D';
     default: return 'A';
   }
 };
 
-export const calculateTotalCost = (distance: number, towTruckType: 'A' | 'C' | 'D', requiresManeuver: boolean): number => {
+export const calculateTotalCost = (distance: number, towTruckType: 'A' | 'B' | 'C' | 'D', requiresManeuver: boolean): number => {
   const { perKm, basePrice, maneuverCharge } = towTruckTypes[towTruckType] || towTruckTypes.A;
   let totalCost = basePrice + (distance * perKm);
   if (requiresManeuver) {
