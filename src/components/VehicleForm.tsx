@@ -4,7 +4,7 @@ import { vehicleBrands, vehicleModels } from "@/data/vehicleData";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Copy } from "lucide-react";
 import { ServiceRequest } from "@/types/service";
 import { useServiceRequest } from "@/hooks/useServiceRequest";
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,10 @@ import { VehicleDetails } from "./form/VehicleDetails";
 import { ServiceRequirements } from "./form/ServiceRequirements";
 import { DownloadButtons } from "./form/DownloadButtons";
 import { downloadServiceInfo, FormData } from "@/utils/downloadUtils";
+import { Input } from "./ui/input";
 
 const formSchema = z.object({
+  username: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   vehicleMake: z.string().min(1, "Brand is required"),
   vehicleModel: z.string().min(1, "Model is required"),
   vehicleYear: z.string()
@@ -52,6 +54,7 @@ const VehicleForm = ({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      username: "",
       vehicleMake: "",
       vehicleModel: "",
       vehicleYear: "",
@@ -71,7 +74,7 @@ const VehicleForm = ({
         formData.vehicleColor && formData.issueDescription) {
       await downloadServiceInfo(
         format,
-        formData as FormData, // Type assertion since we've verified all required fields exist
+        formData as FormData,
         pickupLocation,
         dropLocation,
         serviceType,
@@ -81,6 +84,34 @@ const VehicleForm = ({
       toast({
         title: "Missing Information",
         description: "Please fill in all vehicle details before downloading.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const copyToClipboard = async () => {
+    const formData = form.getValues();
+    const clipboardText = `
+Usuario: ${formData.username}
+Vehículo: ${formData.vehicleMake} ${formData.vehicleModel} ${formData.vehicleYear}
+Color: ${formData.vehicleColor}
+Descripción: ${formData.issueDescription}
+Ubicación de recogida: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocation.lng}` : 'No especificada'}
+Ubicación de entrega: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'No especificada'}
+Tipo de servicio: ${serviceType}
+Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
+    `.trim();
+
+    try {
+      await navigator.clipboard.writeText(clipboardText);
+      toast({
+        title: "Información copiada",
+        description: "Los detalles del servicio se han copiado al portapapeles",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "No se pudo copiar al portapapeles",
         variant: "destructive",
       });
     }
@@ -98,6 +129,7 @@ const VehicleForm = ({
     }
 
     const serviceRequest: Omit<ServiceRequest, 'id' | 'status' | 'createdAt'> = {
+      username: data.username,
       vehicleMake: data.vehicleMake,
       vehicleModel: data.vehicleModel,
       vehicleYear: parseInt(data.vehicleYear),
@@ -116,6 +148,19 @@ const VehicleForm = ({
     <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 shadow-lg backdrop-blur-sm animate-fade-in hover:shadow-xl transition-all duration-300">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre del Usuario</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ingrese su nombre" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
           <VehicleDetails
             onBrandChange={(brand) => form.setValue('vehicleMake', brand)}
             onModelChange={(model) => {
@@ -134,6 +179,16 @@ const VehicleForm = ({
 
           <div className="flex gap-4">
             <DownloadButtons onDownload={handleDownload} />
+            
+            <Button
+              type="button"
+              variant="outline"
+              onClick={copyToClipboard}
+              className="flex-1 bg-white hover:bg-gray-50"
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              Copiar Info
+            </Button>
 
             <Button
               type="submit"

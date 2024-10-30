@@ -1,5 +1,6 @@
 export interface ServiceRequest {
   id?: string;
+  username: string;
   vehicleMake: string;
   vehicleModel: string;
   vehicleYear: number;

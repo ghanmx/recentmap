@@ -2,6 +2,7 @@ import { getAddressFromCoordinates } from "@/services/geocodingService";
 import { toast } from "@/components/ui/use-toast";
 
 export interface FormData {
+  username: string;
   vehicleMake: string;
   vehicleModel: string;
   vehicleYear: string;
@@ -23,7 +24,6 @@ export const generateServiceInfo = async (
 ) => {
   const currentDate = new Date().toLocaleString();
   
-  // Get addresses asynchronously
   const pickupAddress = pickupLocation 
     ? await getAddressFromCoordinates(pickupLocation.lat, pickupLocation.lng)
     : 'Not specified';
@@ -34,6 +34,9 @@ export const generateServiceInfo = async (
   return [
     'SERVICE REQUEST INFORMATION',
     `Generated on: ${currentDate}`,
+    '',
+    'USER INFORMATION',
+    `Name: ${formData.username}`,
     '',
     'LOCATION DETAILS',
     'Pickup Location',
