@@ -95,48 +95,56 @@ const TowMap = () => {
   }, [pickupLocation, dropLocation]);
 
   return (
-    <div className="relative h-screen overflow-hidden bg-gray-50">
-      <MapHeader />
+    <div className="relative h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       
-      <MapControlPanel
-        selectingPickup={selectingPickup}
-        selectingDrop={selectingDrop}
-        setSelectingPickup={setSelectingPickup}
-        setSelectingDrop={setSelectingDrop}
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-      />
-
-      <MapContainerComponent
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-        selectingPickup={selectingPickup}
-        selectingDrop={selectingDrop}
-        onLocationSelect={handleLocationSelect}
-        setPickupLocation={setPickupLocation}
-        setDropLocation={setDropLocation}
-        onRouteCalculated={handleRouteCalculated}
-      />
-
-      <FloatingPanel 
-        position="right" 
-        className="w-[450px] max-h-[calc(100vh-12rem)] overflow-y-auto z-40 bg-white/95 backdrop-blur-sm shadow-xl"
-        title="Vehicle Information"
-      >
-        <VehicleForm
+      <div className="relative z-10">
+        <MapHeader />
+        
+        <MapControlPanel
+          selectingPickup={selectingPickup}
+          selectingDrop={selectingDrop}
+          setSelectingPickup={setSelectingPickup}
+          setSelectingDrop={setSelectingDrop}
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
-          serviceType="standard"
-          onManeuverChange={() => {}}
-          onVehicleModelChange={() => {}}
         />
-      </FloatingPanel>
 
-      <MapBottomControls
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-        onRequestTow={handleRequestTow}
-      />
+        <MapContainerComponent
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+          selectingPickup={selectingPickup}
+          selectingDrop={selectingDrop}
+          onLocationSelect={handleLocationSelect}
+          setPickupLocation={setPickupLocation}
+          setDropLocation={setDropLocation}
+          onRouteCalculated={handleRouteCalculated}
+        />
+
+        <FloatingPanel 
+          position="right" 
+          className="w-[450px] max-h-[calc(100vh-12rem)] overflow-y-auto z-40 bg-white/95 
+                     backdrop-blur-sm shadow-xl border border-gray-200/50 rounded-xl"
+          title="Vehicle Information"
+        >
+          <VehicleForm
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            serviceType="standard"
+            onManeuverChange={() => {}}
+            onVehicleModelChange={() => {}}
+          />
+        </FloatingPanel>
+
+        <div className="absolute bottom-6 inset-x-0 z-30 px-6 transition-all duration-300 
+                      transform hover:translate-y-0 translate-y-2">
+          <MapBottomControls
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            onRequestTow={handleRequestTow}
+          />
+        </div>
+      </div>
 
       <PaymentWindow
         isOpen={showPayment}
