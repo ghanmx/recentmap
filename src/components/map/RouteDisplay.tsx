@@ -12,7 +12,7 @@ interface RouteDisplayProps {
 interface PriceDetails {
   totalPrice: number;
   totalDistance: number;
-  towTruckType: "A" | "C" | "D";
+  towTruckType: "A" | "B" | "C" | "D";
   routeGeometry: {
     companyToPickup: string;
     pickupToDrop: string;
