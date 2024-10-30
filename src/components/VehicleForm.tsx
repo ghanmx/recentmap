@@ -44,14 +44,6 @@ const VehicleForm = ({
   const { toast } = useToast();
   const { form, onSubmit, isPending } = useVehicleForm(pickupLocation, dropLocation, serviceType);
 
-  const costDetails = useTowingCost(
-    pickupLocation,
-    dropLocation,
-    requiresManeuver,
-    truckType,
-    tollFees
-  );
-
   const handleManeuverChange = (checked: boolean) => {
     setRequiresManeuver(checked);
     onManeuverChange?.(checked);
