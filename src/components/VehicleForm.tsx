@@ -13,7 +13,6 @@ import { useTowingCost } from "@/hooks/useTowingCost";
 import { CostBreakdown } from "./form/CostBreakdown";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
-import { FormData } from "@/types/form";
 
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -43,6 +42,14 @@ const VehicleForm = ({
   const [tollFees, setTollFees] = useState(0);
   const { toast } = useToast();
   const { form, onSubmit, isPending } = useVehicleForm(pickupLocation, dropLocation, serviceType);
+
+  const costDetails = useTowingCost(
+    pickupLocation,
+    dropLocation,
+    requiresManeuver,
+    truckType,
+    tollFees
+  );
 
   const handleManeuverChange = (checked: boolean) => {
     setRequiresManeuver(checked);
