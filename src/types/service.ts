@@ -3,6 +3,7 @@ export interface ServiceRequest {
   vehicleMake: string;
   vehicleModel: string;
   vehicleYear: number;
+  vehicleColor: string;
   issueDescription: string;
   serviceType: 'standard' | 'flatbed' | 'emergency';
   pickupLocation: {

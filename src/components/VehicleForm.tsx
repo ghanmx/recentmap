@@ -55,6 +55,11 @@ const VehicleForm = ({
     },
   });
 
+  const handleManeuverChange = (checked: boolean) => {
+    setRequiresManeuver(checked);
+    onManeuverChange?.(checked);
+  };
+
   const downloadServiceInfo = () => {
     const formData = form.getValues();
     const currentDate = new Date().toLocaleString();
