@@ -19,7 +19,11 @@ export const LocationSearch = ({
   currentAddress = ""
 }: LocationSearchProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<Array<{
+    address: string;
+    lat: number;
+    lon: number;
+  }>>([]);
   const [isSearching, setIsSearching] = useState(false);
   const { toast } = useToast();
 
@@ -84,15 +88,16 @@ export const LocationSearch = ({
               className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
               onClick={() => {
                 onLocationSelect({
-                  lat: 0, // These would come from the geocoding service
-                  lng: 0,
-                  address: suggestion
+                  lat: suggestion.lat,
+                  lng: suggestion.lon,
+                  address: suggestion.address
                 });
                 setSuggestions([]);
+                setSearchQuery("");
               }}
             >
               <MapPin className="h-4 w-4 text-gray-500" />
-              <span className="text-sm">{suggestion}</span>
+              <span className="text-sm">{suggestion.address}</span>
             </button>
           ))}
         </div>

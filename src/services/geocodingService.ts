@@ -9,6 +9,9 @@ interface GeocodingResponse {
       country: string;
       postcode: string;
     };
+    geometry: {
+      coordinates: [number, number];
+    };
   }>;
 }
 
@@ -25,7 +28,13 @@ export const getAddressFromCoordinates = async (lat: number, lng: number): Promi
   }
 };
 
-export const searchAddresses = async (query: string): Promise<string[]> => {
+interface SearchResult {
+  address: string;
+  lat: number;
+  lon: number;
+}
+
+export const searchAddresses = async (query: string): Promise<SearchResult[]> => {
   if (!query || query.length < 3) return [];
   
   try {
@@ -33,7 +42,11 @@ export const searchAddresses = async (query: string): Promise<string[]> => {
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
     );
     const data = await response.json();
-    return data.map((item: any) => item.display_name);
+    return data.map((item: any) => ({
+      address: item.display_name,
+      lat: parseFloat(item.lat),
+      lon: parseFloat(item.lon)
+    }));
   } catch (error) {
     console.error('Error searching addresses:', error);
     return [];
