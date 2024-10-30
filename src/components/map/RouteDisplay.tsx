@@ -50,49 +50,45 @@ export const RouteDisplay = ({ pickupLocation, dropLocation }: RouteDisplayProps
   if (!priceDetails) return null;
 
   return (
-    <Card className="p-8 space-y-6 bg-gradient-to-br from-white to-blue-50 backdrop-blur-md shadow-2xl border-2 border-blue-200 rounded-xl">
-      <div className="flex items-center gap-4">
-        <div className="bg-primary/15 p-3 rounded-xl shadow-inner">
-          <DollarSign className="w-6 h-6 text-primary" />
+    <Card className="p-6 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95 backdrop-blur-md shadow-xl border border-blue-100">
+      <div className="flex items-center gap-3">
+        <div className="bg-primary/10 p-2 rounded-lg">
+          <DollarSign className="w-5 h-5 text-primary" />
         </div>
-        <div className="text-xl font-bold text-gray-900">Estimated Price</div>
+        <div className="text-lg font-semibold text-gray-900">Estimated Price</div>
       </div>
       
-      <div className="text-5xl font-bold text-primary bg-primary/10 p-6 rounded-xl flex items-center gap-4 shadow-inner">
+      <div className="text-4xl font-bold text-primary bg-primary/5 p-4 rounded-lg flex items-center gap-3">
         <span>${priceDetails.totalPrice.toFixed(2)}</span>
-        <span className="text-base font-semibold text-gray-700 bg-white/80 px-4 py-2 rounded-full shadow-sm">
+        <span className="text-sm font-normal text-gray-600 bg-white/50 px-3 py-1 rounded-full">
           Fixed Price
         </span>
       </div>
 
-      <div className="space-y-4 divide-y-2 divide-gray-100">
-        <div className="flex items-center gap-4 py-4">
-          <div className="bg-blue-50 p-3 rounded-xl shadow-inner">
-            <Route className="w-6 h-6 text-blue-600" />
-          </div>
+      <div className="space-y-3 divide-y divide-gray-100">
+        <div className="flex items-center gap-3 py-3">
+          <Route className="w-5 h-5 text-gray-500" />
           <div>
-            <p className="text-base font-semibold text-gray-700">Total Distance</p>
-            <p className="text-2xl font-bold text-primary">
+            <p className="text-sm font-medium text-gray-900">Total Distance</p>
+            <p className="text-lg font-semibold text-primary">
               {priceDetails.totalDistance.toFixed(2)} km
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 py-4">
-          <div className="bg-blue-50 p-3 rounded-xl shadow-inner">
-            <Truck className="w-6 h-6 text-blue-600" />
-          </div>
+        <div className="flex items-center gap-3 py-3">
+          <Truck className="w-5 h-5 text-gray-500" />
           <div>
-            <p className="text-base font-semibold text-gray-700">Service Type</p>
-            <p className="text-2xl font-bold text-primary">
+            <p className="text-sm font-medium text-gray-900">Service Type</p>
+            <p className="text-lg font-semibold text-primary">
               Type {priceDetails.towTruckType} Tow Truck
             </p>
           </div>
         </div>
       </div>
 
-      <div className="bg-blue-100 p-4 rounded-xl border-2 border-blue-200 shadow-inner">
-        <p className="text-base font-semibold text-blue-800">
+      <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+        <p className="text-sm text-blue-700">
           Price includes all service fees and taxes. No hidden charges.
         </p>
       </div>
