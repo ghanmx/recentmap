@@ -1,13 +1,18 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { vehicleFormSchema, VehicleFormValues, FormData } from "@/types/form";
+import { vehicleFormSchema, FormData } from "@/types/form";
 import { useServiceRequest } from "@/hooks/useServiceRequest";
 import { useToast } from "@/hooks/use-toast";
 
+interface Location {
+  lat: number;
+  lng: number;
+}
+
 export const useVehicleForm = (
-  pickupLocation: { lat: number; lng: number } | null,
-  dropLocation: { lat: number; lng: number } | null,
-  serviceType: ServiceRequest['serviceType']
+  pickupLocation: Location | null,
+  dropLocation: Location | null,
+  serviceType: 'standard' | 'flatbed' | 'emergency'
 ) => {
   const { toast } = useToast();
   const { mutate: submitRequest, isPending } = useServiceRequest();
@@ -36,7 +41,7 @@ export const useVehicleForm = (
       return;
     }
 
-    const serviceRequest: Omit<ServiceRequest, 'id' | 'status' | 'createdAt'> = {
+    const serviceRequest = {
       username: data.username,
       vehicleMake: data.vehicleMake,
       vehicleModel: data.vehicleModel,

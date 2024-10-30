@@ -1,6 +1,5 @@
 import { Form } from "@/components/ui/form";
 import { Card } from "@/components/ui/card";
-import { ServiceRequest } from "@/types/service";
 import { VehicleDetails } from "./form/VehicleDetails";
 import { ServiceRequirements } from "./form/ServiceRequirements";
 import { downloadServiceInfo } from "@/utils/downloadUtils";
@@ -14,14 +13,14 @@ import { useTowingCost } from "@/hooks/useTowingCost";
 import { CostBreakdown } from "./form/CostBreakdown";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
-import { VehicleFormValues } from "@/types/form";
+import { FormData } from "@/types/form";
 
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
   dropLocation: { lat: number; lng: number } | null;
   pickupAddress: string;
   dropAddress: string;
-  serviceType: ServiceRequest['serviceType'];
+  serviceType: 'standard' | 'flatbed' | 'emergency';
   onManeuverChange?: (requiresManeuver: boolean) => void;
   onVehicleModelChange?: (model: string) => void;
   onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
@@ -59,7 +58,7 @@ const VehicleForm = ({
   };
 
   const handleDownload = async (format: 'csv' | 'txt') => {
-    const formData = form.getValues() as VehicleFormValues;
+    const formData = form.getValues();
     if (formData.vehicleMake && formData.vehicleModel && formData.vehicleYear && 
         formData.vehicleColor && formData.issueDescription) {
       await downloadServiceInfo(
@@ -129,7 +128,7 @@ const VehicleForm = ({
           <VehicleFormActions
             onDownload={handleDownload}
             onCopy={async () => {
-              const formData = form.getValues() as VehicleFormValues;
+              const formData = form.getValues();
               const costBreakdown = costDetails
                 ? `
 COST BREAKDOWN:
