@@ -33,8 +33,8 @@ export const TowTruckSelector = ({ form, onTruckTypeChange, onTollFeesChange }: 
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {Object.entries(towTruckTypes).map(([type, details]) => (
-                  <SelectItem key={type} value={type as FormData['truckType']}>
+                {(Object.entries(towTruckTypes) as [FormData['truckType'], { maxWeight: number }][]).map(([type, details]) => (
+                  <SelectItem key={type} value={type}>
                     Tipo {type} (hasta {details.maxWeight}kg)
                   </SelectItem>
                 ))}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getRouteDetails } from '@/services/routeService';
-import { calculateTotalCost, towTruckTypes } from '@/utils/towTruckPricing';
+import { calculateTotalCost, towTruckTypes, TowTruckConfig } from '@/utils/towTruckPricing';
 import { TowTruckType } from '@/utils/downloadUtils';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -31,7 +31,7 @@ export const useTowingCost = (
         try {
           const route = await getRouteDetails(pickupLocation, dropLocation);
           const distance = route.distance;
-          const truckDetails = towTruckTypes[truckType];
+          const truckDetails: TowTruckConfig = towTruckTypes[truckType];
           const costPerKm = truckDetails.perKm * distance;
           const basePrice = truckDetails.basePrice;
           const maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
