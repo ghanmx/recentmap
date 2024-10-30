@@ -1,29 +1,11 @@
-import { Link, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  Mail, 
-  Users, 
-  BarChart2, 
-  Calendar,
-  Settings,
-  LogOut,
-  Menu
-} from "lucide-react";
+import { Link } from "react-router-dom";
+import { LayoutDashboard, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 
-const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-  { icon: Users, label: "User Dashboard", path: "/user" },
-  { icon: Mail, label: "Messages", path: "/messages" },
-  { icon: BarChart2, label: "Analytics", path: "/analytics" },
-  { icon: Calendar, label: "Schedule", path: "/schedule" },
-];
-
 const Sidebar = () => {
-  const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const NavContent = () => (
@@ -34,40 +16,21 @@ const Sidebar = () => {
 
       <nav className="flex-1 px-4">
         <ul className="space-y-2">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <li key={item.path}>
-                <Link
-                  to={item.path}
-                  onClick={() => setIsMobileOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors",
-                    location.pathname === item.path && "bg-primary/10 text-primary font-medium"
-                  )}
-                >
-                  <Icon className="w-5 h-5" />
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
+          <li>
+            <Link
+              to="/"
+              onClick={() => setIsMobileOpen(false)}
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors",
+                "bg-primary/10 text-primary font-medium"
+              )}
+            >
+              <LayoutDashboard className="w-5 h-5" />
+              Dashboard
+            </Link>
+          </li>
         </ul>
       </nav>
-
-      <div className="p-4 border-t">
-        <Link
-          to="/settings"
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
-        >
-          <Settings className="w-5 h-5" />
-          Settings
-        </Link>
-        <button className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors w-full">
-          <LogOut className="w-5 h-5" />
-          Logout
-        </button>
-      </div>
     </>
   );
 
