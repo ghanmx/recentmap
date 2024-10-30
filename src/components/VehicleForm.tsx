@@ -15,6 +15,8 @@ import { TowTruckSelector } from "./form/TowTruckSelector";
 import { LocationFields } from "./form/LocationFields";
 import { useState } from "react";
 import { TowTruckType } from "@/utils/downloadUtils";
+import { getRouteDetails } from "@/services/routeService";
+import { towTruckTypes } from "@/utils/towTruckPricing";
 
 const formSchema = z.object({
   username: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -112,6 +114,32 @@ const VehicleForm = ({
 
   const copyToClipboard = async () => {
     const formData = form.getValues();
+    let costBreakdown = '';
+    
+    if (pickupLocation && dropLocation) {
+      try {
+        const route = await getRouteDetails(pickupLocation, dropLocation);
+        const distance = route.distance;
+        const truckDetails = towTruckTypes[truckType];
+        const costPerKm = truckDetails.perKm * distance;
+        const basePrice = truckDetails.basePrice;
+        const maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
+        const totalCost = calculateTotalCost(distance, truckType, requiresManeuver) + tollFees;
+
+        costBreakdown = `
+COST BREAKDOWN:
+Total Distance: ${distance.toFixed(2)} km
+Base Price: $${basePrice.toFixed(2)}
+Cost per km ($${truckDetails.perKm}/km): $${costPerKm.toFixed(2)}
+${requiresManeuver ? `Special Maneuver Cost: $${maneuverCost.toFixed(2)}` : ''}
+Toll Fees: $${tollFees.toFixed(2)}
+----------------------------------------
+TOTAL COST: $${totalCost.toFixed(2)}`;
+      } catch (error) {
+        console.error('Error calculating costs:', error);
+      }
+    }
+
     const clipboardText = `
 Usuario: ${formData.username}
 Vehículo: ${formData.vehicleMake} ${formData.vehicleModel} ${formData.vehicleYear}
@@ -123,6 +151,7 @@ Ubicación de recogida: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocat
 Ubicación de entrega: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'No especificada'}
 Tipo de servicio: ${serviceType}
 Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
+${costBreakdown}
     `.trim();
 
     try {

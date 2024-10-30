@@ -1,5 +1,5 @@
 import { getAddressFromCoordinates } from "@/services/geocodingService";
-import { calculateTotalCost } from "./towTruckPricing";
+import { calculateTotalCost, towTruckTypes } from "./towTruckPricing";
 import { getRouteDetails } from "@/services/routeService";
 import { toast } from "@/components/ui/use-toast";
 
@@ -39,11 +39,18 @@ export const generateServiceInfo = async (
 
   let totalDistance = 0;
   let totalCost = 0;
+  let costPerKm = 0;
+  let basePrice = 0;
+  let maneuverCost = 0;
 
   if (pickupLocation && dropLocation) {
     try {
       const route = await getRouteDetails(pickupLocation, dropLocation);
       totalDistance = route.distance;
+      const truckDetails = towTruckTypes[formData.truckType];
+      costPerKm = truckDetails.perKm * totalDistance;
+      basePrice = truckDetails.basePrice;
+      maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
       totalCost = calculateTotalCost(totalDistance, formData.truckType, requiresManeuver);
       totalCost += formData.tollFees;
     } catch (error) {
@@ -79,12 +86,15 @@ export const generateServiceInfo = async (
     `Requires Special Maneuver: ${requiresManeuver ? 'Yes' : 'No'}`,
     `Issue Description: ${formData.issueDescription}`,
     '',
-    'COST DETAILS',
+    'COST BREAKDOWN',
     `Total Distance: ${totalDistance.toFixed(2)} km`,
+    `Base Price: $${basePrice.toFixed(2)}`,
+    `Cost per km ($${towTruckTypes[formData.truckType].perKm}/km): $${costPerKm.toFixed(2)}`,
+    requiresManeuver ? `Special Maneuver Cost: $${maneuverCost.toFixed(2)}` : '',
     `Toll Fees: $${formData.tollFees.toFixed(2)}`,
-    `Service Cost: $${(totalCost - formData.tollFees).toFixed(2)}`,
-    `Total Cost: $${totalCost.toFixed(2)}`
-  ];
+    '----------------------------------------',
+    `TOTAL COST: $${totalCost.toFixed(2)}`
+  ].filter(Boolean); // Remove empty strings from maneuver cost when not required
 };
 
 export const downloadServiceInfo = async (
