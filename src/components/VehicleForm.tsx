@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { CreditCard, Download } from "lucide-react";
+import { CreditCard, Download, FileText } from "lucide-react";
 import { ServiceRequest } from "@/types/service";
 import { useServiceRequest } from "@/hooks/useServiceRequest";
 import { Form } from "@/components/ui/form";
@@ -60,51 +60,61 @@ const VehicleForm = ({
     onManeuverChange?.(checked);
   };
 
-  const downloadServiceInfo = () => {
+  const downloadServiceInfo = (format: 'csv' | 'txt') => {
     const formData = form.getValues();
     const currentDate = new Date().toLocaleString();
     
-    // Create CSV content with Unicode BOM for Excel compatibility
-    const csvContent = '\ufeff' + [
-      ['SERVICE REQUEST INFORMATION'],
-      ['Generated on:', currentDate],
-      [''],
-      ['LOCATION DETAILS'],
-      ['Pickup Location'],
-      ['Latitude:', pickupLocation?.lat.toFixed(6)],
-      ['Longitude:', pickupLocation?.lng.toFixed(6)],
-      [''],
-      ['Drop-off Location'],
-      ['Latitude:', dropLocation?.lat.toFixed(6)],
-      ['Longitude:', dropLocation?.lng.toFixed(6)],
-      [''],
-      ['VEHICLE DETAILS'],
-      ['Make:', formData.vehicleMake],
-      ['Model:', formData.vehicleModel],
-      ['Year:', formData.vehicleYear],
-      ['Color:', formData.vehicleColor],
-      [''],
-      ['SERVICE DETAILS'],
-      ['Service Type:', serviceType],
-      ['Requires Special Maneuver:', requiresManeuver ? 'Yes' : 'No'],
-      ['Issue Description:', formData.issueDescription]
-    ].map(row => row.join(',')).join('\n');
+    const content = [
+      'SERVICE REQUEST INFORMATION',
+      `Generated on: ${currentDate}`,
+      '',
+      'LOCATION DETAILS',
+      'Pickup Location',
+      `Latitude: ${pickupLocation?.lat.toFixed(6)}`,
+      `Longitude: ${pickupLocation?.lng.toFixed(6)}`,
+      '',
+      'Drop-off Location',
+      `Latitude: ${dropLocation?.lat.toFixed(6)}`,
+      `Longitude: ${dropLocation?.lng.toFixed(6)}`,
+      '',
+      'VEHICLE DETAILS',
+      `Make: ${formData.vehicleMake}`,
+      `Model: ${formData.vehicleModel}`,
+      `Year: ${formData.vehicleYear}`,
+      `Color: ${formData.vehicleColor}`,
+      '',
+      'SERVICE DETAILS',
+      `Service Type: ${serviceType}`,
+      `Requires Special Maneuver: ${requiresManeuver ? 'Yes' : 'No'}`,
+      `Issue Description: ${formData.issueDescription}`
+    ];
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    let blob;
+    let filename;
+
+    if (format === 'csv') {
+      const csvContent = '\ufeff' + content.map(row => row.includes(',') ? `"${row}"` : row).join('\n');
+      blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      filename = `service-request-${new Date().getTime()}.csv`;
+    } else {
+      const txtContent = content.join('\n');
+      blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+      filename = `service-request-${new Date().getTime()}.txt`;
+    }
+
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `service-request-${new Date().getTime()}.csv`;
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
 
-    // Show toast only once after download completes
     toast({
       title: "Information Downloaded",
-      description: "Service request information has been saved as CSV file.",
-      duration: 3000, // Set specific duration to prevent loops
+      description: `Service request information has been saved as ${format.toUpperCase()} file.`,
+      duration: 3000,
     });
   };
 
@@ -155,15 +165,26 @@ const VehicleForm = ({
           />
 
           <div className="flex gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={downloadServiceInfo}
-              className="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 hover:border-emerald-300 hover:bg-emerald-100 transition-all duration-300"
-            >
-              <Download className="w-4 h-4 mr-2 text-emerald-600" />
-              Download Info
-            </Button>
+            <div className="flex gap-2 flex-1">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => downloadServiceInfo('csv')}
+                className="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 hover:border-emerald-300 hover:bg-emerald-100 transition-all duration-300"
+              >
+                <Download className="w-4 h-4 mr-2 text-emerald-600" />
+                CSV
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => downloadServiceInfo('txt')}
+                className="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:border-blue-300 hover:bg-blue-100 transition-all duration-300"
+              >
+                <FileText className="w-4 h-4 mr-2 text-blue-600" />
+                TXT
+              </Button>
+            </div>
 
             <Button
               type="submit"
