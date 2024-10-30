@@ -16,7 +16,7 @@ import { LocationFields } from "./form/LocationFields";
 import { useState } from "react";
 import { TowTruckType } from "@/utils/downloadUtils";
 import { getRouteDetails } from "@/services/routeService";
-import { towTruckTypes } from "@/utils/towTruckPricing";
+import { towTruckTypes, calculateTotalCost } from "@/utils/towTruckPricing";
 
 const formSchema = z.object({
   username: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
