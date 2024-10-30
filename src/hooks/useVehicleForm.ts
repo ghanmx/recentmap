@@ -45,7 +45,7 @@ export const useVehicleForm = (
       username: data.username,
       vehicleMake: data.vehicleMake,
       vehicleModel: data.vehicleModel,
-      vehicleYear: data.vehicleYear,
+      vehicleYear: Number(data.vehicleYear),
       vehicleColor: data.vehicleColor,
       issueDescription: data.issueDescription,
       truckType: data.truckType,
