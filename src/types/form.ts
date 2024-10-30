@@ -13,8 +13,7 @@ export const vehicleFormSchema = z.object({
 
 export type VehicleFormValues = z.infer<typeof vehicleFormSchema>;
 
-// Ensure all fields are required in the form data type
-export interface FormData {
+export type FormData = {
   username: string;
   vehicleMake: string;
   vehicleModel: string;
@@ -23,4 +22,4 @@ export interface FormData {
   issueDescription: string;
   truckType: "A" | "B" | "C" | "D";
   tollFees: number;
-}
+};
