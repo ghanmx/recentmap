@@ -3,6 +3,8 @@ import { Polyline } from "react-leaflet";
 import { getRouteDetails } from "@/services/routeService";
 import { decode } from "@mapbox/polyline";
 import { showRouteNotification } from "@/utils/notificationUtils";
+import { useTowing } from "@/contexts/TowingContext";
+import { calculateTotalCost } from "@/utils/towTruckPricing";
 
 interface RoutePolylineProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -16,27 +18,25 @@ export const RoutePolyline = ({ pickupLocation, dropLocation, onRouteCalculated 
   const [companyToPickupRoute, setCompanyToPickupRoute] = useState<[number, number][]>([]);
   const [pickupToDropRoute, setPickupToDropRoute] = useState<[number, number][]>([]);
   const [dropToCompanyRoute, setDropToCompanyRoute] = useState<[number, number][]>([]);
-  const [totalDistance, setTotalDistance] = useState(0);
+  const { updateTowingInfo } = useTowing();
 
   useEffect(() => {
     const fetchRoutes = async () => {
       if (pickupLocation && dropLocation) {
         try {
-          // Get route from company to pickup
           const companyToPickup = await getRouteDetails(COMPANY_LOCATION, pickupLocation);
           setCompanyToPickupRoute(decode(companyToPickup.geometry).map(([lat, lng]) => [lat, lng] as [number, number]));
 
-          // Get route from pickup to drop
           const pickupToDrop = await getRouteDetails(pickupLocation, dropLocation);
           setPickupToDropRoute(decode(pickupToDrop.geometry).map(([lat, lng]) => [lat, lng] as [number, number]));
 
-          // Get route from drop back to company
           const dropToCompany = await getRouteDetails(dropLocation, COMPANY_LOCATION);
           setDropToCompanyRoute(decode(dropToCompany.geometry).map(([lat, lng]) => [lat, lng] as [number, number]));
 
-          // Calculate total distance
           const totalDist = companyToPickup.distance + pickupToDrop.distance + dropToCompany.distance;
-          setTotalDistance(totalDist);
+          const totalCost = calculateTotalCost(totalDist, 'A', false);
+          
+          updateTowingInfo(totalDist, totalCost);
           onRouteCalculated?.(totalDist);
           showRouteNotification(totalDist);
         } catch (error) {
@@ -46,7 +46,7 @@ export const RoutePolyline = ({ pickupLocation, dropLocation, onRouteCalculated 
     };
 
     fetchRoutes();
-  }, [pickupLocation, dropLocation, onRouteCalculated]);
+  }, [pickupLocation, dropLocation, onRouteCalculated, updateTowingInfo]);
 
   return (
     <>
