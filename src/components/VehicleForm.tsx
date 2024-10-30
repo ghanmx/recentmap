@@ -105,7 +105,7 @@ const VehicleForm = ({
 
           <TowTruckSelector
             form={form}
-            onTruckTypeChange={(value: TowTruckType) => setTruckType(value)}
+            onTruckTypeChange={setTruckType}
             onTollFeesChange={setTollFees}
           />
 

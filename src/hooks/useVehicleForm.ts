@@ -24,7 +24,7 @@ export const useVehicleForm = (
       issueDescription: "",
       truckType: "A",
       tollFees: 0,
-    },
+    } as VehicleFormValues,
   });
 
   const onSubmit = (data: VehicleFormValues) => {
