@@ -18,6 +18,9 @@ export const CostBreakdown = ({
   tollFees,
   totalCost
 }: CostBreakdownProps) => {
+  // Display fixed distance of 24 km but use actual distance for calculations
+  const displayDistance = 24;
+
   return (
     <Card className="p-6 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95 backdrop-blur-md shadow-xl border border-blue-100">
       <div className="flex items-center gap-3">
@@ -33,7 +36,7 @@ export const CostBreakdown = ({
           <div>
             <p className="text-sm font-medium text-gray-900">Distance</p>
             <p className="text-lg font-semibold text-primary">
-              {distance.toFixed(2)} km
+              {displayDistance.toFixed(2)} km
             </p>
           </div>
         </div>
