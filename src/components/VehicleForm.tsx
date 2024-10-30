@@ -58,7 +58,6 @@ const VehicleForm = ({
   };
 
   const handleDownload = async (format: 'csv' | 'txt') => {
-    const formData = form.getValues() as FormData;
     if (!form.formState.isValid) {
       toast({
         title: "Missing Information",
@@ -68,6 +67,8 @@ const VehicleForm = ({
       return;
     }
 
+    const formData = form.getValues();
+    
     await downloadServiceInfo(
       format,
       formData,
