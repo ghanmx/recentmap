@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { VehicleDetails } from "./form/VehicleDetails";
 import { ServiceRequirements } from "./form/ServiceRequirements";
-import { downloadServiceInfo } from "@/utils/downloadUtils";
+import { downloadServiceInfo, FormData } from "@/utils/downloadUtils";
 import { VehicleFormHeader } from "./form/VehicleFormHeader";
 import { VehicleFormActions } from "./form/VehicleFormActions";
 import { TowTruckSelector } from "./form/TowTruckSelector";
@@ -72,9 +72,21 @@ const VehicleForm = ({
     const formData = form.getValues();
     if (formData.vehicleMake && formData.vehicleModel && formData.vehicleYear && 
         formData.vehicleColor && formData.issueDescription) {
+      const completeFormData: FormData = {
+        ...formData,
+        username: formData.username,
+        vehicleMake: formData.vehicleMake,
+        vehicleModel: formData.vehicleModel,
+        vehicleYear: formData.vehicleYear,
+        vehicleColor: formData.vehicleColor,
+        issueDescription: formData.issueDescription,
+        truckType: formData.truckType,
+        tollFees: formData.tollFees
+      };
+      
       await downloadServiceInfo(
         format,
-        formData,
+        completeFormData,
         pickupLocation,
         dropLocation,
         serviceType,
@@ -130,12 +142,18 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
     }
 
     const serviceRequest: ServiceRequest = {
-      ...data,
+      username: data.username,
+      vehicleMake: data.vehicleMake,
+      vehicleModel: data.vehicleModel,
       vehicleYear: parseInt(data.vehicleYear),
+      vehicleColor: data.vehicleColor,
+      issueDescription: data.issueDescription,
       pickupLocation,
       dropLocation,
       serviceType,
       requiresManeuver,
+      truckType: data.truckType,
+      tollFees: data.tollFees,
       status: 'pending'
     };
 
@@ -159,7 +177,7 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
 
           <TowTruckSelector
             form={form}
-            onTruckTypeChange={setTruckType}
+            onTruckTypeChange={(value: TowTruckType) => setTruckType(value)}
             onTollFeesChange={setTollFees}
           />
 

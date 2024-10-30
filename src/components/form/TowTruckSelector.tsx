@@ -2,10 +2,12 @@ import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/for
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { towTruckTypes } from "@/utils/towTruckPricing";
+import { TowTruckType } from "@/utils/downloadUtils";
+import { UseFormReturn } from "react-hook-form";
 
 interface TowTruckSelectorProps {
-  form: any;
-  onTruckTypeChange: (type: string) => void;
+  form: UseFormReturn<any>;
+  onTruckTypeChange: (type: TowTruckType) => void;
   onTollFeesChange: (fees: number) => void;
 }
 
@@ -19,7 +21,7 @@ export const TowTruckSelector = ({ form, onTruckTypeChange, onTollFeesChange }: 
           <FormItem>
             <FormLabel>Tipo de Grúa</FormLabel>
             <Select 
-              onValueChange={(value) => {
+              onValueChange={(value: TowTruckType) => {
                 field.onChange(value);
                 onTruckTypeChange(value);
               }}
@@ -32,7 +34,7 @@ export const TowTruckSelector = ({ form, onTruckTypeChange, onTollFeesChange }: 
               </FormControl>
               <SelectContent>
                 {Object.entries(towTruckTypes).map(([type, details]) => (
-                  <SelectItem key={type} value={type}>
+                  <SelectItem key={type} value={type as TowTruckType}>
                     Tipo {type} (hasta {details.maxWeight}kg)
                   </SelectItem>
                 ))}
