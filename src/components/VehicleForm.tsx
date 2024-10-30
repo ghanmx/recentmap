@@ -67,12 +67,12 @@ const VehicleForm = ({
       });
       return;
     }
-    
+
     const validatedData: FormData = {
       username: formData.username,
       vehicleMake: formData.vehicleMake,
       vehicleModel: formData.vehicleModel,
-      vehicleYear: formData.vehicleYear,
+      vehicleYear: Number(formData.vehicleYear),
       vehicleColor: formData.vehicleColor,
       issueDescription: formData.issueDescription,
       truckType: formData.truckType,
