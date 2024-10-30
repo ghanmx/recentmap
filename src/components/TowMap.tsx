@@ -2,19 +2,16 @@ import { useRef, useState, useEffect } from "react";
 import { Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import PaymentWindow from "./payment/PaymentWindow";
-import { calculateTowingPrice } from "@/utils/priceCalculator";
 import { showRouteNotification, showPaymentNotification } from "@/utils/notificationUtils";
-import VehicleForm from "./VehicleForm";
-import { FloatingPanel } from "./map/FloatingPanel";
-import { MapControlPanel } from "./map/MapControlPanel";
+import { MapLayout } from "./map/MapLayout";
 import { MapHeader } from "./map/MapHeader";
 import { MapBottomControls } from "./map/MapBottomControls";
 import { MapContainerComponent } from "./map/MapContainer";
 import { BookingProgress } from "./map/BookingProgress";
+import { MapControlPanel } from "./map/MapControlPanel";
+import { LocationPanels } from "./map/LocationPanels";
 import { useToast } from "@/hooks/use-toast";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
-import { MapPin } from "lucide-react";
-import { LocationFields } from "./form/LocationFields";
 
 const TowMap = () => {
   const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -103,92 +100,48 @@ const TowMap = () => {
   };
 
   return (
-    <div className="relative h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+    <MapLayout>
+      <MapHeader />
       
-      <div className="relative z-10">
-        <MapHeader />
-        
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4">
-          <BookingProgress currentStep={currentStep} />
-        </div>
+      <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4">
+        <BookingProgress currentStep={currentStep} />
+      </div>
 
-        <MapControlPanel
-          selectingPickup={selectingPickup}
-          selectingDrop={selectingDrop}
-          setSelectingPickup={setSelectingPickup}
-          setSelectingDrop={setSelectingDrop}
+      <MapControlPanel
+        selectingPickup={selectingPickup}
+        selectingDrop={selectingDrop}
+        setSelectingPickup={setSelectingPickup}
+        setSelectingDrop={setSelectingDrop}
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+      />
+
+      <MapContainerComponent
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+        selectingPickup={selectingPickup}
+        selectingDrop={selectingDrop}
+        onLocationSelect={handleLocationSelect}
+        setPickupLocation={setPickupLocation}
+        setDropLocation={setDropLocation}
+        onRouteCalculated={handleRouteCalculated}
+      />
+
+      <LocationPanels
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+        pickupAddress={pickupAddress}
+        dropAddress={dropAddress}
+        handleLocationSearch={handleLocationSearch}
+      />
+
+      <div className="absolute bottom-6 inset-x-0 z-30 px-6 transition-all duration-300 
+                    transform hover:translate-y-0 translate-y-2">
+        <MapBottomControls
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
+          onRequestTow={handleRequestTow}
         />
-
-        <MapContainerComponent
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          selectingPickup={selectingPickup}
-          selectingDrop={selectingDrop}
-          onLocationSelect={handleLocationSelect}
-          setPickupLocation={setPickupLocation}
-          setDropLocation={setDropLocation}
-          onRouteCalculated={handleRouteCalculated}
-        />
-
-        <FloatingPanel 
-          position="right" 
-          className="w-[450px] max-h-[calc(100vh-12rem)] overflow-y-auto z-40 bg-white/95 
-                     backdrop-blur-sm shadow-xl border border-gray-200/50 rounded-xl"
-          title="Vehicle Information"
-        >
-          <VehicleForm
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-            pickupAddress={pickupAddress}
-            dropAddress={dropAddress}
-            serviceType="standard"
-            onManeuverChange={() => {}}
-            onVehicleModelChange={() => {}}
-            onPickupSelect={(location) => handleLocationSearch(location, 'pickup')}
-            onDropSelect={(location) => handleLocationSearch(location, 'drop')}
-          />
-        </FloatingPanel>
-
-        {(pickupAddress || dropAddress) && (
-          <FloatingPanel
-            position="left"
-            className="w-[350px] z-40 bg-white/95 backdrop-blur-sm shadow-xl border border-gray-200/50 rounded-xl"
-            title="Selected Locations"
-          >
-            <div className="space-y-4 p-4">
-              {pickupAddress && (
-                <div className="space-y-2">
-                  <div className="font-semibold text-sm text-primary flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    Pickup Location
-                  </div>
-                  <p className="text-sm text-gray-600">{pickupAddress}</p>
-                </div>
-              )}
-              {dropAddress && (
-                <div className="space-y-2">
-                  <div className="font-semibold text-sm text-secondary flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    Drop-off Location
-                  </div>
-                  <p className="text-sm text-gray-600">{dropAddress}</p>
-                </div>
-              )}
-            </div>
-          </FloatingPanel>
-        )}
-
-        <div className="absolute bottom-6 inset-x-0 z-30 px-6 transition-all duration-300 
-                      transform hover:translate-y-0 translate-y-2">
-          <MapBottomControls
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-            onRequestTow={handleRequestTow}
-          />
-        </div>
       </div>
 
       <PaymentWindow
@@ -197,7 +150,7 @@ const TowMap = () => {
         onPaymentSubmit={handlePaymentSubmit}
         totalCost={totalCost}
       />
-    </div>
+    </MapLayout>
   );
 };
 
