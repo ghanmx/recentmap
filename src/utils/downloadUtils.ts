@@ -9,7 +9,7 @@ export interface FormData {
   username: string;
   vehicleMake: string;
   vehicleModel: string;
-  vehicleYear: string;
+  vehicleYear: number;
   vehicleColor: string;
   issueDescription: string;
   truckType: TowTruckType;
