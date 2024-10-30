@@ -93,7 +93,16 @@ const VehicleForm = ({
         formData.vehicleColor && formData.issueDescription) {
       await downloadServiceInfo(
         format,
-        { ...formData, tollFees },
+        {
+          username: formData.username,
+          vehicleMake: formData.vehicleMake,
+          vehicleModel: formData.vehicleModel,
+          vehicleYear: formData.vehicleYear,
+          vehicleColor: formData.vehicleColor,
+          issueDescription: formData.issueDescription,
+          truckType: formData.truckType,
+          tollFees
+        },
         pickupLocation,
         dropLocation,
         serviceType,
