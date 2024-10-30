@@ -58,7 +58,7 @@ const VehicleForm = ({
   };
 
   const handleDownload = async (format: 'csv' | 'txt') => {
-    const formData = form.getValues();
+    const formData = form.getValues() as FormData;
     if (!form.formState.isValid) {
       toast({
         title: "Missing Information",
@@ -68,20 +68,9 @@ const VehicleForm = ({
       return;
     }
 
-    const validatedData: FormData = {
-      username: formData.username,
-      vehicleMake: formData.vehicleMake,
-      vehicleModel: formData.vehicleModel,
-      vehicleYear: Number(formData.vehicleYear),
-      vehicleColor: formData.vehicleColor,
-      issueDescription: formData.issueDescription,
-      truckType: formData.truckType,
-      tollFees: formData.tollFees
-    };
-    
     await downloadServiceInfo(
       format,
-      validatedData,
+      formData,
       pickupLocation,
       dropLocation,
       serviceType,
@@ -109,7 +98,7 @@ const VehicleForm = ({
               form.setValue('vehicleModel', model);
               onVehicleModelChange?.(model);
             }}
-            onYearChange={(year) => form.setValue('vehicleYear', year)}
+            onYearChange={(year) => form.setValue('vehicleYear', Number(year))}
             onColorChange={(color) => form.setValue('vehicleColor', color)}
           />
 

@@ -41,15 +41,13 @@ export const useVehicleForm = (
       return;
     }
 
-    const serviceRequest = {
+    submitRequest({
       ...data,
       pickupLocation,
       dropLocation,
       serviceType,
       requiresManeuver: false,
-    };
-
-    submitRequest(serviceRequest);
+    });
   };
 
   return {
