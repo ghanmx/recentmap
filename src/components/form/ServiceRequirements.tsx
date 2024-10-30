@@ -3,9 +3,10 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertTriangle, Wrench } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
+import { FormData } from "@/types/form";
 
 interface ServiceRequirementsProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FormData>;
   requiresManeuver: boolean;
   onManeuverChange: (checked: boolean) => void;
 }
