@@ -14,7 +14,7 @@ import { useTowingCost } from "@/hooks/useTowingCost";
 import { CostBreakdown } from "./form/CostBreakdown";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
-import { FormData } from "@/types/form";
+import { VehicleFormValues } from "@/types/form";
 
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -59,7 +59,7 @@ const VehicleForm = ({
   };
 
   const handleDownload = async (format: 'csv' | 'txt') => {
-    const formData = form.getValues() as FormData;
+    const formData = form.getValues() as VehicleFormValues;
     if (formData.vehicleMake && formData.vehicleModel && formData.vehicleYear && 
         formData.vehicleColor && formData.issueDescription) {
       await downloadServiceInfo(
@@ -129,7 +129,7 @@ const VehicleForm = ({
           <VehicleFormActions
             onDownload={handleDownload}
             onCopy={async () => {
-              const formData = form.getValues() as FormData;
+              const formData = form.getValues() as VehicleFormValues;
               const costBreakdown = costDetails
                 ? `
 COST BREAKDOWN:
