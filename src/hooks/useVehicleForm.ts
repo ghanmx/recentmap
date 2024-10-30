@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { vehicleFormSchema, FormData } from "@/types/form";
+import { FormData, vehicleFormSchema } from "@/types/form";
 import { useServiceRequest } from "@/hooks/useServiceRequest";
 import { useToast } from "@/hooks/use-toast";
 
