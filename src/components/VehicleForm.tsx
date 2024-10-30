@@ -8,15 +8,15 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { VehicleDetails } from "./form/VehicleDetails";
 import { ServiceRequirements } from "./form/ServiceRequirements";
-import { downloadServiceInfo, FormData } from "@/utils/downloadUtils";
+import { downloadServiceInfo } from "@/utils/downloadUtils";
 import { VehicleFormHeader } from "./form/VehicleFormHeader";
 import { VehicleFormActions } from "./form/VehicleFormActions";
 import { TowTruckSelector } from "./form/TowTruckSelector";
 import { LocationFields } from "./form/LocationFields";
 import { useState } from "react";
 import { TowTruckType } from "@/utils/downloadUtils";
-import { getRouteDetails } from "@/services/routeService";
-import { towTruckTypes, calculateTotalCost } from "@/utils/towTruckPricing";
+import { useTowingCost } from "@/hooks/useTowingCost";
+import { CostBreakdown } from "./form/CostBreakdown";
 
 const formSchema = z.object({
   username: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -60,6 +60,14 @@ const VehicleForm = ({
   const { toast } = useToast();
   const { mutate: submitRequest, isPending } = useServiceRequest();
 
+  const costDetails = useTowingCost(
+    pickupLocation,
+    dropLocation,
+    requiresManeuver,
+    truckType,
+    tollFees
+  );
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -83,21 +91,9 @@ const VehicleForm = ({
     const formData = form.getValues();
     if (formData.vehicleMake && formData.vehicleModel && formData.vehicleYear && 
         formData.vehicleColor && formData.issueDescription) {
-      const completeFormData: FormData = {
-        ...formData,
-        username: formData.username,
-        vehicleMake: formData.vehicleMake,
-        vehicleModel: formData.vehicleModel,
-        vehicleYear: formData.vehicleYear,
-        vehicleColor: formData.vehicleColor,
-        issueDescription: formData.issueDescription,
-        truckType: formData.truckType,
-        tollFees: formData.tollFees
-      };
-      
       await downloadServiceInfo(
         format,
-        completeFormData,
+        { ...formData, tollFees },
         pickupLocation,
         dropLocation,
         serviceType,
@@ -114,38 +110,24 @@ const VehicleForm = ({
 
   const copyToClipboard = async () => {
     const formData = form.getValues();
-    let costBreakdown = '';
-    
-    if (pickupLocation && dropLocation) {
-      try {
-        const route = await getRouteDetails(pickupLocation, dropLocation);
-        const distance = route.distance;
-        const truckDetails = towTruckTypes[truckType];
-        const costPerKm = truckDetails.perKm * distance;
-        const basePrice = truckDetails.basePrice;
-        const maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
-        const totalCost = calculateTotalCost(distance, truckType, requiresManeuver) + tollFees;
-
-        costBreakdown = `
+    const costBreakdown = costDetails
+      ? `
 COST BREAKDOWN:
-Total Distance: ${distance.toFixed(2)} km
-Base Price: $${basePrice.toFixed(2)}
-Cost per km ($${truckDetails.perKm}/km): $${costPerKm.toFixed(2)}
-${requiresManeuver ? `Special Maneuver Cost: $${maneuverCost.toFixed(2)}` : ''}
+Total Distance: ${costDetails.distance.toFixed(2)} km
+Base Price: $${costDetails.basePrice.toFixed(2)}
+Cost per km: $${costDetails.costPerKm.toFixed(2)}
+${requiresManeuver ? `Special Maneuver Cost: $${costDetails.maneuverCost.toFixed(2)}` : ''}
 Toll Fees: $${tollFees.toFixed(2)}
 ----------------------------------------
-TOTAL COST: $${totalCost.toFixed(2)}`;
-      } catch (error) {
-        console.error('Error calculating costs:', error);
-      }
-    }
+TOTAL COST: $${costDetails.totalCost.toFixed(2)}`
+      : '';
 
     const clipboardText = `
 Usuario: ${formData.username}
 Vehículo: ${formData.vehicleMake} ${formData.vehicleModel} ${formData.vehicleYear}
 Color: ${formData.vehicleColor}
 Tipo de Grúa: ${formData.truckType}
-Casetas: $${formData.tollFees}
+Casetas: $${tollFees}
 Descripción: ${formData.issueDescription}
 Ubicación de recogida: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocation.lng}` : 'No especificada'}
 Ubicación de entrega: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'No especificada'}
@@ -191,7 +173,7 @@ ${costBreakdown}
       serviceType,
       requiresManeuver,
       truckType: data.truckType,
-      tollFees: data.tollFees,
+      tollFees,
       status: 'pending'
     };
 
@@ -233,6 +215,17 @@ ${costBreakdown}
             requiresManeuver={requiresManeuver}
             onManeuverChange={handleManeuverChange}
           />
+
+          {costDetails && (
+            <CostBreakdown
+              distance={costDetails.distance}
+              basePrice={costDetails.basePrice}
+              costPerKm={costDetails.costPerKm}
+              maneuverCost={costDetails.maneuverCost}
+              tollFees={tollFees}
+              totalCost={costDetails.totalCost}
+            />
+          )}
 
           <VehicleFormActions
             onDownload={handleDownload}
