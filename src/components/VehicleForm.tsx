@@ -59,23 +59,14 @@ const VehicleForm = ({
 
   const handleDownload = async (format: 'csv' | 'txt') => {
     const formData = form.getValues();
-    if (formData.vehicleMake && formData.vehicleModel && formData.vehicleYear && 
-        formData.vehicleColor && formData.issueDescription) {
-      await downloadServiceInfo(
-        format,
-        formData,
-        pickupLocation,
-        dropLocation,
-        serviceType,
-        requiresManeuver
-      );
-    } else {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all vehicle details before downloading.",
-        variant: "destructive",
-      });
-    }
+    await downloadServiceInfo(
+      format,
+      formData,
+      pickupLocation,
+      dropLocation,
+      serviceType,
+      requiresManeuver
+    );
   };
 
   return (
