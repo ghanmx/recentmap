@@ -59,6 +59,15 @@ const VehicleForm = ({
 
   const handleDownload = async (format: 'csv' | 'txt') => {
     const formData = form.getValues();
+    if (!form.formState.isValid) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields before downloading.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     await downloadServiceInfo(
       format,
       formData,

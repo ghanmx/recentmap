@@ -42,7 +42,14 @@ export const useVehicleForm = (
     }
 
     const serviceRequest = {
-      ...data,
+      username: data.username,
+      vehicleMake: data.vehicleMake,
+      vehicleModel: data.vehicleModel,
+      vehicleYear: data.vehicleYear,
+      vehicleColor: data.vehicleColor,
+      issueDescription: data.issueDescription,
+      truckType: data.truckType,
+      tollFees: data.tollFees,
       pickupLocation,
       dropLocation,
       serviceType,
