@@ -24,7 +24,7 @@ const calculateStraightLineDistance = (start: Location, end: Location): number =
 const createFallbackResponse = (start: Location, end: Location): RouteResponse => {
   const distance = calculateStraightLineDistance(start, end);
   // Create a simple straight line for visualization
-  const geometry = `_p~iF~ps|U_ulLnnqC_mqNvxq`@`;
+  const geometry = "_p~iF~ps|U_ulLnnqC_mqNvxq@"; // Fixed template literal syntax
   return {
     distance,
     duration: distance * 60, // Rough estimate: 1 km/minute
@@ -59,7 +59,7 @@ const fetchWithRetry = async (url: string, retryCount = 0): Promise<Response> =>
   try {
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'TowTruckService/1.0',
+        'User-Agent': 'TowTruckService/1.0'
       }
     });
 
@@ -79,7 +79,7 @@ const fetchWithRetry = async (url: string, retryCount = 0): Promise<Response> =>
 };
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const makeRequest = async () => {
       try {
         const url = `https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`;
