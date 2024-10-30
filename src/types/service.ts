@@ -21,3 +21,14 @@ export interface ServiceRequest {
   tollFees: number;
   createdAt?: Date;
 }
+
+export interface FormData {
+  username: string;
+  vehicleMake: string;
+  vehicleModel: string;
+  vehicleYear: string;
+  vehicleColor: string;
+  issueDescription: string;
+  truckType: "A" | "B" | "C" | "D";
+  tollFees: number;
+}
