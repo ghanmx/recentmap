@@ -9,6 +9,10 @@ interface RouteResponse {
   geometry: string;
 }
 
+// Rate limiting setup
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 1100; // Slightly over 1 second to be safe
+
 const calculateStraightLineDistance = (start: Location, end: Location): number => {
   const R = 6371;
   const dLat = (end.lat - start.lat) * Math.PI / 180;
@@ -25,20 +29,51 @@ const createFallbackResponse = (start: Location, end: Location): RouteResponse =
   return {
     distance,
     duration: distance * 60,
-    geometry: "_p~iF~ps|U_ulLnnqC_mqNvxq@"
+    geometry: "_p~iF~ps|U_ulLnnqC_mqNvxq@" // Simple straight line
   };
 };
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const waitForRateLimit = async () => {
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+  
+  if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+    const waitTime = MIN_REQUEST_INTERVAL - timeSinceLastRequest;
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+  }
+  
+  lastRequestTime = Date.now();
+};
 
 const fetchWithRetry = async (url: string, retryCount = 0): Promise<Response> => {
+  await waitForRateLimit();
+
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'TowTruck-Service/1.0',
+        'Referer': window.location.origin
+      }
+    });
+    
+    if (response.status === 429) {
+      if (retryCount < 3) {
+        const waitTime = Math.pow(2, retryCount) * 2000;
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        return fetchWithRetry(url, retryCount + 1);
+      }
+      throw new Error('Rate limit exceeded after retries');
+    }
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     return response;
   } catch (error) {
     if (retryCount < 3) {
-      await delay(2000 * Math.pow(2, retryCount));
+      const waitTime = Math.pow(2, retryCount) * 2000;
+      await new Promise(resolve => setTimeout(resolve, waitTime));
       return fetchWithRetry(url, retryCount + 1);
     }
     throw error;
