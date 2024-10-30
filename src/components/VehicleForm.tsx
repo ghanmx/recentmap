@@ -64,55 +64,47 @@ const VehicleForm = ({
     const formData = form.getValues();
     const currentDate = new Date().toLocaleString();
     
-    const serviceInfo = `
-╔════════════════════════════════════════════════════════════════╗
-║                   SERVICE REQUEST INFORMATION                   ║
-╚════════════════════════════════════════════════════════════════╝
+    // Create CSV content with Unicode BOM for Excel compatibility
+    const csvContent = '\ufeff' + [
+      ['SERVICE REQUEST INFORMATION'],
+      ['Generated on:', currentDate],
+      [''],
+      ['LOCATION DETAILS'],
+      ['Pickup Location'],
+      ['Latitude:', pickupLocation?.lat.toFixed(6)],
+      ['Longitude:', pickupLocation?.lng.toFixed(6)],
+      [''],
+      ['Drop-off Location'],
+      ['Latitude:', dropLocation?.lat.toFixed(6)],
+      ['Longitude:', dropLocation?.lng.toFixed(6)],
+      [''],
+      ['VEHICLE DETAILS'],
+      ['Make:', formData.vehicleMake],
+      ['Model:', formData.vehicleModel],
+      ['Year:', formData.vehicleYear],
+      ['Color:', formData.vehicleColor],
+      [''],
+      ['SERVICE DETAILS'],
+      ['Service Type:', serviceType],
+      ['Requires Special Maneuver:', requiresManeuver ? 'Yes' : 'No'],
+      ['Issue Description:', formData.issueDescription]
+    ].map(row => row.join(',')).join('\n');
 
-📍 LOCATION DETAILS
-──────────────────
-🚗 Pickup Location: ${pickupLocation ? `
-   • Latitude: ${pickupLocation.lat.toFixed(6)}
-   • Longitude: ${pickupLocation.lng.toFixed(6)}` : 'Not set'}
-
-🎯 Drop-off Location: ${dropLocation ? `
-   • Latitude: ${dropLocation.lat.toFixed(6)}
-   • Longitude: ${dropLocation.lng.toFixed(6)}` : 'Not set'}
-
-🚘 VEHICLE DETAILS
-──────────────────
-• Make: ${formData.vehicleMake}
-• Model: ${formData.vehicleModel}
-• Year: ${formData.vehicleYear}
-• Color: ${formData.vehicleColor}
-
-🔧 SERVICE DETAILS
-──────────────────
-• Service Type: ${serviceType}
-• Requires Special Maneuver: ${requiresManeuver ? 'Yes' : 'No'}
-• Issue Description: ${formData.issueDescription}
-
-📅 Request Generated: ${currentDate}
-
-Note: This is an automated service request summary.
-Please keep this information for your records.
-──────────────────────────────────────────────────
-    `;
-
-    const blob = new Blob([serviceInfo], { type: 'text/plain' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `service-request-${currentDate.replace(/[/:\\]/g, '-')}.txt`;
+    link.download = `service-request-${new Date().getTime()}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
 
+    // Show toast only once after download completes
     toast({
       title: "Information Downloaded",
-      description: "Service request information has been saved to a text file.",
-      className: "bg-green-50 border-green-200",
+      description: "Service request information has been saved as CSV file.",
+      duration: 3000, // Set specific duration to prevent loops
     });
   };
 
@@ -122,6 +114,7 @@ Please keep this information for your records.
         title: "Missing Location",
         description: "Please select both pickup and drop-off locations",
         variant: "destructive",
+        duration: 3000,
       });
       return;
     }
