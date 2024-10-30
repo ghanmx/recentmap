@@ -67,7 +67,7 @@ const VehicleForm = ({
       return;
     }
 
-    const formData = form.getValues() as FormData;
+    const formData = form.getValues() as Required<FormData>;
     
     await downloadServiceInfo(
       format,
