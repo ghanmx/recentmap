@@ -8,7 +8,19 @@ export const vehicleFormSchema = z.object({
   vehicleColor: z.string().min(1, "Color is required"),
   issueDescription: z.string().min(10, "Please provide more details about the issue"),
   truckType: z.enum(["A", "B", "C", "D"]),
-  tollFees: z.number().min(0, "Toll fees cannot be negative"),
+  tollFees: z.number().min(0, "Toll fees cannot be negative")
 });
 
 export type VehicleFormValues = z.infer<typeof vehicleFormSchema>;
+
+// Ensure all fields are required in the form data type
+export interface FormData {
+  username: string;
+  vehicleMake: string;
+  vehicleModel: string;
+  vehicleYear: string;
+  vehicleColor: string;
+  issueDescription: string;
+  truckType: "A" | "B" | "C" | "D";
+  tollFees: number;
+}
