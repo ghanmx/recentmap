@@ -7,7 +7,6 @@ import { MapLayout } from "./map/MapLayout";
 import { MapHeader } from "./map/MapHeader";
 import { MapBottomControls } from "./map/MapBottomControls";
 import { MapContainerComponent } from "./map/MapContainer";
-import { BookingProgress } from "./map/BookingProgress";
 import { MapControlPanel } from "./map/MapControlPanel";
 import { LocationPanels } from "./map/LocationPanels";
 import { useToast } from "@/hooks/use-toast";
@@ -23,7 +22,6 @@ const TowMap = () => {
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [totalCost, setTotalCost] = useState(0);
-  const [currentStep, setCurrentStep] = useState(0);
   const [isPaymentComplete, setIsPaymentComplete] = useState(false);
   const mapRef = useRef<Map | null>(null);
   const { toast } = useToast();
@@ -105,53 +103,50 @@ const TowMap = () => {
       <MapLayout>
         <MapHeader />
         
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4">
-          <BookingProgress currentStep={currentStep} />
-        </div>
-
-        <MapControlPanel
-          selectingPickup={selectingPickup}
-          selectingDrop={selectingDrop}
-          setSelectingPickup={setSelectingPickup}
-          setSelectingDrop={setSelectingDrop}
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-        />
-
-        <MapContainerComponent
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          selectingPickup={selectingPickup}
-          selectingDrop={selectingDrop}
-          onLocationSelect={handleLocationSelect}
-          setPickupLocation={setPickupLocation}
-          setDropLocation={setDropLocation}
-          onRouteCalculated={handleRouteCalculated}
-        />
-
-        <LocationPanels
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          pickupAddress={pickupAddress}
-          dropAddress={dropAddress}
-          handleLocationSearch={handleLocationSearch}
-        />
-
-        <div className="absolute bottom-6 inset-x-0 z-30 px-6 transition-all duration-300 
-                      transform hover:translate-y-0 translate-y-2">
-          <MapBottomControls
+        <div className="relative h-full">
+          <MapControlPanel
+            selectingPickup={selectingPickup}
+            selectingDrop={selectingDrop}
+            setSelectingPickup={setSelectingPickup}
+            setSelectingDrop={setSelectingDrop}
             pickupLocation={pickupLocation}
             dropLocation={dropLocation}
-            onRequestTow={handleRequestTow}
+          />
+
+          <MapContainerComponent
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            selectingPickup={selectingPickup}
+            selectingDrop={selectingDrop}
+            onLocationSelect={handleLocationSelect}
+            setPickupLocation={setPickupLocation}
+            setDropLocation={setDropLocation}
+            onRouteCalculated={handleRouteCalculated}
+          />
+
+          <LocationPanels
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
+            handleLocationSearch={handleLocationSearch}
+          />
+
+          <div className="absolute bottom-6 inset-x-0 z-30 px-6">
+            <MapBottomControls
+              pickupLocation={pickupLocation}
+              dropLocation={dropLocation}
+              onRequestTow={handleRequestTow}
+            />
+          </div>
+
+          <PaymentWindow
+            isOpen={showPayment}
+            onClose={() => setShowPayment(false)}
+            onPaymentSubmit={handlePaymentSubmit}
+            totalCost={totalCost}
           />
         </div>
-
-        <PaymentWindow
-          isOpen={showPayment}
-          onClose={() => setShowPayment(false)}
-          onPaymentSubmit={handlePaymentSubmit}
-          totalCost={totalCost}
-        />
       </MapLayout>
     </TowingProvider>
   );
