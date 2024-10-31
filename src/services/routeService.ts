@@ -24,12 +24,12 @@ const calculateStraightLineDistance = (start: Location, end: Location): number =
 
 // Generate a simple straight line geometry for fallback
 const generateFallbackGeometry = (start: Location, end: Location): string => {
-  // Create a simple two-point polyline
   const points = [
-    [start.lat.toFixed(6), start.lng.toFixed(6)],
-    [end.lat.toFixed(6), end.lng.toFixed(6)]
+    [start.lat, start.lng],
+    [end.lat, end.lng]
   ];
-  return encodeURIComponent(JSON.stringify(points));
+  // Create a simple encoded polyline
+  return btoa(JSON.stringify(points));
 };
 
 const createFallbackResponse = (start: Location, end: Location): RouteResponse => {
@@ -42,44 +42,8 @@ const createFallbackResponse = (start: Location, end: Location): RouteResponse =
 };
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
-  const proxyUrl = 'https://api.allorigins.win/raw?url=';
-  const baseUrl = 'https://router.project-osrm.org/route/v1/driving/';
-  const coordinates = `${start.lng},${start.lat};${end.lng},${end.lat}`;
-  const params = '?overview=full&geometries=polyline';
-  
-  try {
-    const response = await fetch(
-      `${proxyUrl}${encodeURIComponent(baseUrl + coordinates + params)}`,
-      {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    
-    if (!response.ok) {
-      console.warn('OSRM service unavailable, using fallback calculation');
-      return createFallbackResponse(start, end);
-    }
-
-    const data = await response.json();
-    
-    if (!data.routes?.length) {
-      console.warn('No route found, using fallback calculation');
-      return createFallbackResponse(start, end);
-    }
-
-    return {
-      distance: data.routes[0].distance / 1000, // Convert to kilometers
-      duration: data.routes[0].duration,
-      geometry: data.routes[0].geometry
-    };
-  } catch (error) {
-    console.warn('Route calculation failed, using fallback:', error);
-    return createFallbackResponse(start, end);
-  }
+  // Always use fallback calculation to avoid CORS and proxy issues
+  return createFallbackResponse(start, end);
 };
 
 export const COMPANY_LOCATION = { lat: 26.510272, lng: -100.006323 };
