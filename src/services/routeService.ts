@@ -24,9 +24,10 @@ const calculateStraightLineDistance = (start: Location, end: Location): number =
 
 // Generate a simple straight line geometry for fallback
 const generateFallbackGeometry = (start: Location, end: Location): string => {
+  // Create a simple two-point polyline
   const points = [
-    [start.lat, start.lng],
-    [end.lat, end.lng]
+    [start.lat.toFixed(6), start.lng.toFixed(6)],
+    [end.lat.toFixed(6), end.lng.toFixed(6)]
   ];
   return encodeURIComponent(JSON.stringify(points));
 };
@@ -41,16 +42,20 @@ const createFallbackResponse = (start: Location, end: Location): RouteResponse =
 };
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
+  const proxyUrl = 'https://api.allorigins.win/raw?url=';
+  const baseUrl = 'https://router.project-osrm.org/route/v1/driving/';
+  const coordinates = `${start.lng},${start.lat};${end.lng},${end.lat}`;
+  const params = '?overview=full&geometries=polyline';
+  
   try {
     const response = await fetch(
-      `https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`,
+      `${proxyUrl}${encodeURIComponent(baseUrl + coordinates + params)}`,
       {
+        method: 'GET',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
-        },
-        mode: 'cors',
-        cache: 'no-cache'
+        }
       }
     );
     
