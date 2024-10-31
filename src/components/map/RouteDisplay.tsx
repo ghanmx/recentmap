@@ -19,7 +19,8 @@ export const RouteDisplay = ({ pickupLocation, dropLocation }: RouteDisplayProps
         variant="ghost"
         size="sm"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="absolute right-2 top-2 sm:hidden"
+        className="absolute right-2 top-2 sm:hidden z-10"
+        aria-label={isExpanded ? "Collapse details" : "Expand details"}
       >
         {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
       </Button>
@@ -37,25 +38,29 @@ export const RouteDisplay = ({ pickupLocation, dropLocation }: RouteDisplayProps
       </div>
       
       <div className="text-2xl sm:text-4xl font-bold text-primary bg-primary/5 p-3 sm:p-4 rounded-lg flex items-center justify-between">
-        <span>${totalCost.toFixed(2)}</span>
+        <span>${totalCost ? totalCost.toFixed(2) : '0.00'}</span>
         <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-primary/60" />
       </div>
 
-      <div className={`space-y-3 divide-y divide-gray-100 transition-all duration-300 ${isExpanded ? 'block' : 'hidden sm:block'}`}>
+      <div 
+        className={`space-y-3 divide-y divide-gray-100 transition-all duration-300 overflow-hidden ${
+          isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0 sm:max-h-[500px] sm:opacity-100'
+        }`}
+      >
         <div className="flex items-center gap-3 py-3">
-          <Route className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+          <Route className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 flex-shrink-0" />
           <div>
             <p className="text-xs sm:text-sm font-medium text-gray-900">Total Distance</p>
             <p className="text-base sm:text-lg font-semibold text-primary">
-              {totalDistance.toFixed(2)} km
+              {totalDistance ? totalDistance.toFixed(2) : '0.00'} km
             </p>
           </div>
         </div>
 
         <div className="bg-blue-50 p-2 sm:p-3 rounded-lg border border-blue-100 mt-2">
           <p className="text-xs sm:text-sm text-blue-700 flex items-center gap-2">
-            <Truck className="w-3 h-3 sm:w-4 sm:h-4" />
-            Price includes all service fees and taxes
+            <Truck className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+            <span className="line-clamp-2">Price includes all service fees and taxes</span>
           </p>
         </div>
       </div>

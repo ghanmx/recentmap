@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Truck, MapPin, Phone, Menu, X } from 'lucide-react';
+import { Truck, MapPin, Phone, Menu } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -7,7 +7,7 @@ export const MapHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="absolute inset-x-0 top-0 z-20 bg-gradient-to-r from-white/95 via-blue-50/95 to-white/95 shadow-lg backdrop-blur-sm border-b border-blue-100">
+    <div className="absolute inset-x-0 top-0 z-50 bg-gradient-to-r from-white/95 via-blue-50/95 to-white/95 shadow-lg backdrop-blur-sm border-b border-blue-100">
       <nav className="px-4 sm:px-6 py-4 max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="bg-primary/10 p-2 sm:p-2.5 rounded-xl shadow-inner">
@@ -21,15 +21,23 @@ export const MapHeader = () => {
           </div>
         </div>
         
-        {/* Mobile menu button */}
         <div className="sm:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="relative z-50"
+                aria-label="Open menu"
+              >
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <SheetContent 
+              side="right" 
+              className="w-[300px] sm:w-[400px] z-[60]"
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
               <div className="flex flex-col gap-4 mt-6">
                 <div className="flex items-center gap-2 bg-green-50 px-4 py-3 rounded-full border border-green-200 shadow-sm">
                   <MapPin className="w-4 h-4 text-green-600" />
@@ -44,7 +52,6 @@ export const MapHeader = () => {
           </Sheet>
         </div>
 
-        {/* Desktop menu */}
         <div className="hidden sm:flex items-center gap-4">
           <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full border border-green-200 shadow-sm">
             <MapPin className="w-4 h-4 text-green-600" />
