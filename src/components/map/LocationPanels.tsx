@@ -21,11 +21,11 @@ export const LocationPanels = ({
     <>
       <FloatingPanel 
         position="right" 
-        className="w-[90vw] sm:w-[450px] max-h-[calc(100vh-12rem)] overflow-y-auto z-40 
+        className="w-[94vw] sm:w-[450px] max-h-[calc(100vh-14rem)] overflow-y-auto z-40 
                    bg-white/95 backdrop-blur-sm shadow-xl border border-gray-200/50 rounded-xl
-                   fixed top-[calc(50%+2rem)] sm:top-32 left-1/2 sm:left-auto sm:right-6 
+                   fixed top-[calc(50%+4rem)] sm:top-36 left-1/2 sm:left-auto sm:right-6 
                    -translate-x-1/2 sm:translate-x-0 transform"
-        title="Vehicle Information"
+        title="Información del Vehículo"
       >
         <VehicleForm
           pickupLocation={pickupLocation}
@@ -44,15 +44,15 @@ export const LocationPanels = ({
         <FloatingPanel
           position="left"
           className="hidden sm:block w-[350px] z-40 bg-white/95 backdrop-blur-sm shadow-xl 
-                     border border-gray-200/50 rounded-xl fixed top-32 left-6"
-          title="Selected Locations"
+                     border border-gray-200/50 rounded-xl fixed top-36 left-6"
+          title="Ubicaciones Seleccionadas"
         >
           <div className="space-y-4 p-4">
             {pickupAddress && (
               <div className="space-y-2">
                 <div className="font-semibold text-sm text-primary flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Pickup Location
+                  Punto de Recogida
                 </div>
                 <p className="text-sm text-gray-600">{pickupAddress}</p>
               </div>
@@ -61,7 +61,7 @@ export const LocationPanels = ({
               <div className="space-y-2">
                 <div className="font-semibold text-sm text-secondary flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Drop-off Location
+                  Punto de Entrega
                 </div>
                 <p className="text-sm text-gray-600">{dropAddress}</p>
               </div>

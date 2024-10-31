@@ -21,8 +21,8 @@ export const MapControlPanel = ({
   dropLocation,
 }: MapControlPanelProps) => {
   return (
-    <div className="absolute top-20 sm:top-24 inset-x-0 z-[1000] px-4 flex flex-col items-center gap-6">
-      <div className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-lg rounded-lg p-4">
+    <div className="absolute top-24 sm:top-28 inset-x-0 z-[1000] px-4 sm:px-6 flex flex-col items-center gap-6">
+      <div className="w-full max-w-2xl bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-4 sm:p-6">
         <MapControls 
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
@@ -40,7 +40,7 @@ export const MapControlPanel = ({
       </div>
       
       {(pickupLocation || dropLocation) && (
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-2xl">
           <RouteStreetInfo 
             pickupLocation={pickupLocation}
             dropLocation={dropLocation}
