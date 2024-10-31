@@ -15,21 +15,21 @@ export const MapControls = ({
   onDropClick 
 }: MapControlsProps) => {
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col sm:flex-row gap-3">
       <Button 
         variant={selectingPickup ? "secondary" : "outline"}
         onClick={onPickupClick}
-        className="flex items-center gap-2"
+        className="flex-1 flex items-center justify-center gap-2 h-12 text-base"
       >
-        <MapPin className="w-4 h-4" />
+        <MapPin className="w-5 h-5" />
         Select Pickup
       </Button>
       <Button 
         variant={selectingDrop ? "secondary" : "outline"}
         onClick={onDropClick}
-        className="flex items-center gap-2"
+        className="flex-1 flex items-center justify-center gap-2 h-12 text-base"
       >
-        <Navigation className="w-4 h-4" />
+        <Navigation className="w-5 h-5" />
         Select Drop-off
       </Button>
     </div>

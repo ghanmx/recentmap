@@ -21,8 +21,10 @@ export const LocationPanels = ({
     <>
       <FloatingPanel 
         position="right" 
-        className="w-[450px] max-h-[calc(100vh-12rem)] overflow-y-auto z-40 bg-white/95 
-                   backdrop-blur-sm shadow-xl border border-gray-200/50 rounded-xl"
+        className="w-[90vw] sm:w-[450px] max-h-[calc(100vh-12rem)] overflow-y-auto z-40 
+                   bg-white/95 backdrop-blur-sm shadow-xl border border-gray-200/50 rounded-xl
+                   fixed top-[calc(50%+2rem)] sm:top-32 left-1/2 sm:left-auto sm:right-6 
+                   -translate-x-1/2 sm:translate-x-0 transform"
         title="Vehicle Information"
       >
         <VehicleForm
@@ -41,7 +43,8 @@ export const LocationPanels = ({
       {(pickupAddress || dropAddress) && (
         <FloatingPanel
           position="left"
-          className="w-[350px] z-40 bg-white/95 backdrop-blur-sm shadow-xl border border-gray-200/50 rounded-xl"
+          className="hidden sm:block w-[350px] z-40 bg-white/95 backdrop-blur-sm shadow-xl 
+                     border border-gray-200/50 rounded-xl fixed top-32 left-6"
           title="Selected Locations"
         >
           <div className="space-y-4 p-4">

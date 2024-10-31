@@ -21,8 +21,8 @@ export const MapControlPanel = ({
   dropLocation,
 }: MapControlPanelProps) => {
   return (
-    <div className="absolute inset-x-0 top-16 z-[1000] px-4 flex flex-col items-center gap-4">
-      <div className="w-full max-w-md">
+    <div className="absolute top-20 sm:top-24 inset-x-0 z-[1000] px-4 flex flex-col items-center gap-6">
+      <div className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-lg rounded-lg p-4">
         <MapControls 
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
