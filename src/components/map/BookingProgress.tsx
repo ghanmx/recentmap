@@ -1,6 +1,5 @@
-import { Progress } from "@/components/ui/progress";
 import { Card } from "@/components/ui/card";
-import { Check, MapPin, Truck, CreditCard } from "lucide-react";
+import { MapPin, Truck, Check, CreditCard } from "lucide-react";
 
 interface BookingProgressProps {
   currentStep: number;
@@ -8,8 +7,6 @@ interface BookingProgressProps {
 }
 
 export const BookingProgress = ({ currentStep, totalSteps = 4 }: BookingProgressProps) => {
-  const progress = (currentStep / totalSteps) * 100;
-
   const steps = [
     { icon: MapPin, label: "Location" },
     { icon: Truck, label: "Vehicle" },
@@ -19,7 +16,6 @@ export const BookingProgress = ({ currentStep, totalSteps = 4 }: BookingProgress
 
   return (
     <Card className="p-4 bg-white/95 backdrop-blur-sm shadow-lg border border-gray-200/50">
-      <Progress value={progress} className="mb-4" />
       <div className="flex justify-between">
         {steps.map((step, index) => {
           const Icon = step.icon;
