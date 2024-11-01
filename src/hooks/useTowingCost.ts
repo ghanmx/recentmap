@@ -33,7 +33,8 @@ export const useTowingCost = (
           const distance = route.distance;
           const truckDetails = towTruckTypes[truckType];
           const basePrice = truckDetails.basePrice;
-          const costPerKm = truckDetails.perKm * distance;
+          const perKmRate = truckDetails.perKm;
+          const costPerKm = perKmRate * distance;
           const maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
           const totalCost = calculateTotalCost(distance, truckType, requiresManeuver) + tollFees;
 

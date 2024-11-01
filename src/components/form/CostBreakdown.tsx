@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { DollarSign, Route, Truck } from "lucide-react";
+import { towTruckTypes } from "@/utils/towTruckPricing";
 
 interface CostBreakdownProps {
   distance: number;
@@ -18,8 +19,6 @@ export const CostBreakdown = ({
   tollFees,
   totalCost,
 }: CostBreakdownProps) => {
-  const distanceCost = costPerKm * distance;
-
   return (
     <Card className="p-6 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95 backdrop-blur-md shadow-xl border border-blue-100">
       <div className="flex items-center gap-3">
@@ -33,7 +32,7 @@ export const CostBreakdown = ({
         <div className="flex items-center gap-3 py-3">
           <Route className="w-5 h-5 text-gray-500" />
           <div>
-            <p className="text-sm font-medium text-gray-900">Distancia Total (Ida y Vuelta)</p>
+            <p className="text-sm font-medium text-gray-900">Distancia Total</p>
             <p className="text-lg font-semibold text-primary">
               {distance.toFixed(2)} km
             </p>
@@ -49,9 +48,14 @@ export const CostBreakdown = ({
           </div>
           <div>
             <p className="text-sm font-medium text-gray-900">Costo por Distancia</p>
-            <p className="text-lg font-semibold text-primary">
-              ${distanceCost.toFixed(2)}
-            </p>
+            <div>
+              <p className="text-lg font-semibold text-primary">
+                ${costPerKm.toFixed(2)}
+              </p>
+              <p className="text-xs text-gray-500">
+                ({(costPerKm / distance).toFixed(2)}/km)
+              </p>
+            </div>
           </div>
           {maneuverCost > 0 && (
             <div>
