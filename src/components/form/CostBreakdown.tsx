@@ -24,14 +24,14 @@ export const CostBreakdown = ({
         <div className="bg-primary/10 p-2 rounded-lg">
           <DollarSign className="w-5 h-5 text-primary" />
         </div>
-        <div className="text-lg font-semibold text-gray-900">Cost Breakdown</div>
+        <div className="text-lg font-semibold text-gray-900">Cost Breakdown (Round Trip)</div>
       </div>
 
       <div className="space-y-3 divide-y divide-gray-100">
         <div className="flex items-center gap-3 py-3">
           <Route className="w-5 h-5 text-gray-500" />
           <div>
-            <p className="text-sm font-medium text-gray-900">Distance</p>
+            <p className="text-sm font-medium text-gray-900">Total Distance (Round Trip)</p>
             <p className="text-lg font-semibold text-primary">
               {distance.toFixed(2)} km
             </p>

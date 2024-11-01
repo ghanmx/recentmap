@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
 import { Polyline } from "react-leaflet";
-import { getRouteDetails } from "@/services/routeService";
 import { decode } from "@mapbox/polyline";
 import { showRouteNotification } from "@/utils/notificationUtils";
 import { useTowing } from "@/contexts/TowingContext";
-import { calculateTotalCost } from "@/utils/towTruckPricing";
+import { calculateTowingPrice, COMPANY_LOCATION } from "@/utils/priceCalculator";
 
 interface RoutePolylineProps {
   pickupLocation: { lat: number; lng: number } | null;
   dropLocation: { lat: number; lng: number } | null;
   onRouteCalculated?: (distance: number) => void;
 }
-
-const COMPANY_LOCATION = { lat: 26.510272, lng: -100.006323 };
 
 export const RoutePolyline = ({ pickupLocation, dropLocation, onRouteCalculated }: RoutePolylineProps) => {
   const [companyToPickupRoute, setCompanyToPickupRoute] = useState<[number, number][]>([]);
@@ -24,21 +21,22 @@ export const RoutePolyline = ({ pickupLocation, dropLocation, onRouteCalculated 
     const fetchRoutes = async () => {
       if (pickupLocation && dropLocation) {
         try {
-          const companyToPickup = await getRouteDetails(COMPANY_LOCATION, pickupLocation);
-          setCompanyToPickupRoute(decode(companyToPickup.geometry).map(([lat, lng]) => [lat, lng] as [number, number]));
+          const routeDetails = await calculateTowingPrice(
+            pickupLocation,
+            dropLocation,
+            'standard', // default vehicle model
+            false // default maneuver requirement
+          );
 
-          const pickupToDrop = await getRouteDetails(pickupLocation, dropLocation);
-          setPickupToDropRoute(decode(pickupToDrop.geometry).map(([lat, lng]) => [lat, lng] as [number, number]));
+          // Decode and set route geometries
+          setCompanyToPickupRoute(decode(routeDetails.routeGeometry.companyToPickup).map(([lat, lng]) => [lat, lng]));
+          setPickupToDropRoute(decode(routeDetails.routeGeometry.pickupToDrop).map(([lat, lng]) => [lat, lng]));
+          setDropToCompanyRoute(decode(routeDetails.routeGeometry.dropToCompany).map(([lat, lng]) => [lat, lng]));
 
-          const dropToCompany = await getRouteDetails(dropLocation, COMPANY_LOCATION);
-          setDropToCompanyRoute(decode(dropToCompany.geometry).map(([lat, lng]) => [lat, lng] as [number, number]));
-
-          const totalDist = companyToPickup.distance + pickupToDrop.distance + dropToCompany.distance;
-          const totalCost = calculateTotalCost(totalDist, 'A', false);
-          
-          updateTowingInfo(totalDist, totalCost);
-          onRouteCalculated?.(totalDist);
-          showRouteNotification(totalDist);
+          // Update global towing context with total distance and price
+          updateTowingInfo(routeDetails.totalDistance, routeDetails.totalPrice);
+          onRouteCalculated?.(routeDetails.totalDistance);
+          showRouteNotification(routeDetails.totalDistance);
         } catch (error) {
           console.error('Error calculating routes:', error);
         }
