@@ -31,29 +31,28 @@ export const calculateTowingPrice = async (
   requiresManeuver = false
 ): Promise<RouteDetails> => {
   try {
-    // Get route from company to pickup
+    // Get route segments using vehicle profile
     const companyToPickup = await getRouteDetails(COMPANY_LOCATION, pickupLocation);
-    
-    // Get route from pickup to drop-off
     const pickupToDrop = await getRouteDetails(pickupLocation, dropLocation);
-    
-    // Get route from drop-off back to company
     const dropToCompany = await getRouteDetails(dropLocation, COMPANY_LOCATION);
     
-    // Calculate total distance including return trip
+    // Calculate segments with precise rounding
     const segments = {
-      companyToPickup: companyToPickup.distance,
-      pickupToDrop: pickupToDrop.distance,
-      dropToCompany: dropToCompany.distance
+      companyToPickup: Number(companyToPickup.distance.toFixed(2)),
+      pickupToDrop: Number(pickupToDrop.distance.toFixed(2)),
+      dropToCompany: Number(dropToCompany.distance.toFixed(2))
     };
     
-    const totalDistance = segments.companyToPickup + segments.pickupToDrop + segments.dropToCompany;
+    // Calculate total distance with consistent rounding
+    const totalDistance = Number((
+      segments.companyToPickup +
+      segments.pickupToDrop +
+      segments.dropToCompany
+    ).toFixed(2));
     
-    // Get tow truck type based on vehicle
+    // Get tow truck type and calculate total price
     const towTruckType = getTowTruckType(vehicleModel);
-    
-    // Calculate total price including all segments
-    const totalPrice = calculateTotalCost(totalDistance, towTruckType, requiresManeuver);
+    const totalPrice = Number(calculateTotalCost(totalDistance, towTruckType, requiresManeuver).toFixed(2));
 
     return {
       totalPrice,
