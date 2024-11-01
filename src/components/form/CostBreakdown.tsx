@@ -18,6 +18,9 @@ export const CostBreakdown = ({
   tollFees,
   totalCost
 }: CostBreakdownProps) => {
+  // Calculate the actual cost per km (not multiplied by total distance)
+  const displayCostPerKm = Number((costPerKm / distance).toFixed(2));
+
   return (
     <Card className="p-6 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95 backdrop-blur-md shadow-xl border border-blue-100">
       <div className="flex items-center gap-3">
@@ -48,7 +51,7 @@ export const CostBreakdown = ({
           <div>
             <p className="text-sm font-medium text-gray-900">Cost per km</p>
             <p className="text-lg font-semibold text-primary">
-              ${costPerKm.toFixed(2)}
+              ${displayCostPerKm}
             </p>
           </div>
           {maneuverCost > 0 && (
@@ -75,6 +78,13 @@ export const CostBreakdown = ({
             ${totalCost.toFixed(2)}
           </p>
         </div>
+      </div>
+
+      <div className="bg-blue-50 p-3 rounded-lg border border-blue-100 mt-2">
+        <p className="text-sm text-blue-700 flex items-center gap-2">
+          <Truck className="w-4 h-4 flex-shrink-0" />
+          <span className="line-clamp-2">Price includes all service fees and taxes</span>
+        </p>
       </div>
     </Card>
   );
