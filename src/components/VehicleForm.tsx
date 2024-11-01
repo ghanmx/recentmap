@@ -120,6 +120,7 @@ const VehicleForm = ({
               distance={costDetails.distance}
               basePrice={costDetails.basePrice}
               costPerKm={costDetails.costPerKm}
+              ratePerKm={costDetails.ratePerKm}
               maneuverCost={costDetails.maneuverCost}
               tollFees={tollFees}
               totalCost={costDetails.totalCost}
