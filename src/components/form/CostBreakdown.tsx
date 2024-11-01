@@ -16,10 +16,10 @@ export const CostBreakdown = ({
   costPerKm,
   maneuverCost,
   tollFees,
-  totalCost
+  totalCost,
 }: CostBreakdownProps) => {
-  // Calculate the actual cost per km (not multiplied by total distance)
-  const displayCostPerKm = Number((costPerKm / distance).toFixed(2));
+  // Calculate the total distance cost by multiplying distance by cost per km
+  const totalDistanceCost = distance * costPerKm;
 
   return (
     <Card className="p-6 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95 backdrop-blur-md shadow-xl border border-blue-100">
@@ -51,7 +51,7 @@ export const CostBreakdown = ({
           <div>
             <p className="text-sm font-medium text-gray-900">Cost per km</p>
             <p className="text-lg font-semibold text-primary">
-              ${displayCostPerKm}
+              ${costPerKm.toFixed(2)}
             </p>
           </div>
           {maneuverCost > 0 && (
