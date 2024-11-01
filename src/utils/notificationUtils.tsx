@@ -24,8 +24,7 @@ export const showLocationNotification = (type: 'pickup' | 'drop', coords: { lat:
     title: `${type === 'pickup' ? 'Pickup' : 'Drop-off'} Location Set`,
     description: `Coordinates: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`,
     duration: 3000,
-    className: "bg-green-50 border-green-200",
-    icon: <MapPin className="h-4 w-4" />
+    className: "bg-green-50 border-green-200"
   });
 };
 
@@ -36,8 +35,7 @@ export const showRouteNotification = (distance: number) => {
     title: "Route Calculated",
     description: `Total route distance: ${distance.toFixed(2)} km`,
     duration: 3000,
-    className: "bg-blue-50 border-blue-200",
-    icon: <Info className="h-4 w-4" />
+    className: "bg-blue-50 border-blue-200"
   });
 };
 
@@ -49,16 +47,14 @@ export const showPaymentNotification = (success: boolean, error?: string) => {
       title: "Payment Successful",
       description: "Tow truck request confirmed!",
       duration: 4000,
-      className: "bg-green-50 border-green-200",
-      icon: <Check className="h-4 w-4" className="text-green-700" />
+      className: "bg-green-50 border-green-200"
     });
   } else {
     toast({
       title: "Payment Error",
       description: error || "Payment processing error",
       duration: 5000,
-      variant: "destructive",
-      icon: <AlertTriangle className="h-4 w-4" className="text-red-700" />
+      variant: "destructive"
     });
   }
 };
