@@ -1,11 +1,12 @@
 import { Card } from "@/components/ui/card";
-import { DollarSign, Route, Truck } from "lucide-react";
+import { DollarSign, Route, Truck, Calculator } from "lucide-react";
 import { towTruckTypes } from "@/utils/towTruckPricing";
 
 interface CostBreakdownProps {
   distance: number;
   basePrice: number;
   costPerKm: number;
+  ratePerKm: number;
   maneuverCost: number;
   tollFees: number;
   totalCost: number;
@@ -15,6 +16,7 @@ export const CostBreakdown = ({
   distance,
   basePrice,
   costPerKm,
+  ratePerKm,
   maneuverCost,
   tollFees,
   totalCost,
@@ -23,7 +25,7 @@ export const CostBreakdown = ({
     <Card className="p-6 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95 backdrop-blur-md shadow-xl border border-blue-100">
       <div className="flex items-center gap-3">
         <div className="bg-primary/10 p-2 rounded-lg">
-          <DollarSign className="w-5 h-5 text-primary" />
+          <Calculator className="w-5 h-5 text-primary" />
         </div>
         <div className="text-lg font-semibold text-gray-900">Desglose de Costos</div>
       </div>
@@ -41,11 +43,12 @@ export const CostBreakdown = ({
 
         <div className="grid grid-cols-2 gap-4 py-3">
           <div>
-            <p className="text-sm font-medium text-gray-900">Precio Base</p>
+            <p className="text-sm font-medium text-gray-900">Tarifa Base</p>
             <p className="text-lg font-semibold text-primary">
               ${basePrice.toFixed(2)}
             </p>
           </div>
+          
           <div>
             <p className="text-sm font-medium text-gray-900">Costo por Distancia</p>
             <div>
@@ -53,18 +56,20 @@ export const CostBreakdown = ({
                 ${costPerKm.toFixed(2)}
               </p>
               <p className="text-xs text-gray-500">
-                ({(costPerKm / distance).toFixed(2)}/km)
+                (${ratePerKm.toFixed(2)}/km × {distance.toFixed(1)} km)
               </p>
             </div>
           </div>
+
           {maneuverCost > 0 && (
             <div>
-              <p className="text-sm font-medium text-gray-900">Costo de Maniobra</p>
+              <p className="text-sm font-medium text-gray-900">Maniobras Especiales</p>
               <p className="text-lg font-semibold text-primary">
                 ${maneuverCost.toFixed(2)}
               </p>
             </div>
           )}
+
           {tollFees > 0 && (
             <div>
               <p className="text-sm font-medium text-gray-900">Casetas</p>
@@ -76,7 +81,10 @@ export const CostBreakdown = ({
         </div>
 
         <div className="flex items-center justify-between pt-4">
-          <p className="text-lg font-bold text-gray-900">Costo Total</p>
+          <div>
+            <p className="text-lg font-bold text-gray-900">Costo Total</p>
+            <p className="text-xs text-gray-500">Incluye todos los cargos</p>
+          </div>
           <p className="text-2xl font-bold text-primary">
             ${totalCost.toFixed(2)}
           </p>
