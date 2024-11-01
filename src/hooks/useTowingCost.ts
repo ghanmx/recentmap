@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getRouteDetails } from '@/services/routeService';
-import { calculateTotalCost, towTruckTypes, TowTruckConfig } from '@/utils/towTruckPricing';
+import { calculateTowingPrice } from '@/utils/priceCalculator';
 import { TowTruckType } from '@/utils/downloadUtils';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -29,25 +28,24 @@ export const useTowingCost = (
     const calculateCosts = async () => {
       if (pickupLocation && dropLocation) {
         try {
-          const route = await getRouteDetails(pickupLocation, dropLocation);
-          const distance = route.distance;
-          const truckDetails: TowTruckConfig = towTruckTypes[truckType];
-          const costPerKm = truckDetails.perKm * distance;
-          const basePrice = truckDetails.basePrice;
-          const maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
-          const totalCost = calculateTotalCost(distance, truckType, requiresManeuver) + tollFees;
+          const routeDetails = await calculateTowingPrice(
+            pickupLocation,
+            dropLocation,
+            'standard',
+            requiresManeuver
+          );
 
           setCostDetails({
-            distance,
-            basePrice,
-            costPerKm,
-            maneuverCost,
-            totalCost
+            distance: routeDetails.totalDistance,
+            basePrice: routeDetails.segments.basePrice,
+            costPerKm: routeDetails.segments.costPerKm,
+            maneuverCost: requiresManeuver ? routeDetails.segments.maneuverCost : 0,
+            totalCost: routeDetails.totalPrice + tollFees
           });
         } catch (error) {
           toast({
-            title: "Error calculating costs",
-            description: "Failed to calculate route costs. Please try again.",
+            title: "Error al calcular costos",
+            description: "No se pudieron calcular los costos de la ruta. Por favor, intente de nuevo.",
             variant: "destructive",
           });
         }
