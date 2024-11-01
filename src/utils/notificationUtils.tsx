@@ -19,16 +19,14 @@ const shouldShowNotification = (type: string): boolean => {
 export const showLocationNotification = (type: 'pickup' | 'drop', coords: { lat: number; lng: number }) => {
   if (!shouldShowNotification(`location_${type}`)) return;
   
-  const description = (
-    <div className="flex items-center gap-2">
-      <MapPin className="h-4 w-4" />
-      <span>Coordinates: {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}</span>
-    </div>
-  );
-  
   toast({
     title: `${type === 'pickup' ? 'Pickup' : 'Drop-off'} Location Set`,
-    description,
+    description: (
+      <div className="flex items-center gap-2">
+        <MapPin className="h-4 w-4" />
+        <span>Coordinates: {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}</span>
+      </div>
+    ),
     duration: 3000,
     className: "bg-green-50 border-green-200"
   });
@@ -37,16 +35,14 @@ export const showLocationNotification = (type: 'pickup' | 'drop', coords: { lat:
 export const showRouteNotification = (distance: number) => {
   if (!shouldShowNotification('route')) return;
   
-  const description = (
-    <div className="flex items-center gap-2">
-      <Info className="h-4 w-4" />
-      <span>Total route distance: {distance.toFixed(2)} km</span>
-    </div>
-  );
-  
   toast({
     title: "Route Calculated",
-    description,
+    description: (
+      <div className="flex items-center gap-2">
+        <Info className="h-4 w-4" />
+        <span>Total route distance: {distance.toFixed(2)} km</span>
+      </div>
+    ),
     duration: 3000,
     className: "bg-blue-50 border-blue-200"
   });
@@ -56,30 +52,26 @@ export const showPaymentNotification = (success: boolean, error?: string) => {
   if (!shouldShowNotification('payment')) return;
   
   if (success) {
-    const description = (
-      <div className="flex items-center gap-2">
-        <Check className="h-4 w-4" />
-        <span>Tow truck request confirmed!</span>
-      </div>
-    );
-    
     toast({
       title: "Payment Successful",
-      description,
+      description: (
+        <div className="flex items-center gap-2">
+          <Check className="h-4 w-4" />
+          <span>Tow truck request confirmed!</span>
+        </div>
+      ),
       duration: 4000,
       className: "bg-green-50 border-green-200"
     });
   } else {
-    const description = (
-      <div className="flex items-center gap-2">
-        <AlertTriangle className="h-4 w-4" />
-        <span>{error || "Payment processing error"}</span>
-      </div>
-    );
-    
     toast({
       title: "Payment Error",
-      description,
+      description: (
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4" />
+          <span>{error || "Payment processing error"}</span>
+        </div>
+      ),
       duration: 5000,
       variant: "destructive"
     });
