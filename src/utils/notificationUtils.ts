@@ -1,19 +1,22 @@
 import { toast } from "@/hooks/use-toast";
 
-const NOTIFICATION_COOLDOWN = 1000;
-let lastNotificationTimestamp = 0;
+const NOTIFICATION_COOLDOWN = 3000; // 3 segundos entre notificaciones
+const notificationTimestamps: { [key: string]: number } = {};
 
-const shouldShowNotification = () => {
+const shouldShowNotification = (type: string): boolean => {
   const now = Date.now();
-  if (now - lastNotificationTimestamp > NOTIFICATION_COOLDOWN) {
-    lastNotificationTimestamp = now;
+  const lastShown = notificationTimestamps[type] || 0;
+  
+  if (now - lastShown > NOTIFICATION_COOLDOWN) {
+    notificationTimestamps[type] = now;
     return true;
   }
   return false;
 };
 
 export const showLocationNotification = (type: 'pickup' | 'drop', coords: { lat: number; lng: number }) => {
-  if (!shouldShowNotification()) return;
+  if (!shouldShowNotification(`location_${type}`)) return;
+  
   toast({
     title: `${type === 'pickup' ? 'Pickup' : 'Drop-off'} Location Set`,
     description: `Location: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`,
@@ -22,7 +25,8 @@ export const showLocationNotification = (type: 'pickup' | 'drop', coords: { lat:
 };
 
 export const showRouteNotification = (distance: number) => {
-  if (!shouldShowNotification()) return;
+  if (!shouldShowNotification('route')) return;
+  
   toast({
     title: "Route Calculated",
     description: `Total route distance: ${distance.toFixed(2)} km`,
@@ -31,7 +35,8 @@ export const showRouteNotification = (distance: number) => {
 };
 
 export const showPaymentNotification = (success: boolean, error?: string) => {
-  if (!shouldShowNotification()) return;
+  if (!shouldShowNotification('payment')) return;
+  
   toast({
     title: success ? "Payment Successful" : "Payment Error",
     description: success ? "Tow truck request confirmed!" : error || "Payment processing error",

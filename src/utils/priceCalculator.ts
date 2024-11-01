@@ -1,5 +1,5 @@
 import { getRouteDetails } from '../services/routeService';
-import { calculateTotalCost, getTowTruckType, towTruckTypes } from './towTruckPricing';
+import { calculateTotalCost, getTowTruckType } from './towTruckPricing';
 
 interface Location {
   lat: number;
@@ -59,9 +59,6 @@ export interface RouteDetails {
     companyToPickup: number;
     pickupToDrop: number;
     dropToCompany: number;
-    basePrice: number;
-    costPerKm: number;
-    maneuverCost: number;
   };
   tollFees: number;
   routeGeometry: {
@@ -86,10 +83,7 @@ export const calculateTowingPrice = async (
     const segments = {
       companyToPickup: Number(companyToPickup.distance.toFixed(2)),
       pickupToDrop: Number(pickupToDrop.distance.toFixed(2)),
-      dropToCompany: Number(dropToCompany.distance.toFixed(2)),
-      basePrice: 0,
-      costPerKm: 0,
-      maneuverCost: 0
+      dropToCompany: Number(dropToCompany.distance.toFixed(2))
     };
     
     const totalDistance = Number((
@@ -107,18 +101,7 @@ export const calculateTowingPrice = async (
     
     const tollFees = calculateTollFees(routePoints, isRoundTrip);
     const towTruckType = getTowTruckType(vehicleModel);
-    const truckDetails = towTruckTypes[towTruckType];
-    
-    segments.basePrice = truckDetails.basePrice;
-    segments.costPerKm = truckDetails.perKm * totalDistance;
-    segments.maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
-    
-    const totalPrice = Number((
-      segments.basePrice + 
-      segments.costPerKm + 
-      segments.maneuverCost + 
-      tollFees
-    ).toFixed(2));
+    const totalPrice = calculateTotalCost(totalDistance, towTruckType, requiresManeuver) + tollFees;
 
     return {
       totalPrice,

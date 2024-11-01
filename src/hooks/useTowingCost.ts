@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { calculateTowingPrice } from '@/utils/priceCalculator';
+import { getRouteDetails } from '@/services/routeService';
+import { calculateTotalCost, towTruckTypes } from '@/utils/towTruckPricing';
 import { TowTruckType } from '@/utils/downloadUtils';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -28,19 +29,20 @@ export const useTowingCost = (
     const calculateCosts = async () => {
       if (pickupLocation && dropLocation) {
         try {
-          const routeDetails = await calculateTowingPrice(
-            pickupLocation,
-            dropLocation,
-            'standard',
-            requiresManeuver
-          );
+          const route = await getRouteDetails(pickupLocation, dropLocation);
+          const distance = route.distance;
+          const truckDetails = towTruckTypes[truckType];
+          const basePrice = truckDetails.basePrice;
+          const costPerKm = truckDetails.perKm * distance;
+          const maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
+          const totalCost = calculateTotalCost(distance, truckType, requiresManeuver) + tollFees;
 
           setCostDetails({
-            distance: routeDetails.totalDistance,
-            basePrice: routeDetails.segments.basePrice,
-            costPerKm: routeDetails.segments.costPerKm,
-            maneuverCost: requiresManeuver ? routeDetails.segments.maneuverCost : 0,
-            totalCost: routeDetails.totalPrice + tollFees
+            distance,
+            basePrice,
+            costPerKm,
+            maneuverCost,
+            totalCost
           });
         } catch (error) {
           toast({
