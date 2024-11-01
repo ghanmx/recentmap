@@ -12,6 +12,8 @@ interface RouteResponse {
 // Rate limiting setup
 let lastRequestTime = 0;
 const MIN_REQUEST_INTERVAL = 1100; // 1.1 seconds between requests
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -28,13 +30,9 @@ const calculateStraightLineDistance = (start: Location, end: Location): number =
 };
 
 const generateFallbackGeometry = (start: Location, end: Location): string => {
-  const midLat = (start.lat + end.lat) / 2;
-  const midLng = (start.lng + end.lng) / 2;
-  const offset = 0.01;
+  // Create a simple straight line path between points
   const points = [
     [start.lat, start.lng],
-    [midLat + offset, midLng - offset],
-    [midLat - offset, midLng + offset],
     [end.lat, end.lng]
   ];
   return btoa(JSON.stringify(points));
@@ -44,11 +42,25 @@ const createFallbackResponse = (start: Location, end: Location): RouteResponse =
   const distance = calculateStraightLineDistance(start, end);
   const AVG_SPEED = 50; // km/h average speed for a tow truck
   return {
-    distance: distance,
+    distance: distance * 1.3, // Add 30% to account for road curves
     duration: (distance / AVG_SPEED) * 3600,
     geometry: generateFallbackGeometry(start, end)
   };
 };
+
+async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_RETRIES): Promise<Response> {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response;
+  } catch (error) {
+    if (retries > 0) {
+      await wait(RETRY_DELAY);
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw error;
+  }
+}
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
   // Implement rate limiting
@@ -61,32 +73,23 @@ export const getRouteDetails = async (start: Location, end: Location): Promise<R
   
   try {
     lastRequestTime = Date.now();
-    const response = await fetch(
-      `https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`,
-      {
-        headers: {
-          'User-Agent': 'TowingServiceApp/1.0',
-          'Referer': window.location.origin
-        }
-      }
-    );
+    const url = `https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`;
     
-    if (!response.ok) {
-      if (response.status === 429) {
-        console.warn('Rate limit exceeded, using fallback calculation');
-        return createFallbackResponse(start, end);
+    const response = await fetchWithRetry(url, {
+      headers: {
+        'User-Agent': 'TowingServiceApp/1.0',
       }
-      throw new Error('Failed to fetch route');
-    }
+    });
 
     const data = await response.json();
     
     if (!data.routes || data.routes.length === 0) {
+      console.warn('No route found, using fallback calculation');
       return createFallbackResponse(start, end);
     }
 
     return {
-      distance: data.routes[0].distance / 1000,
+      distance: data.routes[0].distance / 1000, // Convert to kilometers
       duration: data.routes[0].duration,
       geometry: data.routes[0].geometry,
     };
