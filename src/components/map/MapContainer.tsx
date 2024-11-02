@@ -8,18 +8,11 @@ import { useToast } from "@/hooks/use-toast";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Initialize Leaflet default icon paths
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png'
-});
-
 const UserLocationMarker = () => {
   const [position, setPosition] = useState<[number, number] | null>(null);
   const map = useMap();
   const { toast } = useToast();
+  const eventHandlerRef = useRef<((e: L.LocationEvent) => void) | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -35,12 +28,16 @@ const UserLocationMarker = () => {
       }
     };
 
-    map.on("locationfound", handleLocationFound);
+    eventHandlerRef.current = handleLocationFound;
+    map.on("locationfound", eventHandlerRef.current);
     map.locate();
 
     return () => {
       isMounted = false;
-      map.off("locationfound", handleLocationFound);
+      if (eventHandlerRef.current) {
+        map.off("locationfound", eventHandlerRef.current);
+        eventHandlerRef.current = null;
+      }
     };
   }, [map, toast]);
 
@@ -79,6 +76,15 @@ export const MapContainerComponent = ({
 }: MapContainerProps) => {
   const mapRef = useRef<L.Map | null>(null);
 
+  useEffect(() => {
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <LeafletMapContainer
       center={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
@@ -86,6 +92,9 @@ export const MapContainerComponent = ({
       style={{ height: "100vh", width: "100vw" }}
       className="z-10"
       ref={mapRef}
+      whenCreated={(map) => {
+        mapRef.current = map;
+      }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -94,7 +103,7 @@ export const MapContainerComponent = ({
       
       <UserLocationMarker />
       
-      <LocationMarker 
+      <LocationMarker
         onLocationSelect={onLocationSelect}
         selectingPickup={selectingPickup}
         selectingDrop={selectingDrop}
@@ -112,22 +121,20 @@ export const MapContainerComponent = ({
       ))}
 
       {pickupLocation && (
-        <DraggableMarker 
+        <DraggableMarker
           position={[pickupLocation.lat, pickupLocation.lng]}
           onDragEnd={(latlng) => setPickupLocation({ lat: latlng.lat, lng: latlng.lng })}
           icon={pickupIcon}
           label="Pickup Location"
-          draggable={true}
         />
       )}
-      
+
       {dropLocation && (
-        <DraggableMarker 
+        <DraggableMarker
           position={[dropLocation.lat, dropLocation.lng]}
           onDragEnd={(latlng) => setDropLocation({ lat: latlng.lat, lng: latlng.lng })}
           icon={dropIcon}
           label="Drop-off Location"
-          draggable={true}
         />
       )}
 
