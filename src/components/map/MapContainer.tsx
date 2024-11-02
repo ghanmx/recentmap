@@ -22,24 +22,31 @@ const UserLocationMarker = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let isMounted = true;
+
     const handleLocationFound = (e: L.LocationEvent) => {
-      setPosition([e.latlng.lat, e.latlng.lng]);
-      map.flyTo(e.latlng, map.getZoom());
-      toast({
-        title: "Location found",
-        description: "Your current location has been detected",
-      });
+      if (isMounted) {
+        setPosition([e.latlng.lat, e.latlng.lng]);
+        map.flyTo(e.latlng, map.getZoom());
+        toast({
+          title: "Location found",
+          description: "Your current location has been detected",
+        });
+      }
     };
 
     map.on("locationfound", handleLocationFound);
     map.locate();
 
     return () => {
+      isMounted = false;
       map.off("locationfound", handleLocationFound);
     };
   }, [map, toast]);
 
-  return position === null ? null : (
+  if (!position) return null;
+
+  return (
     <DraggableMarker
       position={position}
       onDragEnd={() => {}}
@@ -70,12 +77,15 @@ export const MapContainerComponent = ({
   setDropLocation,
   onRouteCalculated,
 }: MapContainerProps) => {
+  const mapRef = useRef<L.Map | null>(null);
+
   return (
     <LeafletMapContainer
       center={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
       zoom={13}
       style={{ height: "100vh", width: "100vw" }}
       className="z-10"
+      ref={mapRef}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -92,7 +102,7 @@ export const MapContainerComponent = ({
       
       {ENTERPRISE_LOCATIONS.map((location, index) => (
         <DraggableMarker
-          key={index}
+          key={`enterprise-${index}`}
           position={[location.lat, location.lng]}
           onDragEnd={() => {}}
           icon={enterpriseIcon}
@@ -121,11 +131,13 @@ export const MapContainerComponent = ({
         />
       )}
 
-      <RoutePolyline
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-        onRouteCalculated={onRouteCalculated}
-      />
+      {pickupLocation && dropLocation && (
+        <RoutePolyline
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+          onRouteCalculated={onRouteCalculated}
+        />
+      )}
     </LeafletMapContainer>
   );
 };
