@@ -97,8 +97,8 @@ export const MapContainerComponent = ({
       zoom={13}
       style={{ height: "100vh", width: "100vw" }}
       className="z-10"
-      whenCreated={(map) => {
-        mapRef.current = map;
+      whenReady={(map) => {
+        mapRef.current = map.target;
       }}
     >
       <TileLayer
