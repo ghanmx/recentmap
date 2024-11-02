@@ -100,8 +100,8 @@ export const MapContainerComponent = ({
       style={{ height: "100vh", width: "100vw" }}
       className="z-10"
       ref={mapRef}
-      whenReady={(map) => {
-        mapRef.current = map.target;
+      whenReady={(e) => {
+        mapRef.current = e.target;
       }}
     >
       <TileLayer
