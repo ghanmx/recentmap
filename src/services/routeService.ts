@@ -15,7 +15,7 @@ const MIN_REQUEST_INTERVAL = 1100;
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const FALLBACK_SPEED_KMH = 45; // Average speed in km/h for Mexican roads
-const REQUEST_TIMEOUT = 10000; // Increased timeout to 10 seconds
+const REQUEST_TIMEOUT = 15000; // Increased timeout to 15 seconds for slower connections
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -61,14 +61,23 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_R
 
       const response = await fetch(url, {
         ...options,
-        signal: controller.signal
+        signal: controller.signal,
+        mode: 'cors',
+        headers: {
+          ...options.headers,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
       });
 
       clearTimeout(timeoutId);
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       return response;
     } catch (error) {
+      console.warn(`Attempt ${i + 1} failed:`, error);
       if (i === retries - 1) {
         console.warn('Max retries reached, using fallback calculation');
         throw error;
