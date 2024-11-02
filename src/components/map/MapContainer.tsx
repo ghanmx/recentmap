@@ -1,4 +1,3 @@
-```typescript
 import { useRef, useState, useEffect } from "react";
 import { MapContainer as LeafletMapContainer, TileLayer, useMap } from "react-leaflet";
 import { DraggableMarker } from "./DraggableMarker";
@@ -153,4 +152,3 @@ export const MapContainerComponent = ({
     </LeafletMapContainer>
   );
 };
-```
