@@ -92,10 +92,6 @@ export const MapContainerComponent = ({
     };
   }, []);
 
-  const handleMapReady = (map: L.Map) => {
-    mapRef.current = map;
-  };
-
   return (
     <LeafletMapContainer
       center={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
@@ -103,7 +99,11 @@ export const MapContainerComponent = ({
       style={{ height: "100vh", width: "100vw" }}
       className="z-10"
       ref={mapRef}
-      whenReady={handleMapReady}
+      whenReady={() => {
+        if (mapRef.current) {
+          return;
+        }
+      }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
