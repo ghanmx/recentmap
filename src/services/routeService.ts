@@ -11,14 +11,14 @@ interface RouteResponse {
 
 // Rate limiting setup
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 1100; // 1.1 seconds between requests
+const MIN_REQUEST_INTERVAL = 1100;
 const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
+const RETRY_DELAY = 1000;
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const calculateStraightLineDistance = (start: Location, end: Location): number => {
-  const R = 6371; // Earth's radius in km
+  const R = 6371;
   const dLat = (end.lat - start.lat) * Math.PI / 180;
   const dLon = (end.lng - start.lng) * Math.PI / 180;
   const a = 
@@ -30,20 +30,16 @@ const calculateStraightLineDistance = (start: Location, end: Location): number =
 };
 
 const generateFallbackGeometry = (start: Location, end: Location): string => {
-  // Create a simple straight line path between points
-  const points = [
-    [start.lat, start.lng],
-    [end.lat, end.lng]
-  ];
+  const points = [[start.lat, start.lng], [end.lat, end.lng]];
   return btoa(JSON.stringify(points));
 };
 
 const createFallbackResponse = (start: Location, end: Location): RouteResponse => {
   const distance = calculateStraightLineDistance(start, end);
-  const AVG_SPEED = 50; // km/h average speed for a tow truck
+  const MEXICAN_ROADS_FACTOR = 1.4; // Adjustment factor for Mexican road conditions
   return {
-    distance: distance * 1.3, // Add 30% to account for road curves
-    duration: (distance / AVG_SPEED) * 3600,
+    distance: distance * MEXICAN_ROADS_FACTOR,
+    duration: (distance / 45) * 3600, // Assuming 45 km/h average speed on Mexican roads
     geometry: generateFallbackGeometry(start, end)
   };
 };
@@ -63,7 +59,6 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_R
 }
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
-  // Implement rate limiting
   const now = Date.now();
   const timeSinceLastRequest = now - lastRequestTime;
   
@@ -73,7 +68,7 @@ export const getRouteDetails = async (start: Location, end: Location): Promise<R
   
   try {
     lastRequestTime = Date.now();
-    const url = `https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`;
+    const url = `https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline&alternatives=true`;
     
     const response = await fetchWithRetry(url, {
       headers: {
@@ -84,14 +79,20 @@ export const getRouteDetails = async (start: Location, end: Location): Promise<R
     const data = await response.json();
     
     if (!data.routes || data.routes.length === 0) {
-      console.warn('No route found, using fallback calculation');
       return createFallbackResponse(start, end);
     }
 
+    // Select the best route considering Mexican road conditions
+    const bestRoute = data.routes.reduce((best: any, current: any) => {
+      const currentScore = current.duration / current.distance; // Lower is better
+      const bestScore = best.duration / best.distance;
+      return currentScore < bestScore ? current : best;
+    }, data.routes[0]);
+
     return {
-      distance: data.routes[0].distance / 1000, // Convert to kilometers
-      duration: data.routes[0].duration,
-      geometry: data.routes[0].geometry,
+      distance: (bestRoute.distance / 1000) * 1.15, // Add 15% for Mexican road conditions
+      duration: bestRoute.duration,
+      geometry: bestRoute.geometry,
     };
   } catch (error) {
     console.warn('Error fetching route, using fallback calculation:', error);

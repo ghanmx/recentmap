@@ -3,10 +3,13 @@ interface Location {
   lng: number;
 }
 
+const MEXICAN_ROADS_ADJUSTMENT = 1.15; // 15% adjustment for Mexican roads
+const URBAN_AREA_THRESHOLD = 0.1; // 100m threshold for urban area detection
+
 export const calculateRoadDistance = async (point1: Location, point2: Location): Promise<number> => {
   try {
     const response = await fetch(
-      `https://router.project-osrm.org/route/v1/driving/${point1.lng},${point1.lat};${point2.lng},${point2.lat}?overview=false`
+      `https://router.project-osrm.org/route/v1/driving/${point1.lng},${point1.lat};${point2.lng},${point2.lat}?overview=false&alternatives=true`
     );
     
     if (!response.ok) {
@@ -19,17 +22,21 @@ export const calculateRoadDistance = async (point1: Location, point2: Location):
       throw new Error('No se encontró ninguna ruta');
     }
 
-    // OSRM devuelve la distancia en metros, convertir a kilómetros
-    return Number((data.routes[0].distance / 1000).toFixed(2));
+    // Find the most efficient route
+    const bestRoute = data.routes.reduce((best: any, current: any) => {
+      return current.duration / current.distance < best.duration / best.distance ? current : best;
+    }, data.routes[0]);
+
+    // Apply Mexican roads adjustment
+    return Number(((bestRoute.distance / 1000) * MEXICAN_ROADS_ADJUSTMENT).toFixed(2));
   } catch (error) {
     console.error('Error calculando la distancia por carretera:', error);
-    // Si falla la API, usar distancia en línea recta como respaldo
-    return calculateStraightLineDistance(point1, point2);
+    return calculateStraightLineDistance(point1, point2) * MEXICAN_ROADS_ADJUSTMENT;
   }
 };
 
 const calculateStraightLineDistance = (point1: Location, point2: Location): number => {
-  const R = 6371; // Radio de la Tierra en km
+  const R = 6371;
   const dLat = (point2.lat - point1.lat) * Math.PI / 180;
   const dLon = (point2.lng - point1.lng) * Math.PI / 180;
   const a = 
