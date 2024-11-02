@@ -1,64 +1,8 @@
-import { useRef, useState, useEffect } from "react";
-import { MapContainer as LeafletMapContainer, TileLayer, useMap } from "react-leaflet";
+import { MapContainer as LeafletMapContainer, TileLayer } from "react-leaflet";
 import { DraggableMarker } from "./DraggableMarker";
 import { RoutePolyline } from "./RoutePolyline";
 import { ENTERPRISE_LOCATIONS, enterpriseIcon, pickupIcon, dropIcon } from "@/utils/mapUtils";
 import { LocationMarker } from "./LocationMarker";
-import { useToast } from "@/hooks/use-toast";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-// Initialize Leaflet default icon paths
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png'
-});
-
-const UserLocationMarker = () => {
-  const [position, setPosition] = useState<[number, number] | null>(null);
-  const map = useMap();
-  const { toast } = useToast();
-  const locationHandlerRef = useRef<((e: L.LocationEvent) => void) | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const handleLocationFound = (e: L.LocationEvent) => {
-      if (isMounted) {
-        setPosition([e.latlng.lat, e.latlng.lng]);
-        map.flyTo(e.latlng, map.getZoom());
-        toast({
-          title: "Location found",
-          description: "Your current location has been detected",
-        });
-      }
-    };
-
-    locationHandlerRef.current = handleLocationFound;
-    map.on("locationfound", locationHandlerRef.current);
-    map.locate();
-
-    return () => {
-      isMounted = false;
-      if (locationHandlerRef.current) {
-        map.off("locationfound", locationHandlerRef.current);
-      }
-    };
-  }, [map, toast]);
-
-  if (!position) return null;
-
-  return (
-    <DraggableMarker
-      position={position}
-      onDragEnd={() => {}}
-      label="Your Location"
-      draggable={false}
-    />
-  );
-};
 
 interface MapContainerProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -81,33 +25,19 @@ export const MapContainerComponent = ({
   setDropLocation,
   onRouteCalculated,
 }: MapContainerProps) => {
-  const mapRef = useRef<L.Map | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-      }
-    };
-  }, []);
-
   return (
     <LeafletMapContainer
       center={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
       zoom={13}
       style={{ height: "100vh", width: "100vw" }}
       className="z-10"
-      whenReady={() => {}}
-      ref={mapRef}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       
-      <UserLocationMarker />
-      
-      <LocationMarker
+      <LocationMarker 
         onLocationSelect={onLocationSelect}
         selectingPickup={selectingPickup}
         selectingDrop={selectingDrop}
@@ -115,7 +45,7 @@ export const MapContainerComponent = ({
       
       {ENTERPRISE_LOCATIONS.map((location, index) => (
         <DraggableMarker
-          key={`enterprise-${index}`}
+          key={index}
           position={[location.lat, location.lng]}
           onDragEnd={() => {}}
           icon={enterpriseIcon}
@@ -125,30 +55,30 @@ export const MapContainerComponent = ({
       ))}
 
       {pickupLocation && (
-        <DraggableMarker
+        <DraggableMarker 
           position={[pickupLocation.lat, pickupLocation.lng]}
           onDragEnd={(latlng) => setPickupLocation({ lat: latlng.lat, lng: latlng.lng })}
           icon={pickupIcon}
           label="Pickup Location"
+          draggable={true}
         />
       )}
-
+      
       {dropLocation && (
-        <DraggableMarker
+        <DraggableMarker 
           position={[dropLocation.lat, dropLocation.lng]}
           onDragEnd={(latlng) => setDropLocation({ lat: latlng.lat, lng: latlng.lng })}
           icon={dropIcon}
           label="Drop-off Location"
+          draggable={true}
         />
       )}
 
-      {pickupLocation && dropLocation && (
-        <RoutePolyline
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          onRouteCalculated={onRouteCalculated}
-        />
-      )}
+      <RoutePolyline
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+        onRouteCalculated={onRouteCalculated}
+      />
     </LeafletMapContainer>
   );
 };

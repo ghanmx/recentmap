@@ -14,7 +14,6 @@ import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
 import { FormData } from "@/types/form";
 import { RouteDisplay } from "./map/RouteDisplay";
-import { Phone, Truck } from "lucide-react";
 
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -119,22 +118,11 @@ const VehicleForm = ({
               onManeuverChange={handleManeuverChange}
             />
 
-            <div className="mt-8 space-y-4">
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg animate-in slide-in-from-bottom duration-500">
-                <Phone className="w-5 h-5 text-blue-600" />
-                <span className="text-sm font-medium text-blue-700">24/7 Emergency Support</span>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-emerald-50 rounded-lg animate-in slide-in-from-bottom duration-500 delay-150">
-                <Truck className="w-5 h-5 text-emerald-600" />
-                <span className="text-sm font-medium text-emerald-700">Emergency Response Available</span>
-              </div>
-
-              <VehicleFormActions
-                onDownload={handleDownload}
-                onCopy={async () => {
-                  const formData = form.getValues();
-                  const clipboardText = `
+            <VehicleFormActions
+              onDownload={handleDownload}
+              onCopy={async () => {
+                const formData = form.getValues();
+                const clipboardText = `
 Usuario: ${formData.username}
 Vehículo: ${formData.vehicleMake} ${formData.vehicleModel} ${formData.vehicleYear}
 Color: ${formData.vehicleColor}
@@ -145,26 +133,25 @@ Ubicación de recogida: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocat
 Ubicación de entrega: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'No especificada'}
 Tipo de servicio: ${serviceType}
 Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
-                  `.trim();
+                `.trim();
 
-                  try {
-                    await navigator.clipboard.writeText(clipboardText);
-                    toast({
-                      title: "Información copiada",
-                      description: "Los detalles del servicio se han copiado al portapapeles",
-                    });
-                  } catch (err) {
-                    toast({
-                      title: "Error",
-                      description: "No se pudo copiar al portapapeles",
-                      variant: "destructive",
-                    });
-                  }
-                }}
-                onSubmit={() => form.handleSubmit(onSubmit)}
-                isPending={isPending}
-              />
-            </div>
+                try {
+                  await navigator.clipboard.writeText(clipboardText);
+                  toast({
+                    title: "Información copiada",
+                    description: "Los detalles del servicio se han copiado al portapapeles",
+                  });
+                } catch (err) {
+                  toast({
+                    title: "Error",
+                    description: "No se pudo copiar al portapapeles",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              onSubmit={() => form.handleSubmit(onSubmit)}
+              isPending={isPending}
+            />
           </form>
         </Form>
       </Card>
