@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, Loader2 } from "lucide-react";
 import { searchAddresses } from "@/services/geocodingService";
 import { useToast } from "@/hooks/use-toast";
+import { debounce } from "lodash";
 
 interface LocationSearchProps {
   label: string;
@@ -27,29 +28,33 @@ export const LocationSearch = ({
   const [isSearching, setIsSearching] = useState(false);
   const { toast } = useToast();
 
-  const handleSearch = async () => {
-    if (searchQuery.length < 3) {
-      toast({
-        title: "Búsqueda muy corta",
-        description: "Por favor ingrese al menos 3 caracteres",
-        variant: "destructive"
-      });
-      return;
-    }
+  const debouncedSearch = useCallback(
+    debounce(async (query: string) => {
+      if (query.length < 3) {
+        setSuggestions([]);
+        return;
+      }
 
-    setIsSearching(true);
-    try {
-      const results = await searchAddresses(searchQuery);
-      setSuggestions(results);
-    } catch (error) {
-      toast({
-        title: "Error en la búsqueda",
-        description: "No se pudieron obtener resultados",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSearching(false);
-    }
+      setIsSearching(true);
+      try {
+        const results = await searchAddresses(query);
+        setSuggestions(results);
+      } catch (error) {
+        toast({
+          title: "Error en la búsqueda",
+          description: "No se pudieron obtener resultados",
+          variant: "destructive"
+        });
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500),
+    [toast]
+  );
+
+  const handleInputChange = (value: string) => {
+    setSearchQuery(value);
+    debouncedSearch(value);
   };
 
   return (
@@ -58,13 +63,13 @@ export const LocationSearch = ({
       <div className="relative">
         <Input
           value={currentAddress || searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}
           className="pr-20"
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              handleSearch();
+              debouncedSearch(searchQuery);
             }
           }}
         />
@@ -73,10 +78,14 @@ export const LocationSearch = ({
           variant="ghost"
           size="sm"
           className="absolute right-1 top-1 h-8"
-          onClick={handleSearch}
+          onClick={() => debouncedSearch(searchQuery)}
           disabled={isSearching}
         >
-          <Search className="h-4 w-4" />
+          {isSearching ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Search className="h-4 w-4" />
+          )}
         </Button>
       </div>
       
@@ -85,7 +94,7 @@ export const LocationSearch = ({
           {suggestions.map((suggestion, index) => (
             <button
               key={index}
-              className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
+              className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2 transition-colors"
               onClick={() => {
                 onLocationSelect({
                   lat: suggestion.lat,
@@ -96,8 +105,8 @@ export const LocationSearch = ({
                 setSearchQuery("");
               }}
             >
-              <MapPin className="h-4 w-4 text-gray-500" />
-              <span className="text-sm">{suggestion.address}</span>
+              <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
+              <span className="text-sm line-clamp-2">{suggestion.address}</span>
             </button>
           ))}
         </div>
