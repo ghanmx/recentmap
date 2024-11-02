@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import L from "leaflet";
 
-// Properly initialize Leaflet default icon paths
-delete L.Icon.Default.prototype._getIconUrl;
+// Initialize Leaflet default icon paths
+L.Icon.Default.imagePath = "/node_modules/leaflet/dist/images/";
 L.Icon.Default.mergeOptions({
-  iconUrl: '/node_modules/leaflet/dist/images/marker-icon.png',
-  iconRetinaUrl: '/node_modules/leaflet/dist/images/marker-icon-2x.png',
-  shadowUrl: '/node_modules/leaflet/dist/images/marker-shadow.png',
+  iconRetinaUrl: L.Icon.Default.imagePath + "marker-icon-2x.png",
+  iconUrl: L.Icon.Default.imagePath + "marker-icon.png",
+  shadowUrl: L.Icon.Default.imagePath + "marker-shadow.png",
 });
 
 interface MapContainerProps {
