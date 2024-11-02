@@ -14,11 +14,12 @@ let lastRequestTime = 0;
 const MIN_REQUEST_INTERVAL = 1100;
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
+const FALLBACK_SPEED_KMH = 45; // Average speed in km/h for Mexican roads
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const calculateStraightLineDistance = (start: Location, end: Location): number => {
-  const R = 6371;
+  const R = 6371; // Earth's radius in kilometers
   const dLat = (end.lat - start.lat) * Math.PI / 180;
   const dLon = (end.lng - start.lng) * Math.PI / 180;
   const a = 
@@ -30,32 +31,42 @@ const calculateStraightLineDistance = (start: Location, end: Location): number =
 };
 
 const generateFallbackGeometry = (start: Location, end: Location): string => {
-  const points = [[start.lat, start.lng], [end.lat, end.lng]];
+  // Create a simple straight line encoded in polyline format
+  const points = [
+    [start.lat, start.lng],
+    [end.lat, end.lng]
+  ];
   return btoa(JSON.stringify(points));
 };
 
 const createFallbackResponse = (start: Location, end: Location): RouteResponse => {
   const distance = calculateStraightLineDistance(start, end);
   const MEXICAN_ROADS_FACTOR = 1.4; // Adjustment factor for Mexican road conditions
+  const adjustedDistance = distance * MEXICAN_ROADS_FACTOR;
+  const duration = (adjustedDistance / FALLBACK_SPEED_KMH) * 3600; // Convert to seconds
+
   return {
-    distance: distance * MEXICAN_ROADS_FACTOR,
-    duration: (distance / 45) * 3600, // Assuming 45 km/h average speed on Mexican roads
+    distance: adjustedDistance,
+    duration,
     geometry: generateFallbackGeometry(start, end)
   };
 };
 
 async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_RETRIES): Promise<Response> {
-  try {
-    const response = await fetch(url, options);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return response;
-  } catch (error) {
-    if (retries > 0) {
-      await wait(RETRY_DELAY);
-      return fetchWithRetry(url, options, retries - 1);
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+      });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return response;
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await wait(RETRY_DELAY * (i + 1)); // Exponential backoff
     }
-    throw error;
   }
+  throw new Error('Max retries reached');
 }
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
@@ -72,19 +83,19 @@ export const getRouteDetails = async (start: Location, end: Location): Promise<R
     
     const response = await fetchWithRetry(url, {
       headers: {
-        'User-Agent': 'TowingServiceApp/1.0',
+        'User-Agent': 'TowingServiceApp/1.0'
       }
     });
 
     const data = await response.json();
     
     if (!data.routes || data.routes.length === 0) {
+      console.warn('No routes found, using fallback calculation');
       return createFallbackResponse(start, end);
     }
 
-    // Select the best route considering Mexican road conditions
     const bestRoute = data.routes.reduce((best: any, current: any) => {
-      const currentScore = current.duration / current.distance; // Lower is better
+      const currentScore = current.duration / current.distance;
       const bestScore = best.duration / best.distance;
       return currentScore < bestScore ? current : best;
     }, data.routes[0]);
