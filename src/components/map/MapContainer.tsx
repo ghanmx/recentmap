@@ -1,3 +1,4 @@
+```typescript
 import { useRef, useState, useEffect } from "react";
 import { MapContainer as LeafletMapContainer, TileLayer, useMap } from "react-leaflet";
 import { DraggableMarker } from "./DraggableMarker";
@@ -97,9 +98,8 @@ export const MapContainerComponent = ({
       zoom={13}
       style={{ height: "100vh", width: "100vw" }}
       className="z-10"
-      whenReady={(map) => {
-        mapRef.current = map.target;
-      }}
+      whenReady={() => {}}
+      ref={mapRef}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -153,3 +153,4 @@ export const MapContainerComponent = ({
     </LeafletMapContainer>
   );
 };
+```
