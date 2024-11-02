@@ -24,12 +24,11 @@ export const LocationPanels = ({
 
   return (
     <>
-      {/* Control buttons with improved spacing and stacking */}
-      <div className="fixed top-24 right-6 z-50 flex flex-col gap-3">
+      <div className="fixed top-20 right-4 sm:top-24 sm:right-6 z-50 flex flex-col gap-3">
         <Button 
           variant="secondary"
           onClick={() => setShowVehicleForm(!showVehicleForm)}
-          className="shadow-lg bg-white/90 backdrop-blur-sm hover:bg-white/95 transition-all duration-200"
+          className="shadow-lg bg-white/90 backdrop-blur-sm hover:bg-white/95 transition-all duration-200 text-sm sm:text-base"
         >
           {showVehicleForm ? "Ocultar Formulario" : "Mostrar Formulario"}
         </Button>
@@ -38,21 +37,21 @@ export const LocationPanels = ({
           <Button 
             variant="secondary"
             onClick={() => setShowLocations(!showLocations)}
-            className="shadow-lg bg-white/90 backdrop-blur-sm hover:bg-white/95 transition-all duration-200"
+            className="shadow-lg bg-white/90 backdrop-blur-sm hover:bg-white/95 transition-all duration-200 text-sm sm:text-base"
           >
             {showLocations ? "Ocultar Ubicaciones" : "Ver Ubicaciones"}
           </Button>
         )}
       </div>
 
-      {/* Vehicle Form Panel with improved positioning */}
       {showVehicleForm && (
         <FloatingPanel 
           position="right" 
-          className="w-[94vw] sm:w-[450px] max-h-[85vh] overflow-y-auto z-40 
+          className="w-[92vw] sm:w-[450px] max-h-[80vh] overflow-y-auto z-40 
                      bg-white/95 backdrop-blur-sm shadow-xl border border-gray-200/50 rounded-xl
-                     fixed top-28 left-1/2 sm:left-auto sm:right-24 
-                     -translate-x-1/2 sm:translate-x-0 transform"
+                     fixed top-24 sm:top-32 left-1/2 sm:left-auto sm:right-24 
+                     -translate-x-1/2 sm:translate-x-0 transform
+                     mx-4 sm:mx-0"
           title="Información del Vehículo"
         >
           <VehicleForm
@@ -69,12 +68,11 @@ export const LocationPanels = ({
         </FloatingPanel>
       )}
 
-      {/* Locations Panel with improved spacing */}
       {showLocations && (pickupAddress || dropAddress) && (
         <FloatingPanel
           position="left"
           className="hidden sm:block w-[350px] z-40 bg-white/95 backdrop-blur-sm shadow-xl 
-                     border border-gray-200/50 rounded-xl fixed top-28 left-6"
+                     border border-gray-200/50 rounded-xl fixed top-32 left-6"
           title="Ubicaciones Seleccionadas"
         >
           <div className="space-y-4 p-4">
@@ -98,6 +96,31 @@ export const LocationPanels = ({
             )}
           </div>
         </FloatingPanel>
+      )}
+
+      {/* Mobile locations panel */}
+      {showLocations && (pickupAddress || dropAddress) && (
+        <div className="sm:hidden fixed bottom-4 left-4 right-4 z-40 bg-white/95 backdrop-blur-sm 
+                        shadow-xl border border-gray-200/50 rounded-xl p-4 space-y-3">
+          {pickupAddress && (
+            <div className="space-y-2 p-2 bg-blue-50/50 rounded-lg">
+              <div className="font-semibold text-xs text-primary flex items-center gap-2">
+                <MapPin className="w-3 h-3" />
+                Punto de Recogida
+              </div>
+              <p className="text-xs text-gray-600 line-clamp-2">{pickupAddress}</p>
+            </div>
+          )}
+          {dropAddress && (
+            <div className="space-y-2 p-2 bg-green-50/50 rounded-lg">
+              <div className="font-semibold text-xs text-secondary flex items-center gap-2">
+                <MapPin className="w-3 h-3" />
+                Punto de Entrega
+              </div>
+              <p className="text-xs text-gray-600 line-clamp-2">{dropAddress}</p>
+            </div>
+          )}
+        </div>
       )}
     </>
   );
