@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { useMap } from "react-leaflet";
 
 interface LocationMarkerProps {
@@ -7,8 +7,13 @@ interface LocationMarkerProps {
   selectingDrop: boolean;
 }
 
-export const LocationMarker = ({ onLocationSelect, selectingPickup, selectingDrop }: LocationMarkerProps) => {
+export const LocationMarker = ({ 
+  onLocationSelect, 
+  selectingPickup, 
+  selectingDrop 
+}: LocationMarkerProps) => {
   const map = useMap();
+  const clickHandlerRef = useRef<((e: L.LeafletMouseEvent) => void) | null>(null);
 
   const handleClick = useCallback((e: L.LeafletMouseEvent) => {
     if (selectingPickup || selectingDrop) {
@@ -18,10 +23,15 @@ export const LocationMarker = ({ onLocationSelect, selectingPickup, selectingDro
 
   useEffect(() => {
     if (selectingPickup || selectingDrop) {
-      map.on('click', handleClick);
+      // Store the handler reference
+      clickHandlerRef.current = handleClick;
+      map.on('click', clickHandlerRef.current);
       
       return () => {
-        map.off('click', handleClick);
+        if (clickHandlerRef.current) {
+          map.off('click', clickHandlerRef.current);
+          clickHandlerRef.current = null;
+        }
       };
     }
   }, [map, handleClick, selectingPickup, selectingDrop]);

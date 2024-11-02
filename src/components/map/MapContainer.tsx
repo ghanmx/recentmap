@@ -8,10 +8,11 @@ import { useToast } from "@/hooks/use-toast";
 import L from "leaflet";
 
 // Properly initialize Leaflet default icon paths
+delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconUrl: '/node_modules/leaflet/dist/images/marker-icon.png',
+  iconRetinaUrl: '/node_modules/leaflet/dist/images/marker-icon-2x.png',
+  shadowUrl: '/node_modules/leaflet/dist/images/marker-shadow.png',
 });
 
 interface MapContainerProps {
@@ -31,17 +32,20 @@ const UserLocationMarker = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    map.locate().on("locationfound", function (e) {
+    const handleLocationFound = (e: L.LocationEvent) => {
       setPosition([e.latlng.lat, e.latlng.lng]);
       map.flyTo(e.latlng, map.getZoom());
       toast({
         title: "Location found",
         description: "Your current location has been detected",
       });
-    });
+    };
+
+    map.locate();
+    map.on("locationfound", handleLocationFound);
 
     return () => {
-      map.off("locationfound");
+      map.off("locationfound", handleLocationFound);
     };
   }, [map, toast]);
 
