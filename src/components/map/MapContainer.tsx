@@ -1,8 +1,10 @@
-import { MapContainer as LeafletMapContainer, TileLayer } from "react-leaflet";
+import { MapContainer as LeafletMapContainer, TileLayer, useMap } from "react-leaflet";
 import { DraggableMarker } from "./DraggableMarker";
 import { RoutePolyline } from "./RoutePolyline";
 import { ENTERPRISE_LOCATIONS, enterpriseIcon, pickupIcon, dropIcon } from "@/utils/mapUtils";
 import { LocationMarker } from "./LocationMarker";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface MapContainerProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -14,6 +16,32 @@ interface MapContainerProps {
   setDropLocation: (location: { lat: number; lng: number }) => void;
   onRouteCalculated: (distance: number) => void;
 }
+
+const UserLocationMarker = () => {
+  const [position, setPosition] = useState<[number, number] | null>(null);
+  const map = useMap();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    map.locate().on("locationfound", function (e) {
+      setPosition([e.latlng.lat, e.latlng.lng]);
+      map.flyTo(e.latlng, map.getZoom());
+      toast({
+        title: "Location found",
+        description: "Your current location has been detected",
+      });
+    });
+  }, [map]);
+
+  return position === null ? null : (
+    <DraggableMarker
+      position={position}
+      onDragEnd={() => {}}
+      label="Your Location"
+      draggable={false}
+    />
+  );
+};
 
 export const MapContainerComponent = ({
   pickupLocation,
@@ -36,6 +64,8 @@ export const MapContainerComponent = ({
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
+      
+      <UserLocationMarker />
       
       <LocationMarker 
         onLocationSelect={onLocationSelect}

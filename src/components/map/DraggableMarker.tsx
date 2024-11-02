@@ -25,7 +25,14 @@ export const DraggableMarker = ({ position, onDragEnd, icon, label, draggable = 
       }}
     >
       <Popup>
-        <div className="font-semibold">{label}</div>
+        <div className="p-2">
+          <h3 className="font-semibold text-primary">{label}</h3>
+          <p className="text-sm text-gray-600 mt-1">
+            {typeof position !== 'string' && Array.isArray(position) 
+              ? `${position[0].toFixed(6)}, ${position[1].toFixed(6)}`
+              : 'Location coordinates'}
+          </p>
+        </div>
       </Popup>
     </Marker>
   );
