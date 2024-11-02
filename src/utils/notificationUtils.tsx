@@ -26,7 +26,7 @@ export const showLocationNotification = (type: 'pickup' | 'drop', coords: { lat:
         <MapPin className="h-4 w-4" />
         <span>Coordinates: {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}</span>
       </div>
-    ),
+    ) as unknown as string,
     duration: 3000,
     className: "bg-green-50 border-green-200"
   });
@@ -42,7 +42,7 @@ export const showRouteNotification = (distance: number) => {
         <Info className="h-4 w-4" />
         <span>Total route distance: {distance.toFixed(2)} km</span>
       </div>
-    ),
+    ) as unknown as string,
     duration: 3000,
     className: "bg-blue-50 border-blue-200"
   });
@@ -59,7 +59,7 @@ export const showPaymentNotification = (success: boolean, error?: string) => {
           <Check className="h-4 w-4" />
           <span>Tow truck request confirmed!</span>
         </div>
-      ),
+      ) as unknown as string,
       duration: 4000,
       className: "bg-green-50 border-green-200"
     });
@@ -71,7 +71,7 @@ export const showPaymentNotification = (success: boolean, error?: string) => {
           <AlertTriangle className="h-4 w-4" />
           <span>{error || "Payment processing error"}</span>
         </div>
-      ),
+      ) as unknown as string,
       duration: 5000,
       variant: "destructive"
     });

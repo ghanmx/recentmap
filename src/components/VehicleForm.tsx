@@ -14,6 +14,7 @@ import { CostBreakdown } from "./form/CostBreakdown";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
 import { FormData } from "@/types/form";
+import { RouteDisplay } from "./map/RouteDisplay";
 
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -80,59 +81,62 @@ const VehicleForm = ({
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
-      <VehicleFormHeader />
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <LocationFields
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-            pickupAddress={pickupAddress}
-            dropAddress={dropAddress}
-            onPickupSelect={onPickupSelect}
-            onDropSelect={onDropSelect}
-          />
-
-          <VehicleDetails
-            onBrandChange={(brand) => form.setValue('vehicleMake', brand)}
-            onModelChange={(model) => {
-              form.setValue('vehicleModel', model);
-              onVehicleModelChange?.(model);
-            }}
-            onYearChange={(year) => form.setValue('vehicleYear', Number(year))}
-            onColorChange={(color) => form.setValue('vehicleColor', color)}
-          />
-
-          <TowTruckSelector
-            form={form}
-            onTruckTypeChange={setTruckType}
-            onTollFeesChange={setTollFees}
-          />
-
-          <ServiceRequirements
-            form={form}
-            requiresManeuver={requiresManeuver}
-            onManeuverChange={handleManeuverChange}
-          />
-
-          {costDetails && (
-            <CostBreakdown
-              distance={costDetails.distance}
-              basePrice={costDetails.basePrice}
-              costPerKm={costDetails.costPerKm}
-              ratePerKm={costDetails.ratePerKm}
-              maneuverCost={costDetails.maneuverCost}
-              tollFees={tollFees}
-              totalCost={costDetails.totalCost}
+    <div className="space-y-6">
+      <RouteDisplay pickupLocation={pickupLocation} dropLocation={dropLocation} />
+      
+      <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+        <VehicleFormHeader />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <LocationFields
+              pickupLocation={pickupLocation}
+              dropLocation={dropLocation}
+              pickupAddress={pickupAddress}
+              dropAddress={dropAddress}
+              onPickupSelect={onPickupSelect}
+              onDropSelect={onDropSelect}
             />
-          )}
 
-          <VehicleFormActions
-            onDownload={handleDownload}
-            onCopy={async () => {
-              const formData = form.getValues();
-              const costBreakdown = costDetails
-                ? `
+            <VehicleDetails
+              onBrandChange={(brand) => form.setValue('vehicleMake', brand)}
+              onModelChange={(model) => {
+                form.setValue('vehicleModel', model);
+                onVehicleModelChange?.(model);
+              }}
+              onYearChange={(year) => form.setValue('vehicleYear', Number(year))}
+              onColorChange={(color) => form.setValue('vehicleColor', color)}
+            />
+
+            <TowTruckSelector
+              form={form}
+              onTruckTypeChange={setTruckType}
+              onTollFeesChange={setTollFees}
+            />
+
+            <ServiceRequirements
+              form={form}
+              requiresManeuver={requiresManeuver}
+              onManeuverChange={handleManeuverChange}
+            />
+
+            {costDetails && (
+              <CostBreakdown
+                distance={costDetails.distance}
+                basePrice={costDetails.basePrice}
+                costPerKm={costDetails.costPerKm}
+                ratePerKm={costDetails.ratePerKm}
+                maneuverCost={costDetails.maneuverCost}
+                tollFees={tollFees}
+                totalCost={costDetails.totalCost}
+              />
+            )}
+
+            <VehicleFormActions
+              onDownload={handleDownload}
+              onCopy={async () => {
+                const formData = form.getValues();
+                const costBreakdown = costDetails
+                  ? `
 COST BREAKDOWN:
 Total Distance: ${costDetails.distance.toFixed(2)} km
 Base Price: $${costDetails.basePrice.toFixed(2)}
@@ -142,7 +146,7 @@ Toll Fees: $${tollFees.toFixed(2)}
 ----------------------------------------
 TOTAL COST: $${costDetails.totalCost.toFixed(2)}` : '';
 
-              const clipboardText = `
+                const clipboardText = `
 Usuario: ${formData.username}
 Vehículo: ${formData.vehicleMake} ${formData.vehicleModel} ${formData.vehicleYear}
 Color: ${formData.vehicleColor}
@@ -156,26 +160,27 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
 ${costBreakdown}
                 `.trim();
 
-              try {
-                await navigator.clipboard.writeText(clipboardText);
-                toast({
-                  title: "Información copiada",
-                  description: "Los detalles del servicio se han copiado al portapapeles",
-                });
-              } catch (err) {
-                toast({
-                  title: "Error",
-                  description: "No se pudo copiar al portapapeles",
-                  variant: "destructive",
-                });
-              }
-            }}
-            onSubmit={() => form.handleSubmit(onSubmit)}
-            isPending={isPending}
-          />
-        </form>
-      </Form>
-    </Card>
+                try {
+                  await navigator.clipboard.writeText(clipboardText);
+                  toast({
+                    title: "Información copiada",
+                    description: "Los detalles del servicio se han copiado al portapapeles",
+                  });
+                } catch (err) {
+                  toast({
+                    title: "Error",
+                    description: "No se pudo copiar al portapapeles",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              onSubmit={() => form.handleSubmit(onSubmit)}
+              isPending={isPending}
+            />
+          </form>
+        </Form>
+      </Card>
+    </div>
   );
 };
 
