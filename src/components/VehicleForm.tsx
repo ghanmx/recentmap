@@ -10,7 +10,6 @@ import { LocationFields } from "./form/LocationFields";
 import { useState } from "react";
 import { TowTruckType } from "@/utils/downloadUtils";
 import { useTowingCost } from "@/hooks/useTowingCost";
-import { CostBreakdown } from "./form/CostBreakdown";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
 import { FormData } from "@/types/form";
@@ -119,33 +118,10 @@ const VehicleForm = ({
               onManeuverChange={handleManeuverChange}
             />
 
-            {costDetails && (
-              <CostBreakdown
-                distance={costDetails.distance}
-                basePrice={costDetails.basePrice}
-                costPerKm={costDetails.costPerKm}
-                ratePerKm={costDetails.ratePerKm}
-                maneuverCost={costDetails.maneuverCost}
-                tollFees={tollFees}
-                totalCost={costDetails.totalCost}
-              />
-            )}
-
             <VehicleFormActions
               onDownload={handleDownload}
               onCopy={async () => {
                 const formData = form.getValues();
-                const costBreakdown = costDetails
-                  ? `
-COST BREAKDOWN:
-Total Distance: ${costDetails.distance.toFixed(2)} km
-Base Price: $${costDetails.basePrice.toFixed(2)}
-Cost per km: $${costDetails.costPerKm.toFixed(2)}
-${requiresManeuver ? `Special Maneuver Cost: $${costDetails.maneuverCost.toFixed(2)}` : ''}
-Toll Fees: $${tollFees.toFixed(2)}
-----------------------------------------
-TOTAL COST: $${costDetails.totalCost.toFixed(2)}` : '';
-
                 const clipboardText = `
 Usuario: ${formData.username}
 Vehículo: ${formData.vehicleMake} ${formData.vehicleModel} ${formData.vehicleYear}
@@ -157,7 +133,6 @@ Ubicación de recogida: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocat
 Ubicación de entrega: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'No especificada'}
 Tipo de servicio: ${serviceType}
 Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
-${costBreakdown}
                 `.trim();
 
                 try {
