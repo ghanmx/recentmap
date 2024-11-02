@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Shield } from "lucide-react";
 import { useTowing } from "@/contexts/TowingContext";
-import { useState } from "react";
 
 interface RouteDisplayProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -10,7 +9,6 @@ interface RouteDisplayProps {
 
 export const RouteDisplay = ({ pickupLocation, dropLocation }: RouteDisplayProps) => {
   const { totalCost } = useTowing();
-  const [isExpanded, setIsExpanded] = useState(true);
 
   return (
     <Card className="relative p-4 sm:p-6 space-y-4 bg-gradient-to-br from-white/95 via-blue-50/95 to-white/95 backdrop-blur-md shadow-xl border border-blue-100/50">

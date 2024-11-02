@@ -22,7 +22,7 @@ export const MapHeader = () => {
           </div>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full border border-green-200 shadow-sm">
             <MapPin className="w-4 h-4 text-green-600" />
             <span className="text-sm font-medium text-green-700">Available in your area</span>
@@ -30,36 +30,30 @@ export const MapHeader = () => {
           <Button
             variant="outline"
             onClick={() => setShowForm(!showForm)}
-            className="hidden sm:flex items-center gap-2"
+            className="items-center gap-2 hidden sm:flex"
           >
             <Truck className="w-4 h-4" />
-            Request Service
+            {showForm ? "Hide Form" : "Show Form"}
           </Button>
-          <div className="sm:hidden">
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative z-50">
-                  <Menu className="h-6 w-6" />
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="sm:hidden">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right">
+              <div className="flex flex-col gap-4 mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowForm(!showForm)}
+                  className="w-full"
+                >
+                  <Truck className="w-4 h-4 mr-2" />
+                  {showForm ? "Hide Form" : "Show Form"}
                 </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px] z-[60]">
-                <div className="flex flex-col gap-4 mt-6">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowForm(!showForm)}
-                    className="w-full"
-                  >
-                    <Truck className="w-4 h-4 mr-2" />
-                    Request Service
-                  </Button>
-                  <div className="flex items-center gap-2 bg-blue-50 px-4 py-3 rounded-full border border-blue-200 shadow-sm">
-                    <Phone className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm font-medium text-blue-700">24/7 Support</span>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </nav>
     </div>
