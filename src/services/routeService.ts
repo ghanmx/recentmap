@@ -15,6 +15,7 @@ const MIN_REQUEST_INTERVAL = 1100;
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const FALLBACK_SPEED_KMH = 45; // Average speed in km/h for Mexican roads
+const REQUEST_TIMEOUT = 10000; // Increased timeout to 10 seconds
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -55,14 +56,23 @@ const createFallbackResponse = (start: Location, end: Location): RouteResponse =
 async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_RETRIES): Promise<Response> {
   for (let i = 0; i < retries; i++) {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
       const response = await fetch(url, {
         ...options,
-        signal: AbortSignal.timeout(5000) // 5 second timeout
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
+
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       return response;
     } catch (error) {
-      if (i === retries - 1) throw error;
+      if (i === retries - 1) {
+        console.warn('Max retries reached, using fallback calculation');
+        throw error;
+      }
       await wait(RETRY_DELAY * (i + 1)); // Exponential backoff
     }
   }
