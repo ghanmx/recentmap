@@ -9,7 +9,6 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 // Initialize Leaflet default icon paths
-delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
@@ -93,6 +92,10 @@ export const MapContainerComponent = ({
     };
   }, []);
 
+  const handleMapReady = (map: L.Map) => {
+    mapRef.current = map;
+  };
+
   return (
     <LeafletMapContainer
       center={[ENTERPRISE_LOCATIONS[0].lat, ENTERPRISE_LOCATIONS[0].lng]}
@@ -100,11 +103,7 @@ export const MapContainerComponent = ({
       style={{ height: "100vh", width: "100vw" }}
       className="z-10"
       ref={mapRef}
-      whenReady={() => {
-        if (mapRef.current) {
-          return;
-        }
-      }}
+      whenReady={handleMapReady}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
