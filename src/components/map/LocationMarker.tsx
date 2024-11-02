@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useMap, useMapEvents } from "react-leaflet";
+import { useEffect, useCallback } from "react";
+import { useMap } from "react-leaflet";
 
 interface LocationMarkerProps {
   onLocationSelect: (location: { lat: number; lng: number }) => void;
@@ -10,21 +10,21 @@ interface LocationMarkerProps {
 export const LocationMarker = ({ onLocationSelect, selectingPickup, selectingDrop }: LocationMarkerProps) => {
   const map = useMap();
 
-  useEffect(() => {
-    const handleClick = (e: L.LeafletMouseEvent) => {
-      if (selectingPickup || selectingDrop) {
-        onLocationSelect(e.latlng);
-      }
-    };
+  const handleClick = useCallback((e: L.LeafletMouseEvent) => {
+    if (selectingPickup || selectingDrop) {
+      onLocationSelect(e.latlng);
+    }
+  }, [selectingPickup, selectingDrop, onLocationSelect]);
 
+  useEffect(() => {
     if (selectingPickup || selectingDrop) {
       map.on('click', handleClick);
+      
+      return () => {
+        map.off('click', handleClick);
+      };
     }
-
-    return () => {
-      map.off('click', handleClick);
-    };
-  }, [map, selectingPickup, selectingDrop, onLocationSelect]);
+  }, [map, handleClick, selectingPickup, selectingDrop]);
 
   return null;
 };
