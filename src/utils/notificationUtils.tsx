@@ -28,8 +28,7 @@ export const showLocationNotification = (type: 'pickup' | 'drop', coords: { lat:
       </div>
     ) as unknown as string,
     duration: 5000,
-    className: "bg-green-50 border-green-200",
-    position: "bottom-center"
+    className: "bg-green-50 border-green-200"
   });
 };
 
@@ -45,8 +44,7 @@ export const showRouteNotification = (distance: number) => {
       </div>
     ) as unknown as string,
     duration: 5000,
-    className: "bg-blue-50 border-blue-200",
-    position: "bottom-center"
+    className: "bg-blue-50 border-blue-200"
   });
 };
 
@@ -63,8 +61,7 @@ export const showPaymentNotification = (success: boolean, error?: string) => {
         </div>
       ) as unknown as string,
       duration: 5000,
-      className: "bg-green-50 border-green-200",
-      position: "bottom-center"
+      className: "bg-green-50 border-green-200"
     });
   } else {
     toast({
@@ -76,8 +73,7 @@ export const showPaymentNotification = (success: boolean, error?: string) => {
         </div>
       ) as unknown as string,
       duration: 5000,
-      variant: "destructive",
-      position: "bottom-center"
+      variant: "destructive"
     });
   }
 };
