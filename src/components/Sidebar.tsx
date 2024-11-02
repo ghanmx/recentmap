@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
-import { LayoutDashboard, Menu, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { Menu, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import VehicleForm from "./VehicleForm";
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -15,23 +15,19 @@ const Sidebar = () => {
         <h1 className="text-2xl font-heading font-bold text-primary">TowTruck</h1>
       </div>
 
-      <nav className="flex-1 px-4">
-        <ul className="space-y-2">
-          <li>
-            <Link
-              to="/"
-              onClick={() => setIsMobileOpen(false)}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors",
-                "bg-primary/10 text-primary font-medium"
-              )}
-            >
-              <LayoutDashboard className="w-5 h-5" />
-              Dashboard
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      <div className="flex-1 px-4 overflow-y-auto">
+        <VehicleForm
+          pickupLocation={null}
+          dropLocation={null}
+          pickupAddress=""
+          dropAddress=""
+          serviceType="standard"
+          onManeuverChange={() => {}}
+          onVehicleModelChange={() => {}}
+          onPickupSelect={() => {}}
+          onDropSelect={() => {}}
+        />
+      </div>
     </>
   );
 
@@ -69,7 +65,7 @@ const Sidebar = () => {
       <div
         className={cn(
           "hidden lg:flex flex-col h-screen bg-white border-r fixed left-0 top-0 transition-all duration-300",
-          isDesktopSidebarVisible ? "w-64" : "w-0 overflow-hidden"
+          isDesktopSidebarVisible ? "w-96" : "w-0 overflow-hidden"
         )}
       >
         <NavContent />
@@ -78,7 +74,7 @@ const Sidebar = () => {
       {/* Spacer for content */}
       <div className={cn(
         "hidden lg:block transition-all duration-300",
-        isDesktopSidebarVisible ? "w-64" : "w-0"
+        isDesktopSidebarVisible ? "w-96" : "w-0"
       )} />
     </>
   );
