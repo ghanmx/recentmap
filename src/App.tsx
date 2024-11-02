@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { StripeProvider } from "./providers/StripeProvider";
 import Sidebar from "./components/Sidebar";
 import Index from "./pages/Index";
-import UserPage from "./pages/UserPage";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +19,6 @@ const App = () => (
             <main className="flex-1 p-8 lg:ml-64">
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/user" element={<UserPage />} />
               </Routes>
             </main>
           </div>
