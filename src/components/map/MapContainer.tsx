@@ -8,23 +8,12 @@ import { useToast } from "@/hooks/use-toast";
 import L from "leaflet";
 
 // Initialize Leaflet default icon paths
-L.Icon.Default.imagePath = "/node_modules/leaflet/dist/images/";
+L.Icon.Default.imagePath = "/";
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: L.Icon.Default.imagePath + "marker-icon-2x.png",
-  iconUrl: L.Icon.Default.imagePath + "marker-icon.png",
-  shadowUrl: L.Icon.Default.imagePath + "marker-shadow.png",
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png"
 });
-
-interface MapContainerProps {
-  pickupLocation: { lat: number; lng: number } | null;
-  dropLocation: { lat: number; lng: number } | null;
-  selectingPickup: boolean;
-  selectingDrop: boolean;
-  onLocationSelect: (location: { lat: number; lng: number }) => void;
-  setPickupLocation: (location: { lat: number; lng: number }) => void;
-  setDropLocation: (location: { lat: number; lng: number }) => void;
-  onRouteCalculated: (distance: number) => void;
-}
 
 const UserLocationMarker = () => {
   const [position, setPosition] = useState<[number, number] | null>(null);
@@ -41,8 +30,8 @@ const UserLocationMarker = () => {
       });
     };
 
-    map.locate();
     map.on("locationfound", handleLocationFound);
+    map.locate();
 
     return () => {
       map.off("locationfound", handleLocationFound);
@@ -58,6 +47,17 @@ const UserLocationMarker = () => {
     />
   );
 };
+
+interface MapContainerProps {
+  pickupLocation: { lat: number; lng: number } | null;
+  dropLocation: { lat: number; lng: number } | null;
+  selectingPickup: boolean;
+  selectingDrop: boolean;
+  onLocationSelect: (location: { lat: number; lng: number }) => void;
+  setPickupLocation: (location: { lat: number; lng: number }) => void;
+  setDropLocation: (location: { lat: number; lng: number }) => void;
+  onRouteCalculated: (distance: number) => void;
+}
 
 export const MapContainerComponent = ({
   pickupLocation,

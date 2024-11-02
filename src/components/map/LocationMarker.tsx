@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useRef } from "react";
 import { useMap } from "react-leaflet";
+import L from "leaflet";
 
 interface LocationMarkerProps {
   onLocationSelect: (location: { lat: number; lng: number }) => void;
@@ -23,7 +24,10 @@ export const LocationMarker = ({
 
   useEffect(() => {
     if (selectingPickup || selectingDrop) {
-      // Store the handler reference
+      if (clickHandlerRef.current) {
+        map.off('click', clickHandlerRef.current);
+      }
+      
       clickHandlerRef.current = handleClick;
       map.on('click', clickHandlerRef.current);
       
@@ -33,6 +37,9 @@ export const LocationMarker = ({
           clickHandlerRef.current = null;
         }
       };
+    } else if (clickHandlerRef.current) {
+      map.off('click', clickHandlerRef.current);
+      clickHandlerRef.current = null;
     }
   }, [map, handleClick, selectingPickup, selectingDrop]);
 
