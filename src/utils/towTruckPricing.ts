@@ -39,5 +39,7 @@ export const getTowTruckType = (vehicleModel: string): 'A' | 'B' | 'C' | 'D' => 
 
 export const calculateTotalCost = (distance: number, towTruckType: 'A' | 'B' | 'C' | 'D', requiresManeuver: boolean): number => {
   const { perKm, basePrice, maneuverCharge } = towTruckTypes[towTruckType];
-  return Number((basePrice + (distance * perKm) + (requiresManeuver ? maneuverCharge : 0)).toFixed(2));
+  const distanceCost = distance * perKm;
+  const maneuverCost = requiresManeuver ? maneuverCharge : 0;
+  return Number((basePrice + distanceCost + maneuverCost).toFixed(2));
 };

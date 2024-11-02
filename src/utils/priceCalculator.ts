@@ -101,7 +101,9 @@ export const calculateTowingPrice = async (
     
     const tollFees = calculateTollFees(routePoints, isRoundTrip);
     const towTruckType = getTowTruckType(vehicleModel);
-    const totalPrice = calculateTotalCost(totalDistance, towTruckType, requiresManeuver) + tollFees;
+    
+    // Updated price calculation to include both ways
+    const totalPrice = (calculateTotalCost(totalDistance, towTruckType, requiresManeuver) * 2) + tollFees;
 
     return {
       totalPrice,
