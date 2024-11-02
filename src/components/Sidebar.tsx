@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import VehicleForm from "./VehicleForm";
+import { TowingProvider } from "@/contexts/TowingContext";
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -16,17 +17,19 @@ const Sidebar = () => {
       </div>
 
       <div className="flex-1 px-4 overflow-y-auto">
-        <VehicleForm
-          pickupLocation={null}
-          dropLocation={null}
-          pickupAddress=""
-          dropAddress=""
-          serviceType="standard"
-          onManeuverChange={() => {}}
-          onVehicleModelChange={() => {}}
-          onPickupSelect={() => {}}
-          onDropSelect={() => {}}
-        />
+        <TowingProvider>
+          <VehicleForm
+            pickupLocation={null}
+            dropLocation={null}
+            pickupAddress=""
+            dropAddress=""
+            serviceType="standard"
+            onManeuverChange={() => {}}
+            onVehicleModelChange={() => {}}
+            onPickupSelect={() => {}}
+            onDropSelect={() => {}}
+          />
+        </TowingProvider>
       </div>
     </>
   );
