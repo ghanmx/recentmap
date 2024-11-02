@@ -1,8 +1,8 @@
 import { toast } from "@/hooks/use-toast";
 import { Check, AlertTriangle, Info, MapPin } from "lucide-react";
-import { ReactNode } from "react";
 
-const NOTIFICATION_COOLDOWN = 3000;
+// Increase cooldown to prevent frequent respawning
+const NOTIFICATION_COOLDOWN = 10000; // Changed from 3000 to 10000ms
 const notificationTimestamps: { [key: string]: number } = {};
 
 const shouldShowNotification = (type: string): boolean => {
@@ -27,8 +27,9 @@ export const showLocationNotification = (type: 'pickup' | 'drop', coords: { lat:
         <span>Coordinates: {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}</span>
       </div>
     ) as unknown as string,
-    duration: 3000,
-    className: "bg-green-50 border-green-200"
+    duration: 5000,
+    className: "bg-green-50 border-green-200",
+    position: "bottom-center"
   });
 };
 
@@ -43,8 +44,9 @@ export const showRouteNotification = (distance: number) => {
         <span>Total route distance: {distance.toFixed(2)} km</span>
       </div>
     ) as unknown as string,
-    duration: 3000,
-    className: "bg-blue-50 border-blue-200"
+    duration: 5000,
+    className: "bg-blue-50 border-blue-200",
+    position: "bottom-center"
   });
 };
 
@@ -60,8 +62,9 @@ export const showPaymentNotification = (success: boolean, error?: string) => {
           <span>Tow truck request confirmed!</span>
         </div>
       ) as unknown as string,
-      duration: 4000,
-      className: "bg-green-50 border-green-200"
+      duration: 5000,
+      className: "bg-green-50 border-green-200",
+      position: "bottom-center"
     });
   } else {
     toast({
@@ -73,7 +76,8 @@ export const showPaymentNotification = (success: boolean, error?: string) => {
         </div>
       ) as unknown as string,
       duration: 5000,
-      variant: "destructive"
+      variant: "destructive",
+      position: "bottom-center"
     });
   }
 };
