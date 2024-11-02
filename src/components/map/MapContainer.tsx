@@ -9,6 +9,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 // Initialize Leaflet default icon paths
+delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
@@ -19,7 +20,7 @@ const UserLocationMarker = () => {
   const [position, setPosition] = useState<[number, number] | null>(null);
   const map = useMap();
   const { toast } = useToast();
-  const eventHandlerRef = useRef<((e: L.LocationEvent) => void) | null>(null);
+  const locationHandlerRef = useRef<((e: L.LocationEvent) => void) | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -35,15 +36,14 @@ const UserLocationMarker = () => {
       }
     };
 
-    eventHandlerRef.current = handleLocationFound;
-    map.on("locationfound", eventHandlerRef.current);
+    locationHandlerRef.current = handleLocationFound;
+    map.on("locationfound", locationHandlerRef.current);
     map.locate();
 
     return () => {
       isMounted = false;
-      if (eventHandlerRef.current) {
-        map.off("locationfound", eventHandlerRef.current);
-        eventHandlerRef.current = null;
+      if (locationHandlerRef.current) {
+        map.off("locationfound", locationHandlerRef.current);
       }
     };
   }, [map, toast]);
@@ -87,7 +87,6 @@ export const MapContainerComponent = ({
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
-        mapRef.current = null;
       }
     };
   }, []);
@@ -98,11 +97,8 @@ export const MapContainerComponent = ({
       zoom={13}
       style={{ height: "100vh", width: "100vw" }}
       className="z-10"
-      ref={mapRef}
-      whenReady={() => {
-        if (mapRef.current) {
-          return;
-        }
+      whenCreated={(map) => {
+        mapRef.current = map;
       }}
     >
       <TileLayer
