@@ -57,6 +57,22 @@ const VehicleForm = ({
     onManeuverChange?.(checked);
   };
 
+  const generateFormDataText = () => {
+    const formData = form.getValues();
+    return `
+Usuario: ${formData.username}
+Vehículo: ${formData.vehicleMake} ${formData.vehicleModel} ${formData.vehicleYear}
+Color: ${formData.vehicleColor}
+Tipo de Grúa: ${formData.truckType}
+Casetas: $${tollFees}
+Descripción: ${formData.issueDescription}
+Ubicación de recogida: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocation.lng}` : 'No especificada'}
+Ubicación de entrega: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'No especificada'}
+Tipo de servicio: ${serviceType}
+Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
+    `.trim();
+  };
+
   const handleDownload = async (format: 'csv' | 'txt') => {
     if (!form.formState.isValid) {
       toast({
@@ -121,22 +137,8 @@ const VehicleForm = ({
             <VehicleFormActions
               onDownload={handleDownload}
               onCopy={async () => {
-                const formData = form.getValues();
-                const clipboardText = `
-Usuario: ${formData.username}
-Vehículo: ${formData.vehicleMake} ${formData.vehicleModel} ${formData.vehicleYear}
-Color: ${formData.vehicleColor}
-Tipo de Grúa: ${formData.truckType}
-Casetas: $${tollFees}
-Descripción: ${formData.issueDescription}
-Ubicación de recogida: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocation.lng}` : 'No especificada'}
-Ubicación de entrega: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'No especificada'}
-Tipo de servicio: ${serviceType}
-Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
-                `.trim();
-
                 try {
-                  await navigator.clipboard.writeText(clipboardText);
+                  await navigator.clipboard.writeText(generateFormDataText());
                   toast({
                     title: "Información copiada",
                     description: "Los detalles del servicio se han copiado al portapapeles",
@@ -151,6 +153,7 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
               }}
               onSubmit={() => form.handleSubmit(onSubmit)}
               isPending={isPending}
+              formData={generateFormDataText()}
             />
           </form>
         </Form>
