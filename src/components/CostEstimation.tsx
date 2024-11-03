@@ -7,7 +7,7 @@ export const CostEstimation = () => {
   const { totalDistance, totalCost } = useTowing();
 
   return (
-    <Card className="p-6 space-y-4 bg-gradient-to-br from-white via-blue-50/50 to-white border-blue-100">
+    <Card className="p-6 space-y-4 bg-gradient-to-br from-white via-blue-50/50 to-white border-blue-100 w-full max-w-md mx-auto shadow-lg hover:shadow-xl transition-all">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="bg-primary/10 p-2 rounded-lg">

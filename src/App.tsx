@@ -16,9 +16,9 @@ const App = () => (
       <StripeProvider>
         <TowingProvider>
           <BrowserRouter>
-            <div className="flex min-h-screen bg-gray-50">
+            <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
               <Sidebar />
-              <main className="flex-1 p-8">
+              <main className="flex-1 p-4 sm:p-6 lg:p-8 mx-auto max-w-7xl w-full">
                 <Routes>
                   <Route path="/" element={<Index />} />
                 </Routes>
