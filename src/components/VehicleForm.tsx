@@ -5,13 +5,14 @@ import { ServiceRequirements } from "./form/ServiceRequirements";
 import { VehicleFormHeader } from "./form/VehicleFormHeader";
 import { TowTruckSelector } from "./form/TowTruckSelector";
 import { AddressFields } from "./form/AddressFields";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TowTruckType } from "@/utils/downloadUtils";
 import { useTowingCost } from "@/hooks/useTowingCost";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
 import { CreditCard } from "lucide-react";
+import { getAddressFromCoordinates } from "@/services/geocodingService";
 
 const VehicleForm = ({
   pickupLocation,
@@ -41,6 +42,21 @@ const VehicleForm = ({
   const { toast } = useToast();
   const { form, onSubmit, isPending } = useVehicleForm(pickupLocation, dropLocation, serviceType);
   const costDetails = useTowingCost(pickupLocation, dropLocation, requiresManeuver, truckType, tollFees);
+
+  useEffect(() => {
+    const updateAddresses = async () => {
+      if (pickupLocation) {
+        const address = await getAddressFromCoordinates(pickupLocation.lat, pickupLocation.lng);
+        onPickupSelect({ ...pickupLocation, address });
+      }
+      if (dropLocation) {
+        const address = await getAddressFromCoordinates(dropLocation.lat, dropLocation.lng);
+        onDropSelect({ ...dropLocation, address });
+      }
+    };
+
+    updateAddresses();
+  }, [pickupLocation, dropLocation, onPickupSelect, onDropSelect]);
 
   return (
     <div className="space-y-6">
