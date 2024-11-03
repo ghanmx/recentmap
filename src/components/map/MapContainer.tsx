@@ -6,10 +6,10 @@ import { BorderControls } from "./BorderControls";
 import { MapLocationHandler } from "./MapLocationHandler";
 import { enterpriseIcon, pickupIcon, dropIcon } from "@/utils/mapUtils";
 import { COMPANY_LOCATION } from "@/services/routeService";
-import { Marker, Popup } from "react-leaflet";
+import { Marker, Popup, useMap } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
 import { useEffect } from "react";
-import { useMap } from "react-leaflet";
+import { LatLngTuple, LatLngBounds } from "leaflet";
 
 const MapUpdater = ({ pickupLocation, dropLocation }: { 
   pickupLocation: { lat: number; lng: number } | null;
@@ -19,10 +19,10 @@ const MapUpdater = ({ pickupLocation, dropLocation }: {
 
   useEffect(() => {
     if (pickupLocation && dropLocation) {
-      const bounds = [
+      const bounds = new LatLngBounds(
         [pickupLocation.lat, pickupLocation.lng],
         [dropLocation.lat, dropLocation.lng]
-      ];
+      );
       map.fitBounds(bounds);
     } else if (pickupLocation) {
       map.setView([pickupLocation.lat, pickupLocation.lng], 13);
@@ -57,12 +57,14 @@ export const MapContainerComponent = ({
 }: MapContainerComponentProps) => {
   const handleLocationSelect = async (location: { lat: number; lng: number }) => {
     const address = await getAddressFromCoordinates(location.lat, location.lng);
-    onLocationSelect({ ...location, address });
+    onLocationSelect(location);
   };
+
+  const defaultPosition: LatLngTuple = [25.6866, -100.3161];
 
   return (
     <MapContainer
-      center={[25.6866, -100.3161]}
+      center={defaultPosition}
       zoom={13}
       className="w-full h-full"
     >
@@ -94,9 +96,8 @@ export const MapContainerComponent = ({
           position={[pickupLocation.lat, pickupLocation.lng]}
           onDragEnd={async (latlng) => {
             const location = { lat: latlng.lat, lng: latlng.lng };
-            const address = await getAddressFromCoordinates(latlng.lat, latlng.lng);
             setPickupLocation(location);
-            onLocationSelect({ ...location, address });
+            onLocationSelect(location);
           }}
           icon={pickupIcon}
           label="Punto de Recogida"
@@ -108,9 +109,8 @@ export const MapContainerComponent = ({
           position={[dropLocation.lat, dropLocation.lng]}
           onDragEnd={async (latlng) => {
             const location = { lat: latlng.lat, lng: latlng.lng };
-            const address = await getAddressFromCoordinates(latlng.lat, latlng.lng);
             setDropLocation(location);
-            onLocationSelect({ ...location, address });
+            onLocationSelect(location);
           }}
           icon={dropIcon}
           label="Punto de Entrega"
