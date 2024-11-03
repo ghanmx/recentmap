@@ -34,41 +34,47 @@ const TowMap = () => {
   }, [pickupLocation, dropLocation]);
 
   return (
-    <div className="h-full relative">
-      <MapContainerComponent
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-        selectingPickup={selectingPickup}
-        selectingDrop={selectingDrop}
-        onLocationSelect={(location) => {
-          if (selectingPickup) {
-            setPickupLocation(location);
-            setSelectingPickup(false);
-          } else if (selectingDrop) {
-            setDropLocation(location);
-            setSelectingDrop(false);
-          }
-        }}
-        setPickupLocation={setPickupLocation}
-        setDropLocation={setDropLocation}
-        onRouteCalculated={(distance) => showRouteNotification(distance)}
-      />
+    <div className="relative h-screen w-full">
+      <div className="absolute inset-0">
+        <MapContainerComponent
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+          selectingPickup={selectingPickup}
+          selectingDrop={selectingDrop}
+          onLocationSelect={(location) => {
+            if (selectingPickup) {
+              setPickupLocation(location);
+              setSelectingPickup(false);
+            } else if (selectingDrop) {
+              setDropLocation(location);
+              setSelectingDrop(false);
+            }
+          }}
+          setPickupLocation={setPickupLocation}
+          setDropLocation={setDropLocation}
+          onRouteCalculated={(distance) => showRouteNotification(distance)}
+        />
+      </div>
       
-      <MapControlPanel
-        selectingPickup={selectingPickup}
-        selectingDrop={selectingDrop}
-        setSelectingPickup={setSelectingPickup}
-        setSelectingDrop={setSelectingDrop}
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-      />
+      <div className="absolute inset-x-0 top-24 z-[400] pointer-events-none">
+        <MapControlPanel 
+          selectingPickup={selectingPickup}
+          selectingDrop={selectingDrop}
+          setSelectingPickup={setSelectingPickup}
+          setSelectingDrop={setSelectingDrop}
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+        />
+      </div>
 
-      <LocationPanels
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-        pickupAddress={pickupAddress}
-        dropAddress={dropAddress}
-      />
+      <div className="absolute inset-x-0 bottom-4 z-[400] pointer-events-none">
+        <LocationPanels
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+          pickupAddress={pickupAddress}
+          dropAddress={dropAddress}
+        />
+      </div>
     </div>
   );
 };
