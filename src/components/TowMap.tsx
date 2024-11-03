@@ -45,7 +45,7 @@ const TowMap = () => {
 
   return (
     <div className="relative h-screen w-full">
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-0">
         <MapContainerComponent
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
@@ -66,24 +66,28 @@ const TowMap = () => {
         />
       </div>
       
-      <div className="absolute inset-x-0 top-24 z-[400] pointer-events-none">
-        <MapControlPanel 
-          selectingPickup={selectingPickup}
-          selectingDrop={selectingDrop}
-          setSelectingPickup={setSelectingPickup}
-          setSelectingDrop={setSelectingDrop}
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-        />
+      <div className="absolute inset-x-0 top-24 z-50 pointer-events-none">
+        <div className="container mx-auto px-4">
+          <MapControlPanel 
+            selectingPickup={selectingPickup}
+            selectingDrop={selectingDrop}
+            setSelectingPickup={setSelectingPickup}
+            setSelectingDrop={setSelectingDrop}
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+          />
+        </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-4 z-[400] pointer-events-none">
-        <LocationPanels
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          pickupAddress={pickupAddress}
-          dropAddress={dropAddress}
-        />
+      <div className="absolute inset-x-0 bottom-4 z-50 pointer-events-none">
+        <div className="container mx-auto px-4">
+          <LocationPanels
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
+          />
+        </div>
       </div>
     </div>
   );
