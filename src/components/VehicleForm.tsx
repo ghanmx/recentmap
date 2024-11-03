@@ -65,6 +65,59 @@ const VehicleForm = ({
     updateTolls();
   }, [pickupLocation, dropLocation, form, toast]);
 
+  const generateFormDataText = () => {
+    const formData = form.getValues();
+    return `
+Usuario: ${formData.username}
+Vehículo: ${formData.vehicleMake} ${formData.vehicleModel} ${formData.vehicleYear}
+Color: ${formData.vehicleColor}
+Tipo de Grúa: ${formData.truckType}
+Casetas: $${tollFees}
+Descripción: ${formData.issueDescription}
+Ubicación de recogida: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocation.lng}` : 'No especificada'}
+Ubicación de entrega: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'No especificada'}
+Tipo de servicio: ${serviceType}
+Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
+    `.trim();
+  };
+
+  const handleDownload = async (format: 'csv' | 'txt') => {
+    if (!form.formState.isValid) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields before downloading.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const formData = form.getValues();
+    await downloadServiceInfo(
+      format,
+      formData,
+      pickupLocation,
+      dropLocation,
+      serviceType,
+      requiresManeuver
+    );
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(generateFormDataText());
+      toast({
+        title: "Information Copied",
+        description: "Service details have been copied to clipboard",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Could not copy to clipboard",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
