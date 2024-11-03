@@ -1,3 +1,4 @@
+import { useState } from "react"; // Added import
 import { Menu, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
