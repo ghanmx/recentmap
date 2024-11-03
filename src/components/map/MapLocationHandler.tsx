@@ -1,3 +1,5 @@
+import { useMapEvents } from "react-leaflet";
+
 interface MapLocationHandlerProps {
   selectingPickup: boolean;
   selectingDrop: boolean;
