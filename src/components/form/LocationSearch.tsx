@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Loader2 } from "lucide-react";
@@ -17,7 +17,7 @@ interface LocationSearchProps {
 export const LocationSearch = ({ 
   label, 
   onLocationSelect, 
-  placeholder = "Buscar dirección...",
+  placeholder = "Search address...",
   currentAddress = "",
   currentLocation
 }: LocationSearchProps) => {
@@ -43,8 +43,8 @@ export const LocationSearch = ({
         setSuggestions(results);
       } catch (error) {
         toast({
-          title: "Error en la búsqueda",
-          description: "No se pudieron obtener resultados",
+          title: "Search Error",
+          description: "Could not get results",
           variant: "destructive"
         });
       } finally {
@@ -54,19 +54,15 @@ export const LocationSearch = ({
     [toast]
   );
 
-  useEffect(() => {
-    if (currentLocation) {
-      const updateAddress = async () => {
-        const address = await getAddressFromCoordinates(currentLocation.lat, currentLocation.lng);
-        setSearchQuery(address);
-      };
-      updateAddress();
-    }
-  }, [currentLocation]);
-
-  const handleInputChange = (value: string) => {
-    setSearchQuery(value);
-    debouncedSearch(value);
+  const handleLocationSelect = async (suggestion: { address: string; lat: number; lon: number }) => {
+    const location = {
+      lat: suggestion.lat,
+      lng: suggestion.lon,
+      address: suggestion.address
+    };
+    onLocationSelect(location);
+    setSuggestions([]);
+    setSearchQuery("");
   };
 
   return (
@@ -75,15 +71,12 @@ export const LocationSearch = ({
       <div className="relative">
         <Input
           value={currentAddress || searchQuery}
-          onChange={(e) => handleInputChange(e.target.value)}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            debouncedSearch(e.target.value);
+          }}
           placeholder={placeholder}
           className="pr-20"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              debouncedSearch(searchQuery);
-            }
-          }}
         />
         <Button
           type="button"
@@ -107,15 +100,7 @@ export const LocationSearch = ({
             <button
               key={index}
               className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2 transition-colors"
-              onClick={() => {
-                onLocationSelect({
-                  lat: suggestion.lat,
-                  lng: suggestion.lon,
-                  address: suggestion.address
-                });
-                setSuggestions([]);
-                setSearchQuery("");
-              }}
+              onClick={() => handleLocationSelect(suggestion)}
             >
               <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
               <span className="text-sm line-clamp-2">{suggestion.address}</span>
