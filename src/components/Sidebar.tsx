@@ -17,7 +17,7 @@ const Sidebar = () => {
         <h1 className="text-2xl font-heading font-bold text-primary">TowTruck</h1>
       </div>
 
-      <div className="flex-1 px-4 py-6 overflow-y-auto">
+      <div className="p-6 overflow-y-auto">
         <div className="space-y-6">
           <VehicleForm
             pickupLocation={null}
@@ -68,13 +68,11 @@ const Sidebar = () => {
         )}
       </Button>
 
-      <aside
-        className={cn(
-          "hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-white border-r shadow-lg z-40",
-          "transition-all duration-300 ease-in-out",
-          isDesktopSidebarVisible ? "w-96" : "w-0 overflow-hidden"
-        )}
-      >
+      <aside className={cn(
+        "hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-white border-r shadow-lg z-40",
+        "transition-all duration-300 ease-in-out",
+        isDesktopSidebarVisible ? "w-96" : "w-0 overflow-hidden"
+      )}>
         <NavContent />
       </aside>
 
