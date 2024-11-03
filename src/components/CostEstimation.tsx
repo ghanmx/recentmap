@@ -1,7 +1,8 @@
 import { Card } from "@/components/ui/card";
-import { DollarSign, Route, Shield, Clock, Truck, Ticket } from "lucide-react";
+import { DollarSign, Route, Shield, Clock, Truck } from "lucide-react";
 import { useTowing } from "@/contexts/TowingContext";
 import { motion } from "framer-motion";
+import { TollInfoDisplay } from "./TollInfoDisplay";
 
 export const CostEstimation = () => {
   const { totalDistance, totalCost, detectedTolls, totalTollCost } = useTowing();
@@ -58,25 +59,7 @@ export const CostEstimation = () => {
       </div>
 
       {detectedTolls.length > 0 && (
-        <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-100">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2 text-sm text-yellow-700">
-              <Ticket className="w-4 h-4" />
-              <span>Peajes en la Ruta</span>
-            </div>
-            <span className="text-sm font-semibold text-yellow-700">
-              ${totalTollCost.toFixed(2)}
-            </span>
-          </div>
-          <div className="text-xs text-yellow-600 space-y-1">
-            {detectedTolls.map((toll, index) => (
-              <div key={index} className="flex justify-between">
-                <span>{toll.name}</span>
-                <span>${toll.cost.toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <TollInfoDisplay tolls={detectedTolls} totalCost={totalTollCost} />
       )}
 
       <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
