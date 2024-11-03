@@ -103,7 +103,7 @@ const TowMap = () => {
       <MapLayout>
         <MapHeader />
         
-        <div className="relative h-full">
+        <div className="relative h-[calc(100vh-4rem)]">
           <MapControlPanel
             selectingPickup={selectingPickup}
             selectingDrop={selectingDrop}
@@ -113,37 +113,70 @@ const TowMap = () => {
             dropLocation={dropLocation}
           />
 
-          <MapContainerComponent
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-            selectingPickup={selectingPickup}
-            selectingDrop={selectingDrop}
-            onLocationSelect={handleLocationSelect}
-            setPickupLocation={setPickupLocation}
-            setDropLocation={setDropLocation}
-            onRouteCalculated={handleRouteCalculated}
-          />
+          <div className="absolute inset-0 z-10">
+            <MapContainerComponent
+              pickupLocation={pickupLocation}
+              dropLocation={dropLocation}
+              selectingPickup={selectingPickup}
+              selectingDrop={selectingDrop}
+              onLocationSelect={(location) => {
+                if (selectingPickup) {
+                  setPickupLocation(location);
+                  setSelectingPickup(false);
+                } else if (selectingDrop) {
+                  setDropLocation(location);
+                  setSelectingDrop(false);
+                }
+              }}
+              setPickupLocation={setPickupLocation}
+              setDropLocation={setDropLocation}
+              onRouteCalculated={(distance) => showRouteNotification(distance)}
+            />
+          </div>
 
           <LocationPanels
             pickupLocation={pickupLocation}
             dropLocation={dropLocation}
             pickupAddress={pickupAddress}
             dropAddress={dropAddress}
-            handleLocationSearch={handleLocationSearch}
+            handleLocationSearch={async (location, type) => {
+              if (type === 'pickup') {
+                setPickupLocation({ lat: location.lat, lng: location.lng });
+                setPickupAddress(location.address);
+              } else {
+                setDropLocation({ lat: location.lat, lng: location.lng });
+                setDropAddress(location.address);
+              }
+            }}
           />
 
           <div className="absolute bottom-6 inset-x-0 z-30 px-6">
             <MapBottomControls
               pickupLocation={pickupLocation}
               dropLocation={dropLocation}
-              onRequestTow={handleRequestTow}
+              onRequestTow={() => {
+                if (!pickupLocation || !dropLocation) {
+                  toast({
+                    title: "Missing Locations",
+                    description: "Please select both pickup and drop-off locations",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                setShowPayment(true);
+              }}
             />
           </div>
 
           <PaymentWindow
             isOpen={showPayment}
             onClose={() => setShowPayment(false)}
-            onPaymentSubmit={handlePaymentSubmit}
+            onPaymentSubmit={(result) => {
+              showPaymentNotification(result.success, result.error);
+              if (result.success) {
+                setIsPaymentComplete(true);
+              }
+            }}
             totalCost={totalCost}
           />
         </div>

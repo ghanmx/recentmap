@@ -12,11 +12,11 @@ const Sidebar = () => {
 
   const NavContent = () => (
     <>
-      <div className="p-6">
+      <div className="p-4 border-b bg-gradient-to-r from-primary/5 to-primary/10">
         <h1 className="text-2xl font-heading font-bold text-primary">TowTruck</h1>
       </div>
 
-      <div className="flex-1 px-4 overflow-y-auto">
+      <div className="flex-1 px-4 py-6 overflow-y-auto">
         <TowingProvider>
           <VehicleForm
             pickupLocation={null}
@@ -40,11 +40,11 @@ const Sidebar = () => {
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" className="bg-white shadow-lg">
               <Menu className="h-4 w-4" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0">
+          <SheetContent side="left" className="w-80 p-0">
             <NavContent />
           </SheetContent>
         </Sheet>
@@ -55,7 +55,7 @@ const Sidebar = () => {
         variant="outline"
         size="icon"
         onClick={() => setIsDesktopSidebarVisible(!isDesktopSidebarVisible)}
-        className="fixed bottom-4 left-4 z-50 hidden lg:flex"
+        className="fixed bottom-4 left-4 z-50 hidden lg:flex bg-white shadow-lg"
       >
         {isDesktopSidebarVisible ? (
           <ChevronLeft className="h-4 w-4" />
@@ -67,7 +67,7 @@ const Sidebar = () => {
       {/* Desktop Sidebar */}
       <div
         className={cn(
-          "hidden lg:flex flex-col h-screen bg-white border-r fixed left-0 top-0 transition-all duration-300",
+          "hidden lg:flex flex-col h-screen bg-white border-r fixed left-0 top-0 transition-all duration-300 shadow-lg z-40",
           isDesktopSidebarVisible ? "w-96" : "w-0 overflow-hidden"
         )}
       >
