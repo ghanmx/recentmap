@@ -7,13 +7,14 @@ import { VehicleFormHeader } from "./form/VehicleFormHeader";
 import { VehicleFormActions } from "./form/VehicleFormActions";
 import { TowTruckSelector } from "./form/TowTruckSelector";
 import { LocationFields } from "./form/LocationFields";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TowTruckType } from "@/utils/downloadUtils";
 import { useTowingCost } from "@/hooks/useTowingCost";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
 import { FormData } from "@/types/form";
-import { RouteDisplay } from "./map/RouteDisplay";
+import { vehicleWeights } from "@/data/vehicleData";
+import { getTowTruckType } from "@/utils/towTruckPricing";
 
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -41,16 +42,23 @@ const VehicleForm = ({
   const [requiresManeuver, setRequiresManeuver] = useState(false);
   const [truckType, setTruckType] = useState<TowTruckType>('A');
   const [tollFees, setTollFees] = useState(0);
+  const [selectedModel, setSelectedModel] = useState('');
   const { toast } = useToast();
   const { form, onSubmit, isPending } = useVehicleForm(pickupLocation, dropLocation, serviceType);
+  const costDetails = useTowingCost(pickupLocation, dropLocation, requiresManeuver, truckType, tollFees);
 
-  const costDetails = useTowingCost(
-    pickupLocation,
-    dropLocation,
-    requiresManeuver,
-    truckType,
-    tollFees
-  );
+  useEffect(() => {
+    if (selectedModel) {
+      const appropriateTruckType = getTowTruckType(selectedModel);
+      setTruckType(appropriateTruckType);
+      form.setValue('truckType', appropriateTruckType);
+      
+      toast({
+        title: "Tipo de grúa actualizado",
+        description: `Se ha seleccionado automáticamente el tipo de grúa ${appropriateTruckType} basado en el modelo del vehículo`,
+      });
+    }
+  }, [selectedModel, form]);
 
   const handleManeuverChange = (checked: boolean) => {
     setRequiresManeuver(checked);
@@ -97,8 +105,6 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
 
   return (
     <div className="space-y-6">
-      <RouteDisplay pickupLocation={pickupLocation} dropLocation={dropLocation} />
-      
       <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
         <VehicleFormHeader />
         <Form {...form}>
@@ -111,29 +117,27 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
               onPickupSelect={onPickupSelect}
               onDropSelect={onDropSelect}
             />
-
             <VehicleDetails
               onBrandChange={(brand) => form.setValue('vehicleMake', brand)}
               onModelChange={(model) => {
                 form.setValue('vehicleModel', model);
+                setSelectedModel(model);
                 onVehicleModelChange?.(model);
               }}
               onYearChange={(year) => form.setValue('vehicleYear', Number(year))}
               onColorChange={(color) => form.setValue('vehicleColor', color)}
             />
-
             <TowTruckSelector
               form={form}
               onTruckTypeChange={setTruckType}
               onTollFeesChange={setTollFees}
+              selectedModel={selectedModel}
             />
-
             <ServiceRequirements
               form={form}
               requiresManeuver={requiresManeuver}
               onManeuverChange={handleManeuverChange}
             />
-
             <VehicleFormActions
               onDownload={handleDownload}
               onCopy={async () => {

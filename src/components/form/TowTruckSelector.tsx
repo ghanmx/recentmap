@@ -12,9 +12,15 @@ interface TowTruckSelectorProps {
   form: UseFormReturn<FormData>;
   onTruckTypeChange: (type: FormData['truckType']) => void;
   onTollFeesChange: (fees: number) => void;
+  selectedModel: string;
 }
 
-export const TowTruckSelector = ({ form, onTruckTypeChange, onTollFeesChange }: TowTruckSelectorProps) => {
+export const TowTruckSelector = ({ 
+  form, 
+  onTruckTypeChange, 
+  onTollFeesChange,
+  selectedModel 
+}: TowTruckSelectorProps) => {
   const { toast } = useToast();
 
   const handleTollFeesChange = (value: string) => {
@@ -43,7 +49,8 @@ export const TowTruckSelector = ({ form, onTruckTypeChange, onTollFeesChange }: 
                 field.onChange(value);
                 onTruckTypeChange(value);
               }}
-              defaultValue={field.value}
+              value={field.value}
+              disabled={!!selectedModel}
             >
               <FormControl>
                 <SelectTrigger>
