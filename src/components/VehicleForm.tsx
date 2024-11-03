@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { FormData } from "@/types/form";
 import { vehicleWeights } from "@/data/vehicleData";
 import { getTowTruckType } from "@/utils/towTruckPricing";
+import { DollarSign, Route, Shield } from "lucide-react";
 
 interface VehicleFormProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -138,6 +139,40 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
               requiresManeuver={requiresManeuver}
               onManeuverChange={handleManeuverChange}
             />
+
+            {costDetails && (
+              <Card className="p-4 bg-gradient-to-br from-white/95 via-blue-50/95 to-white/95 border border-blue-100">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-primary/10 p-2 rounded-lg">
+                        <DollarSign className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="text-lg font-semibold text-gray-900">Precio Estimado</div>
+                    </div>
+                    <div className="bg-green-50 px-3 py-1 rounded-full border border-green-200">
+                      <span className="text-sm font-medium text-green-700">Precio Fijo</span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-3xl font-bold text-primary bg-primary/5 p-4 rounded-lg flex items-center justify-between">
+                    <span>${costDetails.totalCost.toFixed(2)}</span>
+                    <Shield className="w-6 h-6 text-primary/60" />
+                  </div>
+
+                  <div className="flex items-center gap-3 py-2 text-gray-600">
+                    <Route className="w-5 h-5" />
+                    <div>
+                      <p className="text-sm font-medium">Distancia Total</p>
+                      <p className="text-lg font-semibold text-primary">
+                        {costDetails.distance.toFixed(2)} km
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            )}
+
             <VehicleFormActions
               onDownload={handleDownload}
               onCopy={async () => {
