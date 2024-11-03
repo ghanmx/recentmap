@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Loader2 } from "lucide-react";
-import { searchAddresses } from "@/services/geocodingService";
+import { searchAddresses, getAddressFromCoordinates } from "@/services/geocodingService";
 import { useToast } from "@/hooks/use-toast";
 import { debounce } from "lodash";
 
@@ -11,13 +11,15 @@ interface LocationSearchProps {
   onLocationSelect: (location: { lat: number; lng: number; address: string }) => void;
   placeholder?: string;
   currentAddress?: string;
+  currentLocation?: { lat: number; lng: number } | null;
 }
 
 export const LocationSearch = ({ 
   label, 
   onLocationSelect, 
   placeholder = "Buscar dirección...",
-  currentAddress = ""
+  currentAddress = "",
+  currentLocation
 }: LocationSearchProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Array<{
@@ -51,6 +53,16 @@ export const LocationSearch = ({
     }, 500),
     [toast]
   );
+
+  useEffect(() => {
+    if (currentLocation) {
+      const updateAddress = async () => {
+        const address = await getAddressFromCoordinates(currentLocation.lat, currentLocation.lng);
+        setSearchQuery(address);
+      };
+      updateAddress();
+    }
+  }, [currentLocation]);
 
   const handleInputChange = (value: string) => {
     setSearchQuery(value);

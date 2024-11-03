@@ -68,18 +68,19 @@ const Sidebar = () => {
         )}
       </Button>
 
-      <div
+      <aside
         className={cn(
-          "hidden lg:flex flex-col h-screen bg-white border-r fixed left-0 top-0 transition-all duration-300 shadow-lg z-40",
+          "hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-white border-r shadow-lg z-40",
+          "transition-all duration-300 ease-in-out",
           isDesktopSidebarVisible ? "w-96" : "w-0 overflow-hidden"
         )}
       >
         <NavContent />
-      </div>
+      </aside>
 
       <div className={cn(
-        "hidden lg:block transition-all duration-300",
-        isDesktopSidebarVisible ? "ml-96" : "ml-0"
+        "transition-all duration-300 ease-in-out",
+        isDesktopSidebarVisible ? "lg:pl-96" : "lg:pl-0"
       )} />
     </>
   );
