@@ -1,11 +1,17 @@
 import { Card } from "@/components/ui/card";
-import { DollarSign, Route, Shield, Clock, Truck } from "lucide-react";
+import { DollarSign, Route, Shield, Clock, Truck, ChevronDown } from "lucide-react";
 import { useTowing } from "@/contexts/TowingContext";
 import { motion } from "framer-motion";
 import { TollInfoDisplay } from "./TollInfoDisplay";
+import { useState } from "react";
 
 export const CostEstimation = () => {
   const { totalDistance, totalCost, detectedTolls, totalTollCost } = useTowing();
+  const [showBreakdown, setShowBreakdown] = useState(false);
+
+  const baseCost = totalCost - totalTollCost;
+  const serviceFee = baseCost * 0.10; // 10% service fee
+  const tax = baseCost * 0.16; // 16% IVA
 
   return (
     <Card className="p-6 space-y-4 bg-gradient-to-br from-white via-blue-50/50 to-white border-blue-100 w-full max-w-md mx-auto shadow-lg hover:shadow-xl transition-all">
@@ -68,6 +74,46 @@ export const CostEstimation = () => {
           <span>Precio incluye servicio, impuestos y seguro</span>
         </div>
       </div>
+
+      <button
+        onClick={() => setShowBreakdown(!showBreakdown)}
+        className="w-full flex items-center justify-between p-3 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+      >
+        <span>Ver desglose de precios</span>
+        <ChevronDown className={`w-4 h-4 transition-transform ${showBreakdown ? 'rotate-180' : ''}`} />
+      </button>
+
+      {showBreakdown && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          className="space-y-2 pt-2 border-t border-gray-100"
+        >
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Servicio base</span>
+            <span>${(baseCost - serviceFee - tax).toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Cargo por servicio (10%)</span>
+            <span>${serviceFee.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>IVA (16%)</span>
+            <span>${tax.toFixed(2)}</span>
+          </div>
+          {totalTollCost > 0 && (
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>Peajes</span>
+              <span>${totalTollCost.toFixed(2)}</span>
+            </div>
+          )}
+          <div className="flex justify-between text-sm font-semibold text-primary pt-2 border-t border-gray-100">
+            <span>Total</span>
+            <span>${totalCost.toFixed(2)}</span>
+          </div>
+        </motion.div>
+      )}
     </Card>
   );
 };
