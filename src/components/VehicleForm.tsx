@@ -11,8 +11,7 @@ import { useTowingCost } from "@/hooks/useTowingCost";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
-import { Download, Copy, CreditCard } from "lucide-react";
-import { downloadServiceInfo } from "@/utils/downloadUtils";
+import { CreditCard } from "lucide-react";
 
 const VehicleForm = ({
   pickupLocation,
@@ -43,62 +42,9 @@ const VehicleForm = ({
   const { form, onSubmit, isPending } = useVehicleForm(pickupLocation, dropLocation, serviceType);
   const costDetails = useTowingCost(pickupLocation, dropLocation, requiresManeuver, truckType, tollFees);
 
-  const generateFormDataText = () => {
-    const formData = form.getValues();
-    return `
-Usuario: ${formData.username}
-Vehículo: ${formData.vehicleMake} ${formData.vehicleModel} ${formData.vehicleYear}
-Color: ${formData.vehicleColor}
-Tipo de Grúa: ${formData.truckType}
-Casetas: $${tollFees}
-Descripción: ${formData.issueDescription}
-Ubicación de recogida: ${pickupLocation ? `${pickupLocation.lat}, ${pickupLocation.lng}` : 'No especificada'}
-Ubicación de entrega: ${dropLocation ? `${dropLocation.lat}, ${dropLocation.lng}` : 'No especificada'}
-Tipo de servicio: ${serviceType}
-Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
-    `.trim();
-  };
-
-  const handleDownload = async (format: 'csv' | 'txt') => {
-    if (!form.formState.isValid) {
-      toast({
-        title: "Información Incompleta",
-        description: "Por favor complete todos los campos requeridos antes de descargar.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const formData = form.getValues();
-    await downloadServiceInfo(
-      format,
-      formData,
-      pickupLocation,
-      dropLocation,
-      serviceType,
-      requiresManeuver
-    );
-  };
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(generateFormDataText());
-      toast({
-        title: "Información Copiada",
-        description: "Los detalles del servicio han sido copiados al portapapeles",
-      });
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "No se pudo copiar al portapapeles",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className="space-y-6">
-      <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+      <Card className="p-6 bg-gradient-to-br from-white via-blue-50/30 to-white border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300">
         <VehicleFormHeader />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -136,45 +82,24 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
               }}
             />
             
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleDownload('txt')}
-                className="flex-1 bg-white hover:bg-gray-50"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Descargar Detalles
-              </Button>
-              
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCopy}
-                className="flex-1 bg-white hover:bg-gray-50"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                Copiar al Portapapeles
-              </Button>
-              
-              <Button
-                type="submit"
-                disabled={isPending}
-                className="flex-1 bg-gradient-to-r from-primary to-primary/90"
-              >
-                {isPending ? (
-                  <span className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Procesando...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <CreditCard className="h-4 w-4" />
-                    Continuar al Pago
-                  </span>
-                )}
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white shadow-lg hover:shadow-xl transition-all duration-300 py-6 text-lg font-semibold group relative overflow-hidden"
+            >
+              {isPending ? (
+                <span className="flex items-center justify-center gap-3">
+                  <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                  Procesando Solicitud...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-3">
+                  <CreditCard className="h-5 w-5" />
+                  Continuar al Pago
+                </span>
+              )}
+              <span className="absolute inset-0 bg-white/10 transform -skew-x-12 group-hover:translate-x-full transition-transform duration-700 ease-out" />
+            </Button>
           </form>
         </Form>
       </Card>

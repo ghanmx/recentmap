@@ -81,34 +81,36 @@ export const LocationSearch = ({
             }
           }}
           placeholder={placeholder}
-          className="pr-20"
+          className="pr-20 bg-white/95 backdrop-blur-sm border-gray-200 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
         />
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="absolute right-1 top-1 h-8"
+          className="absolute right-1 top-1 h-8 hover:bg-primary/10"
           onClick={() => debouncedSearch(searchQuery)}
           disabled={isSearching}
         >
           {isSearching ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
           ) : (
-            <Search className="h-4 w-4" />
+            <Search className="h-4 w-4 text-primary" />
           )}
         </Button>
       </div>
       
       {suggestions.length > 0 && (
-        <div className="absolute z-50 w-full max-h-60 overflow-auto bg-white border rounded-md shadow-lg">
+        <div className="absolute z-50 w-full max-h-60 overflow-auto bg-white/95 backdrop-blur-sm border border-gray-200 rounded-md shadow-lg divide-y divide-gray-100">
           {suggestions.map((suggestion, index) => (
             <button
               key={index}
-              className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2 transition-colors"
+              className="w-full px-4 py-3 text-left hover:bg-primary/5 flex items-center gap-3 transition-colors group"
               onClick={() => handleLocationSelect(suggestion)}
             >
-              <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
-              <span className="text-sm line-clamp-2">{suggestion.address}</span>
+              <MapPin className="h-4 w-4 text-primary/70 group-hover:text-primary flex-shrink-0" />
+              <span className="text-sm text-gray-700 group-hover:text-gray-900 line-clamp-2">
+                {suggestion.address}
+              </span>
             </button>
           ))}
         </div>
