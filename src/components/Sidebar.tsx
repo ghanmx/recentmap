@@ -1,4 +1,4 @@
-import { useState } from "react"; // Added import
+import { useState } from "react";
 import { Menu, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,20 @@ import { useSidebar } from "@/contexts/SidebarContext";
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { isOpen: isDesktopSidebarVisible, toggle: toggleDesktopSidebar } = useSidebar();
+  const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [dropLocation, setDropLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [pickupAddress, setPickupAddress] = useState("");
+  const [dropAddress, setDropAddress] = useState("");
+
+  const handlePickupSelect = (location: { lat: number; lng: number; address: string }) => {
+    setPickupLocation({ lat: location.lat, lng: location.lng });
+    setPickupAddress(location.address);
+  };
+
+  const handleDropSelect = (location: { lat: number; lng: number; address: string }) => {
+    setDropLocation({ lat: location.lat, lng: location.lng });
+    setDropAddress(location.address);
+  };
 
   const NavContent = () => (
     <>
@@ -21,20 +35,20 @@ const Sidebar = () => {
       <div className="p-6 overflow-y-auto">
         <div className="space-y-6 flex flex-col items-center">
           <VehicleForm
-            pickupLocation={null}
-            dropLocation={null}
-            pickupAddress=""
-            dropAddress=""
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
             serviceType="standard"
             onManeuverChange={() => {}}
             onVehicleModelChange={() => {}}
-            onPickupSelect={() => {}}
-            onDropSelect={() => {}}
+            onPickupSelect={handlePickupSelect}
+            onDropSelect={handleDropSelect}
           />
           <CostEstimation />
           <RouteDisplay
-            pickupLocation={null}
-            dropLocation={null}
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
           />
         </div>
       </div>

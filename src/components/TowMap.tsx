@@ -43,9 +43,17 @@ const TowMap = () => {
     if (type === 'pickup') {
       setPickupLocation(location);
       setPickupAddress(address);
+      toast({
+        title: "Ubicación de Recogida",
+        description: address,
+      });
     } else {
       setDropLocation(location);
       setDropAddress(address);
+      toast({
+        title: "Ubicación de Entrega",
+        description: address,
+      });
     }
   };
 
