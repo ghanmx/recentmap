@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import VehicleForm from "./VehicleForm";
 import { TowingProvider } from "@/contexts/TowingContext";
+import { RouteDisplay } from "./map/RouteDisplay";
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -18,17 +19,23 @@ const Sidebar = () => {
 
       <div className="flex-1 px-4 py-6 overflow-y-auto">
         <TowingProvider>
-          <VehicleForm
-            pickupLocation={null}
-            dropLocation={null}
-            pickupAddress=""
-            dropAddress=""
-            serviceType="standard"
-            onManeuverChange={() => {}}
-            onVehicleModelChange={() => {}}
-            onPickupSelect={() => {}}
-            onDropSelect={() => {}}
-          />
+          <div className="space-y-6">
+            <VehicleForm
+              pickupLocation={null}
+              dropLocation={null}
+              pickupAddress=""
+              dropAddress=""
+              serviceType="standard"
+              onManeuverChange={() => {}}
+              onVehicleModelChange={() => {}}
+              onPickupSelect={() => {}}
+              onDropSelect={() => {}}
+            />
+            <RouteDisplay
+              pickupLocation={null}
+              dropLocation={null}
+            />
+          </div>
         </TowingProvider>
       </div>
     </>
@@ -36,7 +43,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Menu Button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
           <SheetTrigger asChild>
@@ -50,7 +56,6 @@ const Sidebar = () => {
         </Sheet>
       </div>
 
-      {/* Desktop Sidebar Toggle Button */}
       <Button
         variant="outline"
         size="icon"
@@ -64,7 +69,6 @@ const Sidebar = () => {
         )}
       </Button>
 
-      {/* Desktop Sidebar */}
       <div
         className={cn(
           "hidden lg:flex flex-col h-screen bg-white border-r fixed left-0 top-0 transition-all duration-300 shadow-lg z-40",
@@ -74,7 +78,6 @@ const Sidebar = () => {
         <NavContent />
       </div>
 
-      {/* Spacer for content */}
       <div className={cn(
         "hidden lg:block transition-all duration-300",
         isDesktopSidebarVisible ? "w-96" : "w-0"
