@@ -60,7 +60,7 @@ const Sidebar = () => {
         variant="outline"
         size="icon"
         onClick={() => setIsDesktopSidebarVisible(!isDesktopSidebarVisible)}
-        className="fixed bottom-4 left-4 z-50 hidden lg:flex bg-white shadow-lg"
+        className="fixed bottom-4 left-4 z-50 hidden lg:flex bg-white shadow-lg hover:bg-gray-50"
       >
         {isDesktopSidebarVisible ? (
           <ChevronLeft className="h-4 w-4" />
@@ -80,7 +80,7 @@ const Sidebar = () => {
 
       <div className={cn(
         "hidden lg:block transition-all duration-300",
-        isDesktopSidebarVisible ? "w-96" : "w-0"
+        isDesktopSidebarVisible ? "ml-96" : "ml-0"
       )} />
     </>
   );
