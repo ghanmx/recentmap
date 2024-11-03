@@ -1,10 +1,7 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import TowMap from "@/components/TowMap";
-import VehicleForm from "@/components/VehicleForm";
 import { ServiceRequest } from "@/types/service";
-import { FloatingPanel } from "@/components/map/FloatingPanel";
 import { calculateTotalCost, getTowTruckType } from "@/utils/towTruckPricing";
 import { calculateRoadDistance } from "@/utils/routeCalculator";
 
@@ -34,25 +31,8 @@ const Index = () => {
   };
 
   return (
-    <div className="relative h-screen flex">
-      <div className="w-full lg:w-[450px] h-screen overflow-y-auto bg-white/95 backdrop-blur-sm border-r shadow-lg z-10">
-        <div className="p-4">
-          <VehicleForm
-            pickupLocation={null}
-            dropLocation={null}
-            pickupAddress=""
-            dropAddress=""
-            serviceType={serviceType}
-            onManeuverChange={setRequiresManeuver}
-            onVehicleModelChange={setSelectedVehicleModel}
-            onPickupSelect={() => {}}
-            onDropSelect={() => {}}
-          />
-        </div>
-      </div>
-      <div className="flex-1 relative">
-        <TowMap />
-      </div>
+    <div className="relative h-screen">
+      <TowMap />
     </div>
   );
 };
