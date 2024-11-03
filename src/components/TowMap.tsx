@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { showRouteNotification } from "@/utils/notificationUtils";
