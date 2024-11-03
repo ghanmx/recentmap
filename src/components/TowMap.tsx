@@ -7,6 +7,8 @@ import { MapControlPanel } from "./map/MapControlPanel";
 import { LocationPanels } from "./map/LocationPanels";
 import { useToast } from "@/hooks/use-toast";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
+import { detectTollsOnRoute } from "@/utils/tollCalculator";
+import { useTowing } from "@/contexts/TowingContext";
 
 const TowMap = () => {
   const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -17,6 +19,7 @@ const TowMap = () => {
   const [selectingDrop, setSelectingDrop] = useState(false);
   const mapRef = useRef<Map | null>(null);
   const { toast } = useToast();
+  const { updateTollInfo } = useTowing();
 
   useEffect(() => {
     const updateAddresses = async () => {
@@ -28,10 +31,23 @@ const TowMap = () => {
         const address = await getAddressFromCoordinates(dropLocation.lat, dropLocation.lng);
         setDropAddress(address);
       }
+
+      // Update toll information when both locations are set
+      if (pickupLocation && dropLocation) {
+        const { tolls, totalTollCost } = detectTollsOnRoute(pickupLocation, dropLocation);
+        updateTollInfo(tolls, totalTollCost);
+        
+        if (tolls.length > 0) {
+          toast({
+            title: "Peajes Detectados",
+            description: `Se detectaron ${tolls.length} peajes en la ruta con un costo total de $${totalTollCost}`,
+          });
+        }
+      }
     };
 
     updateAddresses();
-  }, [pickupLocation, dropLocation]);
+  }, [pickupLocation, dropLocation, toast, updateTollInfo]);
 
   return (
     <div className="relative h-screen w-full">
