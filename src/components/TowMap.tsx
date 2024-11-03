@@ -36,59 +36,43 @@ const TowMap = () => {
     updateAddresses();
   }, [pickupLocation, dropLocation]);
 
-  const handleLocationSearch = async (location: { lat: number; lng: number; address: string }, type: 'pickup' | 'drop') => {
-    if (type === 'pickup') {
-      setPickupLocation({ lat: location.lat, lng: location.lng });
-      setPickupAddress(location.address);
-    } else {
-      setDropLocation({ lat: location.lat, lng: location.lng });
-      setDropAddress(location.address);
-    }
-  };
-
   return (
-    <MapLayout>
-      <MapHeader />
+    <div className="h-full relative">
+      <MapContainerComponent
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+        selectingPickup={selectingPickup}
+        selectingDrop={selectingDrop}
+        onLocationSelect={(location) => {
+          if (selectingPickup) {
+            setPickupLocation(location);
+            setSelectingPickup(false);
+          } else if (selectingDrop) {
+            setDropLocation(location);
+            setSelectingDrop(false);
+          }
+        }}
+        setPickupLocation={setPickupLocation}
+        setDropLocation={setDropLocation}
+        onRouteCalculated={(distance) => showRouteNotification(distance)}
+      />
       
-      <div className="relative h-[calc(100vh-4rem)] transition-all duration-300">
-        <MapControlPanel
-          selectingPickup={selectingPickup}
-          selectingDrop={selectingDrop}
-          setSelectingPickup={setSelectingPickup}
-          setSelectingDrop={setSelectingDrop}
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-        />
+      <MapControlPanel
+        selectingPickup={selectingPickup}
+        selectingDrop={selectingDrop}
+        setSelectingPickup={setSelectingPickup}
+        setSelectingDrop={setSelectingDrop}
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+      />
 
-        <div className="absolute inset-0 z-10 transition-all duration-300">
-          <MapContainerComponent
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-            selectingPickup={selectingPickup}
-            selectingDrop={selectingDrop}
-            onLocationSelect={(location) => {
-              if (selectingPickup) {
-                setPickupLocation(location);
-                setSelectingPickup(false);
-              } else if (selectingDrop) {
-                setDropLocation(location);
-                setSelectingDrop(false);
-              }
-            }}
-            setPickupLocation={setPickupLocation}
-            setDropLocation={setDropLocation}
-            onRouteCalculated={(distance) => showRouteNotification(distance)}
-          />
-        </div>
-
-        <LocationPanels
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          pickupAddress={pickupAddress}
-          dropAddress={dropAddress}
-        />
-      </div>
-    </MapLayout>
+      <LocationPanels
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+        pickupAddress={pickupAddress}
+        dropAddress={dropAddress}
+      />
+    </div>
   );
 };
 

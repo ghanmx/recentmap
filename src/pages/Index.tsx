@@ -33,17 +33,26 @@ const Index = () => {
     }
   };
 
-  const handleManeuverChange = (maneuver: boolean) => {
-    setRequiresManeuver(maneuver);
-  };
-
-  const handleVehicleModelChange = (model: string) => {
-    setSelectedVehicleModel(model);
-  };
-
   return (
-    <div className="relative h-screen">
-      <TowMap />
+    <div className="relative h-screen flex">
+      <div className="w-full lg:w-[450px] h-screen overflow-y-auto bg-white/95 backdrop-blur-sm border-r shadow-lg z-10">
+        <div className="p-4">
+          <VehicleForm
+            pickupLocation={null}
+            dropLocation={null}
+            pickupAddress=""
+            dropAddress=""
+            serviceType={serviceType}
+            onManeuverChange={setRequiresManeuver}
+            onVehicleModelChange={setSelectedVehicleModel}
+            onPickupSelect={() => {}}
+            onDropSelect={() => {}}
+          />
+        </div>
+      </div>
+      <div className="flex-1 relative">
+        <TowMap />
+      </div>
     </div>
   );
 };
