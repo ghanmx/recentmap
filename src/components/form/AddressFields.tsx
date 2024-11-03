@@ -10,7 +10,8 @@ interface AddressFieldsProps {
   dropAddress: string;
   onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
   onDropSelect: (location: { lat: number; lng: number; address: string }) => void;
-  onTollUpdate: (tollCost: number) => void;
+  onTollUpdate?: (tollCost: number) => void;
+  className?: string;
 }
 
 export const AddressFields = ({
@@ -20,7 +21,8 @@ export const AddressFields = ({
   dropAddress,
   onPickupSelect,
   onDropSelect,
-  onTollUpdate
+  onTollUpdate,
+  className = ""
 }: AddressFieldsProps) => {
   const { toast } = useToast();
 
@@ -38,10 +40,14 @@ export const AddressFields = ({
         description: location.address,
       });
     }
+    
+    if (onTollUpdate) {
+      onTollUpdate(0); // Reset toll cost when location changes
+    }
   };
 
   return (
-    <Card className="p-4 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95">
+    <Card className={`p-4 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95 ${className}`}>
       <div className="space-y-4">
         <div className="relative">
           <LocationSearch

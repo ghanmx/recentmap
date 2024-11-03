@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { showRouteNotification } from "@/utils/notificationUtils";
 import { MapContainerComponent } from "./map/MapContainer";
 import { MapControlPanel } from "./map/MapControlPanel";
-import { LocationPanels } from "./map/LocationPanels";
+import { AddressFields } from "./form/AddressFields";
 import { useToast } from "@/hooks/use-toast";
 import { detectTollsOnRoute } from "@/utils/tollCalculator";
 import { useTowing } from "@/contexts/TowingContext";
@@ -81,11 +81,20 @@ const TowMap = () => {
 
       <div className="absolute inset-x-0 bottom-4 z-50 pointer-events-none">
         <div className="container mx-auto px-4">
-          <LocationPanels
+          <AddressFields
             pickupLocation={pickupLocation}
             dropLocation={dropLocation}
             pickupAddress={pickupAddress}
             dropAddress={dropAddress}
+            onPickupSelect={(loc) => {
+              setPickupLocation({ lat: loc.lat, lng: loc.lng });
+              setPickupAddress(loc.address);
+            }}
+            onDropSelect={(loc) => {
+              setDropLocation({ lat: loc.lat, lng: loc.lng });
+              setDropAddress(loc.address);
+            }}
+            className="pointer-events-auto"
           />
         </div>
       </div>
