@@ -1,5 +1,6 @@
 import { getRouteDetails } from '../services/routeService';
 import { calculateTotalCost, getTowTruckType } from './towTruckPricing';
+import { calculateDistance } from './distanceUtils';
 
 interface Location {
   lat: number;
@@ -7,50 +8,6 @@ interface Location {
 }
 
 export const COMPANY_LOCATION = { lat: 26.510272, lng: -100.006323 };
-
-const TOLL_LOCATIONS = [
-  { name: "Autopista Monterrey Cadereyta", lat: 25.6603, lng: -100.2142, cost: 385 },
-  { name: "Periférico de Monterrey", lat: 25.6767, lng: -100.3165, cost: 385 },
-  { name: "Cadereyta – Reynosa (40D)", lat: 26.0292, lng: -99.8537, cost: 385 },
-  { name: "Monterrey – Saltillo (40D)", lat: 25.4506, lng: -100.9447, cost: 385 },
-  { name: "Puerto México – Ent. La Carbonera (57D)", lat: 23.1234, lng: -101.6543, cost: 385 },
-  { name: "Monterrey – Nuevo Laredo (85D)", lat: 27.5067, lng: -99.5075, cost: 385 },
-  { name: "Puente Cadereyta", lat: 25.5333, lng: -99.9747, cost: 385 },
-  { name: "Puente Solidaridad", lat: 25.8434, lng: -100.2453, cost: 385 },
-];
-
-const calculateTollFees = (route: Location[], isRoundTrip: boolean = true): number => {
-  const usedTolls = new Set<string>();
-  let totalFees = 0;
-
-  route.forEach((point) => {
-    TOLL_LOCATIONS.forEach((toll) => {
-      if (isNearToll(point, toll) && !usedTolls.has(toll.name)) {
-        usedTolls.add(toll.name);
-        totalFees += toll.cost * (isRoundTrip ? 2 : 1);
-      }
-    });
-  });
-
-  return totalFees;
-};
-
-const isNearToll = (point: Location, toll: typeof TOLL_LOCATIONS[0]): boolean => {
-  const distance = calculateDistance(point, toll);
-  return distance < 0.5; // 500 meters in kilometers
-};
-
-const calculateDistance = (point1: Location, point2: Location): number => {
-  const R = 6371; // Earth's radius in km
-  const dLat = (point2.lat - point1.lat) * Math.PI / 180;
-  const dLon = (point2.lng - point1.lng) * Math.PI / 180;
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(point1.lat * Math.PI / 180) * Math.cos(point2.lat * Math.PI / 180) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-};
 
 export interface RouteDetails {
   totalPrice: number;
@@ -92,24 +49,14 @@ export const calculateTowingPrice = async (
       segments.dropToCompany
     ).toFixed(2));
 
-    const routePoints = [
-      COMPANY_LOCATION,
-      pickupLocation,
-      dropLocation,
-      COMPANY_LOCATION
-    ];
-    
-    const tollFees = calculateTollFees(routePoints, isRoundTrip);
     const towTruckType = getTowTruckType(vehicleModel);
-    
-    // Updated price calculation to include both ways
-    const totalPrice = (calculateTotalCost(totalDistance, towTruckType, requiresManeuver) * 2) + tollFees;
+    const totalPrice = calculateTotalCost(totalDistance, towTruckType, requiresManeuver) * (isRoundTrip ? 2 : 1);
 
     return {
       totalPrice,
       totalDistance,
       segments,
-      tollFees,
+      tollFees: 0, // Toll fees are now handled separately by tollCalculator
       routeGeometry: {
         companyToPickup: companyToPickup.geometry,
         pickupToDrop: pickupToDrop.geometry,

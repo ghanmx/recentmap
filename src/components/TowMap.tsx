@@ -6,9 +6,9 @@ import { MapContainerComponent } from "./map/MapContainer";
 import { MapControlPanel } from "./map/MapControlPanel";
 import { LocationPanels } from "./map/LocationPanels";
 import { useToast } from "@/hooks/use-toast";
-import { getAddressFromCoordinates } from "@/services/geocodingService";
 import { detectTollsOnRoute } from "@/utils/tollCalculator";
 import { useTowing } from "@/contexts/TowingContext";
+import { updateLocationAddresses } from "@/utils/addressUtils";
 
 const TowMap = () => {
   const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -23,16 +23,10 @@ const TowMap = () => {
 
   useEffect(() => {
     const updateAddresses = async () => {
-      if (pickupLocation) {
-        const address = await getAddressFromCoordinates(pickupLocation.lat, pickupLocation.lng);
-        setPickupAddress(address);
-      }
-      if (dropLocation) {
-        const address = await getAddressFromCoordinates(dropLocation.lat, dropLocation.lng);
-        setDropAddress(address);
-      }
+      const addresses = await updateLocationAddresses(pickupLocation, dropLocation);
+      setPickupAddress(addresses.pickup);
+      setDropAddress(addresses.drop);
 
-      // Update toll information when both locations are set
       if (pickupLocation && dropLocation) {
         const { tolls, totalTollCost } = detectTollsOnRoute(pickupLocation, dropLocation);
         updateTollInfo(tolls, totalTollCost);
