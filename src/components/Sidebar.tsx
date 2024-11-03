@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import VehicleForm from "./VehicleForm";
-import { TowingProvider } from "@/contexts/TowingContext";
 import { RouteDisplay } from "./map/RouteDisplay";
 
 const Sidebar = () => {
@@ -18,25 +17,23 @@ const Sidebar = () => {
       </div>
 
       <div className="flex-1 px-4 py-6 overflow-y-auto">
-        <TowingProvider>
-          <div className="space-y-6">
-            <VehicleForm
-              pickupLocation={null}
-              dropLocation={null}
-              pickupAddress=""
-              dropAddress=""
-              serviceType="standard"
-              onManeuverChange={() => {}}
-              onVehicleModelChange={() => {}}
-              onPickupSelect={() => {}}
-              onDropSelect={() => {}}
-            />
-            <RouteDisplay
-              pickupLocation={null}
-              dropLocation={null}
-            />
-          </div>
-        </TowingProvider>
+        <div className="space-y-6">
+          <VehicleForm
+            pickupLocation={null}
+            dropLocation={null}
+            pickupAddress=""
+            dropAddress=""
+            serviceType="standard"
+            onManeuverChange={() => {}}
+            onVehicleModelChange={() => {}}
+            onPickupSelect={() => {}}
+            onDropSelect={() => {}}
+          />
+          <RouteDisplay
+            pickupLocation={null}
+            dropLocation={null}
+          />
+        </div>
       </div>
     </>
   );
