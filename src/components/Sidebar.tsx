@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Menu, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -6,10 +5,11 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import VehicleForm from "./VehicleForm";
 import { RouteDisplay } from "./map/RouteDisplay";
 import { CostEstimation } from "./CostEstimation";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isDesktopSidebarVisible, setIsDesktopSidebarVisible] = useState(true);
+  const { isOpen: isDesktopSidebarVisible, toggle: toggleDesktopSidebar } = useSidebar();
 
   const NavContent = () => (
     <>
@@ -58,7 +58,7 @@ const Sidebar = () => {
       <Button
         variant="outline"
         size="icon"
-        onClick={() => setIsDesktopSidebarVisible(!isDesktopSidebarVisible)}
+        onClick={toggleDesktopSidebar}
         className="fixed bottom-4 left-4 z-[1000] hidden lg:flex bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
       >
         {isDesktopSidebarVisible ? (
