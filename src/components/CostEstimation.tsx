@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import PaymentWindow from "./payment/PaymentWindow";
+import { towTruckTypes } from "@/utils/towTruckPricing";
 
 export const CostEstimation = () => {
   const { totalDistance, totalCost, detectedTolls, totalTollCost } = useTowing();
@@ -17,7 +18,7 @@ export const CostEstimation = () => {
   const [showPaymentWindow, setShowPaymentWindow] = useState(false);
   const { toast } = useToast();
 
-  const baseCost = totalDistance * 35; // 35 pesos por kilómetro
+  const baseCost = totalDistance * towTruckTypes.A.perKm; // Usando la tarifa correcta del tipo A
   const tax = requiresInvoice ? baseCost * 0.16 : 0; // 16% IVA solo si requiere factura
   const finalCost = baseCost + totalTollCost + tax;
 
@@ -35,6 +36,8 @@ export const CostEstimation = () => {
       });
     }
   };
+
+  // ... keep existing code (Card component JSX structure)
 
   return (
     <Card className="p-6 space-y-4 bg-gradient-to-br from-white via-blue-50/50 to-white border-blue-100 w-full max-w-md mx-auto shadow-lg hover:shadow-xl transition-all">
@@ -124,7 +127,7 @@ export const CostEstimation = () => {
           className="space-y-2 pt-2 border-t border-gray-100"
         >
           <div className="flex justify-between text-sm text-gray-600">
-            <span>Costo por distancia ({totalDistance.toFixed(2)} km × $35.00)</span>
+            <span>Costo por distancia ({totalDistance.toFixed(2)} km × ${towTruckTypes.A.perKm.toFixed(2)})</span>
             <span>${baseCost.toFixed(2)}</span>
           </div>
 
