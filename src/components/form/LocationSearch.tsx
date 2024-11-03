@@ -65,23 +65,21 @@ export const LocationSearch = ({
     setSearchQuery(suggestion.address);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    if (value.length >= 3) {
-      debouncedSearch(value);
-    } else {
-      setSuggestions([]);
-    }
-  };
-
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-gray-700">{label}</label>
       <div className="relative">
         <Input
           value={currentAddress || searchQuery}
-          onChange={handleInputChange}
+          onChange={(e) => {
+            const value = e.target.value;
+            setSearchQuery(value);
+            if (value.length >= 3) {
+              debouncedSearch(value);
+            } else {
+              setSuggestions([]);
+            }
+          }}
           placeholder={placeholder}
           className="pr-20"
         />
