@@ -1,20 +1,40 @@
 import { Card } from "@/components/ui/card";
-import { DollarSign, Route, Shield, Clock, Truck, ChevronDown, Receipt } from "lucide-react";
+import { DollarSign, Route, Shield, Clock, Truck, ChevronDown, Receipt, CreditCard } from "lucide-react";
 import { useTowing } from "@/contexts/TowingContext";
 import { motion } from "framer-motion";
 import { TollInfoDisplay } from "./TollInfoDisplay";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import PaymentWindow from "./payment/PaymentWindow";
 
 export const CostEstimation = () => {
   const { totalDistance, totalCost, detectedTolls, totalTollCost } = useTowing();
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [requiresInvoice, setRequiresInvoice] = useState(false);
+  const [showPaymentWindow, setShowPaymentWindow] = useState(false);
+  const { toast } = useToast();
 
   const baseCost = totalDistance * 35; // 35 pesos por kilómetro
   const tax = requiresInvoice ? baseCost * 0.16 : 0; // 16% IVA solo si requiere factura
   const finalCost = baseCost + totalTollCost + tax;
+
+  const handlePaymentSubmit = (result: { success: boolean; error?: string }) => {
+    if (result.success) {
+      toast({
+        title: "Pago exitoso",
+        description: "Tu pago ha sido procesado correctamente.",
+      });
+    } else {
+      toast({
+        title: "Error en el pago",
+        description: result.error || "Hubo un error al procesar el pago.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Card className="p-6 space-y-4 bg-gradient-to-br from-white via-blue-50/50 to-white border-blue-100 w-full max-w-md mx-auto shadow-lg hover:shadow-xl transition-all">
@@ -131,8 +151,26 @@ export const CostEstimation = () => {
             <span>Total</span>
             <span>${finalCost.toFixed(2)}</span>
           </div>
+
+          <Button
+            onClick={() => setShowPaymentWindow(true)}
+            className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-lg hover:shadow-xl transition-all duration-300 py-6 text-lg font-semibold group relative overflow-hidden"
+          >
+            <span className="flex items-center justify-center gap-2">
+              <CreditCard className="w-5 h-5" />
+              Pagar ${finalCost.toFixed(2)}
+            </span>
+            <span className="absolute inset-0 bg-white/10 transform -skew-x-12 group-hover:translate-x-full transition-transform duration-700 ease-out" />
+          </Button>
         </motion.div>
       )}
+
+      <PaymentWindow
+        isOpen={showPaymentWindow}
+        onClose={() => setShowPaymentWindow(false)}
+        onPaymentSubmit={handlePaymentSubmit}
+        totalCost={finalCost}
+      />
     </Card>
   );
 };
