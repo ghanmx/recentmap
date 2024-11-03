@@ -45,18 +45,18 @@ const VehicleForm = ({
 
   useEffect(() => {
     const updateAddresses = async () => {
-      if (pickupLocation) {
+      if (pickupLocation && !pickupAddress) {
         const address = await getAddressFromCoordinates(pickupLocation.lat, pickupLocation.lng);
         onPickupSelect({ ...pickupLocation, address });
       }
-      if (dropLocation) {
+      if (dropLocation && !dropAddress) {
         const address = await getAddressFromCoordinates(dropLocation.lat, dropLocation.lng);
         onDropSelect({ ...dropLocation, address });
       }
     };
 
     updateAddresses();
-  }, [pickupLocation, dropLocation, onPickupSelect, onDropSelect]);
+  }, [pickupLocation, dropLocation, pickupAddress, dropAddress, onPickupSelect, onDropSelect]);
 
   return (
     <div className="space-y-6">

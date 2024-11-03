@@ -7,11 +7,13 @@ import { MapControlPanel } from "./map/MapControlPanel";
 import { useToast } from "@/hooks/use-toast";
 import { detectTollsOnRoute } from "@/utils/tollCalculator";
 import { useTowing } from "@/contexts/TowingContext";
-import { updateLocationAddresses } from "@/utils/addressUtils";
+import { getAddressFromCoordinates } from "@/services/geocodingService";
 
 const TowMap = () => {
   const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [dropLocation, setDropLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [pickupAddress, setPickupAddress] = useState("");
+  const [dropAddress, setDropAddress] = useState("");
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
   const mapRef = useRef<Map | null>(null);
@@ -36,6 +38,17 @@ const TowMap = () => {
     updateTolls();
   }, [pickupLocation, dropLocation, toast, updateTollInfo]);
 
+  const handleLocationSelect = async (location: { lat: number; lng: number }, type: 'pickup' | 'drop') => {
+    const address = await getAddressFromCoordinates(location.lat, location.lng);
+    if (type === 'pickup') {
+      setPickupLocation(location);
+      setPickupAddress(address);
+    } else {
+      setDropLocation(location);
+      setDropAddress(address);
+    }
+  };
+
   return (
     <div className="relative h-screen w-full">
       <div className="absolute inset-0 z-0">
@@ -46,10 +59,10 @@ const TowMap = () => {
           selectingDrop={selectingDrop}
           onLocationSelect={(location) => {
             if (selectingPickup) {
-              setPickupLocation(location);
+              handleLocationSelect(location, 'pickup');
               setSelectingPickup(false);
             } else if (selectingDrop) {
-              setDropLocation(location);
+              handleLocationSelect(location, 'drop');
               setSelectingDrop(false);
             }
           }}
