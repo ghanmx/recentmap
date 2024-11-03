@@ -8,13 +8,38 @@ import { enterpriseIcon, pickupIcon, dropIcon } from "@/utils/mapUtils";
 import { COMPANY_LOCATION } from "@/services/routeService";
 import { Marker, Popup } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
+import { useEffect } from "react";
+import { useMap } from "react-leaflet";
+
+const MapUpdater = ({ pickupLocation, dropLocation }: { 
+  pickupLocation: { lat: number; lng: number } | null;
+  dropLocation: { lat: number; lng: number } | null;
+}) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (pickupLocation && dropLocation) {
+      const bounds = [
+        [pickupLocation.lat, pickupLocation.lng],
+        [dropLocation.lat, dropLocation.lng]
+      ];
+      map.fitBounds(bounds);
+    } else if (pickupLocation) {
+      map.setView([pickupLocation.lat, pickupLocation.lng], 13);
+    } else if (dropLocation) {
+      map.setView([dropLocation.lat, dropLocation.lng], 13);
+    }
+  }, [map, pickupLocation, dropLocation]);
+
+  return null;
+};
 
 interface MapContainerComponentProps {
   pickupLocation: { lat: number; lng: number } | null;
   dropLocation: { lat: number; lng: number } | null;
   selectingPickup: boolean;
   selectingDrop: boolean;
-  onLocationSelect: (location: { lat: number; lng: number; address: string }) => void;
+  onLocationSelect: (location: { lat: number; lng: number }) => void;
   setPickupLocation: (location: { lat: number; lng: number } | null) => void;
   setDropLocation: (location: { lat: number; lng: number } | null) => void;
   onRouteCalculated: (distance: number) => void;
@@ -51,6 +76,8 @@ export const MapContainerComponent = ({
         selectingDrop={selectingDrop}
         handleLocationSelect={handleLocationSelect}
       />
+
+      <MapUpdater pickupLocation={pickupLocation} dropLocation={dropLocation} />
 
       <Marker 
         position={[COMPANY_LOCATION.lat, COMPANY_LOCATION.lng]} 
@@ -97,14 +124,6 @@ export const MapContainerComponent = ({
           onRouteCalculated={onRouteCalculated}
         />
       )}
-
-      <MapControls 
-        selectingPickup={selectingPickup}
-        selectingDrop={selectingDrop}
-        onPickupClick={() => onLocationSelect({ lat: 0, lng: 0, address: "" })}
-        onDropClick={() => onLocationSelect({ lat: 0, lng: 0, address: "" })}
-      />
-      <BorderControls />
     </MapContainer>
   );
 };

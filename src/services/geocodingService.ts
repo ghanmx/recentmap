@@ -18,13 +18,18 @@ interface GeocodingResponse {
 export const getAddressFromCoordinates = async (lat: number, lng: number): Promise<string> => {
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=es`
     );
+    
+    if (!response.ok) {
+      throw new Error('Error al obtener la dirección');
+    }
+    
     const data = await response.json();
-    return data.display_name || 'Address not found';
+    return data.display_name || 'Dirección no encontrada';
   } catch (error) {
     console.error('Error fetching address:', error);
-    return 'Error fetching address';
+    throw new Error('Error al obtener la dirección');
   }
 };
 
@@ -39,9 +44,19 @@ export const searchAddresses = async (query: string): Promise<SearchResult[]> =>
   
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=es`
     );
+    
+    if (!response.ok) {
+      throw new Error('Error en la búsqueda de direcciones');
+    }
+    
     const data = await response.json();
+    
+    if (!Array.isArray(data) || data.length === 0) {
+      return [];
+    }
+    
     return data.map((item: any) => ({
       address: item.display_name,
       lat: parseFloat(item.lat),
@@ -49,6 +64,6 @@ export const searchAddresses = async (query: string): Promise<SearchResult[]> =>
     }));
   } catch (error) {
     console.error('Error searching addresses:', error);
-    return [];
+    throw new Error('Error en la búsqueda de direcciones');
   }
 };

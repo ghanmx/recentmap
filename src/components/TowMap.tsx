@@ -39,20 +39,28 @@ const TowMap = () => {
   }, [pickupLocation, dropLocation, toast, updateTollInfo]);
 
   const handleLocationSelect = async (location: { lat: number; lng: number }, type: 'pickup' | 'drop') => {
-    const address = await getAddressFromCoordinates(location.lat, location.lng);
-    if (type === 'pickup') {
-      setPickupLocation(location);
-      setPickupAddress(address);
+    try {
+      const address = await getAddressFromCoordinates(location.lat, location.lng);
+      if (type === 'pickup') {
+        setPickupLocation(location);
+        setPickupAddress(address);
+        toast({
+          title: "Ubicación de Recogida",
+          description: address,
+        });
+      } else {
+        setDropLocation(location);
+        setDropAddress(address);
+        toast({
+          title: "Ubicación de Entrega",
+          description: address,
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Ubicación de Recogida",
-        description: address,
-      });
-    } else {
-      setDropLocation(location);
-      setDropAddress(address);
-      toast({
-        title: "Ubicación de Entrega",
-        description: address,
+        title: "Error",
+        description: "No se pudo obtener la dirección",
+        variant: "destructive",
       });
     }
   };
