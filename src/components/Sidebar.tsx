@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import VehicleForm from "./VehicleForm";
 import { RouteDisplay } from "./map/RouteDisplay";
+import { CostEstimation } from "./CostEstimation";
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -29,6 +30,7 @@ const Sidebar = () => {
             onPickupSelect={() => {}}
             onDropSelect={() => {}}
           />
+          <CostEstimation />
           <RouteDisplay
             pickupLocation={null}
             dropLocation={null}

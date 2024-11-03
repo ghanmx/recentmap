@@ -50,7 +50,7 @@ const TowMap = () => {
     <MapLayout>
       <MapHeader />
       
-      <div className="relative h-[calc(100vh-4rem)]">
+      <div className="relative h-[calc(100vh-4rem)] transition-all duration-300">
         <MapControlPanel
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
@@ -60,7 +60,7 @@ const TowMap = () => {
           dropLocation={dropLocation}
         />
 
-        <div className="absolute inset-0 z-10">
+        <div className="absolute inset-0 z-10 transition-all duration-300">
           <MapContainerComponent
             pickupLocation={pickupLocation}
             dropLocation={dropLocation}
