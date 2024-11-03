@@ -4,7 +4,9 @@ import { RoutePolyline } from "./RoutePolyline";
 import { MapControls } from "./MapControls";
 import { BorderControls } from "./BorderControls";
 import { MapLocationHandler } from "./MapLocationHandler";
-import { useState } from "react";
+import { enterpriseIcon, pickupIcon, dropIcon } from "@/utils/mapUtils";
+import { COMPANY_LOCATION } from "@/services/routeService";
+import { Marker, Popup } from "react-leaflet";
 
 interface MapContainerComponentProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -27,14 +29,6 @@ export const MapContainerComponent = ({
   setDropLocation,
   onRouteCalculated
 }: MapContainerComponentProps) => {
-  const handlePickupClick = () => {
-    onLocationSelect({ lat: 0, lng: 0 }); // Default coordinates
-  };
-
-  const handleDropClick = () => {
-    onLocationSelect({ lat: 0, lng: 0 }); // Default coordinates
-  };
-
   return (
     <MapContainer
       center={[25.6866, -100.3161]}
@@ -52,23 +46,32 @@ export const MapContainerComponent = ({
         handleLocationSelect={onLocationSelect}
       />
 
+      {/* Company Location Marker */}
+      <Marker 
+        position={[COMPANY_LOCATION.lat, COMPANY_LOCATION.lng]} 
+        icon={enterpriseIcon}
+      >
+        <Popup>
+          <div className="font-semibold">Empresa de Grúas</div>
+          <div className="text-sm text-gray-600">Ubicación Principal</div>
+        </Popup>
+      </Marker>
+
       {pickupLocation && (
         <DraggableMarker
-          position={pickupLocation}
-          onDragEnd={setPickupLocation}
-          icon={undefined}
-          label="Pickup Location"
-          draggable={true}
+          position={[pickupLocation.lat, pickupLocation.lng]}
+          onDragEnd={(latlng) => setPickupLocation({ lat: latlng.lat, lng: latlng.lng })}
+          icon={pickupIcon}
+          label="Punto de Recogida"
         />
       )}
 
       {dropLocation && (
         <DraggableMarker
-          position={dropLocation}
-          onDragEnd={setDropLocation}
-          icon={undefined}
-          label="Drop-off Location"
-          draggable={true}
+          position={[dropLocation.lat, dropLocation.lng]}
+          onDragEnd={(latlng) => setDropLocation({ lat: latlng.lat, lng: latlng.lng })}
+          icon={dropIcon}
+          label="Punto de Entrega"
         />
       )}
 
@@ -83,8 +86,8 @@ export const MapContainerComponent = ({
       <MapControls 
         selectingPickup={selectingPickup}
         selectingDrop={selectingDrop}
-        onPickupClick={handlePickupClick}
-        onDropClick={handleDropClick}
+        onPickupClick={() => onLocationSelect({ lat: 0, lng: 0 })}
+        onDropClick={() => onLocationSelect({ lat: 0, lng: 0 })}
       />
       <BorderControls />
     </MapContainer>
