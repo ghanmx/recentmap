@@ -28,13 +28,13 @@ const TowMap = () => {
       setDropAddress(addresses.drop);
 
       if (pickupLocation && dropLocation) {
-        const { tolls, totalTollCost } = detectTollsOnRoute(pickupLocation, dropLocation);
-        updateTollInfo(tolls, totalTollCost);
+        const tollInfo = await detectTollsOnRoute(pickupLocation, dropLocation);
+        updateTollInfo(tollInfo.tolls, tollInfo.totalTollCost);
         
-        if (tolls.length > 0) {
+        if (tollInfo.tolls.length > 0) {
           toast({
             title: "Peajes Detectados",
-            description: `Se detectaron ${tolls.length} peajes en la ruta con un costo total de $${totalTollCost}`,
+            description: `Se detectaron ${tollInfo.tolls.length} peajes en la ruta con un costo total de $${tollInfo.totalTollCost}`,
           });
         }
       }

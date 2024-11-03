@@ -1,4 +1,15 @@
-export const TOLL_LOCATIONS = [
+export interface TollLocation {
+  name: string;
+  lat: number;
+  lng: number;
+  cost: number;
+  description: string;
+  type: 'highway' | 'urban';
+  operatingHours: string;
+  acceptedPayments: ('cash' | 'card' | 'tag')[];
+}
+
+export const TOLL_LOCATIONS: TollLocation[] = [
   { 
     name: "Autopista Monterrey Cadereyta", 
     lat: 25.6603, 
@@ -40,14 +51,3 @@ export const TOLL_LOCATIONS = [
     acceptedPayments: ["cash", "card", "tag"]
   }
 ];
-
-export interface TollLocation {
-  name: string;
-  lat: number;
-  lng: number;
-  cost: number;
-  description: string;
-  type: 'highway' | 'urban';
-  operatingHours: string;
-  acceptedPayments: ('cash' | 'card' | 'tag')[];
-}
