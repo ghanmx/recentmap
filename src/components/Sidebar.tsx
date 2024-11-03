@@ -42,7 +42,7 @@ const Sidebar = () => {
 
   return (
     <>
-      <div className="lg:hidden fixed top-4 left-4 z-50">
+      <div className="lg:hidden fixed top-4 left-4 z-[1000]">
         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all">
@@ -59,7 +59,7 @@ const Sidebar = () => {
         variant="outline"
         size="icon"
         onClick={() => setIsDesktopSidebarVisible(!isDesktopSidebarVisible)}
-        className="fixed bottom-4 left-4 z-50 hidden lg:flex bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
+        className="fixed bottom-4 left-4 z-[1000] hidden lg:flex bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
       >
         {isDesktopSidebarVisible ? (
           <ChevronLeft className="h-4 w-4" />
@@ -69,7 +69,7 @@ const Sidebar = () => {
       </Button>
 
       <aside className={cn(
-        "hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-white/95 backdrop-blur-sm border-r shadow-lg z-40",
+        "hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-white/95 backdrop-blur-sm border-r shadow-lg z-[1000]",
         "transition-all duration-300 ease-in-out",
         isDesktopSidebarVisible ? "w-96" : "w-0 overflow-hidden"
       )}>
