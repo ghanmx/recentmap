@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Loader2 } from "lucide-react";
-import { searchAddresses, getAddressFromCoordinates } from "@/services/geocodingService";
+import { searchAddresses } from "@/services/geocodingService";
 import { useToast } from "@/hooks/use-toast";
 import { debounce } from "lodash";
 
@@ -17,7 +17,7 @@ interface LocationSearchProps {
 export const LocationSearch = ({ 
   label, 
   onLocationSelect, 
-  placeholder = "Search address...",
+  placeholder = "Buscar dirección...",
   currentAddress = "",
   currentLocation
 }: LocationSearchProps) => {
@@ -43,8 +43,8 @@ export const LocationSearch = ({
         setSuggestions(results);
       } catch (error) {
         toast({
-          title: "Search Error",
-          description: "Could not get results",
+          title: "Error de Búsqueda",
+          description: "No se pudieron obtener resultados",
           variant: "destructive"
         });
       } finally {
@@ -54,7 +54,7 @@ export const LocationSearch = ({
     [toast]
   );
 
-  const handleLocationSelect = async (suggestion: { address: string; lat: number; lon: number }) => {
+  const handleLocationSelect = (suggestion: { address: string; lat: number; lon: number }) => {
     const location = {
       lat: suggestion.lat,
       lng: suggestion.lon,

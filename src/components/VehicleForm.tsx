@@ -2,31 +2,17 @@ import { Form } from "@/components/ui/form";
 import { Card } from "@/components/ui/card";
 import { VehicleDetails } from "./form/VehicleDetails";
 import { ServiceRequirements } from "./form/ServiceRequirements";
-import { downloadServiceInfo } from "@/utils/downloadUtils";
 import { VehicleFormHeader } from "./form/VehicleFormHeader";
-import { VehicleFormActions } from "./form/VehicleFormActions";
 import { TowTruckSelector } from "./form/TowTruckSelector";
 import { AddressFields } from "./form/AddressFields";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TowTruckType } from "@/utils/downloadUtils";
 import { useTowingCost } from "@/hooks/useTowingCost";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
-import { FormData } from "@/types/form";
-import { getTowTruckType } from "@/utils/towTruckPricing";
-import { detectTollsOnRoute } from "@/utils/tollCalculator";
-
-interface VehicleFormProps {
-  pickupLocation: { lat: number; lng: number } | null;
-  dropLocation: { lat: number; lng: number } | null;
-  pickupAddress: string;
-  dropAddress: string;
-  serviceType: 'standard' | 'flatbed' | 'emergency';
-  onManeuverChange?: (requiresManeuver: boolean) => void;
-  onVehicleModelChange?: (model: string) => void;
-  onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
-  onDropSelect: (location: { lat: number; lng: number; address: string }) => void;
-}
+import { Button } from "./ui/button";
+import { Download, Copy, CreditCard } from "lucide-react";
+import { downloadServiceInfo } from "@/utils/downloadUtils";
 
 const VehicleForm = ({
   pickupLocation,
@@ -38,7 +24,17 @@ const VehicleForm = ({
   onVehicleModelChange,
   onPickupSelect,
   onDropSelect
-}: VehicleFormProps) => {
+}: {
+  pickupLocation: { lat: number; lng: number } | null;
+  dropLocation: { lat: number; lng: number } | null;
+  pickupAddress: string;
+  dropAddress: string;
+  serviceType: 'standard' | 'flatbed' | 'emergency';
+  onManeuverChange?: (requiresManeuver: boolean) => void;
+  onVehicleModelChange?: (model: string) => void;
+  onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
+  onDropSelect: (location: { lat: number; lng: number; address: string }) => void;
+}) => {
   const [requiresManeuver, setRequiresManeuver] = useState(false);
   const [truckType, setTruckType] = useState<TowTruckType>('A');
   const [tollFees, setTollFees] = useState(0);
@@ -46,24 +42,6 @@ const VehicleForm = ({
   const { toast } = useToast();
   const { form, onSubmit, isPending } = useVehicleForm(pickupLocation, dropLocation, serviceType);
   const costDetails = useTowingCost(pickupLocation, dropLocation, requiresManeuver, truckType, tollFees);
-
-  useEffect(() => {
-    const updateTolls = async () => {
-      if (pickupLocation && dropLocation) {
-        const tollInfo = await detectTollsOnRoute(pickupLocation, dropLocation);
-        setTollFees(tollInfo.totalTollCost);
-        form.setValue('tollFees', tollInfo.totalTollCost);
-        
-        if (tollInfo.tolls.length > 0) {
-          toast({
-            title: "Tolls Detected",
-            description: `${tollInfo.tolls.length} tolls found on route. Total cost: $${tollInfo.totalTollCost}`,
-          });
-        }
-      }
-    };
-    updateTolls();
-  }, [pickupLocation, dropLocation, form, toast]);
 
   const generateFormDataText = () => {
     const formData = form.getValues();
@@ -84,8 +62,8 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
   const handleDownload = async (format: 'csv' | 'txt') => {
     if (!form.formState.isValid) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields before downloading.",
+        title: "Información Incompleta",
+        description: "Por favor complete todos los campos requeridos antes de descargar.",
         variant: "destructive",
       });
       return;
@@ -106,13 +84,13 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
     try {
       await navigator.clipboard.writeText(generateFormDataText());
       toast({
-        title: "Information Copied",
-        description: "Service details have been copied to clipboard",
+        title: "Información Copiada",
+        description: "Los detalles del servicio han sido copiados al portapapeles",
       });
     } catch (err) {
       toast({
         title: "Error",
-        description: "Could not copy to clipboard",
+        description: "No se pudo copiar al portapapeles",
         variant: "destructive",
       });
     }
@@ -157,13 +135,46 @@ Requiere maniobra especial: ${requiresManeuver ? 'Sí' : 'No'}
                 onManeuverChange?.(checked);
               }}
             />
-            <VehicleFormActions
-              onDownload={handleDownload}
-              onCopy={handleCopy}
-              onSubmit={() => form.handleSubmit(onSubmit)}
-              isPending={isPending}
-              formData={generateFormDataText()}
-            />
+            
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleDownload('txt')}
+                className="flex-1 bg-white hover:bg-gray-50"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Descargar Detalles
+              </Button>
+              
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCopy}
+                className="flex-1 bg-white hover:bg-gray-50"
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                Copiar al Portapapeles
+              </Button>
+              
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="flex-1 bg-gradient-to-r from-primary to-primary/90"
+              >
+                {isPending ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Procesando...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" />
+                    Continuar al Pago
+                  </span>
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
       </Card>
