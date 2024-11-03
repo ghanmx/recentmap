@@ -30,13 +30,18 @@ const calculateStraightLineDistance = (start: Location, end: Location): number =
 };
 
 const generateFallbackGeometry = (start: Location, end: Location): string => {
-  const points = [[start.lat, start.lng], [end.lat, end.lng]];
+  // Create a simple straight line polyline
+  const points = [
+    [start.lat, start.lng],
+    [(start.lat + end.lat) / 2, (start.lng + end.lng) / 2],
+    [end.lat, end.lng]
+  ];
   return btoa(JSON.stringify(points));
 };
 
 const createFallbackResponse = (start: Location, end: Location): RouteResponse => {
   const distance = calculateStraightLineDistance(start, end);
-  const MEXICAN_ROADS_FACTOR = 1.4;
+  const MEXICAN_ROADS_FACTOR = 1.4; // Adjustment factor for actual road distance
   const adjustedDistance = distance * MEXICAN_ROADS_FACTOR;
   const duration = (adjustedDistance / FALLBACK_SPEED_KMH) * 3600;
 
@@ -48,19 +53,15 @@ const createFallbackResponse = (start: Location, end: Location): RouteResponse =
 };
 
 async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Response> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
-
   try {
     const response = await fetch(url, {
-      signal: controller.signal,
       headers: {
         'Accept': 'application/json',
         'User-Agent': 'TowingServiceApp/1.0'
-      }
+      },
+      mode: 'cors',
+      cache: 'no-cache'
     });
-
-    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -68,6 +69,7 @@ async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Respo
     return response;
   } catch (error) {
     if (retries > 0) {
+      console.warn(`Retrying route fetch, ${retries} attempts remaining`);
       await wait(RETRY_DELAY);
       return fetchWithRetry(url, retries - 1);
     }
@@ -77,9 +79,9 @@ async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Respo
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
   try {
-    // Ensure proper URL formatting without colon after domain
-    const baseUrl = 'https://router.project-osrm.org';
-    const path = `/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}`;
+    // Use a different OSRM server that allows CORS
+    const baseUrl = 'https://routing.openstreetmap.de';
+    const path = `/routed-car/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}`;
     const params = '?overview=full&geometries=polyline&alternatives=true';
     const url = `${baseUrl}${path}${params}`;
 
@@ -98,7 +100,7 @@ export const getRouteDetails = async (start: Location, end: Location): Promise<R
     }, data.routes[0]);
 
     return {
-      distance: (bestRoute.distance / 1000) * 1.15,
+      distance: (bestRoute.distance / 1000) * 1.15, // Convert to km and add 15% for accuracy
       duration: bestRoute.duration,
       geometry: bestRoute.geometry,
     };
