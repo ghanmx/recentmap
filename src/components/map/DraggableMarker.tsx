@@ -1,6 +1,5 @@
 import L from "leaflet";
 import { Marker, Popup } from "react-leaflet";
-import { useToast } from "@/hooks/use-toast";
 
 interface DraggableMarkerProps {
   position: L.LatLngExpression;
@@ -14,21 +13,12 @@ export const DraggableMarker = ({
   position, 
   onDragEnd, 
   icon, 
-  label, 
+  label,
   draggable = true 
 }: DraggableMarkerProps) => {
-  const { toast } = useToast();
-
   const handleDragEnd = (e: L.DragEndEvent) => {
-    if (draggable) {
-      const marker = e.target;
-      onDragEnd(marker.getLatLng());
-      toast({
-        title: "Location Updated",
-        description: `${label} has been moved to a new position`,
-        duration: 3000,
-      });
-    }
+    const marker = e.target;
+    onDragEnd(marker.getLatLng());
   };
 
   return (

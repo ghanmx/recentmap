@@ -4,6 +4,7 @@ import { RoutePolyline } from "./RoutePolyline";
 import { MapControls } from "./MapControls";
 import { BorderControls } from "./BorderControls";
 import { MapLocationHandler } from "./MapLocationHandler";
+import { useState } from "react";
 
 interface MapContainerComponentProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -26,6 +27,14 @@ export const MapContainerComponent = ({
   setDropLocation,
   onRouteCalculated
 }: MapContainerComponentProps) => {
+  const handlePickupClick = () => {
+    onLocationSelect({ lat: 0, lng: 0 }); // Default coordinates
+  };
+
+  const handleDropClick = () => {
+    onLocationSelect({ lat: 0, lng: 0 }); // Default coordinates
+  };
+
   return (
     <MapContainer
       center={[25.6866, -100.3161]}
@@ -40,14 +49,16 @@ export const MapContainerComponent = ({
       <MapLocationHandler
         selectingPickup={selectingPickup}
         selectingDrop={selectingDrop}
-        onLocationSelect={onLocationSelect}
+        handleLocationSelect={onLocationSelect}
       />
 
       {pickupLocation && (
         <DraggableMarker
           position={pickupLocation}
           onDragEnd={setPickupLocation}
-          type="pickup"
+          icon={undefined}
+          label="Pickup Location"
+          draggable={true}
         />
       )}
 
@@ -55,7 +66,9 @@ export const MapContainerComponent = ({
         <DraggableMarker
           position={dropLocation}
           onDragEnd={setDropLocation}
-          type="drop"
+          icon={undefined}
+          label="Drop-off Location"
+          draggable={true}
         />
       )}
 
@@ -67,7 +80,12 @@ export const MapContainerComponent = ({
         />
       )}
 
-      <MapControls />
+      <MapControls 
+        selectingPickup={selectingPickup}
+        selectingDrop={selectingDrop}
+        onPickupClick={handlePickupClick}
+        onDropClick={handleDropClick}
+      />
       <BorderControls />
     </MapContainer>
   );

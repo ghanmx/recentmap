@@ -1,34 +1,23 @@
-import { useCallback } from "react";
-import { showLocationNotification } from "@/utils/notificationUtils";
-
 interface MapLocationHandlerProps {
-  onPickupSelect: (location: { lat: number; lng: number }) => void;
-  onDropSelect: (location: { lat: number; lng: number }) => void;
   selectingPickup: boolean;
   selectingDrop: boolean;
-  setSelectingPickup: (value: boolean) => void;
-  setSelectingDrop: (value: boolean) => void;
+  handleLocationSelect: (location: { lat: number; lng: number }) => void;
 }
 
 export const MapLocationHandler = ({
-  onPickupSelect,
-  onDropSelect,
   selectingPickup,
   selectingDrop,
-  setSelectingPickup,
-  setSelectingDrop,
+  handleLocationSelect,
 }: MapLocationHandlerProps) => {
-  const handleLocationSelect = useCallback((location: { lat: number; lng: number }) => {
-    if (selectingPickup) {
-      onPickupSelect(location);
-      setSelectingPickup(false);
-      showLocationNotification('pickup', location);
-    } else if (selectingDrop) {
-      onDropSelect(location);
-      setSelectingDrop(false);
-      showLocationNotification('drop', location);
+  const handleClick = (e: L.LeafletMouseEvent) => {
+    if (selectingPickup || selectingDrop) {
+      handleLocationSelect({ lat: e.latlng.lat, lng: e.latlng.lng });
     }
-  }, [selectingPickup, selectingDrop, onPickupSelect, onDropSelect, setSelectingPickup, setSelectingDrop]);
+  };
 
-  return null; // This is a logic-only component
+  useMapEvents({
+    click: handleClick,
+  });
+
+  return null;
 };
