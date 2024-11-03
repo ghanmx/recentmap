@@ -1,17 +1,20 @@
 import { Card } from "@/components/ui/card";
-import { DollarSign, Route, Shield, Clock, Truck, ChevronDown } from "lucide-react";
+import { DollarSign, Route, Shield, Clock, Truck, ChevronDown, Receipt } from "lucide-react";
 import { useTowing } from "@/contexts/TowingContext";
 import { motion } from "framer-motion";
 import { TollInfoDisplay } from "./TollInfoDisplay";
 import { useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export const CostEstimation = () => {
   const { totalDistance, totalCost, detectedTolls, totalTollCost } = useTowing();
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [requiresInvoice, setRequiresInvoice] = useState(false);
 
-  const baseCost = totalCost - totalTollCost;
-  const serviceFee = baseCost * 0.10; // 10% service fee
-  const tax = baseCost * 0.16; // 16% IVA
+  const baseCost = totalDistance * 35; // 35 pesos por kilómetro
+  const tax = requiresInvoice ? baseCost * 0.16 : 0; // 16% IVA solo si requiere factura
+  const finalCost = baseCost + totalTollCost + tax;
 
   return (
     <Card className="p-6 space-y-4 bg-gradient-to-br from-white via-blue-50/50 to-white border-blue-100 w-full max-w-md mx-auto shadow-lg hover:shadow-xl transition-all">
@@ -38,7 +41,7 @@ export const CostEstimation = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <span>${totalCost ? totalCost.toFixed(2) : '0.00'}</span>
+        <span>${finalCost.toFixed(2)}</span>
         <Shield className="w-6 h-6 text-primary/60" />
       </motion.div>
 
@@ -64,6 +67,16 @@ export const CostEstimation = () => {
         </div>
       </div>
 
+      <div className="flex items-center space-x-2 bg-gray-50/50 p-3 rounded-lg">
+        <Receipt className="w-4 h-4 text-gray-500" />
+        <Label htmlFor="invoice-required">Requiere factura</Label>
+        <Switch
+          id="invoice-required"
+          checked={requiresInvoice}
+          onCheckedChange={setRequiresInvoice}
+        />
+      </div>
+
       {detectedTolls.length > 0 && (
         <TollInfoDisplay tolls={detectedTolls} totalCost={totalTollCost} />
       )}
@@ -71,7 +84,7 @@ export const CostEstimation = () => {
       <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
         <div className="flex items-center gap-2 text-sm text-blue-700">
           <Truck className="w-4 h-4" />
-          <span>Precio incluye servicio, impuestos y seguro</span>
+          <span>Precio incluye {requiresInvoice ? 'IVA y ' : ''}seguro</span>
         </div>
       </div>
 
@@ -91,26 +104,32 @@ export const CostEstimation = () => {
           className="space-y-2 pt-2 border-t border-gray-100"
         >
           <div className="flex justify-between text-sm text-gray-600">
-            <span>Servicio base</span>
-            <span>${(baseCost - serviceFee - tax).toFixed(2)}</span>
+            <span>Costo por distancia ({totalDistance.toFixed(2)} km × $35.00)</span>
+            <span>${baseCost.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>Cargo por servicio (10%)</span>
-            <span>${serviceFee.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>IVA (16%)</span>
-            <span>${tax.toFixed(2)}</span>
-          </div>
-          {totalTollCost > 0 && (
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>Peajes</span>
-              <span>${totalTollCost.toFixed(2)}</span>
+
+          {detectedTolls.length > 0 && (
+            <div className="space-y-1">
+              <div className="text-sm text-gray-600 font-medium">Peajes:</div>
+              {detectedTolls.map((toll, index) => (
+                <div key={index} className="flex justify-between text-sm text-gray-600 pl-4">
+                  <span>{toll.name}</span>
+                  <span>${toll.cost.toFixed(2)}</span>
+                </div>
+              ))}
             </div>
           )}
+
+          {requiresInvoice && (
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>IVA (16%)</span>
+              <span>${tax.toFixed(2)}</span>
+            </div>
+          )}
+
           <div className="flex justify-between text-sm font-semibold text-primary pt-2 border-t border-gray-100">
             <span>Total</span>
-            <span>${totalCost.toFixed(2)}</span>
+            <span>${finalCost.toFixed(2)}</span>
           </div>
         </motion.div>
       )}
