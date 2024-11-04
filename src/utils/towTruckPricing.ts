@@ -12,6 +12,34 @@ export const towTruckTypes: Record<'A' | 'B' | 'C' | 'D', TowTruckConfig> = {
   D: { perKm: 32.35, basePrice: 885.84, maneuverCharge: 2101.65, maxWeight: 8000 }
 };
 
+export const getTruckTypeForVehicle = (model: string): 'A' | 'B' | 'C' | 'D' => {
+  if (!model) return 'A';
+  
+  const modelLower = model.toLowerCase();
+  
+  // Check for keywords first
+  if (modelLower.includes('pickup') || 
+      modelLower.includes('suv') || 
+      modelLower.includes('camioneta') ||
+      modelLower.includes('truck')) {
+    return 'C';
+  }
+  if (modelLower.includes('van') || modelLower.includes('minivan')) {
+    return 'B';
+  }
+  
+  // Then check weight if available
+  const weight = vehicleWeights[model];
+  if (weight) {
+    if (weight <= towTruckTypes.A.maxWeight) return 'A';
+    if (weight <= towTruckTypes.B.maxWeight) return 'B';
+    if (weight <= towTruckTypes.C.maxWeight) return 'C';
+    return 'D';
+  }
+  
+  return 'A'; // Default to smallest truck if no conditions met
+};
+
 const vehicleWeights: Record<string, number> = {
   'Toyota Corolla': 1500, 'Honda Civic': 1600, 'Mazda3': 1550,
   'Hyundai Elantra': 1450, 'Nissan Sentra': 1520, 'Volkswagen Jetta': 1580,
@@ -19,22 +47,6 @@ const vehicleWeights: Record<string, number> = {
   'Chevrolet Equinox': 3400, 'Nissan Rogue': 3550, 'Jeep Cherokee': 3700,
   'Ford F-250': 6000, 'RAM 2500': 6500, 'Chevrolet Silverado 2500HD': 7000,
   'GMC Sierra 2500HD': 6800, 'Dodge Ram 3500': 7500
-};
-
-const customPrices: Record<string, { perKm: number; basePrice: number; maneuverCharge: number; weight: number }> = {
-  'Tesla Model S': { perKm: 25, basePrice: 600, maneuverCharge: 1300, weight: 2200 },
-  'Ford Mustang Mach-E': { perKm: 22, basePrice: 550, maneuverCharge: 1200, weight: 2500 }
-};
-
-export const getTowTruckType = (vehicleModel: string): 'A' | 'B' | 'C' | 'D' => {
-  const weight = customPrices[vehicleModel]?.weight || vehicleWeights[vehicleModel];
-  if (weight) {
-    if (weight <= towTruckTypes.A.maxWeight) return 'A';
-    if (weight <= towTruckTypes.B.maxWeight) return 'B';
-    if (weight <= towTruckTypes.C.maxWeight) return 'C';
-    return 'D';
-  }
-  return 'A';
 };
 
 export const calculateTotalCost = (distance: number, towTruckType: 'A' | 'B' | 'C' | 'D', requiresManeuver: boolean): number => {
