@@ -15,6 +15,23 @@ interface GeocodingResponse {
   }>;
 }
 
+const NUEVO_LEON_COORDS = {
+  lat: 25.5922,
+  lng: -99.9962
+};
+
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+};
+
 export const getAddressFromCoordinates = async (lat: number, lng: number): Promise<string> => {
   try {
     const response = await fetch(
@@ -43,14 +60,18 @@ interface SearchResult {
   address: string;
   lat: number;
   lon: number;
+  distance: number;
 }
 
 export const searchAddresses = async (query: string): Promise<SearchResult[]> => {
   if (!query || query.length < 3) return [];
   
   try {
+    // Add Nuevo León context to the search query
+    const enhancedQuery = `${query}, Nuevo Leon, Mexico`;
+    
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=es`,
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enhancedQuery)}&limit=10&accept-language=es`,
       {
         headers: {
           'Accept': 'application/json',
@@ -69,11 +90,21 @@ export const searchAddresses = async (query: string): Promise<SearchResult[]> =>
       return [];
     }
     
-    return data.map((item: any) => ({
+    // Calculate distance from Nuevo León for each result
+    const results = data.map((item: any) => ({
       address: item.display_name,
       lat: parseFloat(item.lat),
-      lon: parseFloat(item.lon)
+      lon: parseFloat(item.lon),
+      distance: calculateDistance(
+        parseFloat(item.lat),
+        parseFloat(item.lon),
+        NUEVO_LEON_COORDS.lat,
+        NUEVO_LEON_COORDS.lng
+      )
     }));
+
+    // Sort results by distance from Nuevo León
+    return results.sort((a, b) => a.distance - b.distance);
   } catch (error) {
     console.error('Error searching addresses:', error);
     throw new Error('Error en la búsqueda de direcciones');

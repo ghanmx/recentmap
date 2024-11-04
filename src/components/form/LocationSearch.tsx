@@ -29,6 +29,7 @@ export const LocationSearch = ({
     address: string;
     lat: number;
     lon: number;
+    distance: number;
   }>>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +67,7 @@ export const LocationSearch = ({
     [toast]
   );
 
-  const handleLocationSelect = (suggestion: { address: string; lat: number; lon: number }) => {
+  const handleLocationSelect = (suggestion: { address: string; lat: number; lon: number; distance: number }) => {
     const location = {
       lat: suggestion.lat,
       lng: suggestion.lon,
@@ -79,7 +80,7 @@ export const LocationSearch = ({
     
     toast({
       title: "Ubicación seleccionada",
-      description: suggestion.address,
+      description: `${suggestion.address} (${suggestion.distance.toFixed(1)}km de Nuevo León)`,
     });
   };
 
@@ -144,9 +145,14 @@ export const LocationSearch = ({
                 onClick={() => handleLocationSelect(suggestion)}
               >
                 <MapPin className="h-4 w-4 text-primary/70 group-hover:text-primary flex-shrink-0" />
-                <span className="text-sm text-gray-700 group-hover:text-gray-900 line-clamp-2">
-                  {suggestion.address}
-                </span>
+                <div className="flex flex-col">
+                  <span className="text-sm text-gray-700 group-hover:text-gray-900 line-clamp-2">
+                    {suggestion.address}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {suggestion.distance.toFixed(1)}km de Nuevo León
+                  </span>
+                </div>
               </button>
             ))}
           </div>
