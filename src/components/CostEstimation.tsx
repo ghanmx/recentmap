@@ -37,8 +37,6 @@ export const CostEstimation = () => {
     }
   };
 
-  // ... keep existing code (Card component JSX structure)
-
   return (
     <Card className="p-6 space-y-4 bg-gradient-to-br from-white via-blue-50/50 to-white border-blue-100 w-full max-w-md mx-auto shadow-lg hover:shadow-xl transition-all">
       <div className="flex items-center justify-between">
@@ -107,7 +105,7 @@ export const CostEstimation = () => {
       <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
         <div className="flex items-center gap-2 text-sm text-blue-700">
           <Truck className="w-4 h-4" />
-          <span>Precio incluye {requiresInvoice ? 'IVA y ' : ''}seguro</span>
+          <span>Precio incluye IVA</span>
         </div>
       </div>
 
