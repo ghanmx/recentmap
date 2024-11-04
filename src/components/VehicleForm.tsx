@@ -11,8 +11,9 @@ import { useTowingCost } from "@/hooks/useTowingCost";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Copy } from "lucide-react";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
+import { CopyButton } from "./ui/copy-button";
 
 const VehicleForm = ({
   pickupLocation,
@@ -58,10 +59,38 @@ const VehicleForm = ({
     updateAddresses();
   }, [pickupLocation, dropLocation, pickupAddress, dropAddress, onPickupSelect, onDropSelect]);
 
+  const getFormData = () => {
+    const data = {
+      pickup: pickupAddress,
+      dropoff: dropAddress,
+      vehicleMake: form.getValues('vehicleMake'),
+      vehicleModel: form.getValues('vehicleModel'),
+      vehicleYear: form.getValues('vehicleYear'),
+      vehicleColor: form.getValues('vehicleColor'),
+      requiresManeuver,
+      truckType,
+      tollFees,
+      estimatedCost: costDetails?.total || 0
+    };
+    return JSON.stringify(data, null, 2);
+  };
+
   return (
     <div className="space-y-6">
       <Card className="p-6 bg-gradient-to-br from-white via-blue-50/30 to-white border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300">
-        <VehicleFormHeader />
+        <div className="flex justify-between items-center mb-4">
+          <VehicleFormHeader />
+          <CopyButton
+            text={getFormData()}
+            onCopy={() => {
+              toast({
+                title: "Form Data Copied",
+                description: "The form data has been copied to your clipboard",
+              });
+            }}
+            className="ml-2"
+          />
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <AddressFields
