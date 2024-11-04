@@ -12,12 +12,20 @@ export const towTruckTypes: Record<'A' | 'B' | 'C' | 'D', TowTruckConfig> = {
   D: { perKm: 32.35, basePrice: 885.84, maneuverCharge: 2101.65, maxWeight: 8000 }
 };
 
+const vehicleWeights: Record<string, number> = {
+  'Toyota Corolla': 1500, 'Honda Civic': 1600, 'Mazda3': 1550,
+  'Hyundai Elantra': 1450, 'Nissan Sentra': 1520, 'Volkswagen Jetta': 1580,
+  'Toyota RAV4': 3500, 'Honda CR-V': 3600, 'Ford Explorer': 3800,
+  'Chevrolet Equinox': 3400, 'Nissan Rogue': 3550, 'Jeep Cherokee': 3700,
+  'Ford F-250': 6000, 'RAM 2500': 6500, 'Chevrolet Silverado 2500HD': 7000,
+  'GMC Sierra 2500HD': 6800, 'Dodge Ram 3500': 7500
+};
+
 export const getTruckTypeForVehicle = (model: string): 'A' | 'B' | 'C' | 'D' => {
   if (!model) return 'A';
   
   const modelLower = model.toLowerCase();
   
-  // Check for keywords first
   if (modelLower.includes('pickup') || 
       modelLower.includes('suv') || 
       modelLower.includes('camioneta') ||
@@ -28,7 +36,6 @@ export const getTruckTypeForVehicle = (model: string): 'A' | 'B' | 'C' | 'D' => 
     return 'B';
   }
   
-  // Then check weight if available
   const weight = vehicleWeights[model];
   if (weight) {
     if (weight <= towTruckTypes.A.maxWeight) return 'A';
@@ -37,16 +44,7 @@ export const getTruckTypeForVehicle = (model: string): 'A' | 'B' | 'C' | 'D' => 
     return 'D';
   }
   
-  return 'A'; // Default to smallest truck if no conditions met
-};
-
-const vehicleWeights: Record<string, number> = {
-  'Toyota Corolla': 1500, 'Honda Civic': 1600, 'Mazda3': 1550,
-  'Hyundai Elantra': 1450, 'Nissan Sentra': 1520, 'Volkswagen Jetta': 1580,
-  'Toyota RAV4': 3500, 'Honda CR-V': 3600, 'Ford Explorer': 3800,
-  'Chevrolet Equinox': 3400, 'Nissan Rogue': 3550, 'Jeep Cherokee': 3700,
-  'Ford F-250': 6000, 'RAM 2500': 6500, 'Chevrolet Silverado 2500HD': 7000,
-  'GMC Sierra 2500HD': 6800, 'Dodge Ram 3500': 7500
+  return 'A';
 };
 
 export const calculateTotalCost = (distance: number, towTruckType: 'A' | 'B' | 'C' | 'D', requiresManeuver: boolean): number => {

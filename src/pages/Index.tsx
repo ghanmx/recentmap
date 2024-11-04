@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import TowMap from "@/components/TowMap";
 import { ServiceRequest } from "@/types/service";
@@ -6,9 +5,6 @@ import { calculateTotalCost, getTruckTypeForVehicle } from "@/utils/towTruckPric
 import { calculateRoadDistance } from "@/utils/routeCalculator";
 
 const Index = () => {
-  const [serviceType, setServiceType] = useState<ServiceRequest['serviceType']>('standard');
-  const [requiresManeuver, setRequiresManeuver] = useState(false);
-  const [selectedVehicleModel, setSelectedVehicleModel] = useState<string>('');
   const [totalCost, setTotalCost] = useState(0);
   const { toast } = useToast();
 
