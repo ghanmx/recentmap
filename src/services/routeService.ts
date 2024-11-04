@@ -15,6 +15,11 @@ const RETRY_DELAY = 2000;
 const FALLBACK_SPEED_KMH = 45;
 const REQUEST_TIMEOUT = 15000;
 
+const OSRM_SERVERS = [
+  'https://router.project-osrm.org',
+  'https://routing.openstreetmap.de/routed-car'
+];
+
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const calculateStraightLineDistance = (start: Location, end: Location): number => {
@@ -71,56 +76,40 @@ async function fetchWithTimeout(url: string, timeout: number): Promise<Response>
   }
 }
 
-async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Response> {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetchWithTimeout(url, REQUEST_TIMEOUT);
-      if (response.ok) return response;
-    } catch (error) {
-      if (i === retries - 1) throw error;
-    }
-    await wait(RETRY_DELAY * (i + 1)); // Exponential backoff
+async function tryFetchRoute(start: Location, end: Location, serverUrl: string): Promise<RouteResponse> {
+  const path = `/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}`;
+  const params = '?overview=full&geometries=polyline&alternatives=true';
+  const url = `${serverUrl}${path}${params}`;
+
+  const response = await fetchWithTimeout(url, REQUEST_TIMEOUT);
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  
+  const data = await response.json();
+  if (!data.routes || data.routes.length === 0) {
+    throw new Error('No routes found');
   }
-  throw new Error('Max retries reached');
+
+  const bestRoute = data.routes[0];
+  return {
+    distance: (bestRoute.distance / 1000) * 1.15, // Convert to km and add 15% for accuracy
+    duration: bestRoute.duration,
+    geometry: bestRoute.geometry,
+  };
 }
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
-  try {
-    // Try multiple routing services
-    const services = [
-      'https://routing.openstreetmap.de/routed-car',
-      'https://router.project-osrm.org'
-    ];
-
-    for (const baseUrl of services) {
-      try {
-        const path = `/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}`;
-        const params = '?overview=full&geometries=polyline&alternatives=true';
-        const url = `${baseUrl}${path}${params}`;
-
-        const response = await fetchWithRetry(url);
-        const data = await response.json();
-
-        if (data.routes && data.routes.length > 0) {
-          const bestRoute = data.routes[0];
-          return {
-            distance: (bestRoute.distance / 1000) * 1.15, // Convert to km and add 15% for accuracy
-            duration: bestRoute.duration,
-            geometry: bestRoute.geometry,
-          };
-        }
-      } catch (error) {
-        console.warn(`Failed to fetch from ${baseUrl}, trying next service...`);
-        continue;
-      }
+  for (const serverUrl of OSRM_SERVERS) {
+    try {
+      return await tryFetchRoute(start, end, serverUrl);
+    } catch (error) {
+      console.warn(`Failed to fetch from ${serverUrl}, trying next server...`, error);
+      await wait(RETRY_DELAY);
+      continue;
     }
-
-    console.warn('All routing services failed, using fallback calculation');
-    return createFallbackResponse(start, end);
-  } catch (error) {
-    console.warn('Error fetching route, using fallback calculation:', error);
-    return createFallbackResponse(start, end);
   }
+
+  console.warn('All routing servers failed, using fallback calculation');
+  return createFallbackResponse(start, end);
 };
 
 export const COMPANY_LOCATION = { lat: 26.510272, lng: -100.006323 };
