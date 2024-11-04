@@ -11,9 +11,14 @@ import { useTowingCost } from "@/hooks/useTowingCost";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
-import { CreditCard, Copy } from "lucide-react";
+import { CreditCard, Copy, CheckCircle2 } from "lucide-react";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
-import { CopyButton } from "./ui/copy-button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const VehicleForm = ({
   pickupLocation,
@@ -40,6 +45,7 @@ const VehicleForm = ({
   const [truckType, setTruckType] = useState<TowTruckType>('A');
   const [tollFees, setTollFees] = useState(0);
   const [selectedModel, setSelectedModel] = useState('');
+  const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const { form, onSubmit, isPending } = useVehicleForm(pickupLocation, dropLocation, serviceType);
   const costDetails = useTowingCost(pickupLocation, dropLocation, requiresManeuver, truckType, tollFees);
@@ -75,21 +81,43 @@ const VehicleForm = ({
     return JSON.stringify(data, null, 2);
   };
 
+  const handleCopy = async () => {
+    const formData = getFormData();
+    await navigator.clipboard.writeText(formData);
+    setIsCopied(true);
+    toast({
+      title: "Datos copiados",
+      description: "La información del formulario ha sido copiada al portapapeles",
+    });
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
   return (
     <div className="space-y-6">
       <Card className="p-6 bg-gradient-to-br from-white via-blue-50/30 to-white border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300">
         <div className="flex justify-between items-center mb-4">
           <VehicleFormHeader />
-          <CopyButton
-            text={getFormData()}
-            onCopy={() => {
-              toast({
-                title: "Form Data Copied",
-                description: "The form data has been copied to your clipboard",
-              });
-            }}
-            className="ml-2"
-          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleCopy}
+                  className="ml-2 transition-all duration-300 hover:bg-primary/10"
+                >
+                  {isCopied ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Copiar datos del formulario</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
