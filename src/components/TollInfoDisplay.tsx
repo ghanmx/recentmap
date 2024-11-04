@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Ticket, Clock, CreditCard } from "lucide-react";
 import { TollLocation } from "@/data/tollData";
-import { motion } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
 
 interface TollInfoDisplayProps {
@@ -19,25 +18,17 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
           <Ticket className="w-4 h-4 text-yellow-700" />
           <h3 className="font-semibold text-yellow-700">Peajes en la Ruta</h3>
         </div>
-        <motion.div 
-          className="text-sm font-semibold text-yellow-700 bg-yellow-100 px-3 py-1 rounded-full"
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.2 }}
-        >
+        <div className="text-sm font-semibold text-yellow-700 bg-yellow-100 px-3 py-1 rounded-full">
           Total: ${totalCost.toFixed(2)}
-        </motion.div>
+        </div>
       </div>
 
       <Separator className="bg-yellow-200/50" />
 
       <div className="space-y-2">
         {tolls.map((toll, index) => (
-          <motion.div
+          <div
             key={index}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
             className="bg-white/50 rounded-lg p-3 space-y-2 hover:bg-white/70 transition-colors"
           >
             <div className="flex justify-between items-center">
@@ -56,7 +47,7 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
                 <span>{toll.acceptedPayments.join(', ')}</span>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </Card>
