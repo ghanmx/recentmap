@@ -1,6 +1,18 @@
-```typescript
 import { towTruckTypes } from "./towTruckPricing";
 import { calculateTotalCost, formatCurrency } from "./priceCalculator";
+
+interface InvoiceItem {
+  description: string;
+  amount: number;
+}
+
+interface InvoiceData {
+  date: string;
+  items: InvoiceItem[];
+  subtotal: number;
+  tax: number;
+  total: number;
+}
 
 export const generateInvoice = (data: {
   distance: number;
@@ -8,7 +20,7 @@ export const generateInvoice = (data: {
   requiresManeuver: boolean;
   tollCosts: number;
   requiresInvoice: boolean;
-}) => {
+}): InvoiceData => {
   const total = calculateTotalCost(
     data.distance,
     data.truckType,
@@ -23,7 +35,7 @@ export const generateInvoice = (data: {
   const subtotal = baseCost + maneuverCost + data.tollCosts;
   const tax = data.requiresInvoice ? subtotal * 0.16 : 0;
 
-  const invoiceData = {
+  const invoiceData: InvoiceData = {
     date: new Date().toLocaleDateString(),
     items: [
       {
@@ -35,9 +47,9 @@ export const generateInvoice = (data: {
         amount: data.tollCosts
       }
     ],
-    subtotal: subtotal,
-    tax: tax,
-    total: total
+    subtotal,
+    tax,
+    total
   };
 
   if (data.requiresManeuver) {
@@ -50,20 +62,20 @@ export const generateInvoice = (data: {
   return invoiceData;
 };
 
-export const downloadInvoice = (invoiceData: any) => {
+export const downloadInvoice = (invoiceData: InvoiceData): void => {
   const invoiceContent = `
-    FACTURA
-    
-    Fecha: ${invoiceData.date}
-    
-    DESGLOSE:
-    ${invoiceData.items.map((item: any) => 
-      `${item.description}: ${formatCurrency(item.amount)}`
-    ).join('\n')}
-    
-    Subtotal: ${formatCurrency(invoiceData.subtotal)}
-    IVA (16%): ${formatCurrency(invoiceData.tax)}
-    Total: ${formatCurrency(invoiceData.total)}
+FACTURA
+
+Fecha: ${invoiceData.date}
+
+DESGLOSE:
+${invoiceData.items.map(item => 
+  `${item.description}: ${formatCurrency(item.amount)}`
+).join('\n')}
+
+Subtotal: ${formatCurrency(invoiceData.subtotal)}
+IVA (16%): ${formatCurrency(invoiceData.tax)}
+Total: ${formatCurrency(invoiceData.total)}
   `;
 
   const blob = new Blob([invoiceContent], { type: 'text/plain' });
@@ -74,4 +86,3 @@ export const downloadInvoice = (invoiceData: any) => {
   a.click();
   window.URL.revokeObjectURL(url);
 };
-```
