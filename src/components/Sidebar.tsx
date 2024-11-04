@@ -33,7 +33,7 @@ const Sidebar = () => {
   const NavContent = () => (
     <>
       <div className="p-4 border-b bg-gradient-to-r from-primary/10 to-primary/5">
-        <h1 className="text-2xl font-heading font-bold text-primary text-center">TowTruck</h1>
+        <h1 className="text-2xl font-heading font-bold text-primary text-center">MRGruas</h1>
       </div>
 
       <div className="p-6 overflow-y-auto">
