@@ -1,10 +1,11 @@
 import { useState, useCallback, ReactNode } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, MapPin, Loader2 } from "lucide-react";
+import { Search, MapPin, Loader2, AlertCircle } from "lucide-react";
 import { searchAddresses } from "@/services/geocodingService";
 import { useToast } from "@/hooks/use-toast";
 import { debounce } from "lodash";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface LocationSearchProps {
   label: string;
@@ -30,20 +31,29 @@ export const LocationSearch = ({
     lon: number;
   }>>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const debouncedSearch = useCallback(
     debounce(async (query: string) => {
       if (query.length < 3) {
         setSuggestions([]);
+        setError(null);
         return;
       }
 
       setIsSearching(true);
+      setError(null);
+      
       try {
         const results = await searchAddresses(query);
         setSuggestions(results);
+        
+        if (results.length === 0) {
+          setError("No se encontraron direcciones. Intente con una búsqueda diferente.");
+        }
       } catch (error) {
+        setError("Error al buscar direcciones. Por favor, inténtelo de nuevo.");
         toast({
           title: "Error en la búsqueda",
           description: "No se pudieron obtener sugerencias de direcciones",
@@ -65,6 +75,7 @@ export const LocationSearch = ({
     onLocationSelect(location);
     setSuggestions([]);
     setSearchQuery(suggestion.address);
+    setError(null);
     
     toast({
       title: "Ubicación seleccionada",
@@ -91,12 +102,13 @@ export const LocationSearch = ({
                 debouncedSearch(value);
               } else {
                 setSuggestions([]);
+                setError(null);
               }
             }}
             placeholder={placeholder}
             className={`${icon ? 'pl-10' : ''} pr-10 bg-white/95 backdrop-blur-sm border-gray-200 
                        focus:border-primary/50 focus:ring-2 focus:ring-primary/20 
-                       placeholder:text-gray-400`}
+                       placeholder:text-gray-400 ${error ? 'border-red-300' : ''}`}
           />
           <Button
             type="button"
@@ -104,7 +116,7 @@ export const LocationSearch = ({
             size="sm"
             className="absolute right-1 top-1/2 -translate-y-1/2 h-8 hover:bg-primary/10"
             onClick={() => debouncedSearch(searchQuery)}
-            disabled={isSearching}
+            disabled={isSearching || searchQuery.length < 3}
           >
             {isSearching ? (
               <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -113,6 +125,13 @@ export const LocationSearch = ({
             )}
           </Button>
         </div>
+        
+        {error && (
+          <Alert variant="destructive" className="mt-2">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         
         {suggestions.length > 0 && (
           <div className="absolute z-50 w-full mt-1 max-h-60 overflow-auto bg-white/95 backdrop-blur-sm 

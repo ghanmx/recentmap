@@ -18,7 +18,13 @@ interface GeocodingResponse {
 export const getAddressFromCoordinates = async (lat: number, lng: number): Promise<string> => {
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=es`
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=es`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'TowTruck Application'
+        }
+      }
     );
     
     if (!response.ok) {
@@ -44,7 +50,13 @@ export const searchAddresses = async (query: string): Promise<SearchResult[]> =>
   
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=es`
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=es`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'TowTruck Application'
+        }
+      }
     );
     
     if (!response.ok) {
@@ -53,7 +65,7 @@ export const searchAddresses = async (query: string): Promise<SearchResult[]> =>
     
     const data = await response.json();
     
-    if (!Array.isArray(data) || data.length === 0) {
+    if (!Array.isArray(data)) {
       return [];
     }
     
