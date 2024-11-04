@@ -88,3 +88,5 @@ export const calculateTowingPrice = async (
     }
   };
 };
+
+export const COMPANY_LOCATION = { lat: 26.510272, lng: -100.006323 };

@@ -74,6 +74,11 @@ export const CostEstimation = () => {
         isOpen={showPaymentWindow}
         onClose={() => setShowPaymentWindow(false)}
         amount={finalCost}
+        onPaymentSubmit={(result) => {
+          if (result.success) {
+            setShowPaymentWindow(false);
+          }
+        }}
       />
     </motion.div>
   );

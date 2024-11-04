@@ -9,11 +9,11 @@ import { cn } from "@/lib/utils";
 interface PaymentWindowProps {
   isOpen: boolean;
   onClose: () => void;
-  onPaymentSubmit: (result: { success: boolean; error?: string }) => void;
-  totalCost: number;
+  onPaymentSubmit?: (result: { success: boolean; error?: string }) => void;
+  amount: number;
 }
 
-const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentWindowProps) => {
+const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: PaymentWindowProps) => {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -152,7 +152,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
             <div className="flex items-center justify-between px-2">
               <span className="text-sm text-gray-600">Service Fee</span>
               <span className="text-lg font-semibold text-primary">
-                ${totalCost.toFixed(2)}
+                ${amount.toFixed(2)}
               </span>
             </div>
           </div>
@@ -183,7 +183,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, totalCost }: PaymentW
               ) : (
                 <span className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" />
-                  Pay ${totalCost.toFixed(2)}
+                  Pay ${amount.toFixed(2)}
                 </span>
               )}
             </Button>
