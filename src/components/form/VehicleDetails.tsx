@@ -18,6 +18,13 @@ const commonColors = [
   "Green", "Yellow", "Brown", "Gold", "Orange", "Purple"
 ];
 
+type FormFields = {
+  year: string;
+  brand: string;
+  model: string;
+  color: string;
+};
+
 export const VehicleDetails = ({ 
   onBrandChange,
   onModelChange,
@@ -25,12 +32,7 @@ export const VehicleDetails = ({
   onColorChange 
 }: VehicleDetailsProps) => {
   const [selectedBrand, setSelectedBrand] = useState<string>("");
-  const form = useForm<{
-    year: string;
-    brand: string;
-    model: string;
-    color: string;
-  }>();
+  const form = useForm<FormFields>();
   
   const years = Array.from({ length: 30 }, (_, i) => (new Date().getFullYear() - i).toString());
 
@@ -52,7 +54,7 @@ export const VehicleDetails = ({
   }: {
     icon: any;
     label: string;
-    name: string;
+    name: keyof FormFields;
     options: string[];
     onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     disabled?: boolean;
