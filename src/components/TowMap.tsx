@@ -23,14 +23,18 @@ const TowMap = () => {
   useEffect(() => {
     const updateTolls = async () => {
       if (pickupLocation && dropLocation) {
-        const tollInfo = await detectTollsOnRoute(pickupLocation, dropLocation);
-        updateTollInfo(tollInfo.tolls, tollInfo.totalTollCost);
-        
-        if (tollInfo.tolls.length > 0) {
-          toast({
-            title: "Peajes Detectados",
-            description: `Se detectaron ${tollInfo.tolls.length} peajes en la ruta con un costo total de $${tollInfo.totalTollCost}`,
-          });
+        try {
+          const tollInfo = await detectTollsOnRoute(pickupLocation, dropLocation);
+          updateTollInfo(tollInfo.tolls, tollInfo.totalTollCost);
+          
+          if (tollInfo.tolls.length > 0) {
+            toast({
+              title: "Peajes Detectados",
+              description: `Se detectaron ${tollInfo.tolls.length} peajes en la ruta con un costo total de $${tollInfo.totalTollCost}`,
+            });
+          }
+        } catch (error) {
+          console.error('Error detecting tolls:', error);
         }
       }
     };
@@ -41,22 +45,23 @@ const TowMap = () => {
   const handleLocationSelect = async (location: { lat: number; lng: number }, type: 'pickup' | 'drop') => {
     try {
       const address = await getAddressFromCoordinates(location.lat, location.lng);
+      
       if (type === 'pickup') {
         setPickupLocation(location);
         setPickupAddress(address);
-        toast({
-          title: "Ubicación de Recogida",
-          description: address,
-        });
+        setSelectingPickup(false);
       } else {
         setDropLocation(location);
         setDropAddress(address);
-        toast({
-          title: "Ubicación de Entrega",
-          description: address,
-        });
+        setSelectingDrop(false);
       }
+
+      toast({
+        title: type === 'pickup' ? "Ubicación de Recogida" : "Ubicación de Entrega",
+        description: address,
+      });
     } catch (error) {
+      console.error('Error getting address:', error);
       toast({
         title: "Error",
         description: "No se pudo obtener la dirección",
@@ -76,10 +81,8 @@ const TowMap = () => {
           onLocationSelect={(location) => {
             if (selectingPickup) {
               handleLocationSelect(location, 'pickup');
-              setSelectingPickup(false);
             } else if (selectingDrop) {
               handleLocationSelect(location, 'drop');
-              setSelectingDrop(false);
             }
           }}
           setPickupLocation={setPickupLocation}
