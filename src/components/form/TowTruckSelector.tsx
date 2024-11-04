@@ -1,11 +1,10 @@
 import { useEffect } from "react";
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { towTruckTypes } from "@/utils/towTruckPricing";
+import { towTruckTypes, getTruckTypeForVehicle } from "@/utils/towTruckPricing";
 import { Truck } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { FormData } from "@/types/form";
-import { getTruckTypeForVehicle } from "@/data/vehicleData";
 
 interface TowTruckSelectorProps {
   form: UseFormReturn<FormData>;

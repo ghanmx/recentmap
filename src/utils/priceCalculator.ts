@@ -1,5 +1,5 @@
 import { getRouteDetails } from '../services/routeService';
-import { calculateTotalCost, getTowTruckType } from './towTruckPricing';
+import { calculateTotalCost, getTruckTypeForVehicle } from './towTruckPricing';
 import { calculateDistance } from './distanceUtils';
 
 interface Location {
@@ -49,14 +49,14 @@ export const calculateTowingPrice = async (
       segments.dropToCompany
     ).toFixed(2));
 
-    const towTruckType = getTowTruckType(vehicleModel);
+    const towTruckType = getTruckTypeForVehicle(vehicleModel);
     const totalPrice = calculateTotalCost(totalDistance, towTruckType, requiresManeuver) * (isRoundTrip ? 2 : 1);
 
     return {
       totalPrice,
       totalDistance,
       segments,
-      tollFees: 0, // Toll fees are now handled separately by tollCalculator
+      tollFees: 0,
       routeGeometry: {
         companyToPickup: companyToPickup.geometry,
         pickupToDrop: pickupToDrop.geometry,
