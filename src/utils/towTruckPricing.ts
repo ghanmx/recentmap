@@ -37,8 +37,22 @@ export const towTruckTypes: Record<string, TowTruckType> = {
   }
 };
 
+export const calculateTotalCost = (
+  distance: number,
+  truckType: string,
+  requiresManeuver: boolean,
+  tollCosts: number = 0,
+  requiresInvoice: boolean = false
+): number => {
+  const truck = towTruckTypes[truckType || 'A'];
+  const baseCost = distance * truck.perKm;
+  const maneuverCost = requiresManeuver ? truck.maneuverCharge : 0;
+  const subtotal = baseCost + maneuverCost + tollCosts;
+  const tax = requiresInvoice ? subtotal * 0.16 : 0;
+  return subtotal + tax;
+};
+
 export const getTruckTypeForVehicle = (model: string): "A" | "B" | "C" | "D" => {
-  // This is a simple implementation. You might want to enhance this with actual vehicle weight data
   const modelLower = model.toLowerCase();
   
   if (modelLower.includes('pickup') || modelLower.includes('suv')) {
@@ -49,6 +63,5 @@ export const getTruckTypeForVehicle = (model: string): "A" | "B" | "C" | "D" => 
     return "C";
   }
   
-  // Default to type A for regular cars
   return "A";
 };
