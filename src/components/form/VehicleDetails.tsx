@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Calendar, Car, Palette, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface VehicleDetailsProps {
   onBrandChange?: (brand: string) => void;
@@ -64,27 +65,37 @@ export const VehicleDetails = ({
       control={form.control}
       name={name}
       render={({ field }) => (
-        <FormItem>
-          <FormLabel className="flex items-center gap-2 text-gray-700">
-            <Icon className="h-4 w-4 text-primary" />
+        <FormItem className="space-y-2">
+          <FormLabel className="flex items-center gap-2 text-gray-700 font-medium">
+            <Icon className="h-4 w-4 text-primary/80" />
             {label}
           </FormLabel>
           <FormControl>
             <select 
               className={cn(
-                "w-full p-2 border rounded-md bg-background",
+                "w-full p-3 border rounded-lg bg-white/95",
                 "focus:ring-2 focus:ring-primary/20 focus:border-primary",
-                "transition-colors duration-200",
-                disabled && "bg-gray-50 cursor-not-allowed"
+                "transition-all duration-200 ease-in-out",
+                "text-gray-700 font-medium",
+                "hover:border-primary/50",
+                disabled && "bg-gray-50/95 cursor-not-allowed opacity-75"
               )}
               {...field}
               onChange={onChange}
               disabled={disabled}
               value={value || field.value}
             >
-              <option value="">{`Select ${label.toLowerCase()}`}</option>
+              <option value="" className="text-gray-500">
+                {`Select ${label.toLowerCase()}`}
+              </option>
               {options.map((option) => (
-                <option key={option} value={option}>{option}</option>
+                <option 
+                  key={option} 
+                  value={option}
+                  className="text-gray-700"
+                >
+                  {option}
+                </option>
               ))}
             </select>
           </FormControl>
@@ -94,8 +105,18 @@ export const VehicleDetails = ({
   );
 
   return (
-    <Card className="p-6 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95 border-blue-100">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Vehicle Details</h3>
+    <Card className="p-6 space-y-6 bg-gradient-to-br from-white/95 via-blue-50/95 to-white/95 border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-800">Vehicle Details</h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-primary hover:text-primary/80 hover:bg-primary/10"
+          onClick={() => form.reset()}
+        >
+          Reset
+        </Button>
+      </div>
       <Form {...form}>
         <form className="space-y-4">
           <SelectField
