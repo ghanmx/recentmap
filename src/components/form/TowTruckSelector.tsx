@@ -5,6 +5,7 @@ import { towTruckTypes } from "@/utils/towTruckPricing";
 import { Truck } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { FormData } from "@/types/form";
+import { getTruckTypeForVehicle } from "@/data/vehicleData";
 
 interface TowTruckSelectorProps {
   form: UseFormReturn<FormData>;
@@ -13,22 +14,18 @@ interface TowTruckSelectorProps {
   selectedModel: string;
 }
 
-export const TowTruckSelector = ({ form, onTruckTypeChange, onTollFeesChange, selectedModel }: TowTruckSelectorProps) => {
+export const TowTruckSelector = ({ 
+  form, 
+  onTruckTypeChange, 
+  onTollFeesChange, 
+  selectedModel 
+}: TowTruckSelectorProps) => {
   useEffect(() => {
-    const determineType = () => {
-      const model = selectedModel.toLowerCase();
-      if (model.includes('pickup') || model.includes('suv') || model.includes('camioneta')) {
-        return 'C';
-      }
-      if (model.includes('van') || model.includes('minivan')) {
-        return 'B';
-      }
-      return 'A';
-    };
-
-    const recommendedType = determineType();
-    form.setValue('truckType', recommendedType);
-    onTruckTypeChange?.(recommendedType);
+    if (selectedModel) {
+      const recommendedType = getTruckTypeForVehicle(selectedModel);
+      form.setValue('truckType', recommendedType);
+      onTruckTypeChange?.(recommendedType);
+    }
   }, [selectedModel, form, onTruckTypeChange]);
 
   return (
@@ -37,11 +34,14 @@ export const TowTruckSelector = ({ form, onTruckTypeChange, onTollFeesChange, se
       name="truckType"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Tipo de Camión</FormLabel>
+          <FormLabel>Tipo de Grúa</FormLabel>
           <FormControl>
             <RadioGroup
-              onValueChange={field.onChange}
-              defaultValue={field.value}
+              onValueChange={(value) => {
+                field.onChange(value);
+                onTruckTypeChange?.(value as "A" | "B" | "C" | "D");
+              }}
+              value={field.value}
               className="flex flex-col space-y-1"
             >
               {Object.entries(towTruckTypes).map(([key, type]) => (

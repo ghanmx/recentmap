@@ -32,6 +32,29 @@ export const vehicleModels = {
   Chrysler: ['300', 'Pacifica', 'Voyager']
 };
 
+export const getTruckTypeForVehicle = (model: string): "A" | "B" | "C" | "D" => {
+  const weight = vehicleWeights[model];
+  if (!weight) {
+    // Check for keywords in the model name
+    const modelLower = model.toLowerCase();
+    if (modelLower.includes('pickup') || 
+        modelLower.includes('suv') || 
+        modelLower.includes('camioneta') ||
+        modelLower.includes('truck')) {
+      return "C";
+    }
+    if (modelLower.includes('van') || modelLower.includes('minivan')) {
+      return "B";
+    }
+    return "A";
+  }
+  
+  if (weight <= 2000) return "A";
+  if (weight <= 3000) return "B";
+  if (weight <= 4000) return "C";
+  return "D";
+};
+
 export const vehicleWeights = {
   // Sedanes y Compactos (Tipo A - hasta 2000kg)
   'Toyota Corolla': 1500,
@@ -88,14 +111,4 @@ export const vehicleWeights = {
   'Mercedes-Benz Sprinter': 3800,
   'RAM ProMaster': 3600,
   'Chevrolet Express': 3500
-};
-
-export const getTruckTypeForVehicle = (model: string): "A" | "B" | "C" | "D" => {
-  const weight = vehicleWeights[model];
-  if (!weight) return "A"; // default to smallest truck if weight unknown
-  
-  if (weight <= 2000) return "A";
-  if (weight <= 3000) return "B";
-  if (weight <= 4000) return "C";
-  return "D";
 };

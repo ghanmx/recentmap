@@ -65,11 +65,6 @@ export const LocationSearch = ({
     onLocationSelect(location);
     setSuggestions([]);
     setSearchQuery(suggestion.address);
-    
-    toast({
-      title: "Ubicación seleccionada",
-      description: suggestion.address,
-    });
   };
 
   return (
