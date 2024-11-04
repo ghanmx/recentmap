@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { DollarSign, Route, Shield, Clock, Truck, ChevronDown, Receipt, CreditCard } from "lucide-react";
+import { DollarSign, Route, Clock, Truck, ChevronDown, Receipt, CreditCard } from "lucide-react";
 import { useTowing } from "@/contexts/TowingContext";
 import { motion } from "framer-motion";
 import { TollInfoDisplay } from "./TollInfoDisplay";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import PaymentWindow from "./payment/PaymentWindow";
 import { towTruckTypes } from "@/utils/towTruckPricing";
+import { Separator } from "@/components/ui/separator";
 
 export const CostEstimation = () => {
   const { totalDistance, totalCost, detectedTolls, totalTollCost } = useTowing();
@@ -18,8 +19,8 @@ export const CostEstimation = () => {
   const [showPaymentWindow, setShowPaymentWindow] = useState(false);
   const { toast } = useToast();
 
-  const baseCost = totalDistance * towTruckTypes.A.perKm; // Usando la tarifa correcta del tipo A
-  const tax = requiresInvoice ? baseCost * 0.16 : 0; // 16% IVA solo si requiere factura
+  const baseCost = totalDistance * towTruckTypes.A.perKm;
+  const tax = requiresInvoice ? baseCost * 0.16 : 0;
   const finalCost = baseCost + totalTollCost + tax;
 
   const handlePaymentSubmit = (result: { success: boolean; error?: string }) => {
@@ -44,7 +45,7 @@ export const CostEstimation = () => {
           <div className="bg-primary/10 p-2 rounded-lg">
             <DollarSign className="w-5 h-5 text-primary" />
           </div>
-          <div className="text-lg font-semibold text-gray-900">Cost Estimation</div>
+          <div className="text-lg font-semibold text-gray-900">Estimación de Costo</div>
         </div>
         <motion.div 
           className="bg-green-50 px-3 py-1 rounded-full border border-green-200"
@@ -52,25 +53,24 @@ export const CostEstimation = () => {
           animate={{ scale: 1 }}
           transition={{ duration: 0.2 }}
         >
-          <span className="text-sm font-medium text-green-700">Fixed Price</span>
+          <span className="text-sm font-medium text-green-700">Precio Fijo</span>
         </motion.div>
       </div>
 
       <motion.div 
-        className="text-3xl font-bold text-primary bg-primary/5 p-4 rounded-lg flex items-center justify-between"
+        className="text-3xl font-bold text-primary bg-primary/5 p-4 rounded-lg text-center"
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <span>${finalCost.toFixed(2)}</span>
-        <Shield className="w-6 h-6 text-primary/60" />
+        ${finalCost.toFixed(2)} MXN
       </motion.div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="flex items-center gap-2 bg-gray-50/50 p-3 rounded-lg">
           <Route className="w-4 h-4 text-gray-500" />
           <div>
-            <p className="text-xs font-medium text-gray-600">Distance</p>
+            <p className="text-xs font-medium text-gray-600">Distancia</p>
             <p className="text-sm font-semibold text-primary">
               {totalDistance ? totalDistance.toFixed(2) : '0.00'} km
             </p>
@@ -80,7 +80,7 @@ export const CostEstimation = () => {
         <div className="flex items-center gap-2 bg-gray-50/50 p-3 rounded-lg">
           <Clock className="w-4 h-4 text-gray-500" />
           <div>
-            <p className="text-xs font-medium text-gray-600">Est. Time</p>
+            <p className="text-xs font-medium text-gray-600">Tiempo Est.</p>
             <p className="text-sm font-semibold text-primary">
               {totalDistance ? Math.ceil(totalDistance / 50) : '0'} hr
             </p>
@@ -88,9 +88,11 @@ export const CostEstimation = () => {
         </div>
       </div>
 
+      <Separator className="my-2" />
+
       <div className="flex items-center space-x-2 bg-gray-50/50 p-3 rounded-lg">
         <Receipt className="w-4 h-4 text-gray-500" />
-        <Label htmlFor="invoice-required">Requiere factura</Label>
+        <Label htmlFor="invoice-required">Requiere factura (+16% IVA)</Label>
         <Switch
           id="invoice-required"
           checked={requiresInvoice}
@@ -101,13 +103,6 @@ export const CostEstimation = () => {
       {detectedTolls.length > 0 && (
         <TollInfoDisplay tolls={detectedTolls} totalCost={totalTollCost} />
       )}
-
-      <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-        <div className="flex items-center gap-2 text-sm text-blue-700">
-          <Truck className="w-4 h-4" />
-          <span>Precio incluye IVA</span>
-        </div>
-      </div>
 
       <button
         onClick={() => setShowBreakdown(!showBreakdown)}
@@ -125,7 +120,7 @@ export const CostEstimation = () => {
           className="space-y-2 pt-2 border-t border-gray-100"
         >
           <div className="flex justify-between text-sm text-gray-600">
-            <span>Costo por distancia ({totalDistance.toFixed(2)} km × ${towTruckTypes.A.perKm.toFixed(2)})</span>
+            <span>Servicio base ({totalDistance.toFixed(2)} km × ${towTruckTypes.A.perKm.toFixed(2)})</span>
             <span>${baseCost.toFixed(2)}</span>
           </div>
 

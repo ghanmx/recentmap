@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Ticket, Clock, CreditCard } from "lucide-react";
 import { TollLocation } from "@/data/tollData";
 import { motion } from "framer-motion";
+import { Separator } from "@/components/ui/separator";
 
 interface TollInfoDisplayProps {
   tolls: TollLocation[];
@@ -19,7 +20,7 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
           <h3 className="font-semibold text-yellow-700">Peajes en la Ruta</h3>
         </div>
         <motion.div 
-          className="text-sm font-semibold text-yellow-700"
+          className="text-sm font-semibold text-yellow-700 bg-yellow-100 px-3 py-1 rounded-full"
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.2 }}
@@ -28,12 +29,22 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
         </motion.div>
       </div>
 
+      <Separator className="bg-yellow-200/50" />
+
       <div className="space-y-2">
         {tolls.map((toll, index) => (
-          <div key={index} className="bg-white/50 rounded-lg p-2 space-y-1">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="bg-white/50 rounded-lg p-3 space-y-2 hover:bg-white/70 transition-colors"
+          >
             <div className="flex justify-between items-center">
-              <span className="font-medium text-sm">{toll.name}</span>
-              <span className="text-sm font-semibold">${toll.cost.toFixed(2)}</span>
+              <span className="font-medium text-sm text-yellow-800">{toll.name}</span>
+              <span className="text-sm font-semibold text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded-full">
+                ${toll.cost.toFixed(2)}
+              </span>
             </div>
             <div className="flex items-center gap-4 text-xs text-gray-600">
               <div className="flex items-center gap-1">
@@ -45,7 +56,7 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
                 <span>{toll.acceptedPayments.join(', ')}</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </Card>
