@@ -9,10 +9,11 @@ import { FormData } from "@/types/form";
 interface TowTruckSelectorProps {
   form: UseFormReturn<FormData>;
   onTruckTypeChange?: (type: "A" | "B" | "C" | "D") => void;
+  onTollFeesChange?: (fees: number) => void;
   selectedModel: string;
 }
 
-export const TowTruckSelector = ({ form, onTruckTypeChange, selectedModel }: TowTruckSelectorProps) => {
+export const TowTruckSelector = ({ form, onTruckTypeChange, onTollFeesChange, selectedModel }: TowTruckSelectorProps) => {
   useEffect(() => {
     const determineType = () => {
       const model = selectedModel.toLowerCase();
