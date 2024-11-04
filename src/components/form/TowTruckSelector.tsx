@@ -88,7 +88,7 @@ export const TowTruckSelector = ({
             </Select>
             {selectedTruckType && (
               <FormDescription className="mt-2">
-                <Alert variant="info" className="bg-primary/5 border-primary/20">
+                <Alert variant="default" className="bg-primary/5 border-primary/20">
                   <AlertDescription>
                     La grúa tipo {selectedTruckType} puede manejar vehículos de hasta {towTruckTypes[selectedTruckType].maxWeight}kg.
                     {selectedModel && ` Recomendada para ${selectedModel}.`}
