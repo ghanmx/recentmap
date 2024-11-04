@@ -36,15 +36,15 @@ export const ServiceRequirements = ({
         name="issueDescription"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Issue Description</FormLabel>
+            <FormLabel className="text-gray-700 font-medium">Vehicle Issue Description</FormLabel>
             <FormControl>
               <Textarea
                 {...field}
-                placeholder="Describe the problem with your vehicle..."
-                className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20 min-h-[100px]"
+                placeholder="Please provide detailed information about your vehicle's issue. For example: 'Car won't start, making clicking sounds' or 'Flat tire on front passenger side'"
+                className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20 min-h-[120px] text-gray-800"
               />
             </FormControl>
-            <FormMessage />
+            <FormMessage className="text-sm text-red-500 mt-1" />
           </FormItem>
         )}
       />
