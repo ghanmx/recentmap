@@ -15,10 +15,9 @@ const RETRY_DELAY = 2000;
 const FALLBACK_SPEED_KMH = 45;
 const REQUEST_TIMEOUT = 15000;
 
-// Added more routing servers as fallbacks
 const OSRM_SERVERS = [
+  'https://routing.openstreetmap.de',
   'https://router.project-osrm.org',
-  'https://routing.openstreetmap.de/routed-car',
   'https://osrm.learningdatabase.dev'
 ];
 
@@ -68,8 +67,7 @@ async function fetchWithTimeout(url: string, timeout: number): Promise<Response>
       headers: {
         'Accept': 'application/json',
         'User-Agent': 'TowingServiceApp/1.0'
-      },
-      mode: 'cors'  // Added CORS mode explicitly
+      }
     });
     clearTimeout(id);
     return response;
@@ -79,48 +77,35 @@ async function fetchWithTimeout(url: string, timeout: number): Promise<Response>
   }
 }
 
-async function tryFetchRoute(start: Location, end: Location, serverUrl: string): Promise<RouteResponse> {
-  const path = `/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}`;
-  const params = '?overview=full&geometries=polyline&alternatives=true';
-  const url = `${serverUrl}${path}${params}`;
-
-  try {
-    const response = await fetchWithTimeout(url, REQUEST_TIMEOUT);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    
-    const data = await response.json();
-    if (!data.routes || data.routes.length === 0) {
-      throw new Error('No routes found');
-    }
-
-    const bestRoute = data.routes[0];
-    return {
-      distance: (bestRoute.distance / 1000) * 1.15, // Convert to km and add 15% for accuracy
-      duration: bestRoute.duration,
-      geometry: bestRoute.geometry,
-    };
-  } catch (error) {
-    throw new Error(`Failed to fetch route from ${serverUrl}: ${error.message}`);
-  }
-}
-
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
-  let lastError;
-
-  // Try each server in sequence
   for (const serverUrl of OSRM_SERVERS) {
     try {
-      return await tryFetchRoute(start, end, serverUrl);
+      const path = `/routed-car/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}`;
+      const params = '?overview=full&geometries=polyline&alternatives=true';
+      const url = `${serverUrl}${path}${params}`;
+
+      const response = await fetchWithTimeout(url, REQUEST_TIMEOUT);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const data = await response.json();
+      if (!data.routes || data.routes.length === 0) {
+        throw new Error('No routes found');
+      }
+
+      const bestRoute = data.routes[0];
+      return {
+        distance: (bestRoute.distance / 1000) * 1.15,
+        duration: bestRoute.duration,
+        geometry: bestRoute.geometry,
+      };
     } catch (error) {
       console.warn(`Failed to fetch from ${serverUrl}, trying next server...`, error);
-      lastError = error;
       await wait(RETRY_DELAY);
       continue;
     }
   }
 
-  // If all servers fail, use fallback calculation
-  console.warn('All routing servers failed, using fallback calculation', lastError);
+  console.warn('All routing servers failed, using fallback calculation');
   return createFallbackResponse(start, end);
 };
 

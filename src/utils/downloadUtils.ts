@@ -1,6 +1,18 @@
-```typescript
 import { towTruckTypes } from "./towTruckPricing";
 import { calculateTotalCost, formatCurrency } from "./priceCalculator";
+
+export type TowTruckType = "A" | "B" | "C" | "D";
+
+export interface FormData {
+  username: string;
+  vehicleMake: string;
+  vehicleModel: string;
+  vehicleYear: number;
+  vehicleColor: string;
+  issueDescription: string;
+  truckType: TowTruckType;
+  tollFees: number;
+}
 
 export const generateInvoice = (data: {
   distance: number;
@@ -74,4 +86,3 @@ export const downloadInvoice = (invoiceData: any) => {
   a.click();
   window.URL.revokeObjectURL(url);
 };
-```
