@@ -52,10 +52,6 @@ export const LocationSearch = ({
         
         if (results.length === 0) {
           setError("No se encontraron direcciones. Intente con una búsqueda diferente.");
-        } else {
-          // Automatically select the first result if available
-          const firstResult = results[0];
-          handleLocationSelect(firstResult);
         }
       } catch (error) {
         setError("Error al buscar direcciones. Por favor, inténtelo de nuevo.");
@@ -68,7 +64,7 @@ export const LocationSearch = ({
         setIsSearching(false);
       }
     }, 500),
-    [toast, onLocationSelect]
+    [toast]
   );
 
   const handleLocationSelect = (suggestion: { address: string; lat: number; lon: number; distance: number }) => {
