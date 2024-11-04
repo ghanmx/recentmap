@@ -1,173 +1,77 @@
-import { getAddressFromCoordinates } from "@/services/geocodingService";
-import { calculateTotalCost, towTruckTypes } from "./towTruckPricing";
-import { getRouteDetails } from "@/services/routeService";
-import { toast } from "@/components/ui/use-toast";
+```typescript
+import { towTruckTypes } from "./towTruckPricing";
+import { calculateTotalCost, formatCurrency } from "./priceCalculator";
 
-export type TowTruckType = "A" | "B" | "C" | "D";
+export const generateInvoice = (data: {
+  distance: number;
+  truckType: string;
+  requiresManeuver: boolean;
+  tollCosts: number;
+  requiresInvoice: boolean;
+}) => {
+  const total = calculateTotalCost(
+    data.distance,
+    data.truckType,
+    data.requiresManeuver,
+    data.tollCosts,
+    data.requiresInvoice
+  );
 
-export interface FormData {
-  username: string;
-  vehicleMake: string;
-  vehicleModel: string;
-  vehicleYear: number;
-  vehicleColor: string;
-  issueDescription: string;
-  truckType: TowTruckType;
-  tollFees: number;
-}
+  const truck = towTruckTypes[data.truckType];
+  const baseCost = data.distance * truck.perKm;
+  const maneuverCost = data.requiresManeuver ? truck.maneuverCharge : 0;
+  const subtotal = baseCost + maneuverCost + data.tollCosts;
+  const tax = data.requiresInvoice ? subtotal * 0.16 : 0;
 
-interface Location {
-  lat: number;
-  lng: number;
-}
+  const invoiceData = {
+    date: new Date().toLocaleDateString(),
+    items: [
+      {
+        description: `Servicio de grúa (${data.distance.toFixed(2)} km)`,
+        amount: baseCost
+      },
+      {
+        description: 'Casetas de peaje',
+        amount: data.tollCosts
+      }
+    ],
+    subtotal: subtotal,
+    tax: tax,
+    total: total
+  };
 
-export const generateServiceInfo = async (
-  formData: FormData,
-  pickupLocation: Location | null,
-  dropLocation: Location | null,
-  serviceType: string,
-  requiresManeuver: boolean
-) => {
-  const currentDate = new Date().toLocaleString();
-  const requestId = `TOW-${Date.now().toString(36).toUpperCase()}`;
-  
-  const pickupAddress = pickupLocation 
-    ? await getAddressFromCoordinates(pickupLocation.lat, pickupLocation.lng)
-    : 'Not specified';
-  const dropAddress = dropLocation
-    ? await getAddressFromCoordinates(dropLocation.lat, dropLocation.lng)
-    : 'Not specified';
-
-  let totalDistance = 0;
-  let totalCost = 0;
-  let costPerKm = 0;
-  let basePrice = 0;
-  let maneuverCost = 0;
-  let estimatedTime = "N/A";
-
-  if (pickupLocation && dropLocation) {
-    try {
-      const route = await getRouteDetails(pickupLocation, dropLocation);
-      totalDistance = route.distance;
-      estimatedTime = `${Math.ceil(route.duration / 60)} minutes`;
-      const truckDetails = towTruckTypes[formData.truckType];
-      costPerKm = truckDetails.perKm * totalDistance;
-      basePrice = truckDetails.basePrice;
-      maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
-      totalCost = calculateTotalCost(totalDistance, formData.truckType, requiresManeuver);
-      totalCost += formData.tollFees;
-    } catch (error) {
-      console.error('Error calculating route:', error);
-    }
-  }
-
-  return [
-    '=== TOWING SERVICE REQUEST ===',
-    `Request ID: ${requestId}`,
-    `Generated on: ${currentDate}`,
-    '',
-    '=== CLIENT INFORMATION ===',
-    `Name: ${formData.username}`,
-    `Contact Status: Verified`,
-    '',
-    '=== LOCATION DETAILS ===',
-    '--- Pickup Location ---',
-    `Complete Address: ${pickupAddress}`,
-    pickupLocation ? `Coordinates: ${pickupLocation.lat.toFixed(6)}, ${pickupLocation.lng.toFixed(6)}` : 'Coordinates: Not specified',
-    '',
-    '--- Drop-off Location ---',
-    `Complete Address: ${dropAddress}`,
-    dropLocation ? `Coordinates: ${dropLocation.lat.toFixed(6)}, ${dropLocation.lng.toFixed(6)}` : 'Coordinates: Not specified',
-    '',
-    '=== VEHICLE INFORMATION ===',
-    `Make: ${formData.vehicleMake}`,
-    `Model: ${formData.vehicleModel}`,
-    `Year: ${formData.vehicleYear}`,
-    `Color: ${formData.vehicleColor}`,
-    '',
-    '=== SERVICE DETAILS ===',
-    `Service Type: ${serviceType.toUpperCase()}`,
-    `Tow Truck Category: Type ${formData.truckType}`,
-    `Special Maneuver Required: ${requiresManeuver ? 'Yes' : 'No'}`,
-    `Issue Description: ${formData.issueDescription}`,
-    '',
-    '=== ROUTE INFORMATION ===',
-    `Total Distance: ${totalDistance.toFixed(2)} km`,
-    `Estimated Time: ${estimatedTime}`,
-    '',
-    '=== COST BREAKDOWN ===',
-    `Base Service Fee: $${basePrice.toFixed(2)}`,
-    `Distance Cost ($${towTruckTypes[formData.truckType].perKm}/km): $${costPerKm.toFixed(2)}`,
-    requiresManeuver ? `Special Maneuver Fee: $${maneuverCost.toFixed(2)}` : '',
-    `Toll Fees: $${formData.tollFees.toFixed(2)}`,
-    '----------------------------------------',
-    `TOTAL COST: $${totalCost.toFixed(2)}`,
-    '',
-    '=== ADDITIONAL INFORMATION ===',
-    'Insurance Coverage: Included',
-    'Payment Methods Accepted: Credit Card, Cash',
-    '24/7 Support Line: 1-800-TOW-HELP',
-    '',
-    '=== TERMS & CONDITIONS ===',
-    '- Prices are subject to change based on actual conditions',
-    '- Cancellation fee may apply if cancelled after dispatch',
-    '- Additional charges may apply for waiting time',
-    '- Service is subject to our standard terms and conditions',
-    '',
-    `Generated by TowTruck System v2.0`,
-    `Request ID: ${requestId}`
-  ].filter(Boolean);
-};
-
-export const downloadServiceInfo = async (
-  format: 'csv' | 'txt',
-  formData: FormData,
-  pickupLocation: Location | null,
-  dropLocation: Location | null,
-  serviceType: string,
-  requiresManeuver: boolean
-) => {
-  try {
-    const content = await generateServiceInfo(
-      formData,
-      pickupLocation,
-      dropLocation,
-      serviceType,
-      requiresManeuver
-    );
-
-    let blob;
-    let filename;
-
-    if (format === 'csv') {
-      const csvContent = '\ufeff' + content.map(row => row.includes(',') ? `"${row}"` : row).join('\n');
-      blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-      filename = `service-request-${new Date().getTime()}.csv`;
-    } else {
-      const txtContent = content.join('\n');
-      blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
-      filename = `service-request-${new Date().getTime()}.txt`;
-    }
-
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-
-    toast({
-      title: "Information Downloaded",
-      description: `Service request information has been saved as ${format.toUpperCase()} file.`,
-      duration: 3000,
-    });
-  } catch (error) {
-    toast({
-      title: "Download Failed",
-      description: "There was an error generating the download file.",
-      variant: "destructive",
+  if (data.requiresManeuver) {
+    invoiceData.items.push({
+      description: 'Cargo por maniobra',
+      amount: maneuverCost
     });
   }
+
+  return invoiceData;
 };
+
+export const downloadInvoice = (invoiceData: any) => {
+  const invoiceContent = `
+    FACTURA
+    
+    Fecha: ${invoiceData.date}
+    
+    DESGLOSE:
+    ${invoiceData.items.map((item: any) => 
+      `${item.description}: ${formatCurrency(item.amount)}`
+    ).join('\n')}
+    
+    Subtotal: ${formatCurrency(invoiceData.subtotal)}
+    IVA (16%): ${formatCurrency(invoiceData.tax)}
+    Total: ${formatCurrency(invoiceData.total)}
+  `;
+
+  const blob = new Blob([invoiceContent], { type: 'text/plain' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `factura_${new Date().getTime()}.txt`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+};
+```

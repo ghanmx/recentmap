@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTowing } from "@/contexts/TowingContext";
 import { towTruckTypes } from "@/utils/towTruckPricing";
-import { PaymentWindow } from "./payment/PaymentWindow";
+import PaymentWindow from "./payment/PaymentWindow";
 import { CostHeader } from "./cost/CostHeader";
 import { CostMetrics } from "./cost/CostMetrics";
 import { CostBreakdown } from "./cost/CostBreakdown";
@@ -33,11 +33,13 @@ export const CostEstimation = () => {
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-lg shadow-lg p-6 space-y-6"
     >
-      <CostHeader
-        showBreakdown={showBreakdown}
-        setShowBreakdown={setShowBreakdown}
-        finalCost={finalCost}
-      />
+      <div className="cost-header">
+        <h2>Estimación de Costo</h2>
+        <button onClick={() => setShowBreakdown(!showBreakdown)}>
+          {showBreakdown ? 'Ocultar desglose' : 'Ver desglose'}
+        </button>
+        <div className="total-cost">${finalCost.toFixed(2)} MXN</div>
+      </div>
 
       {showBreakdown && (
         <motion.div
@@ -48,7 +50,6 @@ export const CostEstimation = () => {
         >
           <CostMetrics
             totalDistance={totalDistance}
-            detectedTolls={detectedTolls}
             requiresInvoice={requiresInvoice}
             setRequiresInvoice={setRequiresInvoice}
           />

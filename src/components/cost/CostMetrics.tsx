@@ -1,36 +1,32 @@
-import { Route, Clock } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 interface CostMetricsProps {
   totalDistance: number;
+  requiresInvoice: boolean;
+  setRequiresInvoice: (value: boolean) => void;
 }
 
-export const CostMetrics = ({ totalDistance }: CostMetricsProps) => {
-  const MetricCard = ({ icon: Icon, label, value }: { 
-    icon: any; 
-    label: string; 
-    value: string 
-  }) => (
-    <div className="flex items-center gap-2 bg-gray-50/50 p-3 rounded-lg hover:bg-gray-100/50 transition-colors">
-      <Icon className="w-4 h-4 text-gray-500" />
-      <div>
-        <p className="text-xs font-medium text-gray-600">{label}</p>
-        <p className="text-sm font-semibold text-primary">{value}</p>
-      </div>
-    </div>
-  );
-
+export const CostMetrics = ({
+  totalDistance,
+  requiresInvoice,
+  setRequiresInvoice
+}: CostMetricsProps) => {
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <MetricCard
-        icon={Route}
-        label="Distancia"
-        value={`${totalDistance ? totalDistance.toFixed(2) : '0.00'} km`}
-      />
-      <MetricCard
-        icon={Clock}
-        label="Tiempo Est."
-        value={`${totalDistance ? Math.ceil(totalDistance / 50) : '0'} hr`}
-      />
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <span>Distancia total:</span>
+        <span>{totalDistance.toFixed(2)} km</span>
+      </div>
+      
+      <div className="flex items-center space-x-2">
+        <Label htmlFor="invoice-required">Requiere factura (+16% IVA)</Label>
+        <Switch
+          id="invoice-required"
+          checked={requiresInvoice}
+          onCheckedChange={setRequiresInvoice}
+        />
+      </div>
     </div>
   );
 };

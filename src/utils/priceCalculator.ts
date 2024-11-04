@@ -1,70 +1,43 @@
-import { getRouteDetails } from '../services/routeService';
-import { calculateTotalCost, getTruckTypeForVehicle } from './towTruckPricing';
-import { calculateDistance } from './distanceUtils';
+import { towTruckTypes } from "./towTruckPricing";
 
-interface Location {
-  lat: number;
-  lng: number;
-}
+export const formatCurrency = (amount: number): string => {
+  return `$${amount.toFixed(2)} MXN`;
+};
 
-export const COMPANY_LOCATION = { lat: 26.510272, lng: -100.006323 };
+export const calculateBaseCost = (distance: number, truckType: string): number => {
+  const truck = towTruckTypes[truckType || 'A'];
+  return distance * truck.perKm;
+};
 
-export interface RouteDetails {
-  totalPrice: number;
-  totalDistance: number;
-  segments: {
-    companyToPickup: number;
-    pickupToDrop: number;
-    dropToCompany: number;
-  };
-  tollFees: number;
-  routeGeometry: {
-    companyToPickup: string;
-    pickupToDrop: string;
-    dropToCompany: string;
-  };
-}
+export const calculateTotalCost = (
+  distance: number,
+  truckType: string,
+  requiresManeuver: boolean,
+  tollCosts: number = 0,
+  requiresInvoice: boolean = false
+): number => {
+  const truck = towTruckTypes[truckType || 'A'];
+  const baseCost = calculateBaseCost(distance, truckType);
+  const maneuverCost = requiresManeuver ? truck.maneuverCharge : 0;
+  const subtotal = baseCost + maneuverCost + tollCosts;
+  const tax = requiresInvoice ? subtotal * 0.16 : 0;
+  return subtotal + tax;
+};
 
-export const calculateTowingPrice = async (
-  pickupLocation: Location,
-  dropLocation: Location,
-  vehicleModel: string,
-  requiresManeuver = false,
-  isRoundTrip = true
-): Promise<RouteDetails> => {
-  try {
-    const companyToPickup = await getRouteDetails(COMPANY_LOCATION, pickupLocation);
-    const pickupToDrop = await getRouteDetails(pickupLocation, dropLocation);
-    const dropToCompany = await getRouteDetails(dropLocation, COMPANY_LOCATION);
-    
-    const segments = {
-      companyToPickup: Number(companyToPickup.distance.toFixed(2)),
-      pickupToDrop: Number(pickupToDrop.distance.toFixed(2)),
-      dropToCompany: Number(dropToCompany.distance.toFixed(2))
-    };
-    
-    const totalDistance = Number((
-      segments.companyToPickup +
-      segments.pickupToDrop +
-      segments.dropToCompany
-    ).toFixed(2));
-
-    const towTruckType = getTruckTypeForVehicle(vehicleModel);
-    const totalPrice = calculateTotalCost(totalDistance, towTruckType, requiresManeuver) * (isRoundTrip ? 2 : 1);
-
-    return {
-      totalPrice,
-      totalDistance,
-      segments,
-      tollFees: 0,
-      routeGeometry: {
-        companyToPickup: companyToPickup.geometry,
-        pickupToDrop: pickupToDrop.geometry,
-        dropToCompany: dropToCompany.geometry
-      }
-    };
-  } catch (error) {
-    console.error('Error calculating price:', error);
-    throw error;
+export const getTruckTypeForVehicle = (vehicleType: string): string => {
+  switch (vehicleType.toLowerCase()) {
+    case 'car':
+    case 'sedan':
+      return 'A';
+    case 'suv':
+    case 'pickup':
+      return 'B';
+    case 'van':
+    case 'truck':
+      return 'C';
+    case 'heavy_truck':
+      return 'D';
+    default:
+      return 'A';
   }
 };
