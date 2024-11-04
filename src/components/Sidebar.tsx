@@ -15,15 +15,19 @@ const Sidebar = () => {
   const [dropLocation, setDropLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [pickupAddress, setPickupAddress] = useState("");
   const [dropAddress, setDropAddress] = useState("");
+  const [selectingPickup, setSelectingPickup] = useState(false);
+  const [selectingDrop, setSelectingDrop] = useState(false);
 
   const handlePickupSelect = (location: { lat: number; lng: number; address: string }) => {
     setPickupLocation({ lat: location.lat, lng: location.lng });
     setPickupAddress(location.address);
+    setSelectingPickup(false);
   };
 
   const handleDropSelect = (location: { lat: number; lng: number; address: string }) => {
     setDropLocation({ lat: location.lat, lng: location.lng });
     setDropAddress(location.address);
+    setSelectingDrop(false);
   };
 
   const NavContent = () => (
@@ -44,6 +48,8 @@ const Sidebar = () => {
             onVehicleModelChange={() => {}}
             onPickupSelect={handlePickupSelect}
             onDropSelect={handleDropSelect}
+            onSelectingPickup={setSelectingPickup}
+            onSelectingDrop={setSelectingDrop}
           />
           <CostEstimation />
           <RouteDisplay

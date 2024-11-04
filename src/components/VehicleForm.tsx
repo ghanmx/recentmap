@@ -11,7 +11,7 @@ import { useTowingCost } from "@/hooks/useTowingCost";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
-import { CreditCard, Copy, CheckCircle2 } from "lucide-react";
+import { CreditCard, Copy, CheckCircle2, MapPin } from "lucide-react";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
 import {
   Tooltip,
@@ -29,7 +29,9 @@ const VehicleForm = ({
   onManeuverChange,
   onVehicleModelChange,
   onPickupSelect,
-  onDropSelect
+  onDropSelect,
+  onSelectingPickup,
+  onSelectingDrop
 }: {
   pickupLocation: { lat: number; lng: number } | null;
   dropLocation: { lat: number; lng: number } | null;
@@ -40,6 +42,8 @@ const VehicleForm = ({
   onVehicleModelChange?: (model: string) => void;
   onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
   onDropSelect: (location: { lat: number; lng: number; address: string }) => void;
+  onSelectingPickup: (selecting: boolean) => void;
+  onSelectingDrop: (selecting: boolean) => void;
 }) => {
   const [requiresManeuver, setRequiresManeuver] = useState(false);
   const [truckType, setTruckType] = useState<TowTruckType>('A');
@@ -129,6 +133,8 @@ const VehicleForm = ({
               onPickupSelect={onPickupSelect}
               onDropSelect={onDropSelect}
               onTollUpdate={setTollFees}
+              onSelectingPickup={onSelectingPickup}
+              onSelectingDrop={onSelectingDrop}
             />
             <VehicleDetails
               onBrandChange={(brand) => form.setValue('vehicleMake', brand)}

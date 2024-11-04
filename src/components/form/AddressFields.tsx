@@ -2,6 +2,7 @@ import { LocationSearch } from "./LocationSearch";
 import { Card } from "@/components/ui/card";
 import { MapPin, Navigation } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 interface AddressFieldsProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -11,6 +12,8 @@ interface AddressFieldsProps {
   onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
   onDropSelect: (location: { lat: number; lng: number; address: string }) => void;
   onTollUpdate?: (tollCost: number) => void;
+  onSelectingPickup: (selecting: boolean) => void;
+  onSelectingDrop: (selecting: boolean) => void;
   className?: string;
 }
 
@@ -22,15 +25,28 @@ export const AddressFields = ({
   onPickupSelect,
   onDropSelect,
   onTollUpdate,
+  onSelectingPickup,
+  onSelectingDrop,
   className = ""
 }: AddressFieldsProps) => {
   return (
     <Card className={`p-6 space-y-6 bg-gradient-to-br from-white/95 to-blue-50/95 border-blue-100 ${className}`}>
       <div className="space-y-6">
         <div className="relative">
-          <div className="flex items-center gap-2 mb-4">
-            <MapPin className="h-5 w-5 text-green-500" />
-            <h3 className="font-semibold text-lg text-gray-800">Pickup Location</h3>
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-green-500" />
+              <h3 className="font-semibold text-lg text-gray-800">Pickup Location</h3>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onSelectingPickup(true)}
+              className="text-sm hover:bg-green-50"
+            >
+              <MapPin className="h-4 w-4 mr-2 text-green-500" />
+              Seleccionar en Mapa
+            </Button>
           </div>
           <LocationSearch
             label=""
@@ -53,9 +69,20 @@ export const AddressFields = ({
         <Separator className="my-4" />
         
         <div className="relative">
-          <div className="flex items-center gap-2 mb-4">
-            <Navigation className="h-5 w-5 text-red-500" />
-            <h3 className="font-semibold text-lg text-gray-800">Drop-off Location</h3>
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <Navigation className="h-5 w-5 text-red-500" />
+              <h3 className="font-semibold text-lg text-gray-800">Drop-off Location</h3>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onSelectingDrop(true)}
+              className="text-sm hover:bg-red-50"
+            >
+              <Navigation className="h-4 w-4 mr-2 text-red-500" />
+              Seleccionar en Mapa
+            </Button>
           </div>
           <LocationSearch
             label=""
