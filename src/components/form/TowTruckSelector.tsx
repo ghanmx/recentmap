@@ -7,6 +7,8 @@ import { FormData } from "@/types/form";
 import { Card } from "@/components/ui/card";
 import { Coins } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { getTruckTypeForVehicle } from "@/data/vehicleData";
+import { useEffect } from "react";
 
 interface TowTruckSelectorProps {
   form: UseFormReturn<FormData>;
@@ -23,12 +25,25 @@ export const TowTruckSelector = ({
 }: TowTruckSelectorProps) => {
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (selectedModel) {
+      const recommendedType = getTruckTypeForVehicle(selectedModel);
+      form.setValue('truckType', recommendedType);
+      onTruckTypeChange(recommendedType);
+      
+      toast({
+        title: "Tipo de Grúa Seleccionado",
+        description: `Se ha seleccionado automáticamente la grúa tipo ${recommendedType} basado en el vehículo elegido.`,
+      });
+    }
+  }, [selectedModel, form, onTruckTypeChange]);
+
   const handleTollFeesChange = (value: string) => {
     const numValue = parseFloat(value) || 0;
     if (numValue < 0) {
       toast({
-        title: "Invalid Toll Fee",
-        description: "Toll fees cannot be negative",
+        title: "Tarifa de Peaje Inválida",
+        description: "Las tarifas de peaje no pueden ser negativas",
         variant: "destructive",
       });
       return;
