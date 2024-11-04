@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/card";
 import { MapPin, Navigation } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { getAddressFromCoordinates } from "@/services/geocodingService";
+import { detectTollsOnRoute } from "@/utils/tollCalculator";
 
 interface AddressFieldsProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -29,6 +31,30 @@ export const AddressFields = ({
   onSelectingDrop,
   className = ""
 }: AddressFieldsProps) => {
+  const handleLocationSelect = async (location: { lat: number; lng: number }, type: 'pickup' | 'drop') => {
+    try {
+      const address = await getAddressFromCoordinates(location.lat, location.lng);
+      if (type === 'pickup') {
+        onPickupSelect({ ...location, address });
+        onSelectingPickup(false);
+      } else {
+        onDropSelect({ ...location, address });
+        onSelectingDrop(false);
+      }
+
+      // Update toll fees when location changes
+      if (pickupLocation && dropLocation) {
+        const tollInfo = await detectTollsOnRoute(
+          type === 'pickup' ? location : pickupLocation,
+          type === 'drop' ? location : dropLocation
+        );
+        onTollUpdate?.(tollInfo.totalTollCost);
+      }
+    } catch (error) {
+      console.error('Error handling location selection:', error);
+    }
+  };
+
   return (
     <Card className={`p-6 space-y-6 bg-gradient-to-br from-white/95 to-blue-50/95 border-blue-100 ${className}`}>
       <div className="space-y-6">
@@ -53,7 +79,7 @@ export const AddressFields = ({
             placeholder="Enter pickup address"
             currentAddress={pickupAddress}
             currentLocation={pickupLocation}
-            onLocationSelect={(loc) => onPickupSelect(loc)}
+            onLocationSelect={(loc) => handleLocationSelect(loc, 'pickup')}
             icon={<MapPin className="h-4 w-4 text-green-500" />}
           />
           {pickupLocation && (
@@ -89,7 +115,7 @@ export const AddressFields = ({
             placeholder="Enter drop-off address"
             currentAddress={dropAddress}
             currentLocation={dropLocation}
-            onLocationSelect={(loc) => onDropSelect(loc)}
+            onLocationSelect={(loc) => handleLocationSelect(loc, 'drop')}
             icon={<Navigation className="h-4 w-4 text-red-500" />}
           />
           {dropLocation && (

@@ -19,6 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { detectTollsOnRoute } from "@/utils/tollCalculator";
 
 const VehicleForm = ({
   pickupLocation,
@@ -55,19 +56,20 @@ const VehicleForm = ({
   const costDetails = useTowingCost(pickupLocation, dropLocation, requiresManeuver, truckType, tollFees);
 
   useEffect(() => {
-    const updateAddresses = async () => {
-      if (pickupLocation && !pickupAddress) {
-        const address = await getAddressFromCoordinates(pickupLocation.lat, pickupLocation.lng);
-        onPickupSelect({ ...pickupLocation, address });
-      }
-      if (dropLocation && !dropAddress) {
-        const address = await getAddressFromCoordinates(dropLocation.lat, dropLocation.lng);
-        onDropSelect({ ...dropLocation, address });
+    const updateTollFees = async () => {
+      if (pickupLocation && dropLocation) {
+        try {
+          const tollInfo = await detectTollsOnRoute(pickupLocation, dropLocation);
+          setTollFees(tollInfo.totalTollCost);
+          form.setValue('tollFees', tollInfo.totalTollCost);
+        } catch (error) {
+          console.error('Error calculating toll fees:', error);
+        }
       }
     };
 
-    updateAddresses();
-  }, [pickupLocation, dropLocation, pickupAddress, dropAddress, onPickupSelect, onDropSelect]);
+    updateTollFees();
+  }, [pickupLocation, dropLocation]);
 
   const getFormData = () => {
     const data = {
@@ -160,7 +162,7 @@ const VehicleForm = ({
                 onManeuverChange?.(checked);
               }}
             />
-            
+
             <Button
               type="submit"
               disabled={isPending}

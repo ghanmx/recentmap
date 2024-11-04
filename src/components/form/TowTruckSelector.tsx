@@ -34,10 +34,11 @@ export const TowTruckSelector = ({
       
       toast({
         title: "Tipo de Grúa Recomendado",
-        description: `Se ha seleccionado la grúa tipo ${recommendedType} basado en el peso y dimensiones de ${selectedModel}.`,
+        description: `Se ha seleccionado la grúa tipo ${recommendedType} basado en el modelo ${selectedModel}.`,
+        variant: "default"
       });
     }
-  }, [selectedModel, form, onTruckTypeChange, toast]);
+  }, [selectedModel, form, onTruckTypeChange]);
 
   const handleTollFeesChange = (value: string) => {
     const numValue = parseFloat(value) || 0;
@@ -49,6 +50,7 @@ export const TowTruckSelector = ({
       });
       return;
     }
+    form.setValue('tollFees', numValue);
     onTollFeesChange(numValue);
   };
 
