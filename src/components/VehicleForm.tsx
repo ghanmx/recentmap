@@ -5,13 +5,14 @@ import { ServiceRequirements } from "./form/ServiceRequirements";
 import { VehicleFormHeader } from "./form/VehicleFormHeader";
 import { TowTruckSelector } from "./form/TowTruckSelector";
 import { AddressFields } from "./form/AddressFields";
+import { FormCostSummary } from "./form/FormCostSummary";
 import { useState, useEffect } from "react";
 import { TowTruckType } from "@/utils/downloadUtils";
 import { useTowingCost } from "@/hooks/useTowingCost";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
-import { CreditCard, Copy, CheckCircle2, MapPin } from "lucide-react";
+import { CreditCard, Copy, CheckCircle2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -71,8 +72,8 @@ const VehicleForm = ({
     updateTollFees();
   }, [pickupLocation, dropLocation]);
 
-  const getFormData = () => {
-    const data = {
+  const handleCopy = async () => {
+    const formData = {
       pickup: pickupAddress,
       dropoff: dropAddress,
       vehicleMake: form.getValues('vehicleMake'),
@@ -84,12 +85,8 @@ const VehicleForm = ({
       tollFees,
       estimatedCost: costDetails?.totalCost || 0
     };
-    return JSON.stringify(data, null, 2);
-  };
-
-  const handleCopy = async () => {
-    const formData = getFormData();
-    await navigator.clipboard.writeText(formData);
+    
+    await navigator.clipboard.writeText(JSON.stringify(formData, null, 2));
     setIsCopied(true);
     toast({
       title: "Datos copiados",
@@ -130,6 +127,7 @@ const VehicleForm = ({
             </Tooltip>
           </TooltipProvider>
         </div>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <motion.div
@@ -150,6 +148,11 @@ const VehicleForm = ({
                 className="mb-6"
               />
             </motion.div>
+
+            <FormCostSummary 
+              tollFees={tollFees}
+              estimatedCost={costDetails?.totalCost || 0}
+            />
 
             <motion.div
               initial={{ opacity: 0 }}
