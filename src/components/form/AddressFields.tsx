@@ -1,7 +1,7 @@
 import { LocationSearch } from "./LocationSearch";
 import { Card } from "@/components/ui/card";
-import { MapPin } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { MapPin, Navigation } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 interface AddressFieldsProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -24,59 +24,53 @@ export const AddressFields = ({
   onTollUpdate,
   className = ""
 }: AddressFieldsProps) => {
-  const { toast } = useToast();
-
-  const handleLocationSelect = async (type: 'pickup' | 'drop', location: { lat: number; lng: number; address: string }) => {
-    if (type === 'pickup') {
-      onPickupSelect(location);
-      toast({
-        title: "Pickup Location Set",
-        description: location.address,
-      });
-    } else {
-      onDropSelect(location);
-      toast({
-        title: "Drop-off Location Set",
-        description: location.address,
-      });
-    }
-    
-    if (onTollUpdate) {
-      onTollUpdate(0); // Reset toll cost when location changes
-    }
-  };
-
   return (
-    <Card className={`p-4 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95 ${className}`}>
-      <div className="space-y-4">
+    <Card className={`p-6 space-y-6 bg-gradient-to-br from-white/95 to-blue-50/95 border-blue-100 ${className}`}>
+      <div className="space-y-6">
         <div className="relative">
+          <div className="flex items-center gap-2 mb-4">
+            <MapPin className="h-5 w-5 text-green-500" />
+            <h3 className="font-semibold text-lg text-gray-800">Pickup Location</h3>
+          </div>
           <LocationSearch
-            label="Pickup Location"
+            label=""
             placeholder="Enter pickup address"
             currentAddress={pickupAddress}
             currentLocation={pickupLocation}
-            onLocationSelect={(loc) => handleLocationSelect('pickup', loc)}
+            onLocationSelect={(loc) => onPickupSelect(loc)}
+            icon={<MapPin className="h-4 w-4 text-green-500" />}
           />
           {pickupLocation && (
-            <div className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+            <div className="mt-2 text-xs text-gray-500 flex items-center gap-1.5 bg-gray-50 p-2 rounded-md">
               <MapPin className="h-3 w-3" />
-              <span>Lat: {pickupLocation.lat.toFixed(6)}, Lng: {pickupLocation.lng.toFixed(6)}</span>
+              <span className="font-mono">
+                {pickupLocation.lat.toFixed(6)}, {pickupLocation.lng.toFixed(6)}
+              </span>
             </div>
           )}
         </div>
         
+        <Separator className="my-4" />
+        
         <div className="relative">
+          <div className="flex items-center gap-2 mb-4">
+            <Navigation className="h-5 w-5 text-red-500" />
+            <h3 className="font-semibold text-lg text-gray-800">Drop-off Location</h3>
+          </div>
           <LocationSearch
-            label="Drop-off Location"
+            label=""
             placeholder="Enter drop-off address"
             currentAddress={dropAddress}
             currentLocation={dropLocation}
-            onLocationSelect={(loc) => handleLocationSelect('drop', loc)}
+            onLocationSelect={(loc) => onDropSelect(loc)}
+            icon={<Navigation className="h-4 w-4 text-red-500" />}
           />
           {dropLocation && (
-            <div className="mt-2 text-xs text-gray-500 flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
-              <span>Lat: {dropLocation.lat.toFixed(6)}, Lng: {dropLocation.lng.toFixed(6)}</span>
+            <div className="mt-2 text-xs text-gray-500 flex items-center gap-1.5 bg-gray-50 p-2 rounded-md">
+              <Navigation className="h-3 w-3" />
+              <span className="font-mono">
+                {dropLocation.lat.toFixed(6)}, {dropLocation.lng.toFixed(6)}
+              </span>
             </div>
           )}
         </div>
