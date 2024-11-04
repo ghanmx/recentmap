@@ -11,7 +11,7 @@ interface RouteResponse {
 
 const MIN_REQUEST_INTERVAL = 1100;
 const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000;
+const RETRY_DELAY = 2000;
 const FALLBACK_SPEED_KMH = 45;
 const REQUEST_TIMEOUT = 15000;
 
@@ -30,7 +30,6 @@ const calculateStraightLineDistance = (start: Location, end: Location): number =
 };
 
 const generateFallbackGeometry = (start: Location, end: Location): string => {
-  // Create a simple straight line polyline
   const points = [
     [start.lat, start.lng],
     [(start.lat + end.lat) / 2, (start.lng + end.lng) / 2],
@@ -41,7 +40,7 @@ const generateFallbackGeometry = (start: Location, end: Location): string => {
 
 const createFallbackResponse = (start: Location, end: Location): RouteResponse => {
   const distance = calculateStraightLineDistance(start, end);
-  const MEXICAN_ROADS_FACTOR = 1.4; // Adjustment factor for actual road distance
+  const MEXICAN_ROADS_FACTOR = 1.4;
   const adjustedDistance = distance * MEXICAN_ROADS_FACTOR;
   const duration = (adjustedDistance / FALLBACK_SPEED_KMH) * 3600;
 
@@ -52,58 +51,72 @@ const createFallbackResponse = (start: Location, end: Location): RouteResponse =
   };
 };
 
-async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Response> {
+async function fetchWithTimeout(url: string, timeout: number): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
   try {
     const response = await fetch(url, {
+      signal: controller.signal,
       headers: {
         'Accept': 'application/json',
         'User-Agent': 'TowingServiceApp/1.0'
-      },
-      mode: 'cors',
-      cache: 'no-cache'
+      }
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    clearTimeout(id);
     return response;
   } catch (error) {
-    if (retries > 0) {
-      console.warn(`Retrying route fetch, ${retries} attempts remaining`);
-      await wait(RETRY_DELAY);
-      return fetchWithRetry(url, retries - 1);
-    }
+    clearTimeout(id);
     throw error;
   }
 }
 
+async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Response> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetchWithTimeout(url, REQUEST_TIMEOUT);
+      if (response.ok) return response;
+    } catch (error) {
+      if (i === retries - 1) throw error;
+    }
+    await wait(RETRY_DELAY * (i + 1)); // Exponential backoff
+  }
+  throw new Error('Max retries reached');
+}
+
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
   try {
-    // Use a different OSRM server that allows CORS
-    const baseUrl = 'https://routing.openstreetmap.de';
-    const path = `/routed-car/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}`;
-    const params = '?overview=full&geometries=polyline&alternatives=true';
-    const url = `${baseUrl}${path}${params}`;
+    // Try multiple routing services
+    const services = [
+      'https://routing.openstreetmap.de/routed-car',
+      'https://router.project-osrm.org'
+    ];
 
-    const response = await fetchWithRetry(url);
-    const data = await response.json();
+    for (const baseUrl of services) {
+      try {
+        const path = `/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}`;
+        const params = '?overview=full&geometries=polyline&alternatives=true';
+        const url = `${baseUrl}${path}${params}`;
 
-    if (!data.routes || data.routes.length === 0) {
-      console.warn('No routes found, using fallback calculation');
-      return createFallbackResponse(start, end);
+        const response = await fetchWithRetry(url);
+        const data = await response.json();
+
+        if (data.routes && data.routes.length > 0) {
+          const bestRoute = data.routes[0];
+          return {
+            distance: (bestRoute.distance / 1000) * 1.15, // Convert to km and add 15% for accuracy
+            duration: bestRoute.duration,
+            geometry: bestRoute.geometry,
+          };
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch from ${baseUrl}, trying next service...`);
+        continue;
+      }
     }
 
-    const bestRoute = data.routes.reduce((best: any, current: any) => {
-      const currentScore = current.duration / current.distance;
-      const bestScore = best.duration / best.distance;
-      return currentScore < bestScore ? current : best;
-    }, data.routes[0]);
-
-    return {
-      distance: (bestRoute.distance / 1000) * 1.15, // Convert to km and add 15% for accuracy
-      duration: bestRoute.duration,
-      geometry: bestRoute.geometry,
-    };
+    console.warn('All routing services failed, using fallback calculation');
+    return createFallbackResponse(start, end);
   } catch (error) {
     console.warn('Error fetching route, using fallback calculation:', error);
     return createFallbackResponse(start, end);
