@@ -15,17 +15,17 @@ export const MapHeader = () => {
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-blue-700 bg-clip-text text-transparent">
-              Tow Truck Service
+              MRGruas
             </h1>
-            <p className="text-xs sm:text-sm text-gray-600">Professional Assistance 24/7</p>
+            <p className="text-xs sm:text-sm text-gray-600">Asistencia Profesional 24/7</p>
           </div>
         </div>
-        
+
         <div className="sm:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="icon"
                 className="relative z-50"
                 aria-label="Open menu"
@@ -33,8 +33,8 @@ export const MapHeader = () => {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent 
-              side="right" 
+            <SheetContent
+              side="right"
               className="w-[300px] sm:w-[400px] z-[60]"
               onOpenAutoFocus={(e) => e.preventDefault()}
             >
