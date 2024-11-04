@@ -15,7 +15,6 @@ const RETRY_DELAY = 2000;
 const FALLBACK_SPEED_KMH = 45;
 const REQUEST_TIMEOUT = 15000;
 
-// Added more routing servers as fallbacks
 const OSRM_SERVERS = [
   'https://router.project-osrm.org',
   'https://routing.openstreetmap.de/routed-car',
@@ -69,7 +68,7 @@ async function fetchWithTimeout(url: string, timeout: number): Promise<Response>
         'Accept': 'application/json',
         'User-Agent': 'TowingServiceApp/1.0'
       },
-      mode: 'cors'  // Added CORS mode explicitly
+      mode: 'cors'
     });
     clearTimeout(id);
     return response;
@@ -95,7 +94,7 @@ async function tryFetchRoute(start: Location, end: Location, serverUrl: string):
 
     const bestRoute = data.routes[0];
     return {
-      distance: (bestRoute.distance / 1000) * 1.15, // Convert to km and add 15% for accuracy
+      distance: (bestRoute.distance / 1000) * 1.15,
       duration: bestRoute.duration,
       geometry: bestRoute.geometry,
     };
@@ -107,7 +106,6 @@ async function tryFetchRoute(start: Location, end: Location, serverUrl: string):
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
   let lastError;
 
-  // Try each server in sequence
   for (const serverUrl of OSRM_SERVERS) {
     try {
       return await tryFetchRoute(start, end, serverUrl);
@@ -119,9 +117,21 @@ export const getRouteDetails = async (start: Location, end: Location): Promise<R
     }
   }
 
-  // If all servers fail, use fallback calculation
   console.warn('All routing servers failed, using fallback calculation', lastError);
   return createFallbackResponse(start, end);
+};
+
+// New function to get route geometry
+export const getRouteGeometry = async (pickupLocation: Location, dropLocation: Location) => {
+  const routeDetails = await getRouteDetails(pickupLocation, dropLocation);
+  return {
+    companyToPickupDistance: routeDetails.distance,
+    pickupToDropDistance: routeDetails.distance,
+    dropToCompanyDistance: routeDetails.distance,
+    companyToPickupGeometry: routeDetails.geometry,
+    pickupToDropGeometry: routeDetails.geometry,
+    dropToCompanyGeometry: routeDetails.geometry,
+  };
 };
 
 export const COMPANY_LOCATION = { lat: 26.510272, lng: -100.006323 };
