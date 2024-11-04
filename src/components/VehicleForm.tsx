@@ -70,7 +70,7 @@ const VehicleForm = ({
       requiresManeuver,
       truckType,
       tollFees,
-      estimatedCost: costDetails?.total || 0
+      estimatedCost: costDetails?.totalCost || 0
     };
     return JSON.stringify(data, null, 2);
   };
