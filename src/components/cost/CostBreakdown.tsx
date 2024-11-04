@@ -13,6 +13,8 @@ interface CostBreakdownProps {
   detectedTolls: Array<{ name: string; cost: number }>;
   requiresInvoice: boolean;
   setShowPaymentWindow: (show: boolean) => void;
+  maneuverCost: number;
+  requiresManeuver: boolean;
 }
 
 export const CostBreakdown = ({
@@ -24,7 +26,9 @@ export const CostBreakdown = ({
   finalCost,
   detectedTolls,
   requiresInvoice,
-  setShowPaymentWindow
+  setShowPaymentWindow,
+  maneuverCost,
+  requiresManeuver
 }: CostBreakdownProps) => {
   const renderCostItem = (label: string, amount: number, indent: boolean = false) => (
     <div className={`flex justify-between text-sm text-gray-600 ${indent ? 'pl-4' : ''}`}>
@@ -59,6 +63,8 @@ export const CostBreakdown = ({
         >
           {renderCostItem(`Servicio base (${totalDistance.toFixed(2)} km × $${towTruckTypes.A.perKm.toFixed(2)})`, baseCost)}
           
+          {requiresManeuver && renderCostItem('Cargo por maniobra especial', maneuverCost)}
+
           {detectedTolls.length > 0 && (
             <div className="space-y-1">
               <div className="text-sm text-gray-600 font-medium">Peajes:</div>

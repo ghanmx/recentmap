@@ -6,8 +6,12 @@ interface TowingContextType {
   totalCost: number;
   detectedTolls: TollLocation[];
   totalTollCost: number;
+  truckType: "A" | "B" | "C" | "D";
+  requiresManeuver: boolean;
   updateTowingInfo: (distance: number, cost: number) => void;
   updateTollInfo: (tolls: TollLocation[], tollCost: number) => void;
+  updateTruckType: (type: "A" | "B" | "C" | "D") => void;
+  updateManeuverRequired: (required: boolean) => void;
 }
 
 const TowingContext = createContext<TowingContextType | undefined>(undefined);
@@ -17,19 +21,29 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
   const [totalCost, setTotalCost] = useState(0);
   const [detectedTolls, setDetectedTolls] = useState<TollLocation[]>([]);
   const [totalTollCost, setTotalTollCost] = useState(0);
+  const [truckType, setTruckType] = useState<"A" | "B" | "C" | "D">("A");
+  const [requiresManeuver, setRequiresManeuver] = useState(false);
 
   const updateTowingInfo = (distance: number, cost: number) => {
     setTotalDistance(distance);
-    setTotalCost(cost + totalTollCost); // Add toll costs to total
+    setTotalCost(cost + totalTollCost);
   };
 
   const updateTollInfo = (tolls: TollLocation[], tollCost: number) => {
     setDetectedTolls(tolls);
     setTotalTollCost(tollCost);
     setTotalCost(prevCost => {
-      const baseCost = prevCost - totalTollCost; // Remove previous toll cost
-      return baseCost + tollCost; // Add new toll cost
+      const baseCost = prevCost - totalTollCost;
+      return baseCost + tollCost;
     });
+  };
+
+  const updateTruckType = (type: "A" | "B" | "C" | "D") => {
+    setTruckType(type);
+  };
+
+  const updateManeuverRequired = (required: boolean) => {
+    setRequiresManeuver(required);
   };
 
   return (
@@ -37,9 +51,13 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
       totalDistance, 
       totalCost, 
       detectedTolls, 
-      totalTollCost, 
+      totalTollCost,
+      truckType,
+      requiresManeuver,
       updateTowingInfo, 
-      updateTollInfo 
+      updateTollInfo,
+      updateTruckType,
+      updateManeuverRequired
     }}>
       {children}
     </TowingContext.Provider>

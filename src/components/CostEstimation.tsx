@@ -14,14 +14,16 @@ import { CostMetrics } from "./cost/CostMetrics";
 import { CostBreakdown } from "./cost/CostBreakdown";
 
 export const CostEstimation = () => {
-  const { totalDistance, detectedTolls, totalTollCost } = useTowing();
+  const { totalDistance, detectedTolls, totalTollCost, truckType = 'A', requiresManeuver = false } = useTowing();
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [requiresInvoice, setRequiresInvoice] = useState(false);
   const [showPaymentWindow, setShowPaymentWindow] = useState(false);
 
-  const baseCost = totalDistance * towTruckTypes.A.perKm;
-  const tax = requiresInvoice ? baseCost * 0.16 : 0;
-  const finalCost = baseCost + totalTollCost + tax;
+  const selectedTruck = towTruckTypes[truckType];
+  const baseCost = totalDistance * selectedTruck.perKm;
+  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0;
+  const tax = requiresInvoice ? (baseCost + maneuverCost) * 0.16 : 0;
+  const finalCost = baseCost + totalTollCost + tax + maneuverCost;
 
   return (
     <motion.div
@@ -68,6 +70,8 @@ export const CostEstimation = () => {
           detectedTolls={detectedTolls}
           requiresInvoice={requiresInvoice}
           setShowPaymentWindow={setShowPaymentWindow}
+          maneuverCost={maneuverCost}
+          requiresManeuver={requiresManeuver}
         />
 
         <PaymentWindow
