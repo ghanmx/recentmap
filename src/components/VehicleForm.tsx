@@ -42,7 +42,7 @@ const VehicleForm = ({
   onSelectingDrop
 }: VehicleFormProps) => {
   const [requiresManeuver, setRequiresManeuver] = useState(false);
-  const [truckType, setTruckType] = useState<TowTruckType>('A');
+  const [truckType, setTruckType] = useState<TowTruckType>("A");
   const [tollFees, setTollFees] = useState(0);
   const [selectedModel, setSelectedModel] = useState('');
   const [isCopied, setIsCopied] = useState(false);
@@ -144,7 +144,7 @@ const VehicleForm = ({
             >
               <TowTruckSelector
                 form={form}
-                onTruckTypeChange={setTruckType}
+                onTruckTypeChange={(type: TowTruckType) => setTruckType(type)}
                 onTollFeesChange={setTollFees}
                 selectedModel={selectedModel}
               />

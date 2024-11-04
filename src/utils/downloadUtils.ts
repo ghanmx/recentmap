@@ -1,4 +1,6 @@
-export interface TowTruckType {
+export type TowTruckType = "A" | "B" | "C" | "D";
+
+export interface TowTruckDetails {
   name: string;
   capacity: string;
   perKm: number;

@@ -33,7 +33,6 @@ export const useTowingCost = (
           const route = await getRouteDetails(pickupLocation, dropLocation);
           const distance = route.distance;
           const truckDetails = towTruckTypes[truckType];
-          const basePrice = truckDetails.basePrice;
           const ratePerKm = truckDetails.perKm;
           const costPerKm = ratePerKm * distance;
           const maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
@@ -41,7 +40,7 @@ export const useTowingCost = (
 
           setCostDetails({
             distance,
-            basePrice,
+            basePrice: truckDetails.perKm,
             costPerKm,
             ratePerKm,
             maneuverCost,
