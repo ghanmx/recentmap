@@ -2,6 +2,9 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { vehicleBrands, vehicleModels } from "@/data/vehicleData";
 import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Calendar, Car, Palette, Tag } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface VehicleDetailsProps {
   onBrandChange?: (brand: string) => void;
@@ -38,110 +41,104 @@ export const VehicleDetails = ({
     onBrandChange?.(brand);
   };
 
+  const SelectField = ({ 
+    icon: Icon, 
+    label, 
+    name, 
+    options, 
+    onChange, 
+    disabled = false,
+    value = ""
+  }: {
+    icon: any;
+    label: string;
+    name: string;
+    options: string[];
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    disabled?: boolean;
+    value?: string;
+  }) => (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className="flex items-center gap-2 text-gray-700">
+            <Icon className="h-4 w-4 text-primary" />
+            {label}
+          </FormLabel>
+          <FormControl>
+            <select 
+              className={cn(
+                "w-full p-2 border rounded-md bg-background",
+                "focus:ring-2 focus:ring-primary/20 focus:border-primary",
+                "transition-colors duration-200",
+                disabled && "bg-gray-50 cursor-not-allowed"
+              )}
+              {...field}
+              onChange={onChange}
+              disabled={disabled}
+              value={value || field.value}
+            >
+              <option value="">{`Select ${label.toLowerCase()}`}</option>
+              {options.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </FormControl>
+        </FormItem>
+      )}
+    />
+  );
+
   return (
-    <Form {...form}>
-      <form className="space-y-4">
-        <FormField
-          control={form.control}
-          name="year"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Year</FormLabel>
-              <FormControl>
-                <select 
-                  className="w-full p-2 border rounded-md bg-background"
-                  {...field}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    onYearChange?.(e.target.value);
-                  }}
-                >
-                  <option value="">Select year</option>
-                  {years.map((year) => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
-              </FormControl>
-            </FormItem>
-          )}
-        />
+    <Card className="p-6 space-y-4 bg-gradient-to-br from-white/95 to-blue-50/95 border-blue-100">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Vehicle Details</h3>
+      <Form {...form}>
+        <form className="space-y-4">
+          <SelectField
+            icon={Calendar}
+            label="Year"
+            name="year"
+            options={years}
+            onChange={(e) => {
+              form.setValue('year', e.target.value);
+              onYearChange?.(e.target.value);
+            }}
+          />
 
-        <FormField
-          control={form.control}
-          name="brand"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Brand</FormLabel>
-              <FormControl>
-                <select 
-                  className="w-full p-2 border rounded-md bg-background"
-                  {...field}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    handleBrandChange(e);
-                  }}
-                >
-                  <option value="">Select brand</option>
-                  {vehicleBrands.map((brand) => (
-                    <option key={brand} value={brand}>{brand}</option>
-                  ))}
-                </select>
-              </FormControl>
-            </FormItem>
-          )}
-        />
+          <SelectField
+            icon={Car}
+            label="Brand"
+            name="brand"
+            options={vehicleBrands}
+            onChange={handleBrandChange}
+          />
 
-        <FormField
-          control={form.control}
-          name="model"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Model</FormLabel>
-              <FormControl>
-                <select 
-                  className="w-full p-2 border rounded-md bg-background"
-                  {...field}
-                  disabled={!selectedBrand}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    onModelChange?.(e.target.value);
-                  }}
-                >
-                  <option value="">Select model</option>
-                  {selectedBrand && vehicleModels[selectedBrand]?.map((model) => (
-                    <option key={model} value={model}>{model}</option>
-                  ))}
-                </select>
-              </FormControl>
-            </FormItem>
-          )}
-        />
+          <SelectField
+            icon={Tag}
+            label="Model"
+            name="model"
+            options={selectedBrand ? vehicleModels[selectedBrand] || [] : []}
+            onChange={(e) => {
+              form.setValue('model', e.target.value);
+              onModelChange?.(e.target.value);
+            }}
+            disabled={!selectedBrand}
+          />
 
-        <FormField
-          control={form.control}
-          name="color"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Color</FormLabel>
-              <FormControl>
-                <select 
-                  className="w-full p-2 border rounded-md bg-background"
-                  {...field}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    onColorChange?.(e.target.value);
-                  }}
-                >
-                  <option value="">Select color</option>
-                  {commonColors.map((color) => (
-                    <option key={color} value={color}>{color}</option>
-                  ))}
-                </select>
-              </FormControl>
-            </FormItem>
-          )}
-        />
-      </form>
-    </Form>
+          <SelectField
+            icon={Palette}
+            label="Color"
+            name="color"
+            options={commonColors}
+            onChange={(e) => {
+              form.setValue('color', e.target.value);
+              onColorChange?.(e.target.value);
+            }}
+          />
+        </form>
+      </Form>
+    </Card>
   );
 };
