@@ -2,25 +2,32 @@ import { Form } from "@/components/ui/form";
 import { Card } from "@/components/ui/card";
 import { VehicleDetails } from "./form/VehicleDetails";
 import { ServiceRequirements } from "./form/ServiceRequirements";
-import { VehicleFormHeader } from "./form/VehicleFormHeader";
 import { TowTruckSelector } from "./form/TowTruckSelector";
 import { AddressFields } from "./form/AddressFields";
 import { FormCostSummary } from "./form/FormCostSummary";
+import { EnhancedFormHeader } from "./form/EnhancedFormHeader";
+import { EnhancedFormActions } from "./form/EnhancedFormActions";
 import { useState, useEffect } from "react";
 import { TowTruckType } from "@/utils/downloadUtils";
 import { useTowingCost } from "@/hooks/useTowingCost";
 import { useVehicleForm } from "@/hooks/useVehicleForm";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "./ui/button";
-import { CreditCard, Copy, CheckCircle2 } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { detectTollsOnRoute } from "@/utils/tollCalculator";
 import { motion } from "framer-motion";
+import { detectTollsOnRoute } from "@/utils/tollCalculator";
+
+interface VehicleFormProps {
+  pickupLocation: { lat: number; lng: number } | null;
+  dropLocation: { lat: number; lng: number } | null;
+  pickupAddress: string;
+  dropAddress: string;
+  serviceType: 'standard' | 'flatbed' | 'emergency';
+  onManeuverChange?: (requiresManeuver: boolean) => void;
+  onVehicleModelChange?: (model: string) => void;
+  onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
+  onDropSelect: (location: { lat: number; lng: number; address: string }) => void;
+  onSelectingPickup: (selecting: boolean) => void;
+  onSelectingDrop: (selecting: boolean) => void;
+}
 
 const VehicleForm = ({
   pickupLocation,
@@ -34,19 +41,7 @@ const VehicleForm = ({
   onDropSelect,
   onSelectingPickup,
   onSelectingDrop
-}: {
-  pickupLocation: { lat: number; lng: number } | null;
-  dropLocation: { lat: number; lng: number } | null;
-  pickupAddress: string;
-  dropAddress: string;
-  serviceType: 'standard' | 'flatbed' | 'emergency';
-  onManeuverChange?: (requiresManeuver: boolean) => void;
-  onVehicleModelChange?: (model: string) => void;
-  onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
-  onDropSelect: (location: { lat: number; lng: number; address: string }) => void;
-  onSelectingPickup: (selecting: boolean) => void;
-  onSelectingDrop: (selecting: boolean) => void;
-}) => {
+}: VehicleFormProps) => {
   const [requiresManeuver, setRequiresManeuver] = useState(false);
   const [truckType, setTruckType] = useState<TowTruckType>('A');
   const [tollFees, setTollFees] = useState(0);
@@ -103,30 +98,7 @@ const VehicleForm = ({
       transition={{ duration: 0.5 }}
     >
       <Card className="p-6 bg-gradient-to-br from-white via-blue-50/30 to-white border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300">
-        <div className="flex justify-between items-center mb-6">
-          <VehicleFormHeader />
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleCopy}
-                  className="ml-2 transition-all duration-300 hover:bg-primary/10 active:scale-95"
-                >
-                  {isCopied ? (
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Copiar datos del formulario</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+        <EnhancedFormHeader />
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -199,30 +171,11 @@ const VehicleForm = ({
               />
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              <Button
-                type="submit"
-                disabled={isPending}
-                className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white shadow-lg hover:shadow-xl transition-all duration-300 py-6 text-lg font-semibold group relative overflow-hidden"
-              >
-                {isPending ? (
-                  <span className="flex items-center justify-center gap-3">
-                    <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-                    Procesando Solicitud...
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center gap-3">
-                    <CreditCard className="h-5 w-5" />
-                    Continuar al Pago
-                    <span className="absolute inset-0 bg-white/10 transform -skew-x-12 group-hover:translate-x-full transition-transform duration-700 ease-out" />
-                  </span>
-                )}
-              </Button>
-            </motion.div>
+            <EnhancedFormActions
+              onCopy={handleCopy}
+              isCopied={isCopied}
+              isPending={isPending}
+            />
           </form>
         </Form>
       </Card>
