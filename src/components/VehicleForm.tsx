@@ -4,7 +4,6 @@ import { VehicleDetails } from "./form/VehicleDetails";
 import { ServiceRequirements } from "./form/ServiceRequirements";
 import { TowTruckSelector } from "./form/TowTruckSelector";
 import { AddressFields } from "./form/AddressFields";
-import { FormCostSummary } from "./form/FormCostSummary";
 import { EnhancedFormHeader } from "./form/EnhancedFormHeader";
 import { EnhancedFormActions } from "./form/EnhancedFormActions";
 import { useState, useEffect } from "react";
@@ -120,11 +119,6 @@ const VehicleForm = ({
                 className="mb-6"
               />
             </motion.div>
-
-            <FormCostSummary 
-              tollFees={tollFees}
-              estimatedCost={costDetails?.totalCost || 0}
-            />
 
             <motion.div
               initial={{ opacity: 0 }}
