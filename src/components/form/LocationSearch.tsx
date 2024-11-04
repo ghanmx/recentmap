@@ -45,8 +45,8 @@ export const LocationSearch = ({
         setSuggestions(results);
       } catch (error) {
         toast({
-          title: "Search Error",
-          description: "Could not fetch address suggestions",
+          title: "Error en la búsqueda",
+          description: "No se pudieron obtener sugerencias de direcciones",
           variant: "destructive"
         });
       } finally {
@@ -65,6 +65,11 @@ export const LocationSearch = ({
     onLocationSelect(location);
     setSuggestions([]);
     setSearchQuery(suggestion.address);
+    
+    toast({
+      title: "Ubicación seleccionada",
+      description: suggestion.address,
+    });
   };
 
   return (
