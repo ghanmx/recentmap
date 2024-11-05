@@ -4,6 +4,7 @@ import { RouteStreetInfo } from "./RouteStreetInfo";
 import { showLocationNotification } from "@/utils/notificationUtils";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
 
 interface MapControlPanelProps {
   selectingPickup: boolean;
@@ -36,11 +37,19 @@ export const MapControlPanel = ({
             setSelectingPickup(true);
             setSelectingDrop(false);
             showLocationNotification('pickup');
+            toast({
+              title: "Seleccionando punto de recogida",
+              description: "Haz clic en el mapa para seleccionar el punto de recogida.",
+            });
           }}
           onDropClick={() => {
             setSelectingDrop(true);
             setSelectingPickup(false);
             showLocationNotification('drop');
+            toast({
+              title: "Seleccionando punto de entrega",
+              description: "Haz clic en el mapa para seleccionar el punto de entrega.",
+            });
           }}
         />
       </Card>
