@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { MapControls } from "./MapControls";
 import { RouteStreetInfo } from "./RouteStreetInfo";
 import { showLocationNotification } from "@/utils/notificationUtils";
+import { motion } from "framer-motion";
+import { Card } from "@/components/ui/card";
 
 interface MapControlPanelProps {
   selectingPickup: boolean;
@@ -21,32 +23,40 @@ export const MapControlPanel = ({
   dropLocation,
 }: MapControlPanelProps) => {
   return (
-    <div className="px-4 sm:px-6 flex flex-col items-center gap-6 pointer-events-auto">
-      <div className="w-full max-w-2xl bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-4 sm:p-6">
+    <motion.div 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="px-4 sm:px-6 flex flex-col items-center gap-6 pointer-events-auto max-w-3xl mx-auto w-full"
+    >
+      <Card className="w-full bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-4 sm:p-6 border-blue-100/50 hover:shadow-xl transition-all duration-300">
         <MapControls 
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
           onPickupClick={() => {
             setSelectingPickup(true);
             setSelectingDrop(false);
-            showLocationNotification('pickup', { lat: 0, lng: 0 });
+            showLocationNotification('pickup');
           }}
           onDropClick={() => {
             setSelectingDrop(true);
             setSelectingPickup(false);
-            showLocationNotification('drop', { lat: 0, lng: 0 });
+            showLocationNotification('drop');
           }}
         />
-      </div>
+      </Card>
       
       {(pickupLocation || dropLocation) && (
-        <div className="w-full max-w-2xl">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full"
+        >
           <RouteStreetInfo 
             pickupLocation={pickupLocation}
             dropLocation={dropLocation}
           />
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };

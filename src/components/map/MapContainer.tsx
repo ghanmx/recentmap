@@ -10,12 +10,17 @@ import { Marker, Popup, useMap } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
 import { useEffect } from "react";
 import { LatLngTuple, LatLngBounds } from "leaflet";
+import { useToast } from "@/components/ui/use-toast";
 
-const MapUpdater = ({ pickupLocation, dropLocation }: { 
+const MapUpdater = ({ 
+  pickupLocation, 
+  dropLocation 
+}: { 
   pickupLocation: { lat: number; lng: number } | null;
   dropLocation: { lat: number; lng: number } | null;
 }) => {
   const map = useMap();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (pickupLocation && dropLocation) {
@@ -23,11 +28,15 @@ const MapUpdater = ({ pickupLocation, dropLocation }: {
         [pickupLocation.lat, pickupLocation.lng],
         [dropLocation.lat, dropLocation.lng]
       );
-      map.fitBounds(bounds);
+      map.fitBounds(bounds, { padding: [50, 50] });
+      toast({
+        title: "Ruta actualizada",
+        description: "El mapa se ha ajustado para mostrar la ruta completa",
+      });
     } else if (pickupLocation) {
-      map.setView([pickupLocation.lat, pickupLocation.lng], 13);
+      map.setView([pickupLocation.lat, pickupLocation.lng], 15);
     } else if (dropLocation) {
-      map.setView([dropLocation.lat, dropLocation.lng], 13);
+      map.setView([dropLocation.lat, dropLocation.lng], 15);
     }
   }, [map, pickupLocation, dropLocation]);
 
@@ -55,9 +64,23 @@ export const MapContainerComponent = ({
   setDropLocation,
   onRouteCalculated
 }: MapContainerComponentProps) => {
+  const { toast } = useToast();
+  
   const handleLocationSelect = async (location: { lat: number; lng: number }) => {
-    const address = await getAddressFromCoordinates(location.lat, location.lng);
-    onLocationSelect(location);
+    try {
+      const address = await getAddressFromCoordinates(location.lat, location.lng);
+      onLocationSelect(location);
+      toast({
+        title: selectingPickup ? "Punto de recogida seleccionado" : "Punto de entrega seleccionado",
+        description: address,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo obtener la dirección",
+        variant: "destructive",
+      });
+    }
   };
 
   const defaultPosition: LatLngTuple = [25.6866, -100.3161];
@@ -66,11 +89,13 @@ export const MapContainerComponent = ({
     <MapContainer
       center={defaultPosition}
       zoom={13}
-      className="w-full h-full"
+      className="w-full h-full rounded-lg shadow-lg"
+      zoomControl={false}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        className="brightness-95"
       />
       
       <MapLocationHandler
@@ -85,7 +110,7 @@ export const MapContainerComponent = ({
         position={[COMPANY_LOCATION.lat, COMPANY_LOCATION.lng]} 
         icon={enterpriseIcon}
       >
-        <Popup>
+        <Popup className="rounded-lg shadow-lg">
           <div className="font-semibold">Empresa de Grúas</div>
           <div className="text-sm text-gray-600">Ubicación Principal</div>
         </Popup>
@@ -97,7 +122,7 @@ export const MapContainerComponent = ({
           onDragEnd={async (latlng) => {
             const location = { lat: latlng.lat, lng: latlng.lng };
             setPickupLocation(location);
-            onLocationSelect(location);
+            handleLocationSelect(location);
           }}
           icon={pickupIcon}
           label="Punto de Recogida"
@@ -110,7 +135,7 @@ export const MapContainerComponent = ({
           onDragEnd={async (latlng) => {
             const location = { lat: latlng.lat, lng: latlng.lng };
             setDropLocation(location);
-            onLocationSelect(location);
+            handleLocationSelect(location);
           }}
           icon={dropIcon}
           label="Punto de Entrega"
