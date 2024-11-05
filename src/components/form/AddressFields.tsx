@@ -35,21 +35,20 @@ export const AddressFields = ({
 }: AddressFieldsProps) => {
   const { toast } = useToast();
 
-  const handleLocationSelect = async (location: { lat: number; lng: number }, type: 'pickup' | 'drop') => {
+  const handleLocationSelect = async (location: { lat: number; lng: number; address: string }, type: 'pickup' | 'drop') => {
     try {
-      const address = await getAddressFromCoordinates(location.lat, location.lng);
       if (type === 'pickup') {
-        onPickupSelect({ ...location, address });
+        onPickupSelect(location);
         onSelectingPickup(false);
       } else {
-        onDropSelect({ ...location, address });
+        onDropSelect(location);
         onSelectingDrop(false);
       }
 
       if (pickupLocation && dropLocation) {
         const tollInfo = await detectTollsOnRoute(
-          type === 'pickup' ? location : pickupLocation,
-          type === 'drop' ? location : dropLocation
+          type === 'pickup' ? { lat: location.lat, lng: location.lng } : pickupLocation,
+          type === 'drop' ? { lat: location.lat, lng: location.lng } : dropLocation
         );
         onTollUpdate?.(tollInfo.totalTollCost);
         
@@ -97,21 +96,9 @@ export const AddressFields = ({
             placeholder="Ingrese dirección de recogida"
             currentAddress={pickupAddress}
             currentLocation={pickupLocation}
-            onLocationSelect={(loc) => handleLocationSelect(loc, 'pickup')}
+            onLocationSelect={(loc) => handleLocationSelect({ ...loc, address: loc.address }, 'pickup')}
             icon={<MapPin className="h-4 w-4 text-green-500" />}
           />
-          {pickupLocation && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-2 text-xs text-gray-500 flex items-center gap-1.5 bg-gray-50/80 p-2 rounded-md"
-            >
-              <MapPin className="h-3 w-3" />
-              <span className="font-mono">
-                {pickupLocation.lat.toFixed(6)}, {pickupLocation.lng.toFixed(6)}
-              </span>
-            </motion.div>
-          )}
         </div>
         
         <Separator className="my-4" />
@@ -137,21 +124,9 @@ export const AddressFields = ({
             placeholder="Ingrese dirección de entrega"
             currentAddress={dropAddress}
             currentLocation={dropLocation}
-            onLocationSelect={(loc) => handleLocationSelect(loc, 'drop')}
+            onLocationSelect={(loc) => handleLocationSelect({ ...loc, address: loc.address }, 'drop')}
             icon={<Navigation className="h-4 w-4 text-red-500" />}
           />
-          {dropLocation && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-2 text-xs text-gray-500 flex items-center gap-1.5 bg-gray-50/80 p-2 rounded-md"
-            >
-              <Navigation className="h-3 w-3" />
-              <span className="font-mono">
-                {dropLocation.lat.toFixed(6)}, {dropLocation.lng.toFixed(6)}
-              </span>
-            </motion.div>
-          )}
         </div>
       </motion.div>
     </Card>

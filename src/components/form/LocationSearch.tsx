@@ -24,7 +24,7 @@ export const LocationSearch = ({
   currentLocation,
   icon
 }: LocationSearchProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(currentAddress || "");
   const [suggestions, setSuggestions] = useState<Array<{
     address: string;
     lat: number;
@@ -67,6 +67,13 @@ export const LocationSearch = ({
     [toast]
   );
 
+  // Update search query when currentAddress changes
+  useEffect(() => {
+    if (currentAddress && currentAddress !== searchQuery) {
+      setSearchQuery(currentAddress);
+    }
+  }, [currentAddress]);
+
   const handleLocationSelect = (suggestion: { address: string; lat: number; lon: number; distance: number }) => {
     const location = {
       lat: suggestion.lat,
@@ -95,7 +102,7 @@ export const LocationSearch = ({
             </div>
           )}
           <Input
-            value={currentAddress || searchQuery}
+            value={searchQuery}
             onChange={(e) => {
               const value = e.target.value;
               setSearchQuery(value);
