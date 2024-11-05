@@ -52,7 +52,7 @@ export const CostEstimation = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-lg shadow-lg p-6 space-y-6"
+      className="bg-gradient-to-br from-white/95 via-blue-50/30 to-white backdrop-blur-sm rounded-lg shadow-lg p-6 space-y-6 border border-blue-100/50 hover:shadow-xl transition-all duration-300 sm:mx-4 md:mx-0"
     >
       <CostHeader 
         showBreakdown={showBreakdown}
