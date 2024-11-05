@@ -9,11 +9,11 @@ interface RouteResponse {
   geometry: string;
 }
 
-const MIN_REQUEST_INTERVAL = 1100;
+const MIN_REQUEST_INTERVAL = 1500; // Increased from 1100
 const MAX_RETRIES = 3;
-const RETRY_DELAY = 2000;
+const RETRY_DELAY = 3000; // Increased from 2000
 const FALLBACK_SPEED_KMH = 45;
-const REQUEST_TIMEOUT = 15000;
+const REQUEST_TIMEOUT = 30000; // Increased from 15000
 
 const OSRM_SERVERS = [
   'https://router.project-osrm.org',
@@ -58,34 +58,36 @@ const createFallbackResponse = (start: Location, end: Location): RouteResponse =
 };
 
 async function fetchWithTimeout(url: string, timeout: number): Promise<Response> {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(() => {
+    abortController.abort();
+  }, timeout);
 
   try {
     const response = await fetch(url, {
-      signal: controller.signal,
+      signal: abortController.signal,
       headers: {
         'Accept': 'application/json',
         'User-Agent': 'TowingServiceApp/1.0'
-      },
-      mode: 'cors'
+      }
     });
-    clearTimeout(id);
     return response;
-  } catch (error) {
-    clearTimeout(id);
-    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
-async function tryFetchRoute(start: Location, end: Location, serverUrl: string): Promise<RouteResponse> {
+async function tryFetchRoute(start: Location, end: Location, serverUrl: string, retryCount = 0): Promise<RouteResponse> {
   const path = `/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}`;
   const params = '?overview=full&geometries=polyline&alternatives=true';
   const url = `${serverUrl}${path}${params}`;
 
   try {
     const response = await fetchWithTimeout(url, REQUEST_TIMEOUT);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     
     const data = await response.json();
     if (!data.routes || data.routes.length === 0) {
@@ -99,39 +101,53 @@ async function tryFetchRoute(start: Location, end: Location, serverUrl: string):
       geometry: bestRoute.geometry,
     };
   } catch (error) {
-    throw new Error(`Failed to fetch route from ${serverUrl}: ${error.message}`);
+    if (retryCount < MAX_RETRIES) {
+      await wait(RETRY_DELAY);
+      return tryFetchRoute(start, end, serverUrl, retryCount + 1);
+    }
+    throw error;
   }
 }
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
-  let lastError;
-
   for (const serverUrl of OSRM_SERVERS) {
     try {
-      return await tryFetchRoute(start, end, serverUrl);
+      const result = await tryFetchRoute(start, end, serverUrl);
+      await wait(MIN_REQUEST_INTERVAL); // Rate limiting
+      return result;
     } catch (error) {
       console.warn(`Failed to fetch from ${serverUrl}, trying next server...`, error);
-      lastError = error;
-      await wait(RETRY_DELAY);
       continue;
     }
   }
 
-  console.warn('All routing servers failed, using fallback calculation', lastError);
+  console.warn('All routing servers failed, using fallback calculation');
   return createFallbackResponse(start, end);
 };
 
-// New function to get route geometry
 export const getRouteGeometry = async (pickupLocation: Location, dropLocation: Location) => {
-  const routeDetails = await getRouteDetails(pickupLocation, dropLocation);
-  return {
-    companyToPickupDistance: routeDetails.distance,
-    pickupToDropDistance: routeDetails.distance,
-    dropToCompanyDistance: routeDetails.distance,
-    companyToPickupGeometry: routeDetails.geometry,
-    pickupToDropGeometry: routeDetails.geometry,
-    dropToCompanyGeometry: routeDetails.geometry,
-  };
+  try {
+    const route = await getRouteDetails(pickupLocation, dropLocation);
+    return {
+      companyToPickupDistance: route.distance,
+      pickupToDropDistance: route.distance,
+      dropToCompanyDistance: route.distance,
+      companyToPickupGeometry: route.geometry,
+      pickupToDropGeometry: route.geometry,
+      dropToCompanyGeometry: route.geometry,
+    };
+  } catch (error) {
+    console.error('Error getting route geometry:', error);
+    const fallback = createFallbackResponse(pickupLocation, dropLocation);
+    return {
+      companyToPickupDistance: fallback.distance,
+      pickupToDropDistance: fallback.distance,
+      dropToCompanyDistance: fallback.distance,
+      companyToPickupGeometry: fallback.geometry,
+      pickupToDropGeometry: fallback.geometry,
+      dropToCompanyGeometry: fallback.geometry,
+    };
+  }
 };
 
 export const COMPANY_LOCATION = { lat: 26.510272, lng: -100.006323 };
