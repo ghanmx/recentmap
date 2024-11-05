@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { MapControls } from "./MapControls";
 import { RouteStreetInfo } from "./RouteStreetInfo";
 import { showLocationNotification } from "@/utils/notificationUtils";
@@ -38,7 +37,7 @@ export const MapControlPanel = ({
           onPickupClick={() => {
             setSelectingPickup(true);
             setSelectingDrop(false);
-            showLocationNotification('pickup');
+            showLocationNotification('pickup', { lat: 0, lng: 0 });
             toast({
               title: "Seleccionando punto de recogida",
               description: "Haz clic en el mapa para seleccionar el punto de recogida"
@@ -47,7 +46,7 @@ export const MapControlPanel = ({
           onDropClick={() => {
             setSelectingDrop(true);
             setSelectingPickup(false);
-            showLocationNotification('drop');
+            showLocationNotification('drop', { lat: 0, lng: 0 });
             toast({
               title: "Seleccionando punto de entrega",
               description: "Haz clic en el mapa para seleccionar el punto de entrega"
