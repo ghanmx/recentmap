@@ -10,29 +10,29 @@ export const towTruckTypes: Record<string, TowTruckType> = {
   A: {
     name: "Tipo A",
     capacity: "hasta 2000kg",
-    perKm: 25,
-    maneuverCharge: 500,
+    perKm: 18.82,
+    maneuverCharge: 1219.55,
     maxWeight: 2000
   },
   B: {
     name: "Tipo B",
     capacity: "hasta 3000kg",
-    perKm: 35,
-    maneuverCharge: 750,
+    perKm: 20.62,
+    maneuverCharge: 1336.73,
     maxWeight: 3000
   },
   C: {
     name: "Tipo C",
     capacity: "hasta 4000kg",
-    perKm: 45,
-    maneuverCharge: 1000,
+    perKm: 23.47,
+    maneuverCharge: 1524.21,
     maxWeight: 4000
   },
   D: {
     name: "Tipo D",
     capacity: "hasta 8000kg",
-    perKm: 60,
-    maneuverCharge: 1500,
+    perKm: 32.35,
+    maneuverCharge: 2101.65,
     maxWeight: 8000
   }
 };
