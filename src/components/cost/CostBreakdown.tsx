@@ -72,7 +72,7 @@ export const CostBreakdown = ({
               animate={{ opacity: 1 }}
             >
               {renderCostItem(
-                'Banderazo',
+                `Banderazo (${selectedTruck.name})`,
                 selectedTruck.flagDropFee,
                 <Flag className="w-4 h-4 text-primary" />
               )}
@@ -84,7 +84,7 @@ export const CostBreakdown = ({
               animate={{ opacity: 1 }}
             >
               {renderCostItem(
-                `Servicio base (${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km)`,
+                `Servicio base ${selectedTruck.name} (${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km)`,
                 baseCost,
                 <TrendingUp className="w-4 h-4 text-primary" />
               )}
@@ -97,7 +97,7 @@ export const CostBreakdown = ({
                 animate={{ opacity: 1 }}
               >
                 {renderCostItem(
-                  'Cargo por maniobra especial',
+                  `Cargo por maniobra especial (${selectedTruck.name})`,
                   selectedTruck.maneuverCharge,
                   <Truck className="w-4 h-4 text-orange-500" />
                 )}
