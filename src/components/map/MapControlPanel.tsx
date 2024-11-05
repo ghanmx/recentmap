@@ -4,7 +4,7 @@ import { RouteStreetInfo } from "./RouteStreetInfo";
 import { showLocationNotification } from "@/utils/notificationUtils";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface MapControlPanelProps {
   selectingPickup: boolean;
@@ -23,6 +23,8 @@ export const MapControlPanel = ({
   pickupLocation,
   dropLocation,
 }: MapControlPanelProps) => {
+  const { toast } = useToast();
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
@@ -39,7 +41,7 @@ export const MapControlPanel = ({
             showLocationNotification('pickup');
             toast({
               title: "Seleccionando punto de recogida",
-              description: "Haz clic en el mapa para seleccionar el punto de recogida.",
+              description: "Haz clic en el mapa para seleccionar el punto de recogida"
             });
           }}
           onDropClick={() => {
@@ -48,7 +50,7 @@ export const MapControlPanel = ({
             showLocationNotification('drop');
             toast({
               title: "Seleccionando punto de entrega",
-              description: "Haz clic en el mapa para seleccionar el punto de entrega.",
+              description: "Haz clic en el mapa para seleccionar el punto de entrega"
             });
           }}
         />
