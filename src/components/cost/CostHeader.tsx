@@ -9,7 +9,11 @@ interface CostHeaderProps {
   finalCost: number;
 }
 
-export const CostHeader = ({ showBreakdown, setShowBreakdown, finalCost }: CostHeaderProps) => {
+export const CostHeader = ({ 
+  showBreakdown, 
+  setShowBreakdown, 
+  finalCost 
+}: CostHeaderProps) => {
   return (
     <div className="flex items-center justify-between">
       <div>
