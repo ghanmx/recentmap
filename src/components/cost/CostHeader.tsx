@@ -1,28 +1,33 @@
+import { Dispatch, SetStateAction } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { formatCurrency } from "@/utils/priceCalculator";
 import { Button } from "@/components/ui/button";
-import { DollarSign, Info } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-export const CostHeader = () => {
+interface CostHeaderProps {
+  showBreakdown: boolean;
+  setShowBreakdown: Dispatch<SetStateAction<boolean>>;
+  finalCost: number;
+}
+
+export const CostHeader = ({ showBreakdown, setShowBreakdown, finalCost }: CostHeaderProps) => {
   return (
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <div className="bg-primary/10 p-2 rounded-lg">
-          <DollarSign className="w-5 h-5 text-primary" />
-        </div>
-        <div className="text-lg font-semibold text-gray-900">Estimación de Costo</div>
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900">Costo estimado</h3>
+        <p className="text-2xl font-bold text-primary">{formatCurrency(finalCost)}</p>
       </div>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Info className="w-4 h-4 text-gray-500" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Precio fijo garantizado sin cargos ocultos</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setShowBreakdown(!showBreakdown)}
+        className="text-gray-500 hover:text-gray-700"
+      >
+        {showBreakdown ? (
+          <ChevronUp className="h-4 w-4" />
+        ) : (
+          <ChevronDown className="h-4 w-4" />
+        )}
+      </Button>
     </div>
   );
 };
