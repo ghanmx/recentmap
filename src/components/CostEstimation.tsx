@@ -25,8 +25,9 @@ export const CostEstimation = () => {
 
   const selectedTruck = towTruckTypes[truckType || 'A'];
   const baseCost = totalDistance * selectedTruck.perKm;
+  const flagDropFee = selectedTruck.flagDropFee;
   const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0;
-  const subtotal = baseCost + maneuverCost + totalTollCost;
+  const subtotal = baseCost + maneuverCost + totalTollCost + flagDropFee;
   const tax = requiresInvoice ? subtotal * 0.16 : 0;
   const finalCost = subtotal + tax;
 
@@ -86,6 +87,7 @@ export const CostEstimation = () => {
 
             <CostBreakdown
               baseCost={baseCost}
+              flagDropFee={flagDropFee}
               tax={tax}
               totalDistance={totalDistance}
               totalTollCost={totalTollCost}

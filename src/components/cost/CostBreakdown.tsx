@@ -2,10 +2,11 @@ import { Button } from "@/components/ui/button";
 import { TowTruckType } from "@/utils/towTruckPricing";
 import { formatCurrency } from "@/utils/priceCalculator";
 import { Card } from "@/components/ui/card";
-import { Receipt, Truck, TrendingUp } from "lucide-react";
+import { Receipt, Truck, TrendingUp, Flag } from "lucide-react";
 
 interface CostBreakdownProps {
   baseCost: number;
+  flagDropFee: number;
   tax: number;
   totalDistance: number;
   totalTollCost: number;
@@ -20,6 +21,7 @@ interface CostBreakdownProps {
 
 export const CostBreakdown = ({
   baseCost,
+  flagDropFee,
   tax,
   totalDistance,
   totalTollCost,
@@ -47,6 +49,12 @@ export const CostBreakdown = ({
         <div className="text-lg font-semibold text-gray-800 mb-4">Desglose de costos:</div>
         
         <div className="space-y-3 border-t pt-3">
+          {renderCostItem(
+            'Banderazo',
+            flagDropFee,
+            <Flag className="w-4 h-4 text-primary" />
+          )}
+
           {renderCostItem(
             `Servicio base - ${selectedTruck.name} (${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km)`,
             baseCost,
