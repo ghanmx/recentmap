@@ -73,7 +73,7 @@ export const CostBreakdown = ({
             >
               {renderCostItem(
                 'Banderazo',
-                flagDropFee,
+                selectedTruck.flagDropFee,
                 <Flag className="w-4 h-4 text-primary" />
               )}
             </motion.div>
@@ -98,7 +98,7 @@ export const CostBreakdown = ({
               >
                 {renderCostItem(
                   'Cargo por maniobra especial',
-                  maneuverCost,
+                  selectedTruck.maneuverCharge,
                   <Truck className="w-4 h-4 text-orange-500" />
                 )}
               </motion.div>
