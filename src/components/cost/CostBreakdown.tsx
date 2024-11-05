@@ -48,7 +48,7 @@ export const CostBreakdown = ({
         
         <div className="space-y-3 border-t pt-3">
           {renderCostItem(
-            `Servicio base (${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km)`,
+            `Servicio base - ${selectedTruck.name} (${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km)`,
             baseCost,
             <TrendingUp className="w-4 h-4 text-primary" />
           )}
