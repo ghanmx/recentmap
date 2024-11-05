@@ -27,7 +27,11 @@ export const CostEstimation = () => {
   const baseCost = totalDistance * selectedTruck.perKm;
   const flagDropFee = selectedTruck.flagDropFee;
   const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0;
-  const subtotal = baseCost + maneuverCost + totalTollCost + flagDropFee;
+  
+  // Calculate subtotal including all charges before tax
+  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost;
+  
+  // Calculate IVA (16%) on the entire subtotal if invoice is required
   const tax = requiresInvoice ? subtotal * 0.16 : 0;
   const finalCost = subtotal + tax;
 
@@ -44,16 +48,25 @@ export const CostEstimation = () => {
     if (requiresInvoice) {
       toast({
         title: "IVA aplicado",
-        description: "Se ha agregado el 16% de IVA al total",
+        description: `Se ha agregado el 16% de IVA al subtotal (${(subtotal * 0.16).toFixed(2)} MXN)`,
       });
     }
-  }, [requiresInvoice]);
+  }, [requiresInvoice, subtotal]);
+
+  useEffect(() => {
+    toast({
+      title: "Tipo de grúa seleccionado",
+      description: `${selectedTruck.name} - Capacidad máxima: ${selectedTruck.maxWeight.toLocaleString()} kg`,
+    });
+  }, [truckType, selectedTruck]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-br from-white/95 via-blue-50/30 to-white backdrop-blur-sm rounded-lg shadow-lg p-6 space-y-6 border border-blue-100/50 hover:shadow-xl transition-all duration-300 sm:mx-4 md:mx-0"
+      className={`bg-gradient-to-br from-white/95 via-blue-50/30 to-white backdrop-blur-sm rounded-lg shadow-lg p-6 space-y-6 border border-blue-100/50 hover:shadow-xl transition-all duration-300 sm:mx-4 md:mx-0 ${
+        truckType === 'D' ? 'border-orange-200' : 'border-blue-100/50'
+      }`}
     >
       <CostHeader 
         showBreakdown={showBreakdown}
@@ -98,6 +111,7 @@ export const CostEstimation = () => {
               maneuverCost={maneuverCost}
               requiresManeuver={requiresManeuver}
               selectedTruck={selectedTruck}
+              subtotal={subtotal}
             />
           </motion.div>
         )}

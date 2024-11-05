@@ -17,6 +17,7 @@ interface CostBreakdownProps {
   maneuverCost: number;
   requiresManeuver: boolean;
   selectedTruck: TowTruckType;
+  subtotal: number;
 }
 
 export const CostBreakdown = ({
@@ -32,6 +33,7 @@ export const CostBreakdown = ({
   maneuverCost,
   requiresManeuver,
   selectedTruck,
+  subtotal,
 }: CostBreakdownProps) => {
   const renderCostItem = (label: string, amount: number, icon?: React.ReactNode, indent: boolean = false) => (
     <div className={`flex justify-between items-center text-sm text-gray-600 ${indent ? 'pl-4' : ''}`}>
@@ -46,7 +48,10 @@ export const CostBreakdown = ({
   return (
     <Card className="p-4 space-y-4 bg-white/50">
       <div className="space-y-2">
-        <div className="text-lg font-semibold text-gray-800 mb-4">Desglose de costos:</div>
+        <div className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <Truck className="w-5 h-5 text-primary" />
+          <span>{selectedTruck.name} - {selectedTruck.capacity}</span>
+        </div>
         
         <div className="space-y-3 border-t pt-3">
           {renderCostItem(
@@ -56,7 +61,7 @@ export const CostBreakdown = ({
           )}
 
           {renderCostItem(
-            `Servicio base - ${selectedTruck.name} (${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km)`,
+            `Servicio base (${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km)`,
             baseCost,
             <TrendingUp className="w-4 h-4 text-primary" />
           )}
@@ -80,11 +85,15 @@ export const CostBreakdown = ({
             </>
           )}
 
-          {requiresInvoice && renderCostItem(
-            'IVA (16%)',
-            tax,
-            <Receipt className="w-4 h-4 text-green-500" />
-          )}
+          <div className="border-t pt-2 mt-2">
+            {renderCostItem('Subtotal', subtotal)}
+            
+            {requiresInvoice && renderCostItem(
+              'IVA (16%)',
+              tax,
+              <Receipt className="w-4 h-4 text-green-500" />
+            )}
+          </div>
 
           <div className="border-t pt-3 text-lg font-bold flex justify-between items-center">
             <span>Total</span>
