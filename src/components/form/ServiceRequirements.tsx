@@ -5,12 +5,16 @@ import { UseFormReturn } from "react-hook-form";
 import { FormData } from "@/types/form";
 import { motion } from "framer-motion";
 
-interface ServiceRequirementsProps {
+export interface ServiceRequirementsProps {
   form: UseFormReturn<FormData>;
+  requiresManeuver?: boolean;
+  onManeuverChange?: (checked: boolean) => void;
 }
 
 export const ServiceRequirements = ({ 
-  form
+  form,
+  requiresManeuver,
+  onManeuverChange 
 }: ServiceRequirementsProps) => {
   return (
     <motion.div
