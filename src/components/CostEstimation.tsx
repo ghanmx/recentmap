@@ -60,6 +60,11 @@ export const CostEstimation = () => {
     });
   }, [truckType, selectedTruck]);
 
+  useEffect(() => {
+    console.log('[CostEstimation] Selected truck type:', truckType);
+    console.log('[CostEstimation] Selected truck details:', selectedTruck);
+  }, [truckType, selectedTruck]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

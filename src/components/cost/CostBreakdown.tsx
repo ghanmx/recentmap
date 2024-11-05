@@ -4,6 +4,7 @@ import { formatCurrency } from "@/utils/priceCalculator";
 import { Card } from "@/components/ui/card";
 import { Receipt, Truck, TrendingUp, Flag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 
 interface CostBreakdownProps {
   baseCost: number;
@@ -36,6 +37,18 @@ export const CostBreakdown = ({
   selectedTruck,
   subtotal,
 }: CostBreakdownProps) => {
+  
+  useEffect(() => {
+    console.log('[CostBreakdown] Re-render with selected truck:', selectedTruck);
+    console.log('[CostBreakdown] Current costs:', {
+      baseCost,
+      flagDropFee,
+      maneuverCost,
+      subtotal,
+      finalCost
+    });
+  }, [selectedTruck, baseCost, flagDropFee, maneuverCost, subtotal, finalCost]);
+
   const renderCostItem = (label: string, amount: number, icon?: React.ReactNode, indent: boolean = false) => (
     <motion.div 
       initial={{ opacity: 0, x: -20 }}

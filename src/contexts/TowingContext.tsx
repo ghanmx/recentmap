@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { TOLL_LOCATIONS, TollLocation } from '@/data/tollData';
 
 interface TowingContextType {
@@ -24,6 +24,10 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
   const [truckType, setTruckType] = useState<"A" | "B" | "C" | "D">("A");
   const [requiresManeuver, setRequiresManeuver] = useState(false);
 
+  useEffect(() => {
+    console.log('[TowingContext] Truck Type Updated:', truckType);
+  }, [truckType]);
+
   const updateTowingInfo = (distance: number, cost: number) => {
     setTotalDistance(distance);
     setTotalCost(cost + totalTollCost);
@@ -39,6 +43,7 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateTruckType = (type: "A" | "B" | "C" | "D") => {
+    console.log('[TowingContext] Updating truck type to:', type);
     setTruckType(type);
   };
 

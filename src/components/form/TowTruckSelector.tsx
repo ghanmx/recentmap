@@ -23,6 +23,8 @@ export const TowTruckSelector = ({
   useEffect(() => {
     if (selectedModel) {
       const recommendedType = getTruckTypeForVehicle(selectedModel);
+      console.log('[TowTruckSelector] Selected model:', selectedModel);
+      console.log('[TowTruckSelector] Recommended truck type:', recommendedType);
       form.setValue('truckType', recommendedType);
       onTruckTypeChange?.(recommendedType);
     }
