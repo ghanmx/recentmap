@@ -1,21 +1,16 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertTriangle, Wrench } from "lucide-react";
+import { Wrench } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { FormData } from "@/types/form";
 import { motion } from "framer-motion";
 
 interface ServiceRequirementsProps {
   form: UseFormReturn<FormData>;
-  requiresManeuver: boolean;
-  onManeuverChange: (checked: boolean) => void;
 }
 
 export const ServiceRequirements = ({ 
-  form, 
-  requiresManeuver, 
-  onManeuverChange 
+  form
 }: ServiceRequirementsProps) => {
   return (
     <motion.div
@@ -28,22 +23,6 @@ export const ServiceRequirements = ({
         <Wrench className="w-5 h-5 text-primary animate-spin-slow" />
         <h2>Requerimientos del Servicio</h2>
       </div>
-
-      <motion.div
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
-        className="flex items-center justify-between p-4 bg-white/80 rounded-lg border border-gray-200 hover:border-primary/50 transition-colors"
-      >
-        <FormLabel className="text-gray-700 font-medium cursor-pointer">
-          Requiere Maniobra Especial
-        </FormLabel>
-        <Switch
-          checked={requiresManeuver}
-          onCheckedChange={onManeuverChange}
-          className="data-[state=checked]:bg-primary"
-        />
-      </motion.div>
 
       <FormField
         control={form.control}
