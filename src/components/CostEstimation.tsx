@@ -7,6 +7,7 @@ import { CostHeader } from "./cost/CostHeader";
 import { CostMetrics } from "./cost/CostMetrics";
 import { CostBreakdown } from "./cost/CostBreakdown";
 import { useToast } from "@/hooks/use-toast";
+import { calculateTotalCost } from "@/utils/priceCalculator";
 
 export const CostEstimation = () => {
   const { 
@@ -17,7 +18,6 @@ export const CostEstimation = () => {
     requiresManeuver,
     updateManeuverRequired,
     selectedVehicleModel,
-    updateTruckType
   } = useTowing();
   
   const [showBreakdown, setShowBreakdown] = useState(false);
@@ -32,7 +32,13 @@ export const CostEstimation = () => {
   
   const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost;
   const tax = requiresInvoice ? subtotal * 0.16 : 0;
-  const finalCost = subtotal + tax;
+  const finalCost = calculateTotalCost(
+    totalDistance,
+    truckType,
+    requiresManeuver,
+    totalTollCost,
+    requiresInvoice
+  );
 
   useEffect(() => {
     if (requiresManeuver) {

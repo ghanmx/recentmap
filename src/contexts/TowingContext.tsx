@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { TOLL_LOCATIONS, TollLocation } from '@/data/tollData';
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { TollLocation } from '@/data/tollData';
 
 interface TowingContextType {
   totalDistance: number;
@@ -9,7 +9,7 @@ interface TowingContextType {
   truckType: "A" | "B" | "C" | "D";
   requiresManeuver: boolean;
   selectedVehicleModel: string;
-  updateTowingInfo: (distance: number, cost: number) => void;
+  updateTowingInfo: (distance: number) => void;
   updateTollInfo: (tolls: TollLocation[], tollCost: number) => void;
   updateTruckType: (type: "A" | "B" | "C" | "D") => void;
   updateManeuverRequired: (required: boolean) => void;
@@ -27,26 +27,16 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
   const [requiresManeuver, setRequiresManeuver] = useState(false);
   const [selectedVehicleModel, setSelectedVehicleModel] = useState("");
 
-  useEffect(() => {
-    console.log('[TowingContext] Truck Type Updated:', truckType);
-  }, [truckType]);
-
-  const updateTowingInfo = (distance: number, cost: number) => {
+  const updateTowingInfo = (distance: number) => {
     setTotalDistance(distance);
-    setTotalCost(cost + totalTollCost);
   };
 
   const updateTollInfo = (tolls: TollLocation[], tollCost: number) => {
     setDetectedTolls(tolls);
     setTotalTollCost(tollCost);
-    setTotalCost(prevCost => {
-      const baseCost = prevCost - totalTollCost;
-      return baseCost + tollCost;
-    });
   };
 
   const updateTruckType = (type: "A" | "B" | "C" | "D") => {
-    console.log('[TowingContext] Updating truck type to:', type);
     setTruckType(type);
   };
 

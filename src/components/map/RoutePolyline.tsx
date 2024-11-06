@@ -34,14 +34,14 @@ export const RoutePolyline = ({ pickupLocation, dropLocation, onRouteCalculated 
           const dropToCompany = await getRouteDetails(dropLocation, COMPANY_LOCATION);
           setDropToCompanyRoute(decode(dropToCompany.geometry).map(([lat, lng]) => [lat, lng]));
 
-          // Calculate total distance
+          // Calculate total distance including return to company
           const totalDistance = 
             companyToPickup.distance + 
             pickupToDrop.distance + 
             dropToCompany.distance;
 
           // Update global towing context with total distance
-          updateTowingInfo(totalDistance, 0); // Price will be calculated elsewhere
+          updateTowingInfo(totalDistance);
           onRouteCalculated?.(totalDistance);
           showRouteNotification(totalDistance);
         } catch (error) {
