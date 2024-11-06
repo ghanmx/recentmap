@@ -39,20 +39,20 @@ const Sidebar = () => {
 
       <div className="p-6 overflow-y-auto">
         <div className="space-y-6 flex flex-col items-center">
-          <VehicleForm
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-            pickupAddress={pickupAddress}
-            dropAddress={dropAddress}
-            serviceType="standard"
-            onManeuverChange={() => {}}
-            onVehicleModelChange={() => {}}
-            onPickupSelect={handlePickupSelect}
-            onDropSelect={handleDropSelect}
-            onSelectingPickup={setSelectingPickup}
-            onSelectingDrop={setSelectingDrop}
-          />
           <TowingProvider>
+            <VehicleForm
+              pickupLocation={pickupLocation}
+              dropLocation={dropLocation}
+              pickupAddress={pickupAddress}
+              dropAddress={dropAddress}
+              serviceType="standard"
+              onManeuverChange={() => {}}
+              onVehicleModelChange={() => {}}
+              onPickupSelect={handlePickupSelect}
+              onDropSelect={handleDropSelect}
+              onSelectingPickup={setSelectingPickup}
+              onSelectingDrop={setSelectingDrop}
+            />
             <CostEstimation />
             <RouteDisplay
               pickupLocation={pickupLocation}

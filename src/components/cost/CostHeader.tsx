@@ -1,45 +1,49 @@
-import { Dispatch, SetStateAction } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { formatCurrency } from "@/utils/priceCalculator";
 import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/utils/priceCalculator";
 import { motion } from "framer-motion";
 
-interface CostHeaderProps {
+export interface CostHeaderProps {
   showBreakdown: boolean;
-  setShowBreakdown: Dispatch<SetStateAction<boolean>>;
+  setShowBreakdown: (show: boolean) => void;
   finalCost: number;
+  truckType: "A" | "B" | "C" | "D";
 }
 
-export const CostHeader = ({ 
-  showBreakdown, 
-  setShowBreakdown, 
-  finalCost 
+export const CostHeader = ({
+  showBreakdown,
+  setShowBreakdown,
+  finalCost,
+  truckType,
 }: CostHeaderProps) => {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex justify-between items-center">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900">Costo estimado</h3>
-        <motion.p 
+        <h2 className="text-xl font-semibold text-gray-800">Costo Estimado</h2>
+        <p className="text-sm text-gray-600">Grúa Tipo {truckType}</p>
+      </div>
+      <div className="flex items-center gap-4">
+        <motion.div
           key={finalCost}
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="text-2xl font-bold bg-gradient-to-r from-primary via-primary-light to-primary bg-clip-text text-transparent"
+          className={`text-2xl font-bold ${truckType === 'D' ? 'text-orange-500' : 'text-primary'}`}
         >
           {formatCurrency(finalCost)}
-        </motion.p>
+        </motion.div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setShowBreakdown(!showBreakdown)}
+          className="hover:bg-primary/10"
+        >
+          {showBreakdown ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
+        </Button>
       </div>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setShowBreakdown(!showBreakdown)}
-        className="text-gray-500 hover:text-gray-700 transition-colors"
-      >
-        {showBreakdown ? (
-          <ChevronUp className="h-4 w-4" />
-        ) : (
-          <ChevronDown className="h-4 w-4" />
-        )}
-      </Button>
     </div>
   );
 };

@@ -1,14 +1,15 @@
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Card } from "@/components/ui/card";
-import { FileText, Truck } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { TowTruckType } from "@/utils/towTruckPricing";
+import { motion } from "framer-motion";
 
-interface CostMetricsProps {
+export interface CostMetricsProps {
   totalDistance: number;
   requiresInvoice: boolean;
-  setRequiresInvoice: (value: boolean) => void;
+  setRequiresInvoice: (requires: boolean) => void;
   requiresManeuver: boolean;
   onManeuverChange: (checked: boolean) => void;
+  selectedTruck: TowTruckType;
 }
 
 export const CostMetrics = ({
@@ -16,40 +17,37 @@ export const CostMetrics = ({
   requiresInvoice,
   setRequiresInvoice,
   requiresManeuver,
-  onManeuverChange
+  onManeuverChange,
+  selectedTruck,
 }: CostMetricsProps) => {
   return (
-    <Card className="p-4 space-y-4 bg-white/50">
-      <div className="flex justify-between items-center">
-        <span className="text-gray-700">Distancia total:</span>
-        <span className="font-semibold">{totalDistance.toFixed(2)} km</span>
-      </div>
-      
-      <div className="flex items-center justify-between space-x-2">
-        <div className="flex items-center space-x-2">
-          <FileText className="w-4 h-4 text-primary" />
-          <Label htmlFor="invoice-required">Requiere factura (+16% IVA)</Label>
-        </div>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <div className="flex items-center justify-between space-x-2 p-4 bg-white/50 rounded-lg">
+        <Label htmlFor="invoice" className="text-sm">Requiere factura (IVA 16%)</Label>
         <Switch
-          id="invoice-required"
+          id="invoice"
           checked={requiresInvoice}
           onCheckedChange={setRequiresInvoice}
-          className="data-[state=checked]:bg-primary"
         />
       </div>
 
-      <div className="flex items-center justify-between space-x-2">
-        <div className="flex items-center space-x-2">
-          <Truck className="w-4 h-4 text-primary" />
-          <Label htmlFor="maneuver-required">Requiere maniobra especial</Label>
-        </div>
+      <div className="flex items-center justify-between space-x-2 p-4 bg-white/50 rounded-lg">
+        <Label htmlFor="maneuver" className="text-sm">
+          Requiere maniobra especial
+          <span className="block text-xs text-gray-500">
+            +{selectedTruck.maneuverCharge.toFixed(2)} MXN
+          </span>
+        </Label>
         <Switch
-          id="maneuver-required"
+          id="maneuver"
           checked={requiresManeuver}
           onCheckedChange={onManeuverChange}
-          className="data-[state=checked]:bg-primary"
         />
       </div>
-    </Card>
+    </motion.div>
   );
 };
