@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { TowTruckType } from "@/utils/towTruckPricing";
 import { formatCurrency } from "@/utils/priceCalculator";
 import { Card } from "@/components/ui/card";
-import { Receipt, Truck, TrendingUp, Flag } from "lucide-react";
+import { Receipt, Truck, TrendingUp, Flag, Calculator } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 
@@ -39,7 +39,7 @@ export const CostBreakdown = ({
 }: CostBreakdownProps) => {
   
   useEffect(() => {
-    console.log('[CostBreakdown] Re-render with selected truck:', selectedTruck);
+    console.log('[CostBreakdown] Selected truck updated:', selectedTruck);
     console.log('[CostBreakdown] Current costs:', {
       baseCost,
       flagDropFee,
@@ -48,6 +48,27 @@ export const CostBreakdown = ({
       finalCost
     });
   }, [selectedTruck, baseCost, flagDropFee, maneuverCost, subtotal, finalCost]);
+
+  const renderCostFormula = () => (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="text-sm text-gray-600 bg-blue-50/50 p-3 rounded-lg mt-2"
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <Calculator className="w-4 h-4 text-primary" />
+        <span className="font-medium">Fórmula de cálculo:</span>
+      </div>
+      <div className="pl-6 space-y-1">
+        <p>• Distancia × Tarifa ({formatCurrency(selectedTruck.perKm)}/km)</p>
+        <p>• Banderazo: {formatCurrency(selectedTruck.flagDropFee)}</p>
+        {requiresManeuver && (
+          <p>• Cargo por maniobra: {formatCurrency(selectedTruck.maneuverCharge)}</p>
+        )}
+        {requiresInvoice && <p>• IVA: 16% del subtotal</p>}
+      </div>
+    </motion.div>
+  );
 
   const renderCostItem = (label: string, amount: number, icon?: React.ReactNode, indent: boolean = false) => (
     <motion.div 
@@ -71,14 +92,17 @@ export const CostBreakdown = ({
           key={selectedTruck.name}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"
+          className="space-y-2"
         >
-          <Truck className={`w-5 h-5 ${selectedTruck.name === 'Tipo D' ? 'text-orange-500' : 'text-primary'}`} />
-          <span>{selectedTruck.name} - {selectedTruck.capacity}</span>
+          <div className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <Truck className={`w-5 h-5 ${selectedTruck.name === 'Tipo D' ? 'text-orange-500' : 'text-primary'}`} />
+            <span>{selectedTruck.name} - Capacidad: {selectedTruck.maxWeight.toLocaleString()} kg</span>
+          </div>
+          {renderCostFormula()}
         </motion.div>
         
         <AnimatePresence mode="wait">
-          <div className="space-y-3 border-t pt-3">
+          <div className="space-y-3 border-t pt-3 mt-2">
             <motion.div
               key={`flag-${selectedTruck.name}`}
               initial={{ opacity: 0 }}
@@ -125,10 +149,16 @@ export const CostBreakdown = ({
               >
                 <div className="text-sm text-gray-600 font-medium flex items-center gap-2">
                   <Receipt className="w-4 h-4 text-primary" />
-                  Peajes:
+                  Peajes detectados:
                 </div>
                 {detectedTolls.map((toll, index) => (
-                  renderCostItem(toll.name, toll.cost, undefined, true)
+                  <motion.div
+                    key={`toll-${index}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    {renderCostItem(toll.name, toll.cost, undefined, true)}
+                  </motion.div>
                 ))}
                 {renderCostItem('Total peajes', totalTollCost)}
               </motion.div>
@@ -155,7 +185,7 @@ export const CostBreakdown = ({
               animate={{ opacity: 1 }}
               className="border-t pt-3 text-lg font-bold flex justify-between items-center"
             >
-              <span>Total</span>
+              <span>Total Final</span>
               <span className={`${selectedTruck.name === 'Tipo D' ? 'text-orange-500' : 'text-primary'}`}>
                 {formatCurrency(finalCost)}
               </span>
