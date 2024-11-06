@@ -2,7 +2,7 @@ import { TowingProvider } from './contexts/TowingContext';
 import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from './components/ui/toaster';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Index } from './pages/Index';
+import Index from './pages/Index';
 
 const queryClient = new QueryClient();
 

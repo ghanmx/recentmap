@@ -3,7 +3,7 @@ import { Menu, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import VehicleForm from "./VehicleForm";
+import { VehicleForm } from "./VehicleForm";
 import { RouteDisplay } from "./map/RouteDisplay";
 import { CostEstimation } from "./CostEstimation";
 import { useSidebar } from "@/contexts/SidebarContext";
