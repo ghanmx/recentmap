@@ -7,6 +7,7 @@ import VehicleForm from "./VehicleForm";
 import { RouteDisplay } from "./map/RouteDisplay";
 import { CostEstimation } from "./CostEstimation";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { TowingProvider } from "@/contexts/TowingContext";
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -51,11 +52,13 @@ const Sidebar = () => {
             onSelectingPickup={setSelectingPickup}
             onSelectingDrop={setSelectingDrop}
           />
-          <CostEstimation />
-          <RouteDisplay
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-          />
+          <TowingProvider>
+            <CostEstimation />
+            <RouteDisplay
+              pickupLocation={pickupLocation}
+              dropLocation={dropLocation}
+            />
+          </TowingProvider>
         </div>
       </div>
     </>
