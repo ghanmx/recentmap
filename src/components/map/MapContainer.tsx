@@ -8,9 +8,11 @@ import { enterpriseIcon, pickupIcon, dropIcon } from "@/utils/mapUtils";
 import { COMPANY_LOCATION } from "@/services/routeService";
 import { Marker, Popup, useMap } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { LatLngTuple, LatLngBounds } from "leaflet";
 import { useToast } from "@/components/ui/use-toast";
+
+const NOTIFICATION_COOLDOWN = 3000; // 3 seconds cooldown between notifications
 
 const MapUpdater = ({ 
   pickupLocation, 
@@ -21,18 +23,24 @@ const MapUpdater = ({
 }) => {
   const map = useMap();
   const { toast } = useToast();
+  const lastToastTime = useRef(0);
 
   useEffect(() => {
+    const now = Date.now();
     if (pickupLocation && dropLocation) {
       const bounds = new LatLngBounds(
         [pickupLocation.lat, pickupLocation.lng],
         [dropLocation.lat, dropLocation.lng]
       );
       map.fitBounds(bounds, { padding: [50, 50] });
-      toast({
-        title: "Ruta actualizada",
-        description: "El mapa se ha ajustado para mostrar la ruta completa",
-      });
+      
+      if (now - lastToastTime.current > NOTIFICATION_COOLDOWN) {
+        toast({
+          title: "Ruta actualizada",
+          description: "El mapa se ha ajustado para mostrar la ruta completa",
+        });
+        lastToastTime.current = now;
+      }
     } else if (pickupLocation) {
       map.setView([pickupLocation.lat, pickupLocation.lng], 15);
     } else if (dropLocation) {
@@ -65,21 +73,32 @@ export const MapContainerComponent = ({
   onRouteCalculated
 }: MapContainerComponentProps) => {
   const { toast } = useToast();
+  const lastToastTime = useRef(0);
   
   const handleLocationSelect = async (location: { lat: number; lng: number }) => {
     try {
-      const address = await getAddressFromCoordinates(location.lat, location.lng);
-      onLocationSelect(location);
-      toast({
-        title: selectingPickup ? "Punto de recogida seleccionado" : "Punto de entrega seleccionado",
-        description: address,
-      });
+      const now = Date.now();
+      if (now - lastToastTime.current > NOTIFICATION_COOLDOWN) {
+        const address = await getAddressFromCoordinates(location.lat, location.lng);
+        onLocationSelect(location);
+        toast({
+          title: selectingPickup ? "Punto de recogida seleccionado" : "Punto de entrega seleccionado",
+          description: address,
+        });
+        lastToastTime.current = now;
+      } else {
+        onLocationSelect(location);
+      }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo obtener la dirección",
-        variant: "destructive",
-      });
+      const now = Date.now();
+      if (now - lastToastTime.current > NOTIFICATION_COOLDOWN) {
+        toast({
+          title: "Error",
+          description: "No se pudo obtener la dirección",
+          variant: "destructive",
+        });
+        lastToastTime.current = now;
+      }
     }
   };
 
