@@ -7,6 +7,7 @@ import { LocationSelector } from "./form/LocationSelector";
 import { FormData, formSchema } from "@/types/form";
 import { Card } from "./ui/card";
 import { useTowing } from "@/contexts/TowingContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface VehicleFormProps {
   pickupLocation?: { lat: number; lng: number } | null;
@@ -36,6 +37,7 @@ export const VehicleForm = ({
   onSelectingDrop
 }: VehicleFormProps) => {
   const { updateSelectedVehicleModel, updateTruckType } = useTowing();
+  const { toast } = useToast();
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -50,15 +52,31 @@ export const VehicleForm = ({
     form.setValue("vehicleModel", value);
     updateSelectedVehicleModel(value);
     onVehicleModelChange?.();
+    
+    toast({
+      title: "Vehicle Model Updated",
+      description: `Selected vehicle model: ${value}`,
+    });
   };
 
   const handleTruckTypeChange = (value: "A" | "B" | "C" | "D") => {
     form.setValue("truckType", value);
     updateTruckType(value);
+    
+    toast({
+      title: "Tow Truck Type Updated",
+      description: `Selected truck type: ${value}`,
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const formData = form.getValues();
+    
+    toast({
+      title: "Form Submitted",
+      description: "Vehicle and location details have been saved",
+    });
   };
 
   return (
