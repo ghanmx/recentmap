@@ -1,7 +1,7 @@
 const OSRM_API_URLS = [
+  'https://routing.openstreetmap.de/routed-car/route/v1',
   'https://router.project-osrm.org/route/v1',
-  'http://router.project-osrm.org/route/v1',
-  'https://routing.openstreetmap.de/routed-car/route/v1'
+  'http://router.project-osrm.org/route/v1'
 ];
 
 const BASE_DELAY = 1000;
@@ -39,16 +39,26 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
   for (const baseUrl of urls) {
     try {
       await delay(calculateDelay(retryCount));
-      const response = await fetch(`${baseUrl}/driving/${coordinates}?overview=full&geometries=polyline`, {
+      const url = `${baseUrl}/driving/${coordinates}?overview=full&geometries=polyline`;
+      console.log('Attempting to fetch from:', url); // Debug log
+      
+      const response = await fetch(url, {
         ...options,
         mode: 'cors',
-        credentials: 'omit'
+        credentials: 'omit',
+        headers: {
+          ...options.headers,
+          'Accept': 'application/json',
+          'User-Agent': 'TowingServiceApplication/1.0'
+        }
       });
 
       if (response.ok) {
         return response;
       }
 
+      console.warn(`Failed response from ${baseUrl}:`, response.status); // Debug log
+      
       if (response.status === 429 && retryCount < MAX_RETRIES) {
         continue;
       }
@@ -59,6 +69,7 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
   }
 
   if (retryCount < MAX_RETRIES) {
+    console.log('Retrying with attempt:', retryCount + 1); // Debug log
     return tryFetchWithUrls(urls, coordinates, options, retryCount + 1);
   }
 
