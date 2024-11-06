@@ -37,7 +37,7 @@ export const CostEstimation = () => {
   useEffect(() => {
     if (requiresManeuver) {
       toast({
-        title: `Cargo por maniobra aplicado para grúa ${selectedTruck.name}`,
+        title: `Cargo por maniobra aplicado para ${selectedTruck.name}`,
         description: `Se ha agregado un cargo de ${selectedTruck.maneuverCharge.toFixed(2)} MXN por maniobra especial`,
       });
     }
@@ -55,7 +55,7 @@ export const CostEstimation = () => {
   useEffect(() => {
     toast({
       title: `${selectedTruck.name} seleccionada`,
-      description: `Capacidad máxima: ${selectedTruck.maxWeight.toLocaleString()} kg - Tarifa por km: ${selectedTruck.perKm.toFixed(2)} MXN`,
+      description: `Tarifa base: ${selectedTruck.perKm.toFixed(2)} MXN/km - Banderazo: ${selectedTruck.flagDropFee.toFixed(2)} MXN`,
     });
   }, [truckType, selectedTruck]);
 
@@ -94,7 +94,7 @@ export const CostEstimation = () => {
                   if (checked) {
                     toast({
                       title: "Maniobra especial requerida",
-                      description: `Se aplicará un cargo adicional de ${selectedTruck.maneuverCharge.toFixed(2)} MXN`,
+                      description: `Se aplicará un cargo adicional de ${selectedTruck.maneuverCharge.toFixed(2)} MXN para ${selectedTruck.name}`,
                     });
                   }
                 }}
@@ -130,7 +130,7 @@ export const CostEstimation = () => {
               setShowPaymentWindow(false);
               toast({
                 title: "Pago procesado",
-                description: "El pago se ha procesado correctamente",
+                description: `Pago de ${finalCost.toFixed(2)} MXN procesado exitosamente para ${selectedTruck.name}`,
               });
             }
           }}

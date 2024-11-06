@@ -23,7 +23,7 @@ export const CostHeader = ({
     <div className="flex justify-between items-center">
       <div>
         <h2 className="text-xl font-semibold text-gray-800">Costo Estimado</h2>
-        <p className="text-sm text-gray-600">{selectedTruck.name}</p>
+        <p className="text-sm text-gray-600">{selectedTruck.name} - {selectedTruck.capacity}</p>
       </div>
       <div className="flex items-center gap-4">
         <motion.div

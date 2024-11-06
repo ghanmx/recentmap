@@ -7,6 +7,7 @@ import { UseFormReturn } from "react-hook-form";
 import { FormData } from "@/types/form";
 import { motion } from "framer-motion";
 import { useTowing } from "@/contexts/TowingContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface TowTruckSelectorProps {
   form: UseFormReturn<FormData>;
@@ -22,6 +23,7 @@ export const TowTruckSelector = ({
   selectedModel 
 }: TowTruckSelectorProps) => {
   const { updateTruckType } = useTowing();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (selectedModel) {
@@ -29,6 +31,11 @@ export const TowTruckSelector = ({
       form.setValue('truckType', recommendedType);
       onTruckTypeChange?.(recommendedType);
       updateTruckType(recommendedType);
+      
+      toast({
+        title: "Tipo de grúa recomendado",
+        description: `Se ha seleccionado ${towTruckTypes[recommendedType].name} basado en el modelo ${selectedModel}`,
+      });
     }
   }, [selectedModel, form, onTruckTypeChange, updateTruckType]);
 
@@ -55,6 +62,12 @@ export const TowTruckSelector = ({
                   field.onChange(truckType);
                   onTruckTypeChange?.(truckType);
                   updateTruckType(truckType);
+                  
+                  const selectedTruckInfo = towTruckTypes[truckType];
+                  toast({
+                    title: `${selectedTruckInfo.name} seleccionada`,
+                    description: `Capacidad máxima: ${selectedTruckInfo.maxWeight.toLocaleString()} kg - Tarifa: ${selectedTruckInfo.perKm.toFixed(2)} MXN/km`,
+                  });
                 }}
                 value={field.value}
                 className="flex flex-col space-y-3"
@@ -69,7 +82,7 @@ export const TowTruckSelector = ({
                   >
                     <RadioGroupItem value={key} id={key} className="border-primary" />
                     <div className="flex items-center gap-2">
-                      <Truck className="w-5 h-5 text-primary" />
+                      <Truck className={`w-5 h-5 ${key === 'D' ? 'text-orange-500' : 'text-primary'}`} />
                       <span className="font-medium">
                         {type.name} (hasta {type.maxWeight.toLocaleString()}kg)
                       </span>
