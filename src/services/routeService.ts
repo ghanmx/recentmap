@@ -36,7 +36,8 @@ const createFallbackResponse = (start: Location, end: Location): RouteResponse =
   return {
     distance,
     duration: (distance / FALLBACK_SPEED_KMH) * 60,
-    geometry: `_p~iF~ps|U_ulLnnqC_mqNvxq`@`
+    // Using a simple encoded polyline for fallback
+    geometry: '_p~iF~ps|U'
   };
 };
 
@@ -60,7 +61,7 @@ async function fetchWithTimeout(url: string, timeout: number): Promise<Response>
       signal: controller.signal,
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'MRGruas-TowingService/1.0 (https://mrgruas.com)',
+        'User-Agent': 'MRGruas-TowingService/1.0',
         'Referer': 'https://mrgruas.com'
       }
     });
@@ -130,7 +131,7 @@ async function tryFetchRoute(start: Location, end: Location, serverUrl: string, 
 }
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const request = async () => {
       for (const serverUrl of OSRM_SERVERS) {
         try {
