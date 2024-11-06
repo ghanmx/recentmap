@@ -13,12 +13,11 @@ interface OSRMResponse {
   }[];
 }
 
-// Renamed from getRouteDetails to getRouteFromOSRM and exported
-export const getRouteFromOSRM = async (start: Coordinates, end: Coordinates): Promise<{
+export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Promise<{
   distance: number;
   duration: number;
   geometry: string;
-}> => {
+}> {
   try {
     const response = await fetch(
       `${OSRM_API_URL}/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`
@@ -43,4 +42,4 @@ export const getRouteFromOSRM = async (start: Coordinates, end: Coordinates): Pr
     console.error('Error fetching route:', error);
     throw error;
   }
-};
+}
