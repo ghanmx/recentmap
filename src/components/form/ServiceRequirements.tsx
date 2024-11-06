@@ -37,7 +37,8 @@ export const ServiceRequirements = ({
             <FormControl>
               <Textarea
                 {...field}
-                placeholder="Por favor, proporcione información detallada sobre el problema de su vehículo. Por ejemplo: 'El auto no arranca, hace ruidos de clic' o 'Llanta ponchada del lado del pasajero'"
+                value={field.value || ''}
+                placeholder="Por favor, proporcione información detallada sobre el problema de su vehículo."
                 className="bg-white/80 border-gray-300 focus:ring-2 ring-primary/20 min-h-[120px] text-gray-800 resize-none"
               />
             </FormControl>

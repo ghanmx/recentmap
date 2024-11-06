@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormData, vehicleFormSchema } from "@/types/form";
+import { FormData, formSchema } from "@/types/form";
 import { useServiceRequest } from "@/hooks/useServiceRequest";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,16 +18,11 @@ export const useVehicleForm = (
   const { mutate: submitRequest, isPending } = useServiceRequest();
 
   const form = useForm<FormData>({
-    resolver: zodResolver(vehicleFormSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
-      vehicleMake: "",
       vehicleModel: "",
-      vehicleYear: new Date().getFullYear(),
-      vehicleColor: "",
-      issueDescription: "",
       truckType: "A",
-      tollFees: 0,
+      issueDescription: "",
     }
   });
 
@@ -42,7 +37,9 @@ export const useVehicleForm = (
     }
 
     submitRequest({
-      ...data,
+      vehicleModel: data.vehicleModel,
+      truckType: data.truckType,
+      issueDescription: data.issueDescription || "",
       pickupLocation,
       dropLocation,
       serviceType,
