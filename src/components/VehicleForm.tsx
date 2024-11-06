@@ -69,19 +69,17 @@ export const VehicleForm = ({
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = form.getValues();
-    
+  // Prevent form submission and handle data
+  const onSubmit = form.handleSubmit((data) => {
     toast({
       title: "Form Submitted",
       description: "Vehicle and location details have been saved",
     });
-  };
+  });
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit} className="space-y-8 w-full">
+      <form onSubmit={onSubmit} className="space-y-8 w-full">
         <Card className="p-6">
           <VehicleSelector 
             form={form} 
