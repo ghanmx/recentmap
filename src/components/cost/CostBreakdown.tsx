@@ -1,10 +1,12 @@
-import { Button } from "@/components/ui/button";
 import { TowTruckType } from "@/utils/towTruckPricing";
 import { formatCurrency } from "@/utils/priceCalculator";
 import { Card } from "@/components/ui/card";
-import { Receipt, Truck, TrendingUp, Flag, Calculator } from "lucide-react";
+import { Receipt, Truck, TrendingUp, Flag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { CostFormulaDisplay } from "./CostFormulaDisplay";
+import { CostItemDisplay } from "./CostItemDisplay";
+import { TruckInfoHeader } from "./TruckInfoHeader";
 
 interface CostBreakdownProps {
   baseCost: number;
@@ -37,54 +39,6 @@ export const CostBreakdown = ({
   selectedTruck,
   subtotal,
 }: CostBreakdownProps) => {
-  
-  useEffect(() => {
-    console.log('[CostBreakdown] Selected truck updated:', selectedTruck);
-    console.log('[CostBreakdown] Current costs:', {
-      baseCost,
-      flagDropFee,
-      maneuverCost,
-      subtotal,
-      finalCost
-    });
-  }, [selectedTruck, baseCost, flagDropFee, maneuverCost, subtotal, finalCost]);
-
-  const renderCostFormula = () => (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="text-sm text-gray-600 bg-blue-50/50 p-3 rounded-lg mt-2"
-    >
-      <div className="flex items-center gap-2 mb-2">
-        <Calculator className="w-4 h-4 text-primary" />
-        <span className="font-medium">Fórmula de cálculo:</span>
-      </div>
-      <div className="pl-6 space-y-1">
-        <p>• Distancia × Tarifa ({formatCurrency(selectedTruck.perKm)}/km)</p>
-        <p>• Banderazo: {formatCurrency(selectedTruck.flagDropFee)}</p>
-        {requiresManeuver && (
-          <p>• Cargo por maniobra: {formatCurrency(selectedTruck.maneuverCharge)}</p>
-        )}
-        {requiresInvoice && <p>• IVA: 16% del subtotal</p>}
-      </div>
-    </motion.div>
-  );
-
-  const renderCostItem = (label: string, amount: number, icon?: React.ReactNode, indent: boolean = false) => (
-    <motion.div 
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
-      className={`flex justify-between items-center text-sm text-gray-600 ${indent ? 'pl-4' : ''}`}
-    >
-      <div className="flex items-center gap-2">
-        {icon}
-        <span>{label}</span>
-      </div>
-      <span className="font-medium">{formatCurrency(amount)}</span>
-    </motion.div>
-  );
-
   return (
     <Card className="p-4 space-y-4 bg-white/50">
       <div className="space-y-2">
@@ -94,51 +48,34 @@ export const CostBreakdown = ({
           animate={{ opacity: 1 }}
           className="space-y-2"
         >
-          <div className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-            <Truck className={`w-5 h-5 ${selectedTruck.name === 'Tipo D' ? 'text-orange-500' : 'text-primary'}`} />
-            <span>{selectedTruck.name} - Capacidad: {selectedTruck.maxWeight.toLocaleString()} kg</span>
-          </div>
-          {renderCostFormula()}
+          <TruckInfoHeader selectedTruck={selectedTruck} />
+          <CostFormulaDisplay 
+            selectedTruck={selectedTruck}
+            requiresManeuver={requiresManeuver}
+            requiresInvoice={requiresInvoice}
+          />
         </motion.div>
         
         <AnimatePresence mode="wait">
           <div className="space-y-3 border-t pt-3 mt-2">
-            <motion.div
-              key={`flag-${selectedTruck.name}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              {renderCostItem(
-                `Banderazo (${selectedTruck.name})`,
-                selectedTruck.flagDropFee,
-                <Flag className="w-4 h-4 text-primary" />
-              )}
-            </motion.div>
+            <CostItemDisplay
+              label={`Banderazo ${selectedTruck.name}`}
+              amount={flagDropFee}
+              icon={<Flag className="w-4 h-4 text-primary" />}
+            />
 
-            <motion.div
-              key={`base-${selectedTruck.name}-${totalDistance}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              {renderCostItem(
-                `Servicio base ${selectedTruck.name} (${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km)`,
-                baseCost,
-                <TrendingUp className="w-4 h-4 text-primary" />
-              )}
-            </motion.div>
+            <CostItemDisplay
+              label={`Servicio base ${selectedTruck.name} (${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km)`}
+              amount={baseCost}
+              icon={<TrendingUp className="w-4 h-4 text-primary" />}
+            />
             
             {requiresManeuver && (
-              <motion.div
-                key={`maneuver-${selectedTruck.name}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                {renderCostItem(
-                  `Cargo por maniobra especial (${selectedTruck.name})`,
-                  selectedTruck.maneuverCharge,
-                  <Truck className="w-4 h-4 text-orange-500" />
-                )}
-              </motion.div>
+              <CostItemDisplay
+                label={`Cargo por maniobra especial (${selectedTruck.name})`}
+                amount={selectedTruck.maneuverCharge}
+                icon={<Truck className="w-4 h-4 text-orange-500" />}
+              />
             )}
 
             {detectedTolls.length > 0 && (
@@ -152,15 +89,17 @@ export const CostBreakdown = ({
                   Peajes detectados:
                 </div>
                 {detectedTolls.map((toll, index) => (
-                  <motion.div
+                  <CostItemDisplay
                     key={`toll-${index}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
-                    {renderCostItem(toll.name, toll.cost, undefined, true)}
-                  </motion.div>
+                    label={toll.name}
+                    amount={toll.cost}
+                    indent
+                  />
                 ))}
-                {renderCostItem('Total peajes', totalTollCost)}
+                <CostItemDisplay
+                  label="Total peajes"
+                  amount={totalTollCost}
+                />
               </motion.div>
             )}
 
@@ -170,12 +109,17 @@ export const CostBreakdown = ({
               animate={{ opacity: 1 }}
               className="border-t pt-2 mt-2"
             >
-              {renderCostItem('Subtotal', subtotal)}
+              <CostItemDisplay
+                label="Subtotal"
+                amount={subtotal}
+              />
               
-              {requiresInvoice && renderCostItem(
-                'IVA (16%)',
-                tax,
-                <Receipt className="w-4 h-4 text-green-500" />
+              {requiresInvoice && (
+                <CostItemDisplay
+                  label="IVA (16%)"
+                  amount={tax}
+                  icon={<Receipt className="w-4 h-4 text-green-500" />}
+                />
               )}
             </motion.div>
 
