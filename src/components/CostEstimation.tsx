@@ -16,7 +16,8 @@ export const CostEstimation = () => {
     truckType, 
     requiresManeuver,
     updateManeuverRequired,
-    selectedVehicleModel
+    selectedVehicleModel,
+    updateTruckType
   } = useTowing();
   
   const [showBreakdown, setShowBreakdown] = useState(false);
@@ -72,6 +73,7 @@ export const CostEstimation = () => {
           setShowBreakdown={setShowBreakdown}
           finalCost={finalCost}
           truckType={truckType}
+          selectedTruck={selectedTruck}
         />
 
         <AnimatePresence>

@@ -6,6 +6,7 @@ import { Truck, AlertTriangle } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { FormData } from "@/types/form";
 import { motion } from "framer-motion";
+import { useTowing } from "@/contexts/TowingContext";
 
 interface TowTruckSelectorProps {
   form: UseFormReturn<FormData>;
@@ -20,15 +21,16 @@ export const TowTruckSelector = ({
   onTollFeesChange, 
   selectedModel 
 }: TowTruckSelectorProps) => {
+  const { updateTruckType } = useTowing();
+
   useEffect(() => {
     if (selectedModel) {
       const recommendedType = getTruckTypeForVehicle(selectedModel);
-      console.log('[TowTruckSelector] Selected model:', selectedModel);
-      console.log('[TowTruckSelector] Recommended truck type:', recommendedType);
       form.setValue('truckType', recommendedType);
       onTruckTypeChange?.(recommendedType);
+      updateTruckType(recommendedType);
     }
-  }, [selectedModel, form, onTruckTypeChange]);
+  }, [selectedModel, form, onTruckTypeChange, updateTruckType]);
 
   return (
     <motion.div
@@ -49,8 +51,10 @@ export const TowTruckSelector = ({
             <FormControl>
               <RadioGroup
                 onValueChange={(value) => {
-                  field.onChange(value);
-                  onTruckTypeChange?.(value as "A" | "B" | "C" | "D");
+                  const truckType = value as "A" | "B" | "C" | "D";
+                  field.onChange(truckType);
+                  onTruckTypeChange?.(truckType);
+                  updateTruckType(truckType);
                 }}
                 value={field.value}
                 className="flex flex-col space-y-3"
@@ -67,7 +71,7 @@ export const TowTruckSelector = ({
                     <div className="flex items-center gap-2">
                       <Truck className="w-5 h-5 text-primary" />
                       <span className="font-medium">
-                        Tipo {key} (hasta {type.maxWeight.toLocaleString()}kg)
+                        {type.name} (hasta {type.maxWeight.toLocaleString()}kg)
                       </span>
                     </div>
                   </motion.div>

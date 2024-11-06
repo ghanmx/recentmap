@@ -2,12 +2,14 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/priceCalculator";
 import { motion } from "framer-motion";
+import { TowTruckType } from "@/utils/towTruckPricing";
 
 export interface CostHeaderProps {
   showBreakdown: boolean;
   setShowBreakdown: (show: boolean) => void;
   finalCost: number;
   truckType: "A" | "B" | "C" | "D";
+  selectedTruck: TowTruckType;
 }
 
 export const CostHeader = ({
@@ -15,12 +17,13 @@ export const CostHeader = ({
   setShowBreakdown,
   finalCost,
   truckType,
+  selectedTruck,
 }: CostHeaderProps) => {
   return (
     <div className="flex justify-between items-center">
       <div>
         <h2 className="text-xl font-semibold text-gray-800">Costo Estimado</h2>
-        <p className="text-sm text-gray-600">Grúa Tipo {truckType}</p>
+        <p className="text-sm text-gray-600">{selectedTruck.name}</p>
       </div>
       <div className="flex items-center gap-4">
         <motion.div
