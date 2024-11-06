@@ -13,7 +13,8 @@ interface OSRMResponse {
   }[];
 }
 
-export const getRouteDetails = async (start: Coordinates, end: Coordinates): Promise<{
+// Renamed from getRouteDetails to getRouteFromOSRM and exported
+export const getRouteFromOSRM = async (start: Coordinates, end: Coordinates): Promise<{
   distance: number;
   duration: number;
   geometry: string;
