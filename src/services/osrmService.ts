@@ -1,8 +1,12 @@
-const OSRM_API_URL = 'https://router.project-osrm.org/route/v1';
-const FALLBACK_OSRM_API_URL = 'http://router.project-osrm.org/route/v1';
-const BASE_DELAY = 1000; // 1 second base delay
+const OSRM_API_URLS = [
+  'https://router.project-osrm.org/route/v1',
+  'http://router.project-osrm.org/route/v1',
+  'https://routing.openstreetmap.de/routed-car/route/v1'
+];
+
+const BASE_DELAY = 1000;
 const MAX_RETRIES = 3;
-const BACKOFF_FACTOR = 1.5; // Exponential backoff factor
+const BACKOFF_FACTOR = 1.5;
 let lastRequestTime = 0;
 
 interface Coordinates {
@@ -19,7 +23,7 @@ interface OSRMResponse {
 }
 
 const calculateDelay = (attempt: number): number => {
-  return Math.min(BASE_DELAY * Math.pow(BACKOFF_FACTOR, attempt), 5000); // Cap at 5 seconds
+  return Math.min(BASE_DELAY * Math.pow(BACKOFF_FACTOR, attempt), 5000);
 };
 
 const delay = async (ms: number) => {
@@ -31,44 +35,34 @@ const delay = async (ms: number) => {
   lastRequestTime = Date.now();
 };
 
-async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_RETRIES, useFallback = false): Promise<Response> {
-  const finalUrl = useFallback ? url.replace('https://', 'http://') : url;
-  
-  try {
-    await delay(calculateDelay(MAX_RETRIES - retries));
-    
-    const response = await fetch(finalUrl, {
-      ...options,
-      mode: 'cors',
-      credentials: 'omit'
-    });
+async function tryFetchWithUrls(urls: string[], coordinates: string, options: RequestInit, retryCount = 0): Promise<Response> {
+  for (const baseUrl of urls) {
+    try {
+      await delay(calculateDelay(retryCount));
+      const response = await fetch(`${baseUrl}/driving/${coordinates}?overview=full&geometries=polyline`, {
+        ...options,
+        mode: 'cors',
+        credentials: 'omit'
+      });
 
-    if (response.status === 429 && retries > 0) {
-      // If rate limited, use exponential backoff
-      await delay(calculateDelay(MAX_RETRIES - retries + 1));
-      return fetchWithRetry(url, options, retries - 1, useFallback);
-    }
+      if (response.ok) {
+        return response;
+      }
 
-    if (!response.ok && !useFallback && retries === MAX_RETRIES) {
-      // If first attempt fails with HTTPS, try HTTP
-      return fetchWithRetry(url, options, retries, true);
+      if (response.status === 429 && retryCount < MAX_RETRIES) {
+        continue;
+      }
+    } catch (error) {
+      console.warn(`Failed to fetch from ${baseUrl}:`, error);
+      continue;
     }
-
-    return response;
-  } catch (error) {
-    if (retries > 0) {
-      // On network error, wait with exponential backoff
-      await delay(calculateDelay(MAX_RETRIES - retries + 1));
-      return fetchWithRetry(url, options, retries - 1, useFallback);
-    }
-    
-    if (!useFallback) {
-      // If HTTPS failed completely, try HTTP as last resort
-      return fetchWithRetry(url, options, MAX_RETRIES, true);
-    }
-    
-    throw new Error('Network error: Unable to connect to routing service. Please check your internet connection.');
   }
+
+  if (retryCount < MAX_RETRIES) {
+    return tryFetchWithUrls(urls, coordinates, options, retryCount + 1);
+  }
+
+  throw new Error('All routing services failed. Please try again later.');
 }
 
 export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Promise<{
@@ -76,24 +70,15 @@ export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Pr
   duration: number;
   geometry: string;
 }> {
+  const coordinates = `${start.lng},${start.lat};${end.lng},${end.lat}`;
+  
   try {
-    const response = await fetchWithRetry(
-      `${OSRM_API_URL}/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`,
-      {
-        headers: {
-          'User-Agent': 'TowingServiceApplication/1.0',
-          'Referer': window.location.origin,
-          'Accept': 'application/json',
-          'Origin': window.location.origin
-        }
+    const response = await tryFetchWithUrls(OSRM_API_URLS, coordinates, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'TowingServiceApplication/1.0'
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(response.status === 429 
-        ? 'Rate limit exceeded. Please try again in a few seconds.'
-        : 'Failed to fetch route data. Please try again.');
-    }
+    });
 
     const data: OSRMResponse = await response.json();
     
