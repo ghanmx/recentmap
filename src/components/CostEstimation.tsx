@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTowing } from "@/contexts/TowingContext";
 import { towTruckTypes } from "@/utils/towTruckPricing";
@@ -23,6 +23,9 @@ export const CostEstimation = () => {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [requiresInvoice, setRequiresInvoice] = useState(false);
   const [showPaymentWindow, setShowPaymentWindow] = useState(false);
+  const [hasShownManeuverToast, setHasShownManeuverToast] = useState(false);
+  const [hasShownInvoiceToast, setHasShownInvoiceToast] = useState(false);
+  const [hasShownTruckToast, setHasShownTruckToast] = useState(false);
   const { toast } = useToast();
 
   const selectedTruck = towTruckTypes[truckType || 'A'];
@@ -41,42 +44,51 @@ export const CostEstimation = () => {
   );
 
   useEffect(() => {
-    if (requiresManeuver) {
+    if (requiresManeuver && !hasShownManeuverToast) {
       toast({
         title: `Cargo por maniobra aplicado para ${selectedTruck.name}`,
         description: `Se ha agregado un cargo de ${selectedTruck.maneuverCharge.toFixed(2)} MXN por maniobra especial`,
       });
+      setHasShownManeuverToast(true);
     }
-  }, [requiresManeuver, selectedTruck]);
+  }, [requiresManeuver, selectedTruck, hasShownManeuverToast, toast]);
 
   useEffect(() => {
-    if (requiresInvoice) {
+    if (requiresInvoice && !hasShownInvoiceToast) {
       toast({
         title: "IVA aplicado",
         description: `Se ha agregado el 16% de IVA al subtotal (${(subtotal * 0.16).toFixed(2)} MXN)`,
       });
+      setHasShownInvoiceToast(true);
     }
-  }, [requiresInvoice, subtotal]);
+  }, [requiresInvoice, subtotal, hasShownInvoiceToast, toast]);
 
   useEffect(() => {
-    toast({
-      title: `${selectedTruck.name} seleccionada`,
-      description: `Tarifa base: ${selectedTruck.perKm.toFixed(2)} MXN/km - Banderazo: ${selectedTruck.flagDropFee.toFixed(2)} MXN`,
-    });
-  }, [truckType, selectedTruck]);
+    if (!hasShownTruckToast) {
+      toast({
+        title: `${selectedTruck.name} seleccionada`,
+        description: `Tarifa base: ${selectedTruck.perKm.toFixed(2)} MXN/km - Banderazo: ${selectedTruck.flagDropFee.toFixed(2)} MXN`,
+      });
+      setHasShownTruckToast(true);
+    }
+  }, [truckType, selectedTruck, hasShownTruckToast, toast]);
+
+  const handleBreakdownToggle = useCallback((value: boolean) => {
+    setShowBreakdown(value);
+  }, []);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
+      className="space-y-6 w-full"
     >
       <div className={`bg-gradient-to-br from-white/95 via-blue-50/30 to-white backdrop-blur-sm rounded-lg shadow-lg p-6 space-y-6 border ${
         truckType === 'D' ? 'border-orange-200' : 'border-blue-100/50'
       }`}>
         <CostHeader 
           showBreakdown={showBreakdown}
-          setShowBreakdown={setShowBreakdown}
+          setShowBreakdown={handleBreakdownToggle}
           finalCost={finalCost}
           truckType={truckType}
           selectedTruck={selectedTruck}
@@ -97,11 +109,12 @@ export const CostEstimation = () => {
                 requiresManeuver={requiresManeuver}
                 onManeuverChange={(checked) => {
                   updateManeuverRequired(checked);
-                  if (checked) {
+                  if (checked && !hasShownManeuverToast) {
                     toast({
                       title: "Maniobra especial requerida",
                       description: `Se aplicará un cargo adicional de ${selectedTruck.maneuverCharge.toFixed(2)} MXN para ${selectedTruck.name}`,
                     });
+                    setHasShownManeuverToast(true);
                   }
                 }}
                 selectedTruck={selectedTruck}

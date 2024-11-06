@@ -7,7 +7,6 @@ import { VehicleForm } from "./VehicleForm";
 import { RouteDisplay } from "./map/RouteDisplay";
 import { CostEstimation } from "./CostEstimation";
 import { useSidebar } from "@/contexts/SidebarContext";
-import { TowingProvider } from "@/contexts/TowingContext";
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -39,26 +38,24 @@ const Sidebar = () => {
 
       <div className="p-6 overflow-y-auto">
         <div className="space-y-6 flex flex-col items-center">
-          <TowingProvider>
-            <VehicleForm
-              pickupLocation={pickupLocation}
-              dropLocation={dropLocation}
-              pickupAddress={pickupAddress}
-              dropAddress={dropAddress}
-              serviceType="standard"
-              onManeuverChange={() => {}}
-              onVehicleModelChange={() => {}}
-              onPickupSelect={handlePickupSelect}
-              onDropSelect={handleDropSelect}
-              onSelectingPickup={setSelectingPickup}
-              onSelectingDrop={setSelectingDrop}
-            />
-            <CostEstimation />
-            <RouteDisplay
-              pickupLocation={pickupLocation}
-              dropLocation={dropLocation}
-            />
-          </TowingProvider>
+          <VehicleForm
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
+            serviceType="standard"
+            onManeuverChange={() => {}}
+            onVehicleModelChange={() => {}}
+            onPickupSelect={handlePickupSelect}
+            onDropSelect={handleDropSelect}
+            onSelectingPickup={setSelectingPickup}
+            onSelectingDrop={setSelectingDrop}
+          />
+          <CostEstimation />
+          <RouteDisplay
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+          />
         </div>
       </div>
     </>

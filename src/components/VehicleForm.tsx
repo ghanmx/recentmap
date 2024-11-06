@@ -4,10 +4,9 @@ import { Form } from "@/components/ui/form";
 import { VehicleSelector } from "./form/VehicleSelector";
 import { TowTruckSelector } from "./form/TowTruckSelector";
 import { LocationSelector } from "./form/LocationSelector";
-import { CostEstimation } from "./CostEstimation";
 import { FormData, formSchema } from "@/types/form";
-import { TowingWrapper } from './TowingWrapper';
 import { Card } from "./ui/card";
+import { useTowing } from "@/contexts/TowingContext";
 
 interface VehicleFormProps {
   pickupLocation?: { lat: number; lng: number } | null;
@@ -36,6 +35,8 @@ export const VehicleForm = ({
   onSelectingPickup,
   onSelectingDrop
 }: VehicleFormProps) => {
+  const { updateSelectedVehicleModel, updateTruckType } = useTowing();
+  
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,28 +46,49 @@ export const VehicleForm = ({
     },
   });
 
+  const handleVehicleModelChange = (value: string) => {
+    form.setValue("vehicleModel", value);
+    updateSelectedVehicleModel(value);
+    onVehicleModelChange?.();
+  };
+
+  const handleTruckTypeChange = (value: "A" | "B" | "C" | "D") => {
+    form.setValue("truckType", value);
+    updateTruckType(value);
+  };
+
   return (
-    <TowingWrapper>
-      <Form {...form}>
-        <form className="space-y-8">
-          <Card className="p-6">
-            <VehicleSelector form={form} />
-          </Card>
+    <Form {...form}>
+      <form className="space-y-8 w-full">
+        <Card className="p-6">
+          <VehicleSelector 
+            form={form} 
+            onVehicleModelChange={handleVehicleModelChange}
+          />
+        </Card>
 
-          <Card className="p-6">
-            <TowTruckSelector
-              form={form}
-              selectedModel={form.watch("vehicleModel")}
-            />
-          </Card>
+        <Card className="p-6">
+          <TowTruckSelector
+            form={form}
+            selectedModel={form.watch("vehicleModel")}
+            onTruckTypeChange={handleTruckTypeChange}
+          />
+        </Card>
 
-          <Card className="p-6">
-            <LocationSelector form={form} />
-          </Card>
-
-          <CostEstimation />
-        </form>
-      </Form>
-    </TowingWrapper>
+        <Card className="p-6">
+          <LocationSelector 
+            form={form}
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
+            onPickupSelect={onPickupSelect}
+            onDropSelect={onDropSelect}
+            onSelectingPickup={onSelectingPickup}
+            onSelectingDrop={onSelectingDrop}
+          />
+        </Card>
+      </form>
+    </Form>
   );
 };
