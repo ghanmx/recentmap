@@ -4,14 +4,13 @@ import { Form } from "@/components/ui/form";
 import { VehicleSelector } from "./form/VehicleSelector";
 import { TowTruckSelector } from "./form/TowTruckSelector";
 import { LocationSelector } from "./form/LocationSelector";
+import { UserInfoFields } from "./form/UserInfoFields";
+import { VehicleBasicFields } from "./form/VehicleBasicFields";
+import { ManeuverField } from "./form/ManeuverField";
 import { FormData, formSchema } from "@/types/form";
 import { Card } from "./ui/card";
 import { useTowing } from "@/contexts/TowingContext";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Switch } from "./ui/switch";
-import { FormField, FormItem, FormLabel, FormControl } from "./ui/form";
 
 interface VehicleFormProps {
   pickupLocation?: { lat: number; lng: number } | null;
@@ -59,7 +58,6 @@ export const VehicleForm = ({
   });
 
   const handleVehicleModelChange = (value: string) => {
-    form.setValue("vehicleModel", value);
     updateSelectedVehicleModel(value);
     onVehicleModelChange?.();
     
@@ -105,92 +103,14 @@ export const VehicleForm = ({
 
         <Card className="p-6">
           <div className="space-y-6">
-            <FormField
-              control={form.control}
-              name="userName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>User Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Enter your name" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="tel" placeholder="Enter your phone number" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="vehicleMake"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Vehicle Make</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Enter vehicle make" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <VehicleSelector 
-              form={form} 
+            <UserInfoFields form={form} />
+            <VehicleBasicFields 
+              form={form}
               onVehicleModelChange={handleVehicleModelChange}
             />
-
-            <FormField
-              control={form.control}
-              name="vehicleYear"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Vehicle Year</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="number" placeholder="Enter vehicle year" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="vehicleColor"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Vehicle Color</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Enter vehicle color" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="requiresManeuver"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Requires Maneuver</FormLabel>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
+            <ManeuverField 
+              form={form}
+              onManeuverChange={onManeuverChange}
             />
           </div>
         </Card>
