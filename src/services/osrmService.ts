@@ -1,7 +1,8 @@
 const OSRM_API_URL = 'https://router.project-osrm.org/route/v1';
-const REQUEST_DELAY = 1100; // Slightly over 1 second to ensure we stay under rate limit
+const FALLBACK_OSRM_API_URL = 'http://router.project-osrm.org/route/v1';
+const BASE_DELAY = 1000; // 1 second base delay
 const MAX_RETRIES = 3;
-const FALLBACK_OSRM_API_URL = 'http://router.project-osrm.org/route/v1'; // Fallback to non-HTTPS
+const BACKOFF_FACTOR = 1.5; // Exponential backoff factor
 let lastRequestTime = 0;
 
 interface Coordinates {
@@ -17,12 +18,25 @@ interface OSRMResponse {
   }[];
 }
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const calculateDelay = (attempt: number): number => {
+  return Math.min(BASE_DELAY * Math.pow(BACKOFF_FACTOR, attempt), 5000); // Cap at 5 seconds
+};
+
+const delay = async (ms: number) => {
+  const now = Date.now();
+  const timeToWait = Math.max(0, ms - (now - lastRequestTime));
+  if (timeToWait > 0) {
+    await new Promise(resolve => setTimeout(resolve, timeToWait));
+  }
+  lastRequestTime = Date.now();
+};
 
 async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_RETRIES, useFallback = false): Promise<Response> {
   const finalUrl = useFallback ? url.replace('https://', 'http://') : url;
   
   try {
+    await delay(calculateDelay(MAX_RETRIES - retries));
+    
     const response = await fetch(finalUrl, {
       ...options,
       mode: 'cors',
@@ -30,8 +44,8 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_R
     });
 
     if (response.status === 429 && retries > 0) {
-      // If rate limited, wait longer and retry
-      await delay(REQUEST_DELAY * 2);
+      // If rate limited, use exponential backoff
+      await delay(calculateDelay(MAX_RETRIES - retries + 1));
       return fetchWithRetry(url, options, retries - 1, useFallback);
     }
 
@@ -43,8 +57,8 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_R
     return response;
   } catch (error) {
     if (retries > 0) {
-      // On network error, wait and retry
-      await delay(REQUEST_DELAY);
+      // On network error, wait with exponential backoff
+      await delay(calculateDelay(MAX_RETRIES - retries + 1));
       return fetchWithRetry(url, options, retries - 1, useFallback);
     }
     
@@ -62,19 +76,7 @@ export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Pr
   duration: number;
   geometry: string;
 }> {
-  // Calculate time to wait
-  const now = Date.now();
-  const timeToWait = Math.max(0, REQUEST_DELAY - (now - lastRequestTime));
-  
-  // Wait if needed
-  if (timeToWait > 0) {
-    await delay(timeToWait);
-  }
-  
   try {
-    // Update last request time
-    lastRequestTime = Date.now();
-
     const response = await fetchWithRetry(
       `${OSRM_API_URL}/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`,
       {
