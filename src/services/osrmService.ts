@@ -1,5 +1,6 @@
 const OSRM_API_URL = 'https://router.project-osrm.org/route/v1';
 const REQUEST_DELAY = 1100; // Slightly over 1 second to ensure we stay under rate limit
+const MAX_RETRIES = 3;
 let lastRequestTime = 0;
 
 interface Coordinates {
@@ -16,6 +17,25 @@ interface OSRMResponse {
 }
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_RETRIES): Promise<Response> {
+  try {
+    const response = await fetch(url, options);
+    if (response.status === 429 && retries > 0) {
+      // If rate limited, wait longer and retry
+      await delay(REQUEST_DELAY * 2);
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    return response;
+  } catch (error) {
+    if (retries > 0) {
+      // On network error, wait and retry
+      await delay(REQUEST_DELAY);
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw new Error('Network error: Unable to connect to routing service. Please check your internet connection.');
+  }
+}
 
 export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Promise<{
   distance: number;
@@ -35,28 +55,29 @@ export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Pr
     // Update last request time
     lastRequestTime = Date.now();
 
-    const response = await fetch(
+    const response = await fetchWithRetry(
       `${OSRM_API_URL}/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=polyline`,
       {
         headers: {
           'User-Agent': 'TowingServiceApplication/1.0',
-          'Referer': window.location.origin
-        }
+          'Referer': window.location.origin,
+          'Accept': 'application/json'
+        },
+        mode: 'cors',
+        cache: 'no-cache'
       }
     );
     
-    if (response.status === 429) {
-      throw new Error('Rate limit exceeded. Please try again in a few seconds.');
-    }
-    
     if (!response.ok) {
-      throw new Error('Failed to fetch route');
+      throw new Error(response.status === 429 
+        ? 'Rate limit exceeded. Please try again in a few seconds.'
+        : 'Failed to fetch route data. Please try again.');
     }
 
     const data: OSRMResponse = await response.json();
     
     if (!data.routes || data.routes.length === 0) {
-      throw new Error('No route found');
+      throw new Error('No route found between the specified locations.');
     }
 
     return {
@@ -66,6 +87,6 @@ export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Pr
     };
   } catch (error) {
     console.error('Error fetching route:', error);
-    throw error;
+    throw error instanceof Error ? error : new Error('An unexpected error occurred while fetching the route.');
   }
 }
