@@ -9,11 +9,15 @@ interface RouteResponse {
   geometry: string;
 }
 
-const MIN_REQUEST_INTERVAL = 1500; // Increased from 1100
+const MIN_REQUEST_INTERVAL = 1500; // 1.5 seconds between requests
 const MAX_RETRIES = 3;
-const RETRY_DELAY = 3000; // Increased from 2000
+const RETRY_DELAY = 3000;
 const FALLBACK_SPEED_KMH = 45;
-const REQUEST_TIMEOUT = 30000; // Increased from 15000
+const REQUEST_TIMEOUT = 30000;
+
+// Queue for managing requests
+let requestQueue: Array<() => Promise<any>> = [];
+let isProcessingQueue = false;
 
 const OSRM_SERVERS = [
   'https://router.project-osrm.org',
@@ -58,23 +62,42 @@ const createFallbackResponse = (start: Location, end: Location): RouteResponse =
 };
 
 async function fetchWithTimeout(url: string, timeout: number): Promise<Response> {
-  const abortController = new AbortController();
-  const timeoutId = setTimeout(() => {
-    abortController.abort();
-  }, timeout);
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
 
   try {
     const response = await fetch(url, {
-      signal: abortController.signal,
+      signal: controller.signal,
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'TowingServiceApp/1.0'
+        'User-Agent': 'MRGruas-TowingService/1.0 (https://mrgruas.com)',
+        'Referer': 'https://mrgruas.com'
       }
     });
     return response;
   } finally {
-    clearTimeout(timeoutId);
+    clearTimeout(id);
   }
+}
+
+async function processQueue() {
+  if (isProcessingQueue || requestQueue.length === 0) return;
+  
+  isProcessingQueue = true;
+  
+  while (requestQueue.length > 0) {
+    const request = requestQueue.shift();
+    if (request) {
+      try {
+        await request();
+      } catch (error) {
+        console.error('Error processing queued request:', error);
+      }
+      await wait(MIN_REQUEST_INTERVAL);
+    }
+  }
+  
+  isProcessingQueue = false;
 }
 
 async function tryFetchRoute(start: Location, end: Location, serverUrl: string, retryCount = 0): Promise<RouteResponse> {
@@ -84,6 +107,14 @@ async function tryFetchRoute(start: Location, end: Location, serverUrl: string, 
 
   try {
     const response = await fetchWithTimeout(url, REQUEST_TIMEOUT);
+    
+    if (response.status === 429) {
+      if (retryCount < MAX_RETRIES) {
+        await wait(RETRY_DELAY * (retryCount + 1)); // Exponential backoff
+        return tryFetchRoute(start, end, serverUrl, retryCount + 1);
+      }
+      throw new Error('Rate limit exceeded after retries');
+    }
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -102,7 +133,7 @@ async function tryFetchRoute(start: Location, end: Location, serverUrl: string, 
     };
   } catch (error) {
     if (retryCount < MAX_RETRIES) {
-      await wait(RETRY_DELAY);
+      await wait(RETRY_DELAY * (retryCount + 1));
       return tryFetchRoute(start, end, serverUrl, retryCount + 1);
     }
     throw error;
@@ -110,19 +141,26 @@ async function tryFetchRoute(start: Location, end: Location, serverUrl: string, 
 }
 
 export const getRouteDetails = async (start: Location, end: Location): Promise<RouteResponse> => {
-  for (const serverUrl of OSRM_SERVERS) {
-    try {
-      const result = await tryFetchRoute(start, end, serverUrl);
-      await wait(MIN_REQUEST_INTERVAL); // Rate limiting
-      return result;
-    } catch (error) {
-      console.warn(`Failed to fetch from ${serverUrl}, trying next server...`, error);
-      continue;
-    }
-  }
+  return new Promise((resolve, reject) => {
+    const request = async () => {
+      for (const serverUrl of OSRM_SERVERS) {
+        try {
+          const result = await tryFetchRoute(start, end, serverUrl);
+          resolve(result);
+          return;
+        } catch (error) {
+          console.warn(`Failed to fetch from ${serverUrl}, trying next server...`, error);
+          continue;
+        }
+      }
+      
+      console.warn('All routing servers failed, using fallback calculation');
+      resolve(createFallbackResponse(start, end));
+    };
 
-  console.warn('All routing servers failed, using fallback calculation');
-  return createFallbackResponse(start, end);
+    requestQueue.push(request);
+    processQueue();
+  });
 };
 
 export const getRouteGeometry = async (pickupLocation: Location, dropLocation: Location) => {
