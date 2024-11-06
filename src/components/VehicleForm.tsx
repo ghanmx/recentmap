@@ -18,8 +18,6 @@ interface VehicleFormProps {
   pickupAddress?: string;
   dropAddress?: string;
   serviceType?: string;
-  onManeuverChange?: () => void;
-  onVehicleModelChange?: () => void;
   onPickupSelect?: (location: { lat: number; lng: number; address: string }) => void;
   onDropSelect?: (location: { lat: number; lng: number; address: string }) => void;
   onSelectingPickup?: (selecting: boolean) => void;
@@ -32,8 +30,6 @@ export const VehicleForm = ({
   pickupAddress,
   dropAddress,
   serviceType = "standard",
-  onManeuverChange,
-  onVehicleModelChange,
   onPickupSelect,
   onDropSelect,
   onSelectingPickup,
@@ -55,11 +51,11 @@ export const VehicleForm = ({
       requiresManeuver: false,
       issueDescription: "",
     },
+    mode: "onChange"
   });
 
   const handleVehicleModelChange = (value: string) => {
     updateSelectedVehicleModel(value);
-    onVehicleModelChange?.();
     
     toast({
       title: "Vehicle Model Updated",
@@ -68,7 +64,7 @@ export const VehicleForm = ({
   };
 
   const handleTruckTypeChange = (value: "A" | "B" | "C" | "D") => {
-    form.setValue("truckType", value);
+    form.setValue("truckType", value, { shouldDirty: true });
     updateTruckType(value);
     
     toast({
@@ -108,10 +104,7 @@ export const VehicleForm = ({
               form={form}
               onVehicleModelChange={handleVehicleModelChange}
             />
-            <ManeuverField 
-              form={form}
-              onManeuverChange={onManeuverChange}
-            />
+            <ManeuverField form={form} />
           </div>
         </Card>
 
