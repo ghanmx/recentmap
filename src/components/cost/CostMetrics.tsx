@@ -27,7 +27,12 @@ export const CostMetrics = ({
       className="grid grid-cols-1 md:grid-cols-2 gap-4"
     >
       <div className="flex items-center justify-between space-x-2 p-4 bg-white/50 rounded-lg">
-        <Label htmlFor="invoice" className="text-sm">Requiere factura (IVA 16%)</Label>
+        <Label htmlFor="invoice" className="text-sm">
+          Requiere factura (IVA 16%)
+          <span className="block text-xs text-gray-500">
+            Para {selectedTruck.name}
+          </span>
+        </Label>
         <Switch
           id="invoice"
           checked={requiresInvoice}
@@ -39,7 +44,7 @@ export const CostMetrics = ({
         <Label htmlFor="maneuver" className="text-sm">
           Requiere maniobra especial
           <span className="block text-xs text-gray-500">
-            +{selectedTruck.maneuverCharge.toFixed(2)} MXN
+            +{selectedTruck.maneuverCharge.toFixed(2)} MXN para {selectedTruck.name}
           </span>
         </Label>
         <Switch
