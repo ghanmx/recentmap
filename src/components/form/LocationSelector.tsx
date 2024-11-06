@@ -4,11 +4,29 @@ import { FormData } from "@/types/form";
 import { LocationSearch } from "../form/LocationSearch";
 import { MapPin } from "lucide-react";
 
-interface LocationSelectorProps {
+export interface LocationSelectorProps {
   form: UseFormReturn<FormData>;
+  pickupLocation?: { lat: number; lng: number } | null;
+  dropLocation?: { lat: number; lng: number } | null;
+  pickupAddress?: string;
+  dropAddress?: string;
+  onPickupSelect?: (location: { lat: number; lng: number; address: string }) => void;
+  onDropSelect?: (location: { lat: number; lng: number; address: string }) => void;
+  onSelectingPickup?: (selecting: boolean) => void;
+  onSelectingDrop?: (selecting: boolean) => void;
 }
 
-export const LocationSelector = ({ form }: LocationSelectorProps) => {
+export const LocationSelector = ({ 
+  form,
+  pickupLocation,
+  dropLocation,
+  pickupAddress,
+  dropAddress,
+  onPickupSelect,
+  onDropSelect,
+  onSelectingPickup,
+  onSelectingDrop
+}: LocationSelectorProps) => {
   return (
     <div className="space-y-6">
       <FormField
@@ -24,6 +42,7 @@ export const LocationSelector = ({ form }: LocationSelectorProps) => {
                 icon={<MapPin className="h-4 w-4 text-primary" />}
                 onLocationSelect={(location) => {
                   field.onChange(location);
+                  onPickupSelect?.(location);
                 }}
               />
             </FormControl>
@@ -44,6 +63,7 @@ export const LocationSelector = ({ form }: LocationSelectorProps) => {
                 icon={<MapPin className="h-4 w-4 text-primary" />}
                 onLocationSelect={(location) => {
                   field.onChange(location);
+                  onDropSelect?.(location);
                 }}
               />
             </FormControl>

@@ -5,11 +5,12 @@ import { UseFormReturn } from "react-hook-form";
 import { FormData } from "@/types/form";
 import { motion } from "framer-motion";
 
-interface VehicleSelectorProps {
+export interface VehicleSelectorProps {
   form: UseFormReturn<FormData>;
+  onVehicleModelChange: (value: string) => void;
 }
 
-export const VehicleSelector = ({ form }: VehicleSelectorProps) => {
+export const VehicleSelector = ({ form, onVehicleModelChange }: VehicleSelectorProps) => {
   const vehicles = [
     { value: "sedan", label: "Sedán" },
     { value: "suv", label: "SUV" },
@@ -36,7 +37,10 @@ export const VehicleSelector = ({ form }: VehicleSelectorProps) => {
             </FormLabel>
             <FormControl>
               <Select
-                onValueChange={field.onChange}
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  onVehicleModelChange(value);
+                }}
                 defaultValue={field.value}
               >
                 <SelectTrigger className="w-full">
