@@ -37,13 +37,18 @@ export const useVehicleForm = (
     }
 
     submitRequest({
+      username: "guest", // Default value
+      vehicleMake: "Unknown", // Default value
       vehicleModel: data.vehicleModel,
+      vehicleYear: new Date().getFullYear(), // Default current year
+      vehicleColor: "Unknown", // Default value
       truckType: data.truckType,
       issueDescription: data.issueDescription || "",
       pickupLocation,
       dropLocation,
       serviceType,
       requiresManeuver: false,
+      tollFees: 0, // Default value
     });
   };
 

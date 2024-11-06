@@ -9,14 +9,39 @@ import { FormData, formSchema } from "@/types/form";
 import { TowingWrapper } from './TowingWrapper';
 import { Card } from "./ui/card";
 
-export const VehicleForm = () => {
+interface VehicleFormProps {
+  pickupLocation?: { lat: number; lng: number } | null;
+  dropLocation?: { lat: number; lng: number } | null;
+  pickupAddress?: string;
+  dropAddress?: string;
+  serviceType?: string;
+  onManeuverChange?: () => void;
+  onVehicleModelChange?: () => void;
+  onPickupSelect?: (location: { lat: number; lng: number; address: string }) => void;
+  onDropSelect?: (location: { lat: number; lng: number; address: string }) => void;
+  onSelectingPickup?: (selecting: boolean) => void;
+  onSelectingDrop?: (selecting: boolean) => void;
+}
+
+export const VehicleForm = ({
+  pickupLocation,
+  dropLocation,
+  pickupAddress,
+  dropAddress,
+  serviceType = "standard",
+  onManeuverChange,
+  onVehicleModelChange,
+  onPickupSelect,
+  onDropSelect,
+  onSelectingPickup,
+  onSelectingDrop
+}: VehicleFormProps) => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       vehicleModel: "",
       truckType: "A",
-      pickupLocation: undefined,
-      dropoffLocation: undefined,
+      issueDescription: "",
     },
   });
 
