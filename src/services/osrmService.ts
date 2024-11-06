@@ -1,6 +1,7 @@
 const OSRM_API_URL = 'https://router.project-osrm.org/route/v1';
 const REQUEST_DELAY = 1100; // Slightly over 1 second to ensure we stay under rate limit
 const MAX_RETRIES = 3;
+const FALLBACK_OSRM_API_URL = 'http://router.project-osrm.org/route/v1'; // Fallback to non-HTTPS
 let lastRequestTime = 0;
 
 interface Coordinates {
@@ -18,21 +19,40 @@ interface OSRMResponse {
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_RETRIES): Promise<Response> {
+async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_RETRIES, useFallback = false): Promise<Response> {
+  const finalUrl = useFallback ? url.replace('https://', 'http://') : url;
+  
   try {
-    const response = await fetch(url, options);
+    const response = await fetch(finalUrl, {
+      ...options,
+      mode: 'cors',
+      credentials: 'omit'
+    });
+
     if (response.status === 429 && retries > 0) {
       // If rate limited, wait longer and retry
       await delay(REQUEST_DELAY * 2);
-      return fetchWithRetry(url, options, retries - 1);
+      return fetchWithRetry(url, options, retries - 1, useFallback);
     }
+
+    if (!response.ok && !useFallback && retries === MAX_RETRIES) {
+      // If first attempt fails with HTTPS, try HTTP
+      return fetchWithRetry(url, options, retries, true);
+    }
+
     return response;
   } catch (error) {
     if (retries > 0) {
       // On network error, wait and retry
       await delay(REQUEST_DELAY);
-      return fetchWithRetry(url, options, retries - 1);
+      return fetchWithRetry(url, options, retries - 1, useFallback);
     }
+    
+    if (!useFallback) {
+      // If HTTPS failed completely, try HTTP as last resort
+      return fetchWithRetry(url, options, MAX_RETRIES, true);
+    }
+    
     throw new Error('Network error: Unable to connect to routing service. Please check your internet connection.');
   }
 }
@@ -61,13 +81,12 @@ export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Pr
         headers: {
           'User-Agent': 'TowingServiceApplication/1.0',
           'Referer': window.location.origin,
-          'Accept': 'application/json'
-        },
-        mode: 'cors',
-        cache: 'no-cache'
+          'Accept': 'application/json',
+          'Origin': window.location.origin
+        }
       }
     );
-    
+
     if (!response.ok) {
       throw new Error(response.status === 429 
         ? 'Rate limit exceeded. Please try again in a few seconds.'
