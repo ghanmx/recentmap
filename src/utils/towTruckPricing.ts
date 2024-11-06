@@ -42,6 +42,52 @@ export const towTruckTypes: Record<string, TowTruckType> = {
   }
 };
 
+export const getTruckTypeForVehicle = (model: string): "A" | "B" | "C" | "D" => {
+  const modelLower = model.toLowerCase();
+  
+  // SUVs and Crossovers that require Type C
+  const typeCVehicles = [
+    'murano', 'pathfinder', 'highlander', 'pilot', '4runner', 'expedition',
+    'tahoe', 'suburban', 'sequoia', 'armada', 'telluride', 'palisade',
+    'explorer', 'traverse', 'atlas', 'ascent', 'cx-9'
+  ];
+  
+  // Medium vehicles that require Type B
+  const typeBVehicles = [
+    'rav4', 'cr-v', 'rogue', 'tucson', 'sportage', 'equinox', 'escape',
+    'compass', 'cherokee', 'forester', 'outback', 'cx-5', 'tiguan'
+  ];
+  
+  // Heavy duty vehicles that require Type D
+  const typeDVehicles = [
+    'f-150', 'f-250', 'f-350', 'silverado', 'sierra', 'ram', 'tundra', 'titan',
+    'sprinter', 'transit', 'promaster', 'nv', 'savana', 'express'
+  ];
+
+  // Check vehicle type based on model or keywords
+  if (typeDVehicles.some(v => modelLower.includes(v)) || 
+      modelLower.includes('heavy') || 
+      modelLower.includes('camion')) {
+    return "D";
+  }
+  
+  if (typeCVehicles.some(v => modelLower.includes(v)) || 
+      modelLower.includes('large suv') || 
+      modelLower.includes('full-size')) {
+    return "C";
+  }
+  
+  if (typeBVehicles.some(v => modelLower.includes(v)) || 
+      modelLower.includes('suv') || 
+      modelLower.includes('crossover') ||
+      modelLower.includes('pickup')) {
+    return "B";
+  }
+  
+  // Default to Type A for sedans and smaller vehicles
+  return "A";
+};
+
 export const calculateTotalCost = (
   distance: number,
   truckType: string,
@@ -55,18 +101,4 @@ export const calculateTotalCost = (
   const subtotal = baseCost + maneuverCost + tollCosts;
   const tax = requiresInvoice ? subtotal * 0.16 : 0;
   return subtotal + tax;
-};
-
-export const getTruckTypeForVehicle = (model: string): "A" | "B" | "C" | "D" => {
-  const modelLower = model.toLowerCase();
-  
-  if (modelLower.includes('pickup') || modelLower.includes('suv')) {
-    return "B";
-  } else if (modelLower.includes('camion') || modelLower.includes('truck')) {
-    return "D";
-  } else if (modelLower.includes('van') || modelLower.includes('minivan')) {
-    return "C";
-  }
-  
-  return "A";
 };

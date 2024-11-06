@@ -32,9 +32,11 @@ export const TowTruckSelector = ({
       onTruckTypeChange?.(recommendedType);
       updateTruckType(recommendedType);
       
+      const truckInfo = towTruckTypes[recommendedType];
       toast({
         title: "Tipo de grúa recomendado",
-        description: `Se ha seleccionado ${towTruckTypes[recommendedType].name} basado en el modelo ${selectedModel}`,
+        description: `Se ha seleccionado ${truckInfo.name} para ${selectedModel} (capacidad: ${truckInfo.maxWeight.toLocaleString()} kg)`,
+        duration: 5000,
       });
     }
   }, [selectedModel, form, onTruckTypeChange, updateTruckType]);
