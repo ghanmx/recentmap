@@ -22,6 +22,7 @@ interface CostBreakdownProps {
   requiresManeuver: boolean;
   selectedTruck: TowTruckType;
   subtotal: number;
+  selectedVehicleModel: string;
 }
 
 export const CostBreakdown = ({
@@ -38,6 +39,7 @@ export const CostBreakdown = ({
   requiresManeuver,
   selectedTruck,
   subtotal,
+  selectedVehicleModel,
 }: CostBreakdownProps) => {
   return (
     <Card className="p-4 space-y-4 bg-white/50">
@@ -48,7 +50,10 @@ export const CostBreakdown = ({
           animate={{ opacity: 1 }}
           className="space-y-2"
         >
-          <TruckInfoHeader selectedTruck={selectedTruck} />
+          <TruckInfoHeader 
+            selectedTruck={selectedTruck} 
+            selectedVehicleModel={selectedVehicleModel}
+          />
           <CostFormulaDisplay 
             selectedTruck={selectedTruck}
             requiresManeuver={requiresManeuver}
@@ -62,12 +67,14 @@ export const CostBreakdown = ({
               label={`Banderazo ${selectedTruck.name}`}
               amount={flagDropFee}
               icon={<Flag className="w-4 h-4 text-primary" />}
+              description={`Cargo inicial por servicio de grúa ${selectedTruck.name}`}
             />
 
             <CostItemDisplay
-              label={`Servicio base ${selectedTruck.name} (${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km)`}
+              label={`Servicio base ${selectedTruck.name}`}
               amount={baseCost}
               icon={<TrendingUp className="w-4 h-4 text-primary" />}
+              description={`${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km`}
             />
             
             {requiresManeuver && (
@@ -75,6 +82,7 @@ export const CostBreakdown = ({
                 label={`Cargo por maniobra especial (${selectedTruck.name})`}
                 amount={selectedTruck.maneuverCharge}
                 icon={<Truck className="w-4 h-4 text-orange-500" />}
+                description="Cargo adicional por maniobras especiales requeridas"
               />
             )}
 
@@ -86,7 +94,7 @@ export const CostBreakdown = ({
               >
                 <div className="text-sm text-gray-600 font-medium flex items-center gap-2">
                   <Receipt className="w-4 h-4 text-primary" />
-                  Peajes detectados:
+                  Peajes detectados en la ruta:
                 </div>
                 {detectedTolls.map((toll, index) => (
                   <CostItemDisplay
@@ -112,6 +120,7 @@ export const CostBreakdown = ({
               <CostItemDisplay
                 label="Subtotal"
                 amount={subtotal}
+                description={`Suma de todos los cargos para grúa ${selectedTruck.name}`}
               />
               
               {requiresInvoice && (
@@ -119,6 +128,7 @@ export const CostBreakdown = ({
                   label="IVA (16%)"
                   amount={tax}
                   icon={<Receipt className="w-4 h-4 text-green-500" />}
+                  description="Impuesto al Valor Agregado"
                 />
               )}
             </motion.div>

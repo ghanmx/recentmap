@@ -8,10 +8,12 @@ interface TowingContextType {
   totalTollCost: number;
   truckType: "A" | "B" | "C" | "D";
   requiresManeuver: boolean;
+  selectedVehicleModel: string;
   updateTowingInfo: (distance: number, cost: number) => void;
   updateTollInfo: (tolls: TollLocation[], tollCost: number) => void;
   updateTruckType: (type: "A" | "B" | "C" | "D") => void;
   updateManeuverRequired: (required: boolean) => void;
+  updateSelectedVehicleModel: (model: string) => void;
 }
 
 const TowingContext = createContext<TowingContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
   const [totalTollCost, setTotalTollCost] = useState(0);
   const [truckType, setTruckType] = useState<"A" | "B" | "C" | "D">("A");
   const [requiresManeuver, setRequiresManeuver] = useState(false);
+  const [selectedVehicleModel, setSelectedVehicleModel] = useState("");
 
   useEffect(() => {
     console.log('[TowingContext] Truck Type Updated:', truckType);
@@ -51,6 +54,10 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
     setRequiresManeuver(required);
   };
 
+  const updateSelectedVehicleModel = (model: string) => {
+    setSelectedVehicleModel(model);
+  };
+
   return (
     <TowingContext.Provider value={{ 
       totalDistance, 
@@ -59,10 +66,12 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
       totalTollCost,
       truckType,
       requiresManeuver,
+      selectedVehicleModel,
       updateTowingInfo, 
       updateTollInfo,
       updateTruckType,
-      updateManeuverRequired
+      updateManeuverRequired,
+      updateSelectedVehicleModel
     }}>
       {children}
     </TowingContext.Provider>
