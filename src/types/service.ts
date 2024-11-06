@@ -1,3 +1,14 @@
+export interface Location {
+  lat: number;
+  lng: number;
+}
+
+export interface RouteResponse {
+  distance: number;
+  duration: number;
+  geometry: string;
+}
+
 export interface ServiceRequest {
   id?: string;
   username: string;

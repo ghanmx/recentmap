@@ -4,6 +4,8 @@ interface RouteError extends Error {
   status?: number;
 }
 
+export const COMPANY_LOCATION: Location = { lat: 26.510272, lng: -100.006323 };
+
 const MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 5000;
