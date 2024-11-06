@@ -5,6 +5,7 @@ import { showRouteNotification } from "@/utils/notificationUtils";
 import { useTowing } from "@/contexts/TowingContext";
 import { getRouteDetails } from "@/services/routeService";
 import { COMPANY_LOCATION } from "@/utils/priceCalculator";
+import { useToast } from "@/hooks/use-toast";
 
 interface RoutePolylineProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -17,6 +18,7 @@ export const RoutePolyline = ({ pickupLocation, dropLocation, onRouteCalculated 
   const [pickupToDropRoute, setPickupToDropRoute] = useState<[number, number][]>([]);
   const [dropToCompanyRoute, setDropToCompanyRoute] = useState<[number, number][]>([]);
   const { updateTowingInfo } = useTowing();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchRoutes = async () => {
@@ -46,35 +48,46 @@ export const RoutePolyline = ({ pickupLocation, dropLocation, onRouteCalculated 
           showRouteNotification(totalDistance);
         } catch (error) {
           console.error('Error calculating routes:', error);
+          toast({
+            title: "Error al calcular la ruta",
+            description: error instanceof Error ? error.message : "Por favor, intente nuevamente en unos segundos",
+            variant: "destructive",
+          });
         }
       }
     };
 
     fetchRoutes();
-  }, [pickupLocation, dropLocation, onRouteCalculated, updateTowingInfo]);
+  }, [pickupLocation, dropLocation, onRouteCalculated, updateTowingInfo, toast]);
 
   return (
     <>
-      <Polyline 
-        positions={companyToPickupRoute} 
-        color="blue" 
-        weight={3} 
-        dashArray="10, 10" 
-        opacity={0.7}
-      />
-      <Polyline 
-        positions={pickupToDropRoute} 
-        color="green" 
-        weight={3} 
-        opacity={0.9}
-      />
-      <Polyline 
-        positions={dropToCompanyRoute} 
-        color="red" 
-        weight={3} 
-        dashArray="10, 10" 
-        opacity={0.7}
-      />
+      {companyToPickupRoute.length > 0 && (
+        <Polyline 
+          positions={companyToPickupRoute} 
+          color="blue" 
+          weight={3} 
+          dashArray="10, 10" 
+          opacity={0.7}
+        />
+      )}
+      {pickupToDropRoute.length > 0 && (
+        <Polyline 
+          positions={pickupToDropRoute} 
+          color="green" 
+          weight={3} 
+          opacity={0.9}
+        />
+      )}
+      {dropToCompanyRoute.length > 0 && (
+        <Polyline 
+          positions={dropToCompanyRoute} 
+          color="red" 
+          weight={3} 
+          dashArray="10, 10" 
+          opacity={0.7}
+        />
+      )}
     </>
   );
 };
