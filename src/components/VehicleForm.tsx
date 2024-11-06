@@ -57,9 +57,13 @@ export const VehicleForm = ({
     updateTruckType(value);
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
+
   return (
     <Form {...form}>
-      <form className="space-y-8 w-full">
+      <form onSubmit={handleSubmit} className="space-y-8 w-full">
         <Card className="p-6">
           <VehicleSelector 
             form={form} 
