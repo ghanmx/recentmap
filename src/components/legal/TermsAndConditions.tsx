@@ -7,9 +7,9 @@ export const TermsAndConditions = () => {
       <ScrollArea className="h-[70vh] pr-4">
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-primary">Términos y Condiciones</h2>
-          
+
           <section className="space-y-4">
-            <h3 className="text-lg font-semibold">1. Aceptación de los Términos</h3>
+            <h3 className="text-lg font-semibold">166666666666666666666666. Aceptación de los Términos</h3>
             <p className="text-gray-600">
               Al utilizar nuestros servicios de grúa, usted acepta estos términos y condiciones en su totalidad. Si no está de acuerdo con estos términos, por favor no utilice nuestros servicios.
             </p>
