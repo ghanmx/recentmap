@@ -3,7 +3,7 @@ export interface TowTruckType {
   capacity: string;
   perKm: number;
   maneuverCharge: number;
-  flagDropFee: number;  // Added for "banderazo"
+  flagDropFee: number;
   maxWeight: number;
 }
 
@@ -45,42 +45,63 @@ export const towTruckTypes: Record<string, TowTruckType> = {
 export const getTruckTypeForVehicle = (model: string): "A" | "B" | "C" | "D" => {
   const modelLower = model.toLowerCase();
   
-  // SUVs and Crossovers that require Type C
+  // Large SUVs, Luxury SUVs, and Full-Size vehicles that require Type C
   const typeCVehicles = [
+    // Full-size SUVs
     'murano', 'pathfinder', 'highlander', 'pilot', '4runner', 'expedition',
     'tahoe', 'suburban', 'sequoia', 'armada', 'telluride', 'palisade',
-    'explorer', 'traverse', 'atlas', 'ascent', 'cx-9'
+    'explorer', 'traverse', 'atlas', 'ascent', 'cx-9',
+    // Luxury SUVs
+    'q7', 'gx', 'lx', 'x7', 'gls', 'navigator', 'escalade', 'range rover',
+    // Large Vans
+    'sienna', 'odyssey', 'carnival', 'pacifica', 'grand caravan',
+    // Additional Full-size SUVs
+    'durango', 'grand cherokee l', 'yukon', 'land cruiser', 'gv80'
   ];
   
-  // Medium vehicles that require Type B
+  // Mid-size SUVs, Crossovers, and Light Trucks that require Type B
   const typeBVehicles = [
+    // Compact & Mid-size SUVs
     'rav4', 'cr-v', 'rogue', 'tucson', 'sportage', 'equinox', 'escape',
-    'compass', 'cherokee', 'forester', 'outback', 'cx-5', 'tiguan'
+    'compass', 'cherokee', 'forester', 'outback', 'cx-5', 'tiguan',
+    // Additional Crossovers
+    'edge', 'blazer', 'passport', 'venza', 'santa fe', 'sorento',
+    'rdx', 'nx', 'x3', 'glc', 'q5', 'xt5', 'corsair',
+    // Small Trucks
+    'maverick', 'santa cruz', 'ranger', 'colorado', 'canyon', 'frontier'
   ];
   
-  // Heavy duty vehicles that require Type D
+  // Heavy Duty Vehicles, Large Trucks, and Commercial Vehicles that require Type D
   const typeDVehicles = [
-    'f-150', 'f-250', 'f-350', 'silverado', 'sierra', 'ram', 'tundra', 'titan',
-    'sprinter', 'transit', 'promaster', 'nv', 'savana', 'express'
+    // Heavy Duty Trucks
+    'f-150', 'f-250', 'f-350', 'f-450', 'silverado', 'sierra', 'ram', 'tundra', 'titan',
+    // Commercial Vehicles
+    'sprinter', 'transit', 'promaster', 'nv', 'savana', 'express',
+    // Heavy Duty Specific Models
+    'silverado 2500', 'silverado 3500', 'sierra 2500', 'sierra 3500',
+    'ram 2500', 'ram 3500', 'ram 4500', 'ram 5500',
+    // Additional Commercial
+    'hino', 'isuzu', 'kenworth', 'peterbilt', 'freightliner'
   ];
+
+  // Check for specific keywords in the model name
+  const heavyKeywords = ['heavy duty', 'commercial', 'camion', 'truck', '2500', '3500', '4500', '5500'];
+  const largeKeywords = ['full-size', 'large suv', 'luxury suv', 'van'];
+  const mediumKeywords = ['suv', 'crossover', 'pickup', 'mid-size', 'compact suv'];
 
   // Check vehicle type based on model or keywords
   if (typeDVehicles.some(v => modelLower.includes(v)) || 
-      modelLower.includes('heavy') || 
-      modelLower.includes('camion')) {
+      heavyKeywords.some(k => modelLower.includes(k))) {
     return "D";
   }
   
   if (typeCVehicles.some(v => modelLower.includes(v)) || 
-      modelLower.includes('large suv') || 
-      modelLower.includes('full-size')) {
+      largeKeywords.some(k => modelLower.includes(k))) {
     return "C";
   }
   
   if (typeBVehicles.some(v => modelLower.includes(v)) || 
-      modelLower.includes('suv') || 
-      modelLower.includes('crossover') ||
-      modelLower.includes('pickup')) {
+      mediumKeywords.some(k => modelLower.includes(k))) {
     return "B";
   }
   
