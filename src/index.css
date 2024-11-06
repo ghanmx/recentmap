@@ -39,6 +39,14 @@ h1, h2, h3, h4, h5, h6 {
   @apply font-heading font-semibold;
 }
 
+/* Fix z-index for dropdowns and autocomplete */
+.select-content,
+[role="listbox"],
+[role="combobox"] {
+  @apply z-[1000];
+}
+
+/* Keep existing metallic effect styles */
 @layer utilities {
   .metallic-effect {
     background: linear-gradient(
@@ -119,6 +127,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Keep existing animations */
 @keyframes shine-metal {
   from {
     transform: translateX(-100%) rotate(30deg);
@@ -146,6 +155,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Keep existing grid pattern */
 .bg-grid-pattern {
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
                     linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);

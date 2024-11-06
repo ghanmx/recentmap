@@ -8,6 +8,10 @@ import { FormData, formSchema } from "@/types/form";
 import { Card } from "./ui/card";
 import { useTowing } from "@/contexts/TowingContext";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
+import { FormField, FormItem, FormLabel, FormControl } from "./ui/form";
 
 interface VehicleFormProps {
   pickupLocation?: { lat: number; lng: number } | null;
@@ -42,8 +46,14 @@ export const VehicleForm = ({
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      userName: "",
+      phone: "",
+      vehicleMake: "",
       vehicleModel: "",
+      vehicleYear: "",
+      vehicleColor: "",
       truckType: "A",
+      requiresManeuver: false,
       issueDescription: "",
     },
   });
@@ -69,7 +79,6 @@ export const VehicleForm = ({
     });
   };
 
-  // Prevent form submission and handle data
   const onSubmit = form.handleSubmit((data) => {
     toast({
       title: "Form Submitted",
@@ -81,21 +90,6 @@ export const VehicleForm = ({
     <Form {...form}>
       <form onSubmit={onSubmit} className="space-y-8 w-full">
         <Card className="p-6">
-          <VehicleSelector 
-            form={form} 
-            onVehicleModelChange={handleVehicleModelChange}
-          />
-        </Card>
-
-        <Card className="p-6">
-          <TowTruckSelector
-            form={form}
-            selectedModel={form.watch("vehicleModel")}
-            onTruckTypeChange={handleTruckTypeChange}
-          />
-        </Card>
-
-        <Card className="p-6">
           <LocationSelector 
             form={form}
             pickupLocation={pickupLocation}
@@ -106,6 +100,106 @@ export const VehicleForm = ({
             onDropSelect={onDropSelect}
             onSelectingPickup={onSelectingPickup}
             onSelectingDrop={onSelectingDrop}
+          />
+        </Card>
+
+        <Card className="p-6">
+          <div className="space-y-6">
+            <FormField
+              control={form.control}
+              name="userName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>User Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Enter your name" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="tel" placeholder="Enter your phone number" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="vehicleMake"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vehicle Make</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Enter vehicle make" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <VehicleSelector 
+              form={form} 
+              onVehicleModelChange={handleVehicleModelChange}
+            />
+
+            <FormField
+              control={form.control}
+              name="vehicleYear"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vehicle Year</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="number" placeholder="Enter vehicle year" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="vehicleColor"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vehicle Color</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Enter vehicle color" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="requiresManeuver"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Requires Maneuver</FormLabel>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <TowTruckSelector
+            form={form}
+            selectedModel={form.watch("vehicleModel")}
+            onTruckTypeChange={handleTruckTypeChange}
           />
         </Card>
       </form>

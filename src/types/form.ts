@@ -1,8 +1,14 @@
 import { z } from "zod";
 
 export const formSchema = z.object({
-  vehicleModel: z.string().min(1, "Selecciona un tipo de vehículo"),
+  userName: z.string().min(1, "Username is required"),
+  phone: z.string().min(1, "Phone number is required"),
+  vehicleMake: z.string().min(1, "Vehicle make is required"),
+  vehicleModel: z.string().min(1, "Vehicle model is required"),
+  vehicleYear: z.string().min(1, "Vehicle year is required"),
+  vehicleColor: z.string().min(1, "Vehicle color is required"),
   truckType: z.enum(["A", "B", "C", "D"]),
+  requiresManeuver: z.boolean().default(false),
   issueDescription: z.string().optional(),
   pickupLocation: z.object({
     lat: z.number(),
