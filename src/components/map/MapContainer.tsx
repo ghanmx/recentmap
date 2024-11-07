@@ -60,6 +60,7 @@ interface MapContainerComponentProps {
   setPickupLocation: (location: { lat: number; lng: number } | null) => void;
   setDropLocation: (location: { lat: number; lng: number } | null) => void;
   onRouteCalculated: (distance: number) => void;
+  isLoading?: boolean;
 }
 
 export const MapContainerComponent = ({
