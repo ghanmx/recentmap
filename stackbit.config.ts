@@ -10,6 +10,21 @@ export default defineStackbitConfig({
   dataDir: 'content',
   pagesDir: 'src/pages',
   publicDir: 'public',
+  contentSources: [
+    {
+      name: 'local',
+      type: 'files',
+      directory: 'content'
+    }
+  ],
+  env: [
+    {
+      name: 'VAR_NAME',
+      value: 'somevalue',
+      type: 'string',
+      required: true
+    }
+  ],
   assets: {
     referenceType: 'static',
     staticDir: 'public',
