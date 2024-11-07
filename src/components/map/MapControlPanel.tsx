@@ -4,6 +4,7 @@ import { showLocationNotification } from "@/utils/notificationUtils";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface MapControlPanelProps {
   selectingPickup: boolean;
@@ -12,6 +13,9 @@ interface MapControlPanelProps {
   setSelectingDrop: (value: boolean) => void;
   pickupLocation: { lat: number; lng: number } | null;
   dropLocation: { lat: number; lng: number } | null;
+  pickupAddress?: string;
+  dropAddress?: string;
+  isLoading?: boolean;
 }
 
 export const MapControlPanel = ({
@@ -21,6 +25,9 @@ export const MapControlPanel = ({
   setSelectingDrop,
   pickupLocation,
   dropLocation,
+  pickupAddress,
+  dropAddress,
+  isLoading = false,
 }: MapControlPanelProps) => {
   const { toast } = useToast();
 
@@ -31,6 +38,11 @@ export const MapControlPanel = ({
       className="px-4 sm:px-6 flex flex-col items-center gap-6 pointer-events-auto max-w-3xl mx-auto w-full"
     >
       <Card className="w-full bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-4 sm:p-6 border-blue-100/50 hover:shadow-xl transition-all duration-300">
+        {isLoading && (
+          <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-50 rounded-xl">
+            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          </div>
+        )}
         <MapControls 
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
@@ -64,6 +76,9 @@ export const MapControlPanel = ({
           <RouteStreetInfo 
             pickupLocation={pickupLocation}
             dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
+            isLoading={isLoading}
           />
         </motion.div>
       )}

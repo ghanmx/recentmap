@@ -1,6 +1,11 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { TollLocation } from '@/data/tollData';
 
+interface LocationInfo {
+  pickup?: { lat: number; lng: number; address: string };
+  drop?: { lat: number; lng: number; address: string };
+}
+
 interface TowingContextType {
   totalDistance: number;
   totalCost: number;
@@ -14,6 +19,7 @@ interface TowingContextType {
   updateTruckType: (type: "A" | "B" | "C" | "D") => void;
   updateManeuverRequired: (required: boolean) => void;
   updateSelectedVehicleModel: (model: string) => void;
+  updateLocationInfo: (info: LocationInfo) => void;
 }
 
 const TowingContext = createContext<TowingContextType | undefined>(undefined);
@@ -48,6 +54,11 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
     setSelectedVehicleModel(model);
   };
 
+  const updateLocationInfo = (info: LocationInfo) => {
+    // This function is used to update pickup and drop location information
+    // The actual state updates will be handled by the map component
+  };
+
   return (
     <TowingContext.Provider value={{ 
       totalDistance, 
@@ -61,7 +72,8 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
       updateTollInfo,
       updateTruckType,
       updateManeuverRequired,
-      updateSelectedVehicleModel
+      updateSelectedVehicleModel,
+      updateLocationInfo
     }}>
       {children}
     </TowingContext.Provider>
