@@ -3,82 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 222.2 84% 4.9%;
-
-        --card: 0 0% 100%;
-        --card-foreground: 222.2 84% 4.9%;
-
-        --popover: 0 0% 100%;
-        --popover-foreground: 222.2 84% 4.9%;
-
-        --primary: 222.2 47.4% 11.2%;
-        --primary-foreground: 210 40% 98%;
-
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
-
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
-
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 222.2 84% 4.9%;
-
-        --radius: 0.5rem;
-    }
-
-    .dark {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
-
-        --card: 222.2 84% 4.9%;
-        --card-foreground: 210 40% 98%;
-
-        --popover: 222.2 84% 4.9%;
-        --popover-foreground: 210 40% 98%;
-
-        --primary: 210 40% 98%;
-        --primary-foreground: 222.2 47.4% 11.2%;
-
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
-
-        --muted: 217.2 32.6% 17.5%;
-        --muted-foreground: 215 20.2% 65.1%;
-
-        --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
-
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-
-        --border: 217.2 32.6% 17.5%;
-        --input: 217.2 32.6% 17.5%;
-        --ring: 212.7 26.8% 83.9%;
-    }
-}
-
-@layer base {
-    * {
-        @apply border-border;
-    }
-
-    body {
-        @apply bg-background text-foreground;
-    }
-}
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&display=swap');
-
-:root {
+  :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -99,144 +24,119 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221 83% 53%;
     --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
 }
 
-* {
-    border-color: hsl(var(--border));
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-semibold;
+  }
 }
 
-body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    font-family: 'Inter', sans-serif;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&display=swap');
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-}
-
-/* Fix z-index for dropdowns and autocomplete */
 .select-content,
 [role="listbox"],
 [role="combobox"] {
-    z-index: 1000;
+  @apply z-[1000];
 }
 
-/* Keep existing metallic effect styles */
 .metallic-effect {
-    background: linear-gradient(45deg,
-            #999 5%,
-            #fff 10%,
-            #ccc 30%,
-            #ddd 50%,
-            #ccc 70%,
-            #fff 80%,
-            #999 95%);
-    position: relative;
-    overflow: hidden;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  @apply relative overflow-hidden;
+  background: linear-gradient(45deg,
+    #999 5%,
+    #fff 10%,
+    #ccc 30%,
+    #ddd 50%,
+    #ccc 70%,
+    #fff 80%,
+    #999 95%);
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .metallic-effect::after {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(30deg,
-            transparent 20%,
-            transparent 40%,
-            rgb(255, 255, 255, 0.4) 50%,
-            rgb(255, 255, 255, 0.4) 55%,
-            transparent 70%,
-            transparent 100%);
-    transform: rotate(30deg);
-    animation: shine-metal 3s infinite linear;
+  @apply absolute -top-1/2 -left-1/2;
+  content: "";
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(30deg,
+    transparent 20%,
+    transparent 40%,
+    rgb(255, 255, 255, 0.4) 50%,
+    rgb(255, 255, 255, 0.4) 55%,
+    transparent 70%,
+    transparent 100%);
+  transform: rotate(30deg);
+  animation: shine-metal 3s infinite linear;
 }
 
-.animate-pulse-slow {
-    animation: pulseSlow 3s infinite;
+@keyframes shine-metal {
+  from { transform: translateX(-100%) rotate(30deg); }
+  to { transform: translateX(100%) rotate(30deg); }
 }
 
 .card-shine-effect-metal {
-    --shine-deg: 45deg;
-    position: relative;
-    overflow: hidden;
-    border-radius: 0.875rem;
-    padding: 4rem 2rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-    width: 200px;
-    height: 180px;
-    background: linear-gradient(to bottom, #dbdbdb, #f9f9f9, #dbdbdb);
+  --shine-deg: 45deg;
+  @apply relative overflow-hidden rounded-[0.875rem] p-8 shadow-lg w-[200px] h-[180px];
+  background: linear-gradient(to bottom, #dbdbdb, #f9f9f9, #dbdbdb);
 }
 
 .card-shine-effect-metal:after {
-    content: "";
-    top: 0;
-    transform: translateX(100%) rotate(var(--shine-deg));
-    width: 300%;
-    height: 300%;
-    position: absolute;
-    z-index: 1;
-    background: linear-gradient(30deg,
-            transparent 20%,
-            transparent 40%,
-            rgb(255, 255, 255, 0.4) 50%,
-            rgb(255, 255, 255, 0.4) 55%,
-            transparent 70%,
-            transparent 100%);
-    transition: transform 2s ease-in;
-    transform: translateX(100%) rotate(var(--shine-deg));
+  @apply absolute top-0 z-[1];
+  content: "";
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(30deg,
+    transparent 20%,
+    transparent 40%,
+    rgb(255, 255, 255, 0.4) 50%,
+    rgb(255, 255, 255, 0.4) 55%,
+    transparent 70%,
+    transparent 100%);
+  transition: transform 2s ease-in;
+  transform: translateX(100%) rotate(var(--shine-deg));
 }
 
 .card-shine-effect-metal:hover:after {
-    animation: shine-card 1s infinite ease-in;
-}
-
-/* Keep existing animations */
-@keyframes shine-metal {
-    from {
-        transform: translateX(-100%) rotate(30deg);
-    }
-
-    to {
-        transform: translateX(100%) rotate(30deg);
-    }
+  animation: shine-card 1s infinite ease-in;
 }
 
 @keyframes shine-card {
-    0% {
-        transform: translateX(100%) rotate(var(--shine-deg));
-    }
-
-    100% {
-        transform: translateX(-100%) rotate(var(--shine-deg));
-    }
+  0% { transform: translateX(100%) rotate(var(--shine-deg)); }
+  100% { transform: translateX(-100%) rotate(var(--shine-deg)); }
 }
 
-@keyframes pulseSlow {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.7;
-    }
-}
-
-/* Keep existing grid pattern */
 .bg-grid-pattern {
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-    background-size: 20px 20px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
 }

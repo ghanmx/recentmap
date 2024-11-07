@@ -11,6 +11,9 @@ import { FormData, formSchema } from "@/types/form";
 import { Card } from "./ui/card";
 import { useTowing } from "@/contexts/TowingContext";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { VehicleFormCopyButton } from "./form/VehicleFormCopyButton";
 
 interface VehicleFormProps {
   pickupLocation?: { lat: number; lng: number } | null;
@@ -37,6 +40,7 @@ export const VehicleForm = ({
 }: VehicleFormProps) => {
   const { updateSelectedVehicleModel, updateTruckType } = useTowing();
   const { toast } = useToast();
+  const [isPending, setIsPending] = useState(false);
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -56,65 +60,95 @@ export const VehicleForm = ({
 
   const handleVehicleModelChange = (value: string) => {
     updateSelectedVehicleModel(value);
-    
     toast({
-      title: "Vehicle Model Updated",
-      description: `Selected vehicle model: ${value}`,
+      title: "Modelo de Vehículo Actualizado",
+      description: `Modelo seleccionado: ${value}`,
     });
   };
 
   const handleTruckTypeChange = (value: "A" | "B" | "C" | "D") => {
     form.setValue("truckType", value, { shouldDirty: true });
     updateTruckType(value);
-    
     toast({
-      title: "Tow Truck Type Updated",
-      description: `Selected truck type: ${value}`,
+      title: "Tipo de Grúa Actualizado",
+      description: `Tipo de grúa seleccionado: ${value}`,
     });
   };
 
-  const onSubmit = form.handleSubmit((data) => {
-    toast({
-      title: "Form Submitted",
-      description: "Vehicle and location details have been saved",
-    });
+  const onSubmit = form.handleSubmit(async (data) => {
+    setIsPending(true);
+    try {
+      toast({
+        title: "Formulario Enviado",
+        description: "Los detalles del vehículo y ubicación han sido guardados",
+      });
+    } finally {
+      setIsPending(false);
+    }
   });
 
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className="space-y-8 w-full">
-        <Card className="p-6">
-          <LocationSelector 
-            form={form}
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-            pickupAddress={pickupAddress}
-            dropAddress={dropAddress}
-            onPickupSelect={onPickupSelect}
-            onDropSelect={onDropSelect}
-            onSelectingPickup={onSelectingPickup}
-            onSelectingDrop={onSelectingDrop}
-          />
-        </Card>
-
-        <Card className="p-6">
-          <div className="space-y-6">
-            <UserInfoFields form={form} />
-            <VehicleBasicFields 
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card className="p-6 bg-gradient-to-br from-white/95 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
+            <LocationSelector 
               form={form}
-              onVehicleModelChange={handleVehicleModelChange}
+              pickupLocation={pickupLocation}
+              dropLocation={dropLocation}
+              pickupAddress={pickupAddress}
+              dropAddress={dropAddress}
+              onPickupSelect={onPickupSelect}
+              onDropSelect={onDropSelect}
+              onSelectingPickup={onSelectingPickup}
+              onSelectingDrop={onSelectingDrop}
             />
-            <ManeuverField form={form} />
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card className="p-6">
-          <TowTruckSelector
-            form={form}
-            selectedModel={form.watch("vehicleModel")}
-            onTruckTypeChange={handleTruckTypeChange}
-          />
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Card className="p-6 bg-gradient-to-br from-white/95 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="space-y-6">
+              <UserInfoFields form={form} />
+              <VehicleBasicFields 
+                form={form}
+                onVehicleModelChange={handleVehicleModelChange}
+              />
+              <ManeuverField form={form} />
+            </div>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <Card className="p-6 bg-gradient-to-br from-white/95 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
+            <TowTruckSelector
+              form={form}
+              selectedModel={form.watch("vehicleModel")}
+              onTruckTypeChange={handleTruckTypeChange}
+            />
+          </Card>
+        </motion.div>
+
+        <VehicleFormCopyButton
+          form={form}
+          pickupAddress={pickupAddress}
+          dropAddress={dropAddress}
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+          isPending={isPending}
+        />
       </form>
     </Form>
   );

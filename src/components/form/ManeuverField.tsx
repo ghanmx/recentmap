@@ -1,7 +1,8 @@
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { UseFormReturn } from "react-hook-form";
 import { FormData } from "@/types/form";
+import { Card } from "@/components/ui/card";
 
 interface ManeuverFieldProps {
   form: UseFormReturn<FormData>;
@@ -10,25 +11,30 @@ interface ManeuverFieldProps {
 
 export const ManeuverField = ({ form, onManeuverChange }: ManeuverFieldProps) => {
   return (
-    <FormField
-      control={form.control}
-      name="requiresManeuver"
-      render={({ field }) => (
-        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-          <div className="space-y-0.5">
-            <FormLabel className="text-base">Requires Maneuver</FormLabel>
-          </div>
-          <FormControl>
-            <Switch
-              checked={field.value}
-              onCheckedChange={(checked) => {
-                field.onChange(checked);
-                onManeuverChange?.();
-              }}
-            />
-          </FormControl>
-        </FormItem>
-      )}
-    />
+    <Card className="p-4 space-y-4">
+      <FormField
+        control={form.control}
+        name="issueDescription"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-base font-semibold">Descripción del Problema</FormLabel>
+            <FormControl>
+              <Textarea
+                placeholder="Describa el problema o situación especial del vehículo (ej: no enciende, llanta ponchada, etc.)"
+                className="min-h-[100px] resize-none"
+                {...field}
+                onChange={(e) => {
+                  field.onChange(e);
+                  if (e.target.value.length > 0) {
+                    form.setValue("requiresManeuver", true);
+                    onManeuverChange?.();
+                  }
+                }}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+    </Card>
   );
 };

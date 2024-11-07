@@ -1,7 +1,7 @@
 const OSRM_API_URLS = [
-  'https://routing.openstreetmap.de/routed-car/route/v1',
   'https://router.project-osrm.org/route/v1',
-  'http://router.project-osrm.org/route/v1'
+  'http://router.project-osrm.org/route/v1',
+  'https://routing.openstreetmap.de/routed-car/route/v1'
 ];
 
 const BASE_DELAY = 1000;
@@ -36,11 +36,12 @@ const delay = async (ms: number) => {
 };
 
 async function tryFetchWithUrls(urls: string[], coordinates: string, options: RequestInit, retryCount = 0): Promise<Response> {
+  const errors: Error[] = [];
+
   for (const baseUrl of urls) {
     try {
       await delay(calculateDelay(retryCount));
       const url = `${baseUrl}/driving/${coordinates}?overview=full&geometries=polyline`;
-      console.log('Attempting to fetch from:', url); // Debug log
       
       const response = await fetch(url, {
         ...options,
@@ -57,23 +58,19 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
         return response;
       }
 
-      console.warn(`Failed response from ${baseUrl}:`, response.status); // Debug log
-      
-      if (response.status === 429 && retryCount < MAX_RETRIES) {
-        continue;
-      }
+      errors.push(new Error(`Failed response from ${baseUrl}: ${response.status}`));
     } catch (error) {
-      console.warn(`Failed to fetch from ${baseUrl}:`, error);
+      errors.push(error instanceof Error ? error : new Error(`Unknown error from ${baseUrl}`));
       continue;
     }
   }
 
   if (retryCount < MAX_RETRIES) {
-    console.log('Retrying with attempt:', retryCount + 1); // Debug log
+    await delay(calculateDelay(retryCount));
     return tryFetchWithUrls(urls, coordinates, options, retryCount + 1);
   }
 
-  throw new Error('All routing services failed. Please try again later.');
+  throw new Error(`All routing services failed after ${MAX_RETRIES} retries. Errors: ${errors.map(e => e.message).join(', ')}`);
 }
 
 export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Promise<{

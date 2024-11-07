@@ -2,7 +2,7 @@ import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/for
 import { UseFormReturn } from "react-hook-form";
 import { FormData } from "@/types/form";
 import { LocationSearch } from "./LocationSearch";
-import { MapPin } from "lucide-react";
+import { MapPin, Navigation } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export interface LocationSelectorProps {
@@ -30,22 +30,21 @@ export const LocationSelector = ({
 }: LocationSelectorProps) => {
   const { toast } = useToast();
 
-  const handleLocationSelect = (location: { lat: number; lng: number; address: string }, type: 'pickup' | 'drop') => {
+  const handleLocationSelect = async (location: { lat: number; lng: number; address: string }, type: 'pickup' | 'drop') => {
     if (type === 'pickup') {
       form.setValue('pickupLocation', location);
       onPickupSelect?.(location);
-      toast({
-        title: "Ubicación de recogida actualizada",
-        description: location.address,
-      });
+      onSelectingPickup?.(false);
     } else {
       form.setValue('dropoffLocation', location);
       onDropSelect?.(location);
-      toast({
-        title: "Ubicación de entrega actualizada",
-        description: location.address,
-      });
+      onSelectingDrop?.(false);
     }
+
+    toast({
+      title: type === 'pickup' ? "Ubicación de recogida actualizada" : "Ubicación de entrega actualizada",
+      description: location.address,
+    });
   };
 
   return (
@@ -64,6 +63,7 @@ export const LocationSelector = ({
                 currentAddress={pickupAddress}
                 currentLocation={pickupLocation}
                 onLocationSelect={(location) => handleLocationSelect(location, 'pickup')}
+                type="pickup"
               />
             </FormControl>
           </FormItem>
@@ -80,10 +80,11 @@ export const LocationSelector = ({
               <LocationSearch
                 label="Ubicación de Entrega"
                 placeholder="Ingrese dirección de entrega..."
-                icon={<MapPin className="h-4 w-4 text-primary" />}
+                icon={<Navigation className="h-4 w-4 text-primary" />}
                 currentAddress={dropAddress}
                 currentLocation={dropLocation}
                 onLocationSelect={(location) => handleLocationSelect(location, 'drop')}
+                type="drop"
               />
             </FormControl>
           </FormItem>

@@ -1,63 +1,30 @@
-import { useState, useEffect } from 'react';
-import { getRouteDetails } from '@/services/routeService';
-import { calculateTotalCost, towTruckTypes } from '@/utils/towTruckPricing';
-import { TowTruckType } from '@/utils/downloadUtils';
-import { useToast } from '@/components/ui/use-toast';
+import { useState } from "react";
+import { towTruckTypes } from "@/utils/towTruckPricing";
 
-interface Location {
-  lat: number;
-  lng: number;
-}
+export const useTowingCost = () => {
+  const [selectedTruck, setSelectedTruck] = useState<"A" | "B" | "C" | "D">("A");
+  const [distance, setDistance] = useState(0);
+  const [requiresManeuver, setRequiresManeuver] = useState(false);
+  const [tollCost, setTollCost] = useState(0);
 
-export const useTowingCost = (
-  pickupLocation: Location | null,
-  dropLocation: Location | null,
-  requiresManeuver: boolean,
-  truckType: TowTruckType,
-  tollFees: number
-) => {
-  const [costDetails, setCostDetails] = useState<{
-    distance: number;
-    basePrice: number;
-    costPerKm: number;
-    ratePerKm: number;
-    maneuverCost: number;
-    totalCost: number;
-  } | null>(null);
-  const { toast } = useToast();
+  const truck = towTruckTypes[selectedTruck];
+  const baseCost = distance * truck.perKm;
+  const flagDropFee = truck.flagDropFee;
+  const maneuverCost = requiresManeuver ? truck.maneuverCharge : 0;
+  const totalCost = baseCost + flagDropFee + maneuverCost + tollCost;
 
-  useEffect(() => {
-    const calculateCosts = async () => {
-      if (pickupLocation && dropLocation) {
-        try {
-          const route = await getRouteDetails(pickupLocation, dropLocation);
-          const distance = route.distance;
-          const truckDetails = towTruckTypes[truckType];
-          const ratePerKm = truckDetails.perKm;
-          const costPerKm = ratePerKm * distance;
-          const maneuverCost = requiresManeuver ? truckDetails.maneuverCharge : 0;
-          const totalCost = calculateTotalCost(distance, truckType, requiresManeuver) + tollFees;
-
-          setCostDetails({
-            distance,
-            basePrice: truckDetails.perKm,
-            costPerKm,
-            ratePerKm,
-            maneuverCost,
-            totalCost
-          });
-        } catch (error) {
-          toast({
-            title: "Error al calcular costos",
-            description: "No se pudieron calcular los costos de la ruta. Por favor, intente de nuevo.",
-            variant: "destructive",
-          });
-        }
-      }
-    };
-
-    calculateCosts();
-  }, [pickupLocation, dropLocation, requiresManeuver, truckType, tollFees]);
-
-  return costDetails;
+  return {
+    selectedTruck,
+    setSelectedTruck,
+    distance,
+    setDistance,
+    requiresManeuver,
+    setRequiresManeuver,
+    tollCost,
+    setTollCost,
+    totalCost,
+    baseCost,
+    flagDropFee,
+    maneuverCost,
+  };
 };

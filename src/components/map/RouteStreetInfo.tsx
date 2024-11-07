@@ -3,6 +3,7 @@ import { MapPin, Navigation, Loader2 } from "lucide-react";
 import Draggable from "react-draggable";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useRef } from "react";
 
 interface RouteStreetInfoProps {
   pickupLocation: { lat: number; lng: number } | null;
@@ -20,6 +21,7 @@ export const RouteStreetInfo = ({
   isLoading = false
 }: RouteStreetInfoProps) => {
   const { toast } = useToast();
+  const nodeRef = useRef(null);
 
   if (!pickupLocation && !dropLocation) return null;
 
@@ -27,13 +29,14 @@ export const RouteStreetInfo = ({
     <Draggable
       handle=".drag-handle"
       bounds="parent"
+      nodeRef={nodeRef}
     >
-      <div className="absolute z-[1000] max-w-md">
+      <div ref={nodeRef} className="absolute z-[1000] max-w-md">
         <Card className={cn(
           "p-4 space-y-3 bg-white/95 backdrop-blur-sm shadow-lg transition-all duration-300",
           "hover:shadow-xl border-blue-100/50"
         )}>
-          <div className="flex items-center justify-between border-b pb-2 mb-2">
+          <div className="flex items-center justify-between border-b pb-2 mb-2 drag-handle cursor-move">
             <div className="font-semibold text-sm text-primary/90">Detalles de Ubicación</div>
             {isLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
           </div>

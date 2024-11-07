@@ -10,6 +10,7 @@ export interface TollLocation {
   vehicleTypes: ('car' | 'truck' | 'motorcycle')[];
   lastUpdated: string;
   status: 'active' | 'maintenance' | 'closed';
+  direction?: 'outbound' | 'return';
 }
 
 export const TOLL_LOCATIONS: TollLocation[] = [

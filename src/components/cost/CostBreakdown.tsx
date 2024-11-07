@@ -1,12 +1,13 @@
 import { TowTruckType } from "@/utils/towTruckPricing";
 import { formatCurrency } from "@/utils/priceCalculator";
 import { Card } from "@/components/ui/card";
-import { Receipt, Truck, TrendingUp, Flag } from "lucide-react";
+import { Receipt, Truck, TrendingUp, Flag, ArrowRight, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CostFormulaDisplay } from "./CostFormulaDisplay";
 import { CostItemDisplay } from "./CostItemDisplay";
 import { TruckInfoHeader } from "./TruckInfoHeader";
+import { Separator } from "@/components/ui/separator";
 
 interface CostBreakdownProps {
   baseCost: number;
@@ -15,7 +16,7 @@ interface CostBreakdownProps {
   totalDistance: number;
   totalTollCost: number;
   finalCost: number;
-  detectedTolls: Array<{ name: string; cost: number }>;
+  detectedTolls: Array<{ name: string; cost: number; direction: 'outbound' | 'return' }>;
   requiresInvoice: boolean;
   setShowPaymentWindow: (show: boolean) => void;
   maneuverCost: number;
@@ -41,6 +42,9 @@ export const CostBreakdown = ({
   subtotal,
   selectedVehicleModel,
 }: CostBreakdownProps) => {
+  const outboundTolls = detectedTolls.filter(toll => toll.direction === 'outbound');
+  const returnTolls = detectedTolls.filter(toll => toll.direction === 'return');
+
   return (
     <Card className="p-4 space-y-4 bg-white/50">
       <div className="space-y-2">
@@ -86,28 +90,59 @@ export const CostBreakdown = ({
               />
             )}
 
-            {detectedTolls.length > 0 && (
+            {(outboundTolls.length > 0 || returnTolls.length > 0) && (
               <motion.div
                 key={`tolls-${selectedTruck.name}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
+                className="space-y-3"
               >
                 <div className="text-sm text-gray-600 font-medium flex items-center gap-2">
                   <Receipt className="w-4 h-4 text-primary" />
                   Peajes detectados en la ruta:
                 </div>
-                {detectedTolls.map((toll, index) => (
+
+                {outboundTolls.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-blue-600">
+                      <ArrowRight className="w-4 h-4" />
+                      <span>Peajes de ida:</span>
+                    </div>
+                    {outboundTolls.map((toll, index) => (
+                      <CostItemDisplay
+                        key={`outbound-toll-${index}`}
+                        label={toll.name}
+                        amount={toll.cost}
+                        indent
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {returnTolls.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-blue-600">
+                      <ArrowLeft className="w-4 h-4" />
+                      <span>Peajes de regreso:</span>
+                    </div>
+                    {returnTolls.map((toll, index) => (
+                      <CostItemDisplay
+                        key={`return-toll-${index}`}
+                        label={toll.name}
+                        amount={toll.cost}
+                        indent
+                      />
+                    ))}
+                  </div>
+                )}
+
+                <div className="pt-2">
                   <CostItemDisplay
-                    key={`toll-${index}`}
-                    label={toll.name}
-                    amount={toll.cost}
-                    indent
+                    label="Total peajes (ida y vuelta)"
+                    amount={totalTollCost}
+                    className="font-medium"
                   />
-                ))}
-                <CostItemDisplay
-                  label="Total peajes"
-                  amount={totalTollCost}
-                />
+                </div>
               </motion.div>
             )}
 

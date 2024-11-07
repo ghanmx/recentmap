@@ -6,33 +6,36 @@ interface MapLocationHandlerProps {
   selectingPickup: boolean;
   selectingDrop: boolean;
   handleLocationSelect: (location: { lat: number; lng: number; address: string }) => void;
+  currentPickupLocation?: { lat: number; lng: number } | null;
 }
 
 export const MapLocationHandler = ({
   selectingPickup,
   selectingDrop,
   handleLocationSelect,
+  currentPickupLocation
 }: MapLocationHandlerProps) => {
   const { toast } = useToast();
 
   const handleClick = async (e: L.LeafletMouseEvent) => {
     if (selectingPickup || selectingDrop) {
       try {
-        const address = await getAddressFromCoordinates(e.latlng.lat, e.latlng.lng);
-        handleLocationSelect({ 
-          lat: e.latlng.lat, 
+        const location = {
+          lat: e.latlng.lat,
           lng: e.latlng.lng,
-          address: address 
-        });
+          address: await getAddressFromCoordinates(e.latlng.lat, e.latlng.lng)
+        };
+
+        handleLocationSelect(location);
         
         toast({
-          title: selectingPickup ? "Punto de recogida seleccionado" : "Punto de entrega seleccionado",
-          description: address,
+          title: selectingPickup ? "Punto de recogida marcado" : "Punto de entrega marcado",
+          description: location.address,
         });
       } catch (error) {
         toast({
           title: "Error",
-          description: "No se pudo obtener la dirección del punto seleccionado",
+          description: "No se pudo obtener la dirección de la ubicación seleccionada",
           variant: "destructive"
         });
       }

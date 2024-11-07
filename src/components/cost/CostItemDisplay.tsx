@@ -7,6 +7,7 @@ interface CostItemDisplayProps {
   icon?: React.ReactNode;
   indent?: boolean;
   description?: string;
+  className?: string;
 }
 
 export const CostItemDisplay = ({
@@ -15,13 +16,14 @@ export const CostItemDisplay = ({
   icon,
   indent = false,
   description,
+  className = "",
 }: CostItemDisplayProps) => {
   return (
     <motion.div 
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
-      className={`flex flex-col gap-1 ${indent ? 'pl-4' : ''}`}
+      className={`flex flex-col gap-1 ${indent ? 'pl-4' : ''} ${className}`}
     >
       <div className="flex justify-between items-center text-sm text-gray-600">
         <div className="flex items-center gap-2">

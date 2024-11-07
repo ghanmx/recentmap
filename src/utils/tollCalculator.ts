@@ -1,98 +1,99 @@
 import { TOLL_LOCATIONS } from '@/data/tollData';
 import { calculateDistance } from './distanceUtils';
 import { getRouteDetails } from '@/services/routeService';
+import { COMPANY_LOCATION } from './priceCalculator';
 
 interface Location {
   lat: number;
   lng: number;
 }
 
-const TOLL_DETECTION_RADIUS = 1.0; // Increased to 1km for better detection
-const TOLL_BUFFER_DISTANCE = 0.2; // 200m buffer for route proximity
+const TOLL_DETECTION_RADIUS = 1.0;
+const TOLL_BUFFER_DISTANCE = 0.2;
 
 export const detectTollsOnRoute = async (pickupLocation: Location, dropLocation: Location) => {
   try {
-    // Get the actual route
-    const routeDetails = await getRouteDetails(pickupLocation, dropLocation);
-    const routePoints = decodePolyline(routeDetails.geometry);
+    const routes = await getRouteSegments(pickupLocation, dropLocation);
+    const routePoints = extractRoutePoints(routes);
     
-    const detectedTolls = TOLL_LOCATIONS.filter(toll => {
-      // Check if toll is near pickup or drop location
-      const nearPickup = calculateDistance(pickupLocation, toll) <= TOLL_DETECTION_RADIUS;
-      const nearDrop = calculateDistance(dropLocation, toll) <= TOLL_DETECTION_RADIUS;
-      
-      // Check if toll is along the route
-      const nearRoute = routePoints.some(point => 
-        calculateDistance({ lat: point[0], lng: point[1] }, toll) <= TOLL_BUFFER_DISTANCE
-      );
+    const outboundTolls = detectTollsForSegment(pickupLocation, dropLocation, routePoints, 'outbound');
+    const returnTolls = detectTollsForSegment(dropLocation, COMPANY_LOCATION, routePoints, 'return');
+    
+    const allTolls = [...outboundTolls, ...returnTolls];
+    const totalTollCost = allTolls.reduce((sum, toll) => sum + toll.cost, 0);
 
-      return nearPickup || nearDrop || nearRoute;
-    });
-
-    const totalTollCost = detectedTolls.reduce((sum, toll) => sum + toll.cost, 0);
-
-    return {
-      tolls: detectedTolls,
-      totalTollCost,
-      routeDetails
-    };
+    return { tolls: allTolls, totalTollCost, routeDetails: routes };
   } catch (error) {
-    console.warn('Error detecting tolls, falling back to simple detection:', error);
-    // Fallback to simple point-to-point detection
-    const detectedTolls = TOLL_LOCATIONS.filter(toll => {
-      const distanceFromPickup = calculateDistance(pickupLocation, toll);
-      const distanceFromDrop = calculateDistance(dropLocation, toll);
-      return distanceFromPickup <= TOLL_DETECTION_RADIUS || distanceFromDrop <= TOLL_DETECTION_RADIUS;
-    });
-
-    return {
-      tolls: detectedTolls,
-      totalTollCost: detectedTolls.reduce((sum, toll) => sum + toll.cost, 0),
-      routeDetails: null
-    };
+    console.warn('Error detecting tolls:', error);
+    return { tolls: [], totalTollCost: 0, routeDetails: null };
   }
 };
 
-// Helper function to decode polyline
-function decodePolyline(str: string, precision = 5) {
-  let index = 0,
-      lat = 0,
-      lng = 0,
-      coordinates = [],
-      shift = 0,
-      result = 0,
-      byte = null,
-      latitude_change,
-      longitude_change,
-      factor = Math.pow(10, precision);
+const getRouteSegments = async (pickupLocation: Location, dropLocation: Location) => {
+  const companyToPickup = await getRouteDetails(COMPANY_LOCATION, pickupLocation);
+  const pickupToDrop = await getRouteDetails(pickupLocation, dropLocation);
+  const dropToCompany = await getRouteDetails(dropLocation, COMPANY_LOCATION);
+  
+  return { outbound: pickupToDrop, return: dropToCompany };
+};
+
+const extractRoutePoints = (routes: any) => {
+  const points: [number, number][] = [];
+  if (routes.outbound?.geometry) points.push(...decodePolyline(routes.outbound.geometry));
+  if (routes.return?.geometry) points.push(...decodePolyline(routes.return.geometry));
+  return points;
+};
+
+const detectTollsForSegment = (
+  start: Location,
+  end: Location,
+  routePoints: [number, number][],
+  direction: 'outbound' | 'return'
+) => {
+  return TOLL_LOCATIONS.filter(toll => {
+    const nearStart = calculateDistance(start, toll) <= TOLL_DETECTION_RADIUS;
+    const nearEnd = calculateDistance(end, toll) <= TOLL_DETECTION_RADIUS;
+    const nearRoute = routePoints.some(point => 
+      calculateDistance({ lat: point[0], lng: point[1] }, toll) <= TOLL_BUFFER_DISTANCE
+    );
+    return nearStart || nearEnd || nearRoute;
+  }).map(toll => ({
+    ...toll,
+    direction
+  }));
+};
+
+const decodePolyline = (str: string, precision = 5) => {
+  let index = 0, lat = 0, lng = 0, coordinates: [number, number][] = [];
+  const factor = Math.pow(10, precision);
 
   while (index < str.length) {
-    byte = null;
-    shift = 0;
+    let result = 0, shift = 0, byte;
+    
+    do {
+      byte = str.charCodeAt(index++) - 63;
+      result |= (byte & 0x1f) << shift;
+      shift += 5;
+    } while (byte >= 0x20);
+
+    const latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+    
     result = 0;
-
+    shift = 0;
+    
     do {
       byte = str.charCodeAt(index++) - 63;
       result |= (byte & 0x1f) << shift;
       shift += 5;
     } while (byte >= 0x20);
-
-    latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
-    shift = result = 0;
-
-    do {
-      byte = str.charCodeAt(index++) - 63;
-      result |= (byte & 0x1f) << shift;
-      shift += 5;
-    } while (byte >= 0x20);
-
-    longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
-
+    
+    const longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+    
     lat += latitude_change;
     lng += longitude_change;
-
+    
     coordinates.push([lat / factor, lng / factor]);
   }
 
   return coordinates;
-}
+};

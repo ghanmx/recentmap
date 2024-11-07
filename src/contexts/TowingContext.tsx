@@ -6,6 +6,11 @@ interface LocationInfo {
   drop?: { lat: number; lng: number; address: string };
 }
 
+interface TollInfo {
+  tolls: TollLocation[];
+  totalTollCost: number;
+}
+
 interface TowingContextType {
   totalDistance: number;
   totalCost: number;
@@ -14,6 +19,7 @@ interface TowingContextType {
   truckType: "A" | "B" | "C" | "D";
   requiresManeuver: boolean;
   selectedVehicleModel: string;
+  tollInfo: TollInfo | null;
   updateTowingInfo: (distance: number) => void;
   updateTollInfo: (tolls: TollLocation[], tollCost: number) => void;
   updateTruckType: (type: "A" | "B" | "C" | "D") => void;
@@ -32,6 +38,7 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
   const [truckType, setTruckType] = useState<"A" | "B" | "C" | "D">("A");
   const [requiresManeuver, setRequiresManeuver] = useState(false);
   const [selectedVehicleModel, setSelectedVehicleModel] = useState("");
+  const [tollInfo, setTollInfo] = useState<TollInfo | null>(null);
 
   const updateTowingInfo = (distance: number) => {
     setTotalDistance(distance);
@@ -40,6 +47,7 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
   const updateTollInfo = (tolls: TollLocation[], tollCost: number) => {
     setDetectedTolls(tolls);
     setTotalTollCost(tollCost);
+    setTollInfo({ tolls, totalTollCost: tollCost });
   };
 
   const updateTruckType = (type: "A" | "B" | "C" | "D") => {
@@ -68,6 +76,7 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
       truckType,
       requiresManeuver,
       selectedVehicleModel,
+      tollInfo,
       updateTowingInfo, 
       updateTollInfo,
       updateTruckType,

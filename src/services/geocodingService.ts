@@ -3,11 +3,11 @@ const NUEVO_LEON_COORDS = {
   lng: -99.9962
 };
 
-const GEOCODING_DELAY = 300; // ms between requests
+const GEOCODING_DELAY = 1000; // Increased delay to 1 second
 let lastRequestTime = 0;
 
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-  const R = 6371; // Earth's radius in km
+  const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = 
@@ -20,6 +20,30 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'MRGruas Application (https://mrgruas.com)',
+          'Referer': 'https://mrgruas.com'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return response;
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await wait(1000 * (i + 1)); // Exponential backoff
+    }
+  }
+  throw new Error('Max retries reached');
+};
+
 export const getAddressFromCoordinates = async (lat: number, lng: number): Promise<string> => {
   const timeSinceLastRequest = Date.now() - lastRequestTime;
   if (timeSinceLastRequest < GEOCODING_DELAY) {
@@ -28,37 +52,24 @@ export const getAddressFromCoordinates = async (lat: number, lng: number): Promi
   
   try {
     lastRequestTime = Date.now();
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=es`,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'MRGruas Application'
-        }
-      }
+    const response = await fetchWithRetry(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=es`
     );
-    
-    if (!response.ok) {
-      throw new Error('Error al obtener la dirección');
-    }
     
     const data = await response.json();
     return data.display_name || 'Dirección no encontrada';
   } catch (error) {
     console.error('Error fetching address:', error);
-    throw new Error('Error al obtener la dirección');
+    return 'Ubicación seleccionada'; // Fallback address
   }
 };
 
-interface SearchResult {
+export const searchAddresses = async (query: string): Promise<Array<{
   address: string;
   lat: number;
   lon: number;
   distance: number;
-  importance?: number;
-}
-
-export const searchAddresses = async (query: string): Promise<SearchResult[]> => {
+}>> => {
   if (!query || query.length < 3) return [];
   
   const timeSinceLastRequest = Date.now() - lastRequestTime;
@@ -70,19 +81,9 @@ export const searchAddresses = async (query: string): Promise<SearchResult[]> =>
     lastRequestTime = Date.now();
     const enhancedQuery = `${query}, Nuevo Leon, Mexico`;
     
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enhancedQuery)}&limit=10&accept-language=es&countrycodes=mx&bounded=1&viewbox=-100.5,26.0,-99.5,25.0`,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'MRGruas Application'
-        }
-      }
+    const response = await fetchWithRetry(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enhancedQuery)}&limit=10&accept-language=es&countrycodes=mx&bounded=1&viewbox=-100.5,26.0,-99.5,25.0`
     );
-    
-    if (!response.ok) {
-      throw new Error('Error en la búsqueda de direcciones');
-    }
     
     const data = await response.json();
     
@@ -103,7 +104,6 @@ export const searchAddresses = async (query: string): Promise<SearchResult[]> =>
       importance: item.importance || 0
     }));
 
-    // Sort by distance and importance
     return results.sort((a, b) => {
       const distanceWeight = 0.7;
       const importanceWeight = 0.3;
@@ -115,6 +115,6 @@ export const searchAddresses = async (query: string): Promise<SearchResult[]> =>
     });
   } catch (error) {
     console.error('Error searching addresses:', error);
-    throw new Error('Error en la búsqueda de direcciones');
+    return [];
   }
 };
