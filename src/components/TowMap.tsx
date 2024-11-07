@@ -16,14 +16,16 @@ const TowMap = () => {
   const [dropAddress, setDropAddress] = useState("");
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const mapRef = useRef<Map | null>(null);
   const { toast } = useToast();
-  const { updateTollInfo } = useTowing();
+  const { updateTollInfo, updateLocationInfo } = useTowing();
 
   useEffect(() => {
     const updateTolls = async () => {
       if (pickupLocation && dropLocation) {
         try {
+          setIsLoading(true);
           const tollInfo = await detectTollsOnRoute(pickupLocation, dropLocation);
           updateTollInfo(tollInfo.tolls, tollInfo.totalTollCost);
           
@@ -35,6 +37,13 @@ const TowMap = () => {
           }
         } catch (error) {
           console.error('Error detecting tolls:', error);
+          toast({
+            title: "Error",
+            description: "No se pudieron detectar los peajes en la ruta",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -44,16 +53,19 @@ const TowMap = () => {
 
   const handleLocationSelect = async (location: { lat: number; lng: number }, type: 'pickup' | 'drop') => {
     try {
+      setIsLoading(true);
       const address = await getAddressFromCoordinates(location.lat, location.lng);
       
       if (type === 'pickup') {
         setPickupLocation(location);
         setPickupAddress(address);
         setSelectingPickup(false);
+        updateLocationInfo({ pickup: { ...location, address } });
       } else {
         setDropLocation(location);
         setDropAddress(address);
         setSelectingDrop(false);
+        updateLocationInfo({ drop: { ...location, address } });
       }
 
       toast({
@@ -67,6 +79,8 @@ const TowMap = () => {
         description: "No se pudo obtener la dirección",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -88,6 +102,7 @@ const TowMap = () => {
           setPickupLocation={setPickupLocation}
           setDropLocation={setDropLocation}
           onRouteCalculated={(distance) => showRouteNotification(distance)}
+          isLoading={isLoading}
         />
       </div>
       
@@ -100,6 +115,9 @@ const TowMap = () => {
             setSelectingDrop={setSelectingDrop}
             pickupLocation={pickupLocation}
             dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
+            isLoading={isLoading}
           />
         </div>
       </div>
