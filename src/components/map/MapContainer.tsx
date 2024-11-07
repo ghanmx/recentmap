@@ -12,15 +12,19 @@ import { useEffect, useRef } from "react";
 import { LatLngTuple, LatLngBounds } from "leaflet";
 import { useToast } from "@/components/ui/use-toast";
 
-const NOTIFICATION_COOLDOWN = 3000; // 3 seconds cooldown between notifications
+const NOTIFICATION_COOLDOWN = 3000;
 
-const MapUpdater = ({ 
-  pickupLocation, 
-  dropLocation 
-}: { 
-  pickupLocation: { lat: number; lng: number } | null;
-  dropLocation: { lat: number; lng: number } | null;
-}) => {
+interface Location {
+  lat: number;
+  lng: number;
+}
+
+interface MapUpdaterProps {
+  pickupLocation: Location | null;
+  dropLocation: Location | null;
+}
+
+const MapUpdater = ({ pickupLocation, dropLocation }: MapUpdaterProps) => {
   const map = useMap();
   const { toast } = useToast();
   const lastToastTime = useRef(0);
@@ -46,19 +50,19 @@ const MapUpdater = ({
     } else if (dropLocation) {
       map.setView([dropLocation.lat, dropLocation.lng], 15);
     }
-  }, [map, pickupLocation, dropLocation]);
+  }, [map, pickupLocation, dropLocation, toast]);
 
   return null;
 };
 
 interface MapContainerComponentProps {
-  pickupLocation: { lat: number; lng: number } | null;
-  dropLocation: { lat: number; lng: number } | null;
+  pickupLocation: Location | null;
+  dropLocation: Location | null;
   selectingPickup: boolean;
   selectingDrop: boolean;
-  onLocationSelect: (location: { lat: number; lng: number }) => void;
-  setPickupLocation: (location: { lat: number; lng: number } | null) => void;
-  setDropLocation: (location: { lat: number; lng: number } | null) => void;
+  onLocationSelect: (location: Location) => void;
+  setPickupLocation: (location: Location | null) => void;
+  setDropLocation: (location: Location | null) => void;
   onRouteCalculated: (distance: number) => void;
   isLoading?: boolean;
 }
@@ -71,12 +75,13 @@ export const MapContainerComponent = ({
   onLocationSelect,
   setPickupLocation,
   setDropLocation,
-  onRouteCalculated
+  onRouteCalculated,
+  isLoading = false
 }: MapContainerComponentProps) => {
   const { toast } = useToast();
   const lastToastTime = useRef(0);
   
-  const handleLocationSelect = async (location: { lat: number; lng: number }) => {
+  const handleLocationSelect = async (location: Location) => {
     try {
       const now = Date.now();
       if (now - lastToastTime.current > NOTIFICATION_COOLDOWN) {
