@@ -10,7 +10,7 @@ export default defineStackbitConfig({
   installCommand: 'npm install',
   dataDir: 'content',
   pagesDir: 'src/pages',
-  publicDir: 'public',
+  publishDir: 'public',
   contentSources: [
     new GitContentSource({
       rootPath: __dirname,
