@@ -1,8 +1,9 @@
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { FormData } from "@/types/form";
-import { LocationSearch } from "../form/LocationSearch";
+import { LocationSearch } from "./LocationSearch";
 import { MapPin } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export interface LocationSelectorProps {
   form: UseFormReturn<FormData>;
@@ -27,6 +28,26 @@ export const LocationSelector = ({
   onSelectingPickup,
   onSelectingDrop
 }: LocationSelectorProps) => {
+  const { toast } = useToast();
+
+  const handleLocationSelect = (location: { lat: number; lng: number; address: string }, type: 'pickup' | 'drop') => {
+    if (type === 'pickup') {
+      form.setValue('pickupLocation', location);
+      onPickupSelect?.(location);
+      toast({
+        title: "Ubicación de recogida actualizada",
+        description: location.address,
+      });
+    } else {
+      form.setValue('dropoffLocation', location);
+      onDropSelect?.(location);
+      toast({
+        title: "Ubicación de entrega actualizada",
+        description: location.address,
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <FormField
@@ -34,16 +55,15 @@ export const LocationSelector = ({
         name="pickupLocation"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-lg font-semibold">Pickup Location</FormLabel>
+            <FormLabel className="text-lg font-semibold">Ubicación de Recogida</FormLabel>
             <FormControl>
               <LocationSearch
-                label="Pickup Location"
-                placeholder="Enter pickup address..."
+                label="Ubicación de Recogida"
+                placeholder="Ingrese dirección de recogida..."
                 icon={<MapPin className="h-4 w-4 text-primary" />}
-                onLocationSelect={(location) => {
-                  field.onChange(location);
-                  onPickupSelect?.(location);
-                }}
+                currentAddress={pickupAddress}
+                currentLocation={pickupLocation}
+                onLocationSelect={(location) => handleLocationSelect(location, 'pickup')}
               />
             </FormControl>
           </FormItem>
@@ -55,16 +75,15 @@ export const LocationSelector = ({
         name="dropoffLocation"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-lg font-semibold">Drop-off Location</FormLabel>
+            <FormLabel className="text-lg font-semibold">Ubicación de Entrega</FormLabel>
             <FormControl>
               <LocationSearch
-                label="Drop-off Location"
-                placeholder="Enter drop-off address..."
+                label="Ubicación de Entrega"
+                placeholder="Ingrese dirección de entrega..."
                 icon={<MapPin className="h-4 w-4 text-primary" />}
-                onLocationSelect={(location) => {
-                  field.onChange(location);
-                  onDropSelect?.(location);
-                }}
+                currentAddress={dropAddress}
+                currentLocation={dropLocation}
+                onLocationSelect={(location) => handleLocationSelect(location, 'drop')}
               />
             </FormControl>
           </FormItem>

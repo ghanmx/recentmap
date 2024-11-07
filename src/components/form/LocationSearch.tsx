@@ -6,6 +6,7 @@ import { searchAddresses } from "@/services/geocodingService";
 import { useToast } from "@/hooks/use-toast";
 import { debounce } from "lodash";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface LocationSearchProps {
   label: string;
@@ -34,6 +35,12 @@ export const LocationSearch = ({
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (currentAddress && currentAddress !== searchQuery) {
+      setSearchQuery(currentAddress);
+    }
+  }, [currentAddress]);
 
   const debouncedSearch = useCallback(
     debounce(async (query: string) => {
@@ -67,13 +74,6 @@ export const LocationSearch = ({
     [toast]
   );
 
-  // Update search query when currentAddress changes
-  useEffect(() => {
-    if (currentAddress && currentAddress !== searchQuery) {
-      setSearchQuery(currentAddress);
-    }
-  }, [currentAddress]);
-
   const handleLocationSelect = (suggestion: { address: string; lat: number; lon: number; distance: number }) => {
     const location = {
       lat: suggestion.lat,
@@ -84,16 +84,10 @@ export const LocationSearch = ({
     setSuggestions([]);
     setSearchQuery(suggestion.address);
     setError(null);
-    
-    toast({
-      title: "Ubicación seleccionada",
-      description: `${suggestion.address} (${suggestion.distance.toFixed(1)}km de Nuevo León)`,
-    });
   };
 
   return (
     <div className="space-y-2">
-      {label && <label className="text-sm font-medium text-gray-700">{label}</label>}
       <div className="relative">
         <div className="relative">
           {icon && (
@@ -134,36 +128,52 @@ export const LocationSearch = ({
           </Button>
         </div>
         
-        {error && (
-          <Alert variant="destructive" className="mt-2">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        
-        {suggestions.length > 0 && (
-          <div className="absolute z-50 w-full mt-1 max-h-60 overflow-auto bg-white/95 backdrop-blur-sm 
-                        border border-gray-200 rounded-md shadow-lg divide-y divide-gray-100">
-            {suggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                className="w-full px-4 py-3 text-left hover:bg-primary/5 flex items-center gap-3 
-                         transition-colors group"
-                onClick={() => handleLocationSelect(suggestion)}
-              >
-                <MapPin className="h-4 w-4 text-primary/70 group-hover:text-primary flex-shrink-0" />
-                <div className="flex flex-col">
-                  <span className="text-sm text-gray-700 group-hover:text-gray-900 line-clamp-2">
-                    {suggestion.address}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {suggestion.distance.toFixed(1)}km de Nuevo León
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <Alert variant="destructive" className="mt-2">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+          
+          {suggestions.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="absolute z-50 w-full mt-1 max-h-60 overflow-auto bg-white/95 backdrop-blur-sm 
+                        border border-gray-200 rounded-md shadow-lg divide-y divide-gray-100"
+            >
+              {suggestions.map((suggestion, index) => (
+                <motion.button
+                  key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="w-full px-4 py-3 text-left hover:bg-primary/5 flex items-center gap-3 
+                           transition-colors group"
+                  onClick={() => handleLocationSelect(suggestion)}
+                >
+                  <MapPin className="h-4 w-4 text-primary/70 group-hover:text-primary flex-shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-700 group-hover:text-gray-900 line-clamp-2">
+                      {suggestion.address}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {suggestion.distance.toFixed(1)}km de Nuevo León
+                    </span>
+                  </div>
+                </motion.button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
