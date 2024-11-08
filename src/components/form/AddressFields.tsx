@@ -51,7 +51,7 @@ export const AddressFields = ({
           type === 'drop' ? { lat: location.lat, lng: location.lng } : dropLocation
         );
         onTollUpdate?.(tollInfo.totalTollCost);
-        
+
         if (tollInfo.tolls.length > 0) {
           toast({
             title: "Peajes detectados",
@@ -70,7 +70,7 @@ export const AddressFields = ({
 
   return (
     <Card className={`p-6 space-y-6 bg-gradient-to-br from-white/95 to-blue-50/95 border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}>
-      <motion.div 
+      <motion.div
         className="space-y-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -100,9 +100,9 @@ export const AddressFields = ({
             icon={<MapPin className="h-4 w-4 text-green-500" />}
           />
         </div>
-        
+
         <Separator className="my-4" />
-        
+
         <div className="relative">
           <div className="flex items-center justify-between gap-2 mb-4">
             <div className="flex items-center gap-2">

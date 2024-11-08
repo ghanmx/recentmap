@@ -55,6 +55,7 @@
     "class-variance-authority": "^0.7.0",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
+    "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.3.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "framer-motion": "^11.11.11",
@@ -291,6 +292,7 @@ export default tseslint.config(
     "class-variance-authority": "^0.7.0",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
+    "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.3.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "framer-motion": "^11.11.11",
@@ -630,6 +632,30 @@ export default defineConfig(() => ({
 {
 	"siteId": "68e2c53a-1c3b-43cd-9f88-be9661720146"
 }
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\dist\assets\index-DSwnUCTd.js
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\netlify\functions\hello-world\hello-world.js
+// Docs on event and context https://docs.netlify.com/functions/build/#code-your-function-2
+const handler = async (event) => {
+  try {
+    const subject = event.queryStringParameters.name || 'World'
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: `Hello ${subject}` }),
+      // // more keys you can return:
+      // headers: { "headerName": "headerValue", ... },
+      // isBase64Encoded: true,
+    }
+  } catch (error) {
+    return { statusCode: 500, body: error.toString() }
+  }
+}
+
+module.exports = { handler }
+
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\App.tsx
@@ -9742,7 +9768,7 @@ const calculateBackoffDelay = (attempt: number): number => {
 const enforceRateLimit = async () => {
   const now = Date.now();
   const timeSinceLastRequest = now - lastRequestTime;
-  
+
   if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
     await wait(MIN_REQUEST_INTERVAL - timeSinceLastRequest);
   }
@@ -9757,13 +9783,10 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
 
   for (const baseUrl of urls) {
     try {
-<<<<<<< HEAD
-      await delay(calculateDelay(retryCount));
+
+
       const url = `${baseUrl}/${coordinates}?overview=full&geometries=polyline`;
-=======
-      const url = `${baseUrl}/driving/${coordinates}?overview=full&geometries=polyline`;
->>>>>>> 6f06c996992d75036e04aacca3c0135fbe66cef3
-      
+
       const response = await fetch(url, {
         ...options,
         method: 'GET',
@@ -9779,11 +9802,8 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-<<<<<<< HEAD
-      return response;
-=======
+      // Handle rate limiting
       if (response.status === 429) {
-        // If rate limited, wait and try again
         const backoffDelay = calculateBackoffDelay(attempt);
         await wait(backoffDelay);
         if (attempt < MAX_RETRIES) {
@@ -9791,8 +9811,7 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
         }
       }
 
-      errors.push(new Error(`Failed response from ${baseUrl}: ${response.status}`));
->>>>>>> 6f06c996992d75036e04aacca3c0135fbe66cef3
+      return response;
     } catch (error) {
       console.error(`Error with ${baseUrl}:`, error);
       errors.push(error instanceof Error ? error : new Error(`Unknown error from ${baseUrl}`));
@@ -9800,15 +9819,17 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
     }
   }
 
-<<<<<<< HEAD
-  if (retryCount < MAX_RETRIES) {
-    console.log(`Retrying request, attempt ${retryCount + 1} of ${MAX_RETRIES}`);
-    await delay(calculateDelay(retryCount));
-    return tryFetchWithUrls(urls, coordinates, options, retryCount + 1);
+
+
+
+
+  if (attempt < MAX_RETRIES) {
+    console.log(`Retrying request, attempt ${attempt + 1} of ${MAX_RETRIES}`);
+    const backoffDelay = calculateBackoffDelay(attempt);
+    await wait(backoffDelay);
+    return tryFetchWithUrls(urls, coordinates, options, attempt + 1);
   }
 
-=======
->>>>>>> 6f06c996992d75036e04aacca3c0135fbe66cef3
   throw new Error(`All routing services failed after ${MAX_RETRIES} retries. Errors: ${errors.map(e => e.message).join(', ')}`);
 }
 
@@ -9818,12 +9839,47 @@ export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Pr
   geometry: string;
 }> {
   const coordinates = `${start.lng},${start.lat};${end.lng},${end.lat}`;
-  
-<<<<<<< HEAD
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   try {
-    const response = await tryFetchWithUrls(OSRM_API_URLS, coordinates, {});
-    const data: OSRMResponse = await response.json();
-    
+    // Queue this request
+    const result = await new Promise((resolve, reject) => {
+      requestQueue = requestQueue
+        .then(() => tryFetchWithUrls(OSRM_API_URLS, coordinates, {
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'TowingServiceApplication/1.0',
+            'Referer': 'https://mrgruas.com'
+          }
+        }))
+        .then(response => response.json())
+        .then(resolve)
+        .catch(reject);
+    });
+
+
+    const data = result as OSRMResponse;
+
+
+
+
+
+
+
+
     if (!data.routes || data.routes.length === 0) {
       throw new Error('No route found between the specified locations.');
     }
@@ -9833,37 +9889,10 @@ export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Pr
       duration: data.routes[0].duration,
       geometry: data.routes[0].geometry,
     };
+
   } catch (error) {
-    console.error('Error fetching route:', error);
-    throw error instanceof Error ? error : new Error('An unexpected error occurred while fetching the route.');
-=======
-  // Queue this request
-  const result = await new Promise((resolve, reject) => {
-    requestQueue = requestQueue
-      .then(() => tryFetchWithUrls(OSRM_API_URLS, coordinates, {
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'TowingServiceApplication/1.0',
-          'Referer': 'https://mrgruas.com'
-        }
-      }))
-      .then(response => response.json())
-      .then(resolve)
-      .catch(reject);
-  });
-
-  const data = result as OSRMResponse;
-  
-  if (!data.routes || data.routes.length === 0) {
-    throw new Error('No route found between the specified locations.');
->>>>>>> 6f06c996992d75036e04aacca3c0135fbe66cef3
+    throw error;
   }
-
-  return {
-    distance: data.routes[0].distance / 1000, // Convert to kilometers
-    duration: data.routes[0].duration,
-    geometry: data.routes[0].geometry,
-  };
 }
 
 
@@ -10052,38 +10081,6 @@ const convertToCSV = (data: any) => {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\utils\mapUtils.ts
-import L from "leaflet";
-
-export const ENTERPRISE_LOCATIONS = [
-  { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
-];
-
-export const enterpriseIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-export const pickupIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-export const dropIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\utils\notificationUtils.tsx

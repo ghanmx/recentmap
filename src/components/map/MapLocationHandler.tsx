@@ -1,3 +1,4 @@
+// MapLocationHandler.tsx
 import { useMapEvents } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
 import { useToast } from "@/hooks/use-toast";
@@ -6,14 +7,12 @@ interface MapLocationHandlerProps {
   selectingPickup: boolean;
   selectingDrop: boolean;
   handleLocationSelect: (location: { lat: number; lng: number; address: string }) => void;
-  currentPickupLocation?: { lat: number; lng: number } | null;
 }
 
 export const MapLocationHandler = ({
   selectingPickup,
   selectingDrop,
-  handleLocationSelect,
-  currentPickupLocation
+  handleLocationSelect
 }: MapLocationHandlerProps) => {
   const { toast } = useToast();
 
@@ -27,7 +26,7 @@ export const MapLocationHandler = ({
         };
 
         handleLocationSelect(location);
-        
+
         toast({
           title: selectingPickup ? "Punto de recogida marcado" : "Punto de entrega marcado",
           description: location.address,

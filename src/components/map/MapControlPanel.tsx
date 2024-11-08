@@ -33,19 +33,19 @@ export const MapControlPanel = ({
   const { toast } = useToast();
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="px-4 sm:px-6 flex flex-col items-center gap-6 pointer-events-auto max-w-3xl mx-auto w-full"
+      className="fixed top-4 left-0 right-0 px-4 sm:px-6 flex flex-col items-center gap-6 pointer-events-auto max-w-3xl mx-auto w-full z-10"
     >
-      <ScrollArea className="w-full max-h-[calc(100vh-8rem)]">
-        <Card className="w-full bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-4 sm:p-6 border-blue-100/50 hover:shadow-xl transition-all duration-300">
+      <ScrollArea className="w-full max-h-[calc(100vh-6rem)] overflow-visible">
+        <Card className="relative w-full bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-4 sm:p-6 border-blue-100/50 hover:shadow-xl transition-all duration-300">
           {isLoading && (
             <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-50 rounded-xl">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
             </div>
           )}
-          <MapControls 
+          <MapControls
             selectingPickup={selectingPickup}
             selectingDrop={selectingDrop}
             onPickupClick={() => {
@@ -68,14 +68,14 @@ export const MapControlPanel = ({
             }}
           />
         </Card>
-        
+
         {(pickupLocation || dropLocation) && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="w-full mt-4"
           >
-            <RouteStreetInfo 
+            <RouteStreetInfo
               pickupLocation={pickupLocation}
               dropLocation={dropLocation}
               pickupAddress={pickupAddress}

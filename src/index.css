@@ -28,23 +28,78 @@
 
   html {
     font-size: 14px;
-    @screen md {
+
+    @media (min-width: 768px) {
       font-size: 16px;
     }
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-semibold tracking-tight;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
 
-  h1 { @apply text-2xl md:text-3xl lg:text-4xl; }
-  h2 { @apply text-xl md:text-2xl lg:text-3xl; }
-  h3 { @apply text-lg md:text-xl lg:text-2xl; }
-  h4 { @apply text-base md:text-lg lg:text-xl; }
+  h1 {
+    font-size: 1.5rem;
+
+    @media (min-width: 768px) {
+      font-size: 1.875rem;
+    }
+
+    @media (min-width: 1024px) {
+      font-size: 2.25rem;
+    }
+  }
+
+  h2 {
+    font-size: 1.25rem;
+
+    @media (min-width: 768px) {
+      font-size: 1.5rem;
+    }
+
+    @media (min-width: 1024px) {
+      font-size: 1.875rem;
+    }
+  }
+
+  h3 {
+    font-size: 1.125rem;
+
+    @media (min-width: 768px) {
+      font-size: 1.25rem;
+    }
+
+    @media (min-width: 1024px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  h4 {
+    font-size: 1rem;
+
+    @media (min-width: 768px) {
+      font-size: 1.125rem;
+    }
+
+    @media (min-width: 1024px) {
+      font-size: 1.25rem;
+    }
+  }
 
   .dark {
     --background: 222.2 84% 4.9%;
@@ -69,7 +124,7 @@
   }
 
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 }
 
@@ -78,62 +133,78 @@
 .select-content,
 [role="listbox"],
 [role="combobox"] {
-  @apply z-[1000];
+  z-index: 1000;
 }
 
 .metallic-effect {
-  @apply relative overflow-hidden;
+  position: relative;
+  overflow: hidden;
   background: linear-gradient(45deg,
-    #999 5%,
-    #fff 10%,
-    #ccc 30%,
-    #ddd 50%,
-    #ccc 70%,
-    #fff 80%,
-    #999 95%);
+      #999 5%,
+      #fff 10%,
+      #ccc 30%,
+      #ddd 50%,
+      #ccc 70%,
+      #fff 80%,
+      #999 95%);
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .metallic-effect::after {
-  @apply absolute -top-1/2 -left-1/2;
+  position: absolute;
+  top: -50%;
+  left: -50%;
   content: "";
   width: 200%;
   height: 200%;
   background: linear-gradient(30deg,
-    transparent 20%,
-    transparent 40%,
-    rgb(255, 255, 255, 0.4) 50%,
-    rgb(255, 255, 255, 0.4) 55%,
-    transparent 70%,
-    transparent 100%);
+      transparent 20%,
+      transparent 40%,
+      rgb(255, 255, 255, 0.4) 50%,
+      rgb(255, 255, 255, 0.4) 55%,
+      transparent 70%,
+      transparent 100%);
   transform: rotate(30deg);
   animation: shine-metal 3s infinite linear;
 }
 
 @keyframes shine-metal {
-  from { transform: translateX(-100%) rotate(30deg); }
-  to { transform: translateX(100%) rotate(30deg); }
+  from {
+    transform: translateX(-100%) rotate(30deg);
+  }
+
+  to {
+    transform: translateX(100%) rotate(30deg);
+  }
 }
 
 .card-shine-effect-metal {
   --shine-deg: 45deg;
-  @apply relative overflow-hidden rounded-[0.875rem] p-8 shadow-lg w-[200px] h-[180px];
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.875rem;
+  padding: 2rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  width: 200px;
+  height: 180px;
   background: linear-gradient(to bottom, #dbdbdb, #f9f9f9, #dbdbdb);
 }
 
 .card-shine-effect-metal:after {
-  @apply absolute top-0 z-[1];
+  position: absolute;
+  top: 0;
+  z-index: 1;
   content: "";
   width: 300%;
   height: 300%;
   background: linear-gradient(30deg,
-    transparent 20%,
-    transparent 40%,
-    rgb(255, 255, 255, 0.4) 50%,
-    rgb(255, 255, 255, 0.4) 55%,
-    transparent 70%,
-    transparent 100%);
+      transparent 20%,
+      transparent 40%,
+      rgb(255, 255, 255, 0.4) 50%,
+      rgb(255, 255, 255, 0.4) 55%,
+      transparent 70%,
+      transparent 100%);
   transition: transform 2s ease-in;
   transform: translateX(100%) rotate(var(--shine-deg));
 }
@@ -143,8 +214,13 @@
 }
 
 @keyframes shine-card {
-  0% { transform: translateX(100%) rotate(var(--shine-deg)); }
-  100% { transform: translateX(-100%) rotate(var(--shine-deg)); }
+  0% {
+    transform: translateX(100%) rotate(var(--shine-deg));
+  }
+
+  100% {
+    transform: translateX(-100%) rotate(var(--shine-deg));
+  }
 }
 
 .bg-grid-pattern {
