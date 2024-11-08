@@ -65,8 +65,8 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Handle rate limiting
       if (response.status === 429) {
-        // If rate limited, wait and try again
         const backoffDelay = calculateBackoffDelay(attempt);
         await wait(backoffDelay);
         if (attempt < MAX_RETRIES) {
