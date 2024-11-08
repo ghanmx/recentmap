@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { CreditCard, Calendar, CheckCircle, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { processPayment, validatePaymentDetails } from "@/utils/paymentProcessor";
 
 interface PaymentWindowProps {
   isOpen: boolean;
@@ -29,8 +30,8 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: Payment
   const handleClose = () => {
     if (isProcessing) {
       toast({
-        title: "Payment in Progress",
-        description: "Please wait while we process your payment",
+        title: "Pago en Proceso",
+        description: "Por favor, espere mientras procesamos su pago",
         variant: "destructive",
       });
       return;
@@ -43,8 +44,8 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: Payment
 
     if (!cardComplete) {
       toast({
-        title: "Incomplete Card Details",
-        description: "Please fill in all card information before proceeding",
+        title: "Datos Incompletos",
+        description: "Por favor, complete todos los datos de la tarjeta",
         variant: "destructive",
       });
       return;
@@ -55,7 +56,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: Payment
     if (!stripe || !elements) {
       toast({
         title: "Error",
-        description: "Payment system is not ready. Please try again later.",
+        description: "Sistema de pago no disponible. Intente más tarde.",
         variant: "destructive",
       });
       setIsProcessing(false);
@@ -63,12 +64,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: Payment
     }
 
     const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      toast({
-        title: "Error",
-        description: "Card element not found.",
-        variant: "destructive",
-      });
+    if (!validatePaymentDetails(cardElement)) {
       setIsProcessing(false);
       return;
     }
@@ -83,23 +79,25 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: Payment
         throw error;
       }
 
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const result = await processPayment(amount);
 
-      toast({
-        title: "Payment Successful",
-        description: "Your payment has been processed successfully.",
-      });
-      
-      onPaymentSubmit({ success: true });
-      onClose();
+      if (result.success) {
+        toast({
+          title: "Pago Exitoso",
+          description: `Transacción completada. ID: ${result.transactionId}`,
+        });
+        onPaymentSubmit?.({ success: true });
+        onClose();
+      } else {
+        throw new Error(result.error);
+      }
     } catch (err: any) {
       toast({
-        title: "Payment Failed",
-        description: err.message || "An error occurred during payment processing",
+        title: "Error en el Pago",
+        description: err.message || "Ocurrió un error al procesar el pago",
         variant: "destructive",
       });
-      onPaymentSubmit({ success: false, error: err.message });
+      onPaymentSubmit?.({ success: false, error: err.message });
     } finally {
       setIsProcessing(false);
     }
@@ -111,7 +109,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: Payment
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
             <CreditCard className="w-5 h-5 text-primary" />
-            Secure Payment
+            Pago Seguro
           </DialogTitle>
         </DialogHeader>
         
@@ -141,7 +139,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: Payment
             <div className="flex items-center justify-between text-sm text-gray-600">
               <span className="flex items-center gap-1.5">
                 <Shield className="w-4 h-4" />
-                Secure SSL Encryption
+                Encriptación SSL Segura
               </span>
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />
@@ -150,7 +148,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: Payment
             </div>
 
             <div className="flex items-center justify-between px-2">
-              <span className="text-sm text-gray-600">Service Fee</span>
+              <span className="text-sm text-gray-600">Cargo por Servicio</span>
               <span className="text-lg font-semibold text-primary">
                 ${amount.toFixed(2)}
               </span>
@@ -165,7 +163,7 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: Payment
               disabled={isProcessing}
               className="border-gray-300 hover:bg-gray-100"
             >
-              Cancel
+              Cancelar
             </Button>
             <Button
               type="submit"
@@ -178,12 +176,12 @@ const PaymentWindow = ({ isOpen, onClose, onPaymentSubmit, amount = 0 }: Payment
               {isProcessing ? (
                 <span className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Processing...
+                  Procesando...
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" />
-                  Pay ${amount.toFixed(2)}
+                  Pagar ${amount.toFixed(2)}
                 </span>
               )}
             </Button>

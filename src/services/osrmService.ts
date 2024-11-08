@@ -1,7 +1,6 @@
 const OSRM_API_URLS = [
-  'https://router.project-osrm.org/route/v1',
-  'http://router.project-osrm.org/route/v1',
-  'https://routing.openstreetmap.de/routed-car/route/v1'
+  'https://routing.openstreetmap.de/routed-car/route/v1/driving',
+  'https://router.project-osrm.org/route/v1/driving'
 ];
 
 const BASE_DELAY = 1000;
@@ -41,31 +40,32 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
   for (const baseUrl of urls) {
     try {
       await delay(calculateDelay(retryCount));
-      const url = `${baseUrl}/driving/${coordinates}?overview=full&geometries=polyline`;
+      const url = `${baseUrl}/${coordinates}?overview=full&geometries=polyline`;
       
       const response = await fetch(url, {
         ...options,
+        method: 'GET',
         mode: 'cors',
-        credentials: 'omit',
         headers: {
-          ...options.headers,
           'Accept': 'application/json',
           'User-Agent': 'TowingServiceApplication/1.0'
         }
       });
 
-      if (response.ok) {
-        return response;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      errors.push(new Error(`Failed response from ${baseUrl}: ${response.status}`));
+      return response;
     } catch (error) {
+      console.error(`Error with ${baseUrl}:`, error);
       errors.push(error instanceof Error ? error : new Error(`Unknown error from ${baseUrl}`));
       continue;
     }
   }
 
   if (retryCount < MAX_RETRIES) {
+    console.log(`Retrying request, attempt ${retryCount + 1} of ${MAX_RETRIES}`);
     await delay(calculateDelay(retryCount));
     return tryFetchWithUrls(urls, coordinates, options, retryCount + 1);
   }
@@ -81,13 +81,7 @@ export async function getRouteFromOSRM(start: Coordinates, end: Coordinates): Pr
   const coordinates = `${start.lng},${start.lat};${end.lng},${end.lat}`;
   
   try {
-    const response = await tryFetchWithUrls(OSRM_API_URLS, coordinates, {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'TowingServiceApplication/1.0'
-      }
-    });
-
+    const response = await tryFetchWithUrls(OSRM_API_URLS, coordinates, {});
     const data: OSRMResponse = await response.json();
     
     if (!data.routes || data.routes.length === 0) {

@@ -7,6 +7,7 @@ import { VehicleForm } from "./VehicleForm";
 import { RouteDisplay } from "./map/RouteDisplay";
 import { CostEstimation } from "./CostEstimation";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const NavContent = ({
   pickupLocation,
@@ -28,12 +29,12 @@ const NavContent = ({
   onSelectingDrop: (selecting: boolean) => void;
 }) => (
   <>
-    <div className="p-4 border-b bg-gradient-to-r from-primary/10 to-primary/5">
-      <h1 className="text-2xl font-heading font-bold text-primary text-center">MRGruas</h1>
+    <div className="sticky top-0 z-10 p-4 border-b bg-gradient-to-r from-primary/10 to-primary/5 backdrop-blur-sm">
+      <h1 className="text-xl md:text-2xl lg:text-3xl font-heading font-bold text-primary text-center">MRGruas</h1>
     </div>
 
-    <div className="p-6 overflow-y-auto">
-      <div className="space-y-6 flex flex-col items-center">
+    <ScrollArea className="h-[calc(100vh-4rem)] p-4 md:p-6">
+      <div className="space-y-4 md:space-y-6 flex flex-col items-center pb-20">
         <VehicleForm
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
@@ -51,7 +52,7 @@ const NavContent = ({
           dropLocation={dropLocation}
         />
       </div>
-    </div>
+    </ScrollArea>
   </>
 );
 
@@ -90,7 +91,7 @@ const Sidebar = () => {
               <Menu className="h-4 w-4" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-80 p-0">
+          <SheetContent side="left" className="w-full sm:w-[400px] p-0">
             <NavContent
               pickupLocation={pickupLocation}
               dropLocation={dropLocation}
@@ -126,7 +127,7 @@ const Sidebar = () => {
           "hidden lg:flex flex-col fixed left-0 top-0 h-screen",
           "bg-white/95 backdrop-blur-sm border-r shadow-lg z-[1000]",
           "transition-all duration-300 ease-in-out",
-          isDesktopSidebarVisible ? "w-96" : "w-0 overflow-hidden"
+          isDesktopSidebarVisible ? "w-[400px]" : "w-0 overflow-hidden"
         )}
       >
         <NavContent
@@ -144,7 +145,7 @@ const Sidebar = () => {
       <div 
         className={cn(
           "transition-all duration-300 ease-in-out",
-          isDesktopSidebarVisible ? "lg:pl-96" : "lg:pl-0"
+          isDesktopSidebarVisible ? "lg:pl-[400px]" : "lg:pl-0"
         )} 
       />
     </>
