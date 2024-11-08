@@ -77,7 +77,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
-    "@stackbit/cms-git": "^1.0.22",
     "@stackbit/types": "^2.1.6",
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^22.5.5",
