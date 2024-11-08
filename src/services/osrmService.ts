@@ -1,7 +1,7 @@
 const OSRM_API_URLS = [
   'https://router.project-osrm.org/route/v1',
-  'http://router.project-osrm.org/route/v1',
-  'https://routing.openstreetmap.de/routed-car/route/v1'
+  'https://routing.openstreetmap.de/routed-car/route/v1',
+  'https://osrm.openstreetmap.de/routed-car/route/v1'
 ];
 
 const MIN_REQUEST_INTERVAL = 1100; // Slightly over 1 second to be safe
@@ -51,8 +51,7 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
       
       const response = await fetch(url, {
         ...options,
-        mode: 'cors',
-        credentials: 'omit',
+        method: 'GET',
         headers: {
           ...options.headers,
           'Accept': 'application/json',
@@ -61,12 +60,13 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
         }
       });
 
+      // Handle successful responses
       if (response.ok) {
         return response;
       }
 
+      // Handle rate limiting
       if (response.status === 429) {
-        // If rate limited, wait and try again
         const backoffDelay = calculateBackoffDelay(attempt);
         await wait(backoffDelay);
         if (attempt < MAX_RETRIES) {
@@ -74,11 +74,24 @@ async function tryFetchWithUrls(urls: string[], coordinates: string, options: Re
         }
       }
 
+      // Handle server errors (502, 503, 504)
+      if (response.status >= 500) {
+        errors.push(new Error(`Server error from ${baseUrl}: ${response.status}`));
+        continue; // Try next URL
+      }
+
       errors.push(new Error(`Failed response from ${baseUrl}: ${response.status}`));
     } catch (error) {
       errors.push(error instanceof Error ? error : new Error(`Unknown error from ${baseUrl}`));
       continue;
     }
+  }
+
+  // If we've tried all URLs and still have errors, but haven't exceeded retries
+  if (attempt < MAX_RETRIES) {
+    const backoffDelay = calculateBackoffDelay(attempt);
+    await wait(backoffDelay);
+    return tryFetchWithUrls(urls, coordinates, options, attempt + 1);
   }
 
   throw new Error(`All routing services failed after ${MAX_RETRIES} retries. Errors: ${errors.map(e => e.message).join(', ')}`);
