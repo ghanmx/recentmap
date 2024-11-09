@@ -1,11 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./use-toast";
-import { Tables } from "@/integrations/supabase/types";
+import { Database } from "@/integrations/supabase/types";
 
-type Webhook = Tables['webhooks']['Row'];
-type WebhookInsert = Tables['webhooks']['Insert'];
-type WebhookUpdate = Tables['webhooks']['Update'];
+type Tables = Database['public']['Tables']
+type Webhook = Tables['webhooks']['Row']
+type WebhookInsert = Tables['webhooks']['Insert']
+type WebhookUpdate = Tables['webhooks']['Update']
 
 export const useWebhooks = () => {
   const { toast } = useToast();
