@@ -1958,7 +1958,7 @@ export const AddressFields = ({
           type === 'drop' ? { lat: location.lat, lng: location.lng } : dropLocation
         );
         onTollUpdate?.(tollInfo.totalTollCost);
-        
+
         if (tollInfo.tolls.length > 0) {
           toast({
             title: "Peajes detectados",
@@ -1977,7 +1977,7 @@ export const AddressFields = ({
 
   return (
     <Card className={`p-6 space-y-6 bg-gradient-to-br from-white/95 to-blue-50/95 border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}>
-      <motion.div 
+      <motion.div
         className="space-y-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -2007,9 +2007,9 @@ export const AddressFields = ({
             icon={<MapPin className="h-4 w-4 text-green-500" />}
           />
         </div>
-        
+
         <Separator className="my-4" />
-        
+
         <div className="relative">
           <div className="flex items-center justify-between gap-2 mb-4">
             <div className="flex items-center gap-2">
@@ -2039,7 +2039,6 @@ export const AddressFields = ({
     </Card>
   );
 };
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\form\DownloadButtons.tsx
@@ -4011,19 +4010,19 @@ export const MapControlPanel = ({
   const { toast } = useToast();
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="px-4 sm:px-6 flex flex-col items-center gap-6 pointer-events-auto max-w-3xl mx-auto w-full"
+      className="fixed top-4 left-0 right-0 px-4 sm:px-6 flex flex-col items-center gap-6 pointer-events-auto max-w-3xl mx-auto w-full z-10"
     >
-      <ScrollArea className="w-full max-h-[calc(100vh-8rem)]">
-        <Card className="w-full bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-4 sm:p-6 border-blue-100/50 hover:shadow-xl transition-all duration-300">
+      <ScrollArea className="w-full max-h-[calc(100vh-6rem)] overflow-visible">
+        <Card className="relative w-full bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-4 sm:p-6 border-blue-100/50 hover:shadow-xl transition-all duration-300">
           {isLoading && (
             <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-50 rounded-xl">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
             </div>
           )}
-          <MapControls 
+          <MapControls
             selectingPickup={selectingPickup}
             selectingDrop={selectingDrop}
             onPickupClick={() => {
@@ -4046,14 +4045,14 @@ export const MapControlPanel = ({
             }}
           />
         </Card>
-        
+
         {(pickupLocation || dropLocation) && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="w-full mt-4"
           >
-            <RouteStreetInfo 
+            <RouteStreetInfo
               pickupLocation={pickupLocation}
               dropLocation={dropLocation}
               pickupAddress={pickupAddress}
@@ -4220,6 +4219,7 @@ export const MapLayout = ({ children }: MapLayoutProps) => {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\MapLocationHandler.tsx
+// MapLocationHandler.tsx
 import { useMapEvents } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
 import { useToast } from "@/hooks/use-toast";
@@ -4228,14 +4228,12 @@ interface MapLocationHandlerProps {
   selectingPickup: boolean;
   selectingDrop: boolean;
   handleLocationSelect: (location: { lat: number; lng: number; address: string }) => void;
-  currentPickupLocation?: { lat: number; lng: number } | null;
 }
 
 export const MapLocationHandler = ({
   selectingPickup,
   selectingDrop,
-  handleLocationSelect,
-  currentPickupLocation
+  handleLocationSelect
 }: MapLocationHandlerProps) => {
   const { toast } = useToast();
 
@@ -4249,7 +4247,7 @@ export const MapLocationHandler = ({
         };
 
         handleLocationSelect(location);
-        
+
         toast({
           title: selectingPickup ? "Punto de recogida marcado" : "Punto de entrega marcado",
           description: location.address,
@@ -4270,6 +4268,7 @@ export const MapLocationHandler = ({
 
   return null;
 };
+
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\MapMetrics.tsx
@@ -10081,6 +10080,38 @@ const convertToCSV = (data: any) => {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\utils\mapUtils.ts
+import L from "leaflet";
+
+export const ENTERPRISE_LOCATIONS = [
+  { lat: 26.510272, lng: -100.006323, name: "Main Service Center" },
+];
+
+export const enterpriseIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+export const pickupIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+export const dropIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\utils\notificationUtils.tsx
