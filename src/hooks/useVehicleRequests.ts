@@ -57,6 +57,12 @@ export const useVehicleRequests = () => {
         .single();
 
       if (error) throw error;
+
+      // Notify admin via email
+      await supabase.functions.invoke('notify-request', {
+        body: { requestId: data.id }
+      });
+
       return data;
     },
     onSuccess: () => {
