@@ -58,6 +58,11 @@ export const useVehicleRequests = () => {
 
       if (error) throw error;
 
+      // Notify webhooks
+      await supabase.functions.invoke('webhook-notify', {
+        body: { requestId: data.id }
+      });
+
       // Notify admin via email
       await supabase.functions.invoke('notify-request', {
         body: { requestId: data.id }
