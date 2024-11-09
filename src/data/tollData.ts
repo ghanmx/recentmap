@@ -117,5 +117,31 @@ export const TOLL_LOCATIONS: TollLocation[] = [
     vehicleTypes: ["car", "truck", "motorcycle"],
     lastUpdated: "2023-11-15",
     status: "active"
+  },
+  {
+    name: "Peaje Nuevo León Norte 1",
+    lat: 26.339940,
+    lng: -100.072232,
+    cost: 385,
+    description: "Peaje principal en carretera Nuevo León",
+    type: "highway",
+    operatingHours: "24/7",
+    acceptedPayments: ["cash", "card", "tag"],
+    vehicleTypes: ["car", "truck", "motorcycle"],
+    lastUpdated: "2024-03-19",
+    status: "active"
+  },
+  {
+    name: "Peaje Nuevo León Norte 2",
+    lat: 26.340124,
+    lng: -100.070719,
+    cost: 385,
+    description: "Peaje secundario en carretera Nuevo León",
+    type: "highway",
+    operatingHours: "24/7",
+    acceptedPayments: ["cash", "card", "tag"],
+    vehicleTypes: ["car", "truck", "motorcycle"],
+    lastUpdated: "2024-03-19",
+    status: "active"
   }
 ];
