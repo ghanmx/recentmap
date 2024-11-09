@@ -1,14 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./use-toast";
+import { Database } from "@/integrations/supabase/types";
 
-interface Webhook {
-  id: string;
-  url: string;
-  description?: string;
-  is_active: boolean;
-  secret_key: string;
-}
+type Webhook = Database['public']['Tables']['webhooks']['Row']
+type WebhookInsert = Database['public']['Tables']['webhooks']['Insert']
+type WebhookUpdate = Database['public']['Tables']['webhooks']['Update']
 
 export const useWebhooks = () => {
   const { toast } = useToast();
@@ -31,12 +28,12 @@ export const useWebhooks = () => {
         throw error;
       }
 
-      return data;
+      return data as Webhook[];
     },
   });
 
   const createWebhook = useMutation({
-    mutationFn: async (webhookData: Omit<Webhook, 'id'>) => {
+    mutationFn: async (webhookData: WebhookInsert) => {
       const { data, error } = await supabase
         .from('webhooks')
         .insert([webhookData])
@@ -44,7 +41,7 @@ export const useWebhooks = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as Webhook;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks'] });
@@ -63,7 +60,7 @@ export const useWebhooks = () => {
   });
 
   const updateWebhook = useMutation({
-    mutationFn: async ({ id, ...updateData }: Partial<Webhook> & { id: string }) => {
+    mutationFn: async ({ id, ...updateData }: WebhookUpdate & { id: string }) => {
       const { data, error } = await supabase
         .from('webhooks')
         .update(updateData)
@@ -72,7 +69,7 @@ export const useWebhooks = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as Webhook;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks'] });
