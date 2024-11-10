@@ -82,46 +82,82 @@ const TowMap = () => {
     updateTolls();
   }, [pickupLocation, dropLocation, toast, updateTollInfo, retryWithDelay]);
 
+  // New useEffect hooks for address synchronization
+  useEffect(() => {
+    const updatePickupAddress = async () => {
+      if (pickupLocation) {
+        try {
+          setIsLoading(true);
+          const address = await retryWithDelay(async () => {
+            return await getAddressFromCoordinates(pickupLocation.lat, pickupLocation.lng);
+          });
+          setPickupAddress(address);
+          updateLocationInfo({ pickup: { ...pickupLocation, address } });
+        } catch (error) {
+          console.error('Error getting pickup address:', error);
+          toast({
+            title: "Error de Dirección",
+            description: "No se pudo obtener la dirección de recogida",
+            variant: "destructive",
+            duration: 3000,
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    updatePickupAddress();
+  }, [pickupLocation, toast, updateLocationInfo, retryWithDelay]);
+
+  useEffect(() => {
+    const updateDropAddress = async () => {
+      if (dropLocation) {
+        try {
+          setIsLoading(true);
+          const address = await retryWithDelay(async () => {
+            return await getAddressFromCoordinates(dropLocation.lat, dropLocation.lng);
+          });
+          setDropAddress(address);
+          updateLocationInfo({ drop: { ...dropLocation, address } });
+        } catch (error) {
+          console.error('Error getting drop address:', error);
+          toast({
+            title: "Error de Dirección",
+            description: "No se pudo obtener la dirección de entrega",
+            variant: "destructive",
+            duration: 3000,
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    updateDropAddress();
+  }, [dropLocation, toast, updateLocationInfo, retryWithDelay]);
+
   const handleLocationSelect = useCallback(async (location: { lat: number; lng: number }) => {
     try {
-      setIsLoading(true);
-      const address = await retryWithDelay(async () => {
-        return await getAddressFromCoordinates(location.lat, location.lng);
-      });
-      
       if (selectingPickup) {
         setPickupLocation(location);
-        setPickupAddress(address);
         setSelectingPickup(false);
-        updateLocationInfo({ pickup: { ...location, address } });
-        toast({
-          title: "Ubicación de Recogida",
-          description: address,
-          duration: 3000,
-        });
       } else if (selectingDrop) {
         setDropLocation(location);
-        setDropAddress(address);
         setSelectingDrop(false);
-        updateLocationInfo({ drop: { ...location, address } });
-        toast({
-          title: "Ubicación de Entrega",
-          description: address,
-          duration: 3000,
-        });
       }
     } catch (error) {
-      console.error('Error getting address:', error);
+      console.error('Error handling location selection:', error);
       toast({
         title: "Error de Ubicación",
-        description: "No se pudo obtener la dirección. Por favor, intente seleccionar otro punto.",
+        description: "No se pudo procesar la ubicación seleccionada",
         variant: "destructive",
         duration: 5000,
       });
     } finally {
       setIsLoading(false);
     }
-  }, [selectingPickup, selectingDrop, toast, updateLocationInfo, retryWithDelay]);
+  }, [selectingPickup, selectingDrop, toast]);
 
   return (
     <div className="relative h-screen w-full">
