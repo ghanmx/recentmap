@@ -82,17 +82,18 @@ export const MapContainerComponent = memo(({
   const handleLocationSelect = useCallback(async (location: Location) => {
     try {
       const now = Date.now();
+      const address = await getAddressFromCoordinates(location.lat, location.lng);
+      
       if (now - lastToastTime.current > 3000) {
-        const address = await getAddressFromCoordinates(location.lat, location.lng);
-        onLocationSelect(location);
         toast({
           title: selectingPickup ? "Punto de recogida seleccionado" : "Punto de entrega seleccionado",
           description: address,
+          duration: 3000,
         });
         lastToastTime.current = now;
-      } else {
-        onLocationSelect(location);
       }
+      
+      onLocationSelect(location);
     } catch (error) {
       const now = Date.now();
       if (now - lastToastTime.current > 3000) {
@@ -100,11 +101,22 @@ export const MapContainerComponent = memo(({
           title: "Error",
           description: "No se pudo obtener la dirección",
           variant: "destructive",
+          duration: 3000,
         });
         lastToastTime.current = now;
       }
     }
   }, [onLocationSelect, selectingPickup, toast]);
+
+  const handleMarkerDragEnd = useCallback(async (latlng: L.LatLng, type: 'pickup' | 'drop') => {
+    const location = { lat: latlng.lat, lng: latlng.lng };
+    if (type === 'pickup') {
+      setPickupLocation(location);
+    } else {
+      setDropLocation(location);
+    }
+    await handleLocationSelect(location);
+  }, [handleLocationSelect, setPickupLocation, setDropLocation]);
 
   const defaultPosition: LatLngTuple = [25.6866, -100.3161];
 
@@ -142,26 +154,20 @@ export const MapContainerComponent = memo(({
       {pickupLocation && (
         <DraggableMarker
           position={[pickupLocation.lat, pickupLocation.lng]}
-          onDragEnd={(latlng) => {
-            const location = { lat: latlng.lat, lng: latlng.lng };
-            setPickupLocation(location);
-            handleLocationSelect(location);
-          }}
+          onDragEnd={(latlng) => handleMarkerDragEnd(latlng, 'pickup')}
           icon={pickupIcon}
           label="Punto de Recogida"
+          draggable={!isLoading}
         />
       )}
 
       {dropLocation && (
         <DraggableMarker
           position={[dropLocation.lat, dropLocation.lng]}
-          onDragEnd={(latlng) => {
-            const location = { lat: latlng.lat, lng: latlng.lng };
-            setDropLocation(location);
-            handleLocationSelect(location);
-          }}
+          onDragEnd={(latlng) => handleMarkerDragEnd(latlng, 'drop')}
           icon={dropIcon}
           label="Punto de Entrega"
+          draggable={!isLoading}
         />
       )}
 
