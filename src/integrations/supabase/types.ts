@@ -9,6 +9,41 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      payment_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          request_id: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          request_id?: string | null
+          status: string
+          stripe_payment_intent_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          request_id?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -38,11 +73,16 @@ export type Database = {
       }
       vehicle_requests: {
         Row: {
+          admin_notified: boolean | null
           created_at: string
           dropoff_location: Json | null
           id: string
+          payment_amount: number | null
+          payment_intent_id: string | null
+          payment_status: string | null
           pickup_location: Json | null
           requires_maneuver: boolean | null
+          service_notes: string | null
           status: string
           truck_type: string
           user_id: string
@@ -52,11 +92,16 @@ export type Database = {
           vehicle_year: string
         }
         Insert: {
+          admin_notified?: boolean | null
           created_at?: string
           dropoff_location?: Json | null
           id?: string
+          payment_amount?: number | null
+          payment_intent_id?: string | null
+          payment_status?: string | null
           pickup_location?: Json | null
           requires_maneuver?: boolean | null
+          service_notes?: string | null
           status?: string
           truck_type: string
           user_id: string
@@ -66,11 +111,16 @@ export type Database = {
           vehicle_year: string
         }
         Update: {
+          admin_notified?: boolean | null
           created_at?: string
           dropoff_location?: Json | null
           id?: string
+          payment_amount?: number | null
+          payment_intent_id?: string | null
+          payment_status?: string | null
           pickup_location?: Json | null
           requires_maneuver?: boolean | null
+          service_notes?: string | null
           status?: string
           truck_type?: string
           user_id?: string
@@ -82,6 +132,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "vehicle_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhooks: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          secret_key: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          secret_key: string
+          updated_at?: string
+          url: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          secret_key?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhooks_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
