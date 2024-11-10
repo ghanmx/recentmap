@@ -50,9 +50,9 @@ const TowMap = () => {
           const tollInfo = await retryWithDelay(async () => {
             return await detectTollsOnRoute(pickupLocation, dropLocation);
           });
-          
+
           updateTollInfo(tollInfo.tolls, tollInfo.totalTollCost);
-          
+
           if (tollInfo.tolls.length > 0) {
             toast({
               title: "Peajes Detectados",
@@ -90,7 +90,7 @@ const TowMap = () => {
       const address = await retryWithDelay(async () => {
         return await getAddressFromCoordinates(location.lat, location.lng);
       });
-      
+
       if (type === 'pickup') {
         setPickupLocation(location);
         setPickupAddress(address);
@@ -146,10 +146,10 @@ const TowMap = () => {
           isLoading={isLoading}
         />
       </div>
-      
+
       <div className="absolute inset-x-0 top-24 z-50 pointer-events-none">
         <div className="container mx-auto px-4">
-          <MapControlPanel 
+          <MapControlPanel
             selectingPickup={selectingPickup}
             selectingDrop={selectingDrop}
             setSelectingPickup={setSelectingPickup}
