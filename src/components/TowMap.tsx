@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { showRouteNotification } from "@/utils/notificationUtils";
@@ -20,12 +20,11 @@ const TowMap = () => {
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
   const mapRef = useRef<Map | null>(null);
   const { toast } = useToast();
   const { updateTollInfo, updateLocationInfo } = useTowing();
 
-  const retryWithDelay = async (fn: () => Promise<any>, attempt: number = 0): Promise<any> => {
+  const retryWithDelay = useCallback(async (fn: () => Promise<any>, attempt: number = 0): Promise<any> => {
     try {
       return await fn();
     } catch (error) {
@@ -40,7 +39,7 @@ const TowMap = () => {
       }
       throw error;
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     const updateTolls = async () => {
@@ -76,22 +75,21 @@ const TowMap = () => {
           });
         } finally {
           setIsLoading(false);
-          setRetryCount(0);
         }
       }
     };
 
     updateTolls();
-  }, [pickupLocation, dropLocation, toast, updateTollInfo]);
+  }, [pickupLocation, dropLocation, toast, updateTollInfo, retryWithDelay]);
 
-  const handleLocationSelect = async (location: { lat: number; lng: number }, type: 'pickup' | 'drop') => {
+  const handleLocationSelect = useCallback(async (location: { lat: number; lng: number }) => {
     try {
       setIsLoading(true);
       const address = await retryWithDelay(async () => {
         return await getAddressFromCoordinates(location.lat, location.lng);
       });
       
-      if (type === 'pickup') {
+      if (selectingPickup) {
         setPickupLocation(location);
         setPickupAddress(address);
         setSelectingPickup(false);
@@ -101,7 +99,7 @@ const TowMap = () => {
           description: address,
           duration: 3000,
         });
-      } else {
+      } else if (selectingDrop) {
         setDropLocation(location);
         setDropAddress(address);
         setSelectingDrop(false);
@@ -123,7 +121,7 @@ const TowMap = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectingPickup, selectingDrop, toast, updateLocationInfo, retryWithDelay]);
 
   return (
     <div className="relative h-screen w-full">
@@ -133,13 +131,7 @@ const TowMap = () => {
           dropLocation={dropLocation}
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
-          onLocationSelect={(location) => {
-            if (selectingPickup) {
-              handleLocationSelect(location, 'pickup');
-            } else if (selectingDrop) {
-              handleLocationSelect(location, 'drop');
-            }
-          }}
+          onLocationSelect={handleLocationSelect}
           setPickupLocation={setPickupLocation}
           setDropLocation={setDropLocation}
           onRouteCalculated={(distance) => showRouteNotification(distance)}
@@ -163,7 +155,6 @@ const TowMap = () => {
         </div>
       </div>
 
-      {/* Use a standard paragraph with screen reader class */}
       <p className="sr-only">
         Mapa interactivo para seleccionar ubicaciones de recogida y entrega del servicio de grúa
       </p>

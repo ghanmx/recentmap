@@ -1,7 +1,7 @@
-// MapLocationHandler.tsx
 import { useMapEvents } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
 import { useToast } from "@/hooks/use-toast";
+import { useCallback } from "react";
 
 interface MapLocationHandlerProps {
   selectingPickup: boolean;
@@ -16,7 +16,7 @@ export const MapLocationHandler = ({
 }: MapLocationHandlerProps) => {
   const { toast } = useToast();
 
-  const handleClick = async (e: L.LeafletMouseEvent) => {
+  const handleClick = useCallback(async (e: L.LeafletMouseEvent) => {
     if (selectingPickup || selectingDrop) {
       try {
         const location = {
@@ -39,7 +39,7 @@ export const MapLocationHandler = ({
         });
       }
     }
-  };
+  }, [selectingPickup, selectingDrop, handleLocationSelect, toast]);
 
   useMapEvents({
     click: handleClick,

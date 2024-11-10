@@ -1,18 +1,14 @@
-import { MapContainer, TileLayer } from "react-leaflet";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { DraggableMarker } from "./DraggableMarker";
 import { RoutePolyline } from "./RoutePolyline";
-import { MapControls } from "./MapControls";
-import { BorderControls } from "./BorderControls";
 import { MapLocationHandler } from "./MapLocationHandler";
 import { enterpriseIcon, pickupIcon, dropIcon } from "@/utils/mapUtils";
 import { COMPANY_LOCATION } from "@/services/routeService";
-import { Marker, Popup, useMap } from "react-leaflet";
+import { Marker, Popup } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo, useCallback } from "react";
 import { LatLngTuple, LatLngBounds } from "leaflet";
-import { useToast } from "@/components/ui/use-toast";
-
-const NOTIFICATION_COOLDOWN = 3000;
+import { useToast } from "@/hooks/use-toast";
 
 interface Location {
   lat: number;
@@ -24,7 +20,7 @@ interface MapUpdaterProps {
   dropLocation: Location | null;
 }
 
-const MapUpdater = ({ pickupLocation, dropLocation }: MapUpdaterProps) => {
+const MapUpdater = React.memo(({ pickupLocation, dropLocation }: MapUpdaterProps) => {
   const map = useMap();
   const { toast } = useToast();
   const lastToastTime = useRef(0);
@@ -38,7 +34,7 @@ const MapUpdater = ({ pickupLocation, dropLocation }: MapUpdaterProps) => {
       );
       map.fitBounds(bounds, { padding: [50, 50] });
       
-      if (now - lastToastTime.current > NOTIFICATION_COOLDOWN) {
+      if (now - lastToastTime.current > 3000) {
         toast({
           title: "Ruta actualizada",
           description: "El mapa se ha ajustado para mostrar la ruta completa",
@@ -53,7 +49,9 @@ const MapUpdater = ({ pickupLocation, dropLocation }: MapUpdaterProps) => {
   }, [map, pickupLocation, dropLocation, toast]);
 
   return null;
-};
+});
+
+MapUpdater.displayName = 'MapUpdater';
 
 interface MapContainerComponentProps {
   pickupLocation: Location | null;
@@ -67,7 +65,7 @@ interface MapContainerComponentProps {
   isLoading?: boolean;
 }
 
-export const MapContainerComponent = ({
+export const MapContainerComponent = React.memo(({
   pickupLocation,
   dropLocation,
   selectingPickup,
@@ -81,10 +79,10 @@ export const MapContainerComponent = ({
   const { toast } = useToast();
   const lastToastTime = useRef(0);
   
-  const handleLocationSelect = async (location: Location) => {
+  const handleLocationSelect = useCallback(async (location: Location) => {
     try {
       const now = Date.now();
-      if (now - lastToastTime.current > NOTIFICATION_COOLDOWN) {
+      if (now - lastToastTime.current > 3000) {
         const address = await getAddressFromCoordinates(location.lat, location.lng);
         onLocationSelect(location);
         toast({
@@ -97,7 +95,7 @@ export const MapContainerComponent = ({
       }
     } catch (error) {
       const now = Date.now();
-      if (now - lastToastTime.current > NOTIFICATION_COOLDOWN) {
+      if (now - lastToastTime.current > 3000) {
         toast({
           title: "Error",
           description: "No se pudo obtener la dirección",
@@ -106,7 +104,7 @@ export const MapContainerComponent = ({
         lastToastTime.current = now;
       }
     }
-  };
+  }, [onLocationSelect, selectingPickup, toast]);
 
   const defaultPosition: LatLngTuple = [25.6866, -100.3161];
 
@@ -144,7 +142,7 @@ export const MapContainerComponent = ({
       {pickupLocation && (
         <DraggableMarker
           position={[pickupLocation.lat, pickupLocation.lng]}
-          onDragEnd={async (latlng) => {
+          onDragEnd={(latlng) => {
             const location = { lat: latlng.lat, lng: latlng.lng };
             setPickupLocation(location);
             handleLocationSelect(location);
@@ -157,7 +155,7 @@ export const MapContainerComponent = ({
       {dropLocation && (
         <DraggableMarker
           position={[dropLocation.lat, dropLocation.lng]}
-          onDragEnd={async (latlng) => {
+          onDragEnd={(latlng) => {
             const location = { lat: latlng.lat, lng: latlng.lng };
             setDropLocation(location);
             handleLocationSelect(location);
@@ -176,4 +174,6 @@ export const MapContainerComponent = ({
       )}
     </MapContainer>
   );
-};
+});
+
+MapContainerComponent.displayName = 'MapContainerComponent';
