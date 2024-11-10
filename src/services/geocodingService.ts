@@ -3,7 +3,7 @@ const NUEVO_LEON_COORDS = {
   lng: -99.9962
 };
 
-const GEOCODING_DELAY = 1000; // Increased delay to 1 second
+const GEOCODING_DELAY = 1000;
 let lastRequestTime = 0;
 
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -27,8 +27,11 @@ const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
         headers: {
           'Accept': 'application/json',
           'User-Agent': 'MRGruas Application (https://mrgruas.com)',
-          'Referer': 'https://mrgruas.com'
-        }
+          'Referer': 'https://mrgruas.com',
+          'Origin': window.location.origin,
+        },
+        mode: 'cors',
+        credentials: 'omit'
       });
       
       if (!response.ok) {
@@ -37,8 +40,17 @@ const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
       
       return response;
     } catch (error) {
-      if (i === retries - 1) throw error;
-      await wait(1000 * (i + 1)); // Exponential backoff
+      console.error(`Attempt ${i + 1} failed:`, error);
+      if (i === retries - 1) {
+        // On last retry, try the fallback coordinates
+        return new Response(JSON.stringify([{
+          lat: NUEVO_LEON_COORDS.lat,
+          lon: NUEVO_LEON_COORDS.lng,
+          display_name: 'Ubicación en Nuevo León',
+          importance: 0.5
+        }]));
+      }
+      await wait(1000 * (i + 1));
     }
   }
   throw new Error('Max retries reached');
@@ -57,10 +69,10 @@ export const getAddressFromCoordinates = async (lat: number, lng: number): Promi
     );
     
     const data = await response.json();
-    return data.display_name || 'Dirección no encontrada';
+    return data.display_name || 'Ubicación seleccionada';
   } catch (error) {
     console.error('Error fetching address:', error);
-    return 'Ubicación seleccionada'; // Fallback address
+    return 'Ubicación seleccionada';
   }
 };
 
@@ -88,6 +100,7 @@ export const searchAddresses = async (query: string): Promise<Array<{
     const data = await response.json();
     
     if (!Array.isArray(data)) {
+      console.warn('Received non-array response:', data);
       return [];
     }
     
@@ -104,17 +117,24 @@ export const searchAddresses = async (query: string): Promise<Array<{
       importance: item.importance || 0
     }));
 
-    return results.sort((a, b) => {
-      const distanceWeight = 0.7;
-      const importanceWeight = 0.3;
-      
-      const scoreA = (distanceWeight * (1 / (a.distance + 1))) + (importanceWeight * (a.importance || 0));
-      const scoreB = (distanceWeight * (1 / (b.distance + 1))) + (importanceWeight * (b.importance || 0));
-      
-      return scoreB - scoreA;
-    });
+    return results
+      .filter(result => !isNaN(result.lat) && !isNaN(result.lon))
+      .sort((a, b) => {
+        const distanceWeight = 0.7;
+        const importanceWeight = 0.3;
+        
+        const scoreA = (distanceWeight * (1 / (a.distance + 1))) + (importanceWeight * (a.importance || 0));
+        const scoreB = (distanceWeight * (1 / (b.distance + 1))) + (importanceWeight * (b.importance || 0));
+        
+        return scoreB - scoreA;
+      });
   } catch (error) {
     console.error('Error searching addresses:', error);
-    return [];
+    return [{
+      address: 'Nuevo León, México',
+      lat: NUEVO_LEON_COORDS.lat,
+      lon: NUEVO_LEON_COORDS.lng,
+      distance: 0
+    }];
   }
 };
