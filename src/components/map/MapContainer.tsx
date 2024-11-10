@@ -1,3 +1,4 @@
+import { memo, useEffect, useRef, useMemo, useCallback } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { DraggableMarker } from "./DraggableMarker";
 import { RoutePolyline } from "./RoutePolyline";
@@ -6,7 +7,6 @@ import { enterpriseIcon, pickupIcon, dropIcon } from "@/utils/mapUtils";
 import { COMPANY_LOCATION } from "@/services/routeService";
 import { Marker, Popup } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
-import { useEffect, useRef, useMemo, useCallback } from "react";
 import { LatLngTuple, LatLngBounds } from "leaflet";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,7 +20,7 @@ interface MapUpdaterProps {
   dropLocation: Location | null;
 }
 
-const MapUpdater = React.memo(({ pickupLocation, dropLocation }: MapUpdaterProps) => {
+const MapUpdater = memo(({ pickupLocation, dropLocation }: MapUpdaterProps) => {
   const map = useMap();
   const { toast } = useToast();
   const lastToastTime = useRef(0);
@@ -65,7 +65,7 @@ interface MapContainerComponentProps {
   isLoading?: boolean;
 }
 
-export const MapContainerComponent = React.memo(({
+export const MapContainerComponent = memo(({
   pickupLocation,
   dropLocation,
   selectingPickup,
