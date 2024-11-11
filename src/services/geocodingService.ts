@@ -10,11 +10,11 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 };
 
@@ -33,11 +33,11 @@ const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
         mode: 'cors',
         credentials: 'omit'
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       return response;
     } catch (error) {
       console.error(`Attempt ${i + 1} failed:`, error);
@@ -61,13 +61,13 @@ export const getAddressFromCoordinates = async (lat: number, lng: number): Promi
   if (timeSinceLastRequest < GEOCODING_DELAY) {
     await wait(GEOCODING_DELAY - timeSinceLastRequest);
   }
-  
+
   try {
     lastRequestTime = Date.now();
     const response = await fetchWithRetry(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=es`
     );
-    
+
     const data = await response.json();
     return data.display_name || 'Ubicación seleccionada';
   } catch (error) {
@@ -83,27 +83,27 @@ export const searchAddresses = async (query: string): Promise<Array<{
   distance: number;
 }>> => {
   if (!query || query.length < 3) return [];
-  
+
   const timeSinceLastRequest = Date.now() - lastRequestTime;
   if (timeSinceLastRequest < GEOCODING_DELAY) {
     await wait(GEOCODING_DELAY - timeSinceLastRequest);
   }
-  
+
   try {
     lastRequestTime = Date.now();
     const enhancedQuery = `${query}, Nuevo Leon, Mexico`;
-    
+
     const response = await fetchWithRetry(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enhancedQuery)}&limit=10&accept-language=es&countrycodes=mx&bounded=1&viewbox=-100.5,26.0,-99.5,25.0`
     );
-    
+
     const data = await response.json();
-    
+
     if (!Array.isArray(data)) {
       console.warn('Received non-array response:', data);
       return [];
     }
-    
+
     const results = data.map((item: any) => ({
       address: item.display_name,
       lat: parseFloat(item.lat),
@@ -122,10 +122,10 @@ export const searchAddresses = async (query: string): Promise<Array<{
       .sort((a, b) => {
         const distanceWeight = 0.7;
         const importanceWeight = 0.3;
-        
+
         const scoreA = (distanceWeight * (1 / (a.distance + 1))) + (importanceWeight * (a.importance || 0));
         const scoreB = (distanceWeight * (1 / (b.distance + 1))) + (importanceWeight * (b.importance || 0));
-        
+
         return scoreB - scoreA;
       });
   } catch (error) {

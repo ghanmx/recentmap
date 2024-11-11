@@ -41,7 +41,7 @@ export const VehicleForm = ({
   const { updateSelectedVehicleModel, updateTruckType } = useTowing();
   const { toast } = useToast();
   const [isPending, setIsPending] = useState(false);
-  
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -96,7 +96,7 @@ export const VehicleForm = ({
           transition={{ duration: 0.5 }}
         >
           <Card className="p-6 bg-gradient-to-br from-white/95 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
-            <LocationSelector 
+            <LocationSelector
               form={form}
               pickupLocation={pickupLocation}
               dropLocation={dropLocation}
@@ -118,7 +118,7 @@ export const VehicleForm = ({
           <Card className="p-6 bg-gradient-to-br from-white/95 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
             <div className="space-y-6">
               <UserInfoFields form={form} />
-              <VehicleBasicFields 
+              <VehicleBasicFields
                 form={form}
                 onVehicleModelChange={handleVehicleModelChange}
               />

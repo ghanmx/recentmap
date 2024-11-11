@@ -50,6 +50,10 @@
     "@stackbit/cms-git": "^1.0.22",
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",
+    "@supabase/auth-helpers-react": "^0.5.0",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/supabase-js": "^2.46.1",
     "@tanstack/react-query": "^5.59.16",
     "@types/leaflet": "^1.9.14",
     "class-variance-authority": "^0.7.0",
@@ -287,6 +291,10 @@ export default tseslint.config(
     "@stackbit/cms-git": "^1.0.22",
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",
+    "@supabase/auth-helpers-react": "^0.5.0",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/supabase-js": "^2.46.1",
     "@tanstack/react-query": "^5.59.16",
     "@types/leaflet": "^1.9.14",
     "class-variance-authority": "^0.7.0",
@@ -1091,7 +1099,7 @@ export const TowingWrapper = ({ children }: TowingWrapperProps) => {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\TowMap.tsx
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { showRouteNotification } from "@/utils/notificationUtils";
@@ -1113,12 +1121,11 @@ const TowMap = () => {
   const [selectingPickup, setSelectingPickup] = useState(false);
   const [selectingDrop, setSelectingDrop] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
   const mapRef = useRef<Map | null>(null);
   const { toast } = useToast();
   const { updateTollInfo, updateLocationInfo } = useTowing();
 
-  const retryWithDelay = async (fn: () => Promise<any>, attempt: number = 0): Promise<any> => {
+  const retryWithDelay = useCallback(async (fn: () => Promise<any>, attempt: number = 0): Promise<any> => {
     try {
       return await fn();
     } catch (error) {
@@ -1133,7 +1140,7 @@ const TowMap = () => {
       }
       throw error;
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     const updateTolls = async () => {
@@ -1143,9 +1150,9 @@ const TowMap = () => {
           const tollInfo = await retryWithDelay(async () => {
             return await detectTollsOnRoute(pickupLocation, dropLocation);
           });
-          
+
           updateTollInfo(tollInfo.tolls, tollInfo.totalTollCost);
-          
+
           if (tollInfo.tolls.length > 0) {
             toast({
               title: "Peajes Detectados",
@@ -1169,54 +1176,89 @@ const TowMap = () => {
           });
         } finally {
           setIsLoading(false);
-          setRetryCount(0);
         }
       }
     };
 
     updateTolls();
-  }, [pickupLocation, dropLocation, toast, updateTollInfo]);
+  }, [pickupLocation, dropLocation, toast, updateTollInfo, retryWithDelay]);
 
-  const handleLocationSelect = async (location: { lat: number; lng: number }, type: 'pickup' | 'drop') => {
+  // New useEffect hooks for address synchronization
+  useEffect(() => {
+    const updatePickupAddress = async () => {
+      if (pickupLocation) {
+        try {
+          setIsLoading(true);
+          const address = await retryWithDelay(async () => {
+            return await getAddressFromCoordinates(pickupLocation.lat, pickupLocation.lng);
+          });
+          setPickupAddress(address);
+          updateLocationInfo({ pickup: { ...pickupLocation, address } });
+        } catch (error) {
+          console.error('Error getting pickup address:', error);
+          toast({
+            title: "Error de Dirección",
+            description: "No se pudo obtener la dirección de recogida",
+            variant: "destructive",
+            duration: 3000,
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    updatePickupAddress();
+  }, [pickupLocation, toast, updateLocationInfo, retryWithDelay]);
+
+  useEffect(() => {
+    const updateDropAddress = async () => {
+      if (dropLocation) {
+        try {
+          setIsLoading(true);
+          const address = await retryWithDelay(async () => {
+            return await getAddressFromCoordinates(dropLocation.lat, dropLocation.lng);
+          });
+          setDropAddress(address);
+          updateLocationInfo({ drop: { ...dropLocation, address } });
+        } catch (error) {
+          console.error('Error getting drop address:', error);
+          toast({
+            title: "Error de Dirección",
+            description: "No se pudo obtener la dirección de entrega",
+            variant: "destructive",
+            duration: 3000,
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    updateDropAddress();
+  }, [dropLocation, toast, updateLocationInfo, retryWithDelay]);
+
+  const handleLocationSelect = useCallback(async (location: { lat: number; lng: number }) => {
     try {
-      setIsLoading(true);
-      const address = await retryWithDelay(async () => {
-        return await getAddressFromCoordinates(location.lat, location.lng);
-      });
-      
-      if (type === 'pickup') {
+      if (selectingPickup) {
         setPickupLocation(location);
-        setPickupAddress(address);
         setSelectingPickup(false);
-        updateLocationInfo({ pickup: { ...location, address } });
-        toast({
-          title: "Ubicación de Recogida",
-          description: address,
-          duration: 3000,
-        });
-      } else {
+      } else if (selectingDrop) {
         setDropLocation(location);
-        setDropAddress(address);
         setSelectingDrop(false);
-        updateLocationInfo({ drop: { ...location, address } });
-        toast({
-          title: "Ubicación de Entrega",
-          description: address,
-          duration: 3000,
-        });
       }
     } catch (error) {
-      console.error('Error getting address:', error);
+      console.error('Error handling location selection:', error);
       toast({
         title: "Error de Ubicación",
-        description: "No se pudo obtener la dirección. Por favor, intente seleccionar otro punto.",
+        description: "No se pudo procesar la ubicación seleccionada",
         variant: "destructive",
         duration: 5000,
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectingPickup, selectingDrop, toast]);
 
   return (
     <div className="relative h-screen w-full">
@@ -1226,23 +1268,17 @@ const TowMap = () => {
           dropLocation={dropLocation}
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
-          onLocationSelect={(location) => {
-            if (selectingPickup) {
-              handleLocationSelect(location, 'pickup');
-            } else if (selectingDrop) {
-              handleLocationSelect(location, 'drop');
-            }
-          }}
+          onLocationSelect={handleLocationSelect}
           setPickupLocation={setPickupLocation}
           setDropLocation={setDropLocation}
           onRouteCalculated={(distance) => showRouteNotification(distance)}
           isLoading={isLoading}
         />
       </div>
-      
+
       <div className="absolute inset-x-0 top-24 z-50 pointer-events-none">
         <div className="container mx-auto px-4">
-          <MapControlPanel 
+          <MapControlPanel
             selectingPickup={selectingPickup}
             selectingDrop={selectingDrop}
             setSelectingPickup={setSelectingPickup}
@@ -1256,7 +1292,6 @@ const TowMap = () => {
         </div>
       </div>
 
-      {/* Use a standard paragraph with screen reader class */}
       <p className="sr-only">
         Mapa interactivo para seleccionar ubicaciones de recogida y entrega del servicio de grúa
       </p>
@@ -3793,21 +3828,17 @@ export const MapBottomControls = ({
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\MapContainer.tsx
-import { MapContainer, TileLayer } from "react-leaflet";
+import { memo, useEffect, useRef, useMemo, useCallback } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { DraggableMarker } from "./DraggableMarker";
 import { RoutePolyline } from "./RoutePolyline";
-import { MapControls } from "./MapControls";
-import { BorderControls } from "./BorderControls";
 import { MapLocationHandler } from "./MapLocationHandler";
 import { enterpriseIcon, pickupIcon, dropIcon } from "@/utils/mapUtils";
 import { COMPANY_LOCATION } from "@/services/routeService";
-import { Marker, Popup, useMap } from "react-leaflet";
+import { Marker, Popup } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
-import { useEffect, useRef } from "react";
 import { LatLngTuple, LatLngBounds } from "leaflet";
-import { useToast } from "@/components/ui/use-toast";
-
-const NOTIFICATION_COOLDOWN = 3000;
+import { useToast } from "@/hooks/use-toast";
 
 interface Location {
   lat: number;
@@ -3819,7 +3850,7 @@ interface MapUpdaterProps {
   dropLocation: Location | null;
 }
 
-const MapUpdater = ({ pickupLocation, dropLocation }: MapUpdaterProps) => {
+const MapUpdater = memo(({ pickupLocation, dropLocation }: MapUpdaterProps) => {
   const map = useMap();
   const { toast } = useToast();
   const lastToastTime = useRef(0);
@@ -3833,7 +3864,7 @@ const MapUpdater = ({ pickupLocation, dropLocation }: MapUpdaterProps) => {
       );
       map.fitBounds(bounds, { padding: [50, 50] });
       
-      if (now - lastToastTime.current > NOTIFICATION_COOLDOWN) {
+      if (now - lastToastTime.current > 3000) {
         toast({
           title: "Ruta actualizada",
           description: "El mapa se ha ajustado para mostrar la ruta completa",
@@ -3848,7 +3879,9 @@ const MapUpdater = ({ pickupLocation, dropLocation }: MapUpdaterProps) => {
   }, [map, pickupLocation, dropLocation, toast]);
 
   return null;
-};
+});
+
+MapUpdater.displayName = 'MapUpdater';
 
 interface MapContainerComponentProps {
   pickupLocation: Location | null;
@@ -3862,7 +3895,7 @@ interface MapContainerComponentProps {
   isLoading?: boolean;
 }
 
-export const MapContainerComponent = ({
+export const MapContainerComponent = memo(({
   pickupLocation,
   dropLocation,
   selectingPickup,
@@ -3876,32 +3909,44 @@ export const MapContainerComponent = ({
   const { toast } = useToast();
   const lastToastTime = useRef(0);
   
-  const handleLocationSelect = async (location: Location) => {
+  const handleLocationSelect = useCallback(async (location: Location) => {
     try {
       const now = Date.now();
-      if (now - lastToastTime.current > NOTIFICATION_COOLDOWN) {
-        const address = await getAddressFromCoordinates(location.lat, location.lng);
-        onLocationSelect(location);
+      const address = await getAddressFromCoordinates(location.lat, location.lng);
+      
+      if (now - lastToastTime.current > 3000) {
         toast({
           title: selectingPickup ? "Punto de recogida seleccionado" : "Punto de entrega seleccionado",
           description: address,
+          duration: 3000,
         });
         lastToastTime.current = now;
-      } else {
-        onLocationSelect(location);
       }
+      
+      onLocationSelect(location);
     } catch (error) {
       const now = Date.now();
-      if (now - lastToastTime.current > NOTIFICATION_COOLDOWN) {
+      if (now - lastToastTime.current > 3000) {
         toast({
           title: "Error",
           description: "No se pudo obtener la dirección",
           variant: "destructive",
+          duration: 3000,
         });
         lastToastTime.current = now;
       }
     }
-  };
+  }, [onLocationSelect, selectingPickup, toast]);
+
+  const handleMarkerDragEnd = useCallback(async (latlng: L.LatLng, type: 'pickup' | 'drop') => {
+    const location = { lat: latlng.lat, lng: latlng.lng };
+    if (type === 'pickup') {
+      setPickupLocation(location);
+    } else {
+      setDropLocation(location);
+    }
+    await handleLocationSelect(location);
+  }, [handleLocationSelect, setPickupLocation, setDropLocation]);
 
   const defaultPosition: LatLngTuple = [25.6866, -100.3161];
 
@@ -3939,26 +3984,20 @@ export const MapContainerComponent = ({
       {pickupLocation && (
         <DraggableMarker
           position={[pickupLocation.lat, pickupLocation.lng]}
-          onDragEnd={async (latlng) => {
-            const location = { lat: latlng.lat, lng: latlng.lng };
-            setPickupLocation(location);
-            handleLocationSelect(location);
-          }}
+          onDragEnd={(latlng) => handleMarkerDragEnd(latlng, 'pickup')}
           icon={pickupIcon}
           label="Punto de Recogida"
+          draggable={!isLoading}
         />
       )}
 
       {dropLocation && (
         <DraggableMarker
           position={[dropLocation.lat, dropLocation.lng]}
-          onDragEnd={async (latlng) => {
-            const location = { lat: latlng.lat, lng: latlng.lng };
-            setDropLocation(location);
-            handleLocationSelect(location);
-          }}
+          onDragEnd={(latlng) => handleMarkerDragEnd(latlng, 'drop')}
           icon={dropIcon}
           label="Punto de Entrega"
+          draggable={!isLoading}
         />
       )}
 
@@ -3971,7 +4010,9 @@ export const MapContainerComponent = ({
       )}
     </MapContainer>
   );
-};
+});
+
+MapContainerComponent.displayName = 'MapContainerComponent';
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\MapControlPanel.tsx
@@ -4219,15 +4260,15 @@ export const MapLayout = ({ children }: MapLayoutProps) => {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\MapLocationHandler.tsx
-// MapLocationHandler.tsx
 import { useMapEvents } from "react-leaflet";
 import { getAddressFromCoordinates } from "@/services/geocodingService";
 import { useToast } from "@/hooks/use-toast";
+import { useCallback } from "react";
 
 interface MapLocationHandlerProps {
   selectingPickup: boolean;
   selectingDrop: boolean;
-  handleLocationSelect: (location: { lat: number; lng: number; address: string }) => void;
+  handleLocationSelect: (location: { lat: number; lng: number }) => void;
 }
 
 export const MapLocationHandler = ({
@@ -4237,30 +4278,16 @@ export const MapLocationHandler = ({
 }: MapLocationHandlerProps) => {
   const { toast } = useToast();
 
-  const handleClick = async (e: L.LeafletMouseEvent) => {
+  const handleClick = useCallback(async (e: L.LeafletMouseEvent) => {
     if (selectingPickup || selectingDrop) {
-      try {
-        const location = {
-          lat: e.latlng.lat,
-          lng: e.latlng.lng,
-          address: await getAddressFromCoordinates(e.latlng.lat, e.latlng.lng)
-        };
-
-        handleLocationSelect(location);
-
-        toast({
-          title: selectingPickup ? "Punto de recogida marcado" : "Punto de entrega marcado",
-          description: location.address,
-        });
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "No se pudo obtener la dirección de la ubicación seleccionada",
-          variant: "destructive"
-        });
-      }
+      const location = {
+        lat: e.latlng.lat,
+        lng: e.latlng.lng
+      };
+      
+      handleLocationSelect(location);
     }
-  };
+  }, [selectingPickup, selectingDrop, handleLocationSelect]);
 
   useMapEvents({
     click: handleClick,
@@ -4268,7 +4295,6 @@ export const MapLocationHandler = ({
 
   return null;
 };
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\MapMetrics.tsx
@@ -8317,237 +8343,6 @@ export {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\ui\skeleton.tsx
-import { cn } from "@/lib/utils"
-
-function Skeleton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("animate-pulse rounded-md bg-muted", className)}
-      {...props}
-    />
-  )
-}
-
-export { Skeleton }
-
-
-
-// C:\Users\israe\Documents\GitHub\recentmap\src\components\ui\slider.tsx
-import * as React from "react"
-import * as SliderPrimitive from "@radix-ui/react-slider"
-
-import { cn } from "@/lib/utils"
-
-const Slider = React.forwardRef<
-  React.ElementRef<typeof SliderPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <SliderPrimitive.Root
-    ref={ref}
-    className={cn(
-      "relative flex w-full touch-none select-none items-center",
-      className
-    )}
-    {...props}
-  >
-    <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
-      <SliderPrimitive.Range className="absolute h-full bg-primary" />
-    </SliderPrimitive.Track>
-    <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
-  </SliderPrimitive.Root>
-))
-Slider.displayName = SliderPrimitive.Root.displayName
-
-export { Slider }
-
-
-
-// C:\Users\israe\Documents\GitHub\recentmap\src\components\ui\sonner.tsx
-import { useTheme } from "next-themes"
-import { Toaster as Sonner } from "sonner"
-
-type ToasterProps = React.ComponentProps<typeof Sonner>
-
-const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
-
-  return (
-    <Sonner
-      theme={theme as ToasterProps["theme"]}
-      className="toaster group"
-      toastOptions={{
-        classNames: {
-          toast:
-            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
-          description: "group-[.toast]:text-muted-foreground",
-          actionButton:
-            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-          cancelButton:
-            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-        },
-      }}
-      {...props}
-    />
-  )
-}
-
-export { Toaster }
-
-
-
-// C:\Users\israe\Documents\GitHub\recentmap\src\components\ui\switch.tsx
-import * as React from "react"
-import * as SwitchPrimitives from "@radix-ui/react-switch"
-
-import { cn } from "@/lib/utils"
-
-const Switch = React.forwardRef<
-  React.ElementRef<typeof SwitchPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>
->(({ className, ...props }, ref) => (
-  <SwitchPrimitives.Root
-    className={cn(
-      "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
-      className
-    )}
-    {...props}
-    ref={ref}
-  >
-    <SwitchPrimitives.Thumb
-      className={cn(
-        "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
-      )}
-    />
-  </SwitchPrimitives.Root>
-))
-Switch.displayName = SwitchPrimitives.Root.displayName
-
-export { Switch }
-
-
-
-// C:\Users\israe\Documents\GitHub\recentmap\src\components\ui\table.tsx
-import * as React from "react"
-
-import { cn } from "@/lib/utils"
-
-const Table = React.forwardRef<
-  HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
-    <table
-      ref={ref}
-      className={cn("w-full caption-bottom text-sm", className)}
-      {...props}
-    />
-  </div>
-))
-Table.displayName = "Table"
-
-const TableHeader = React.forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
-))
-TableHeader.displayName = "TableHeader"
-
-const TableBody = React.forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <tbody
-    ref={ref}
-    className={cn("[&_tr:last-child]:border-0", className)}
-    {...props}
-  />
-))
-TableBody.displayName = "TableBody"
-
-const TableFooter = React.forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <tfoot
-    ref={ref}
-    className={cn(
-      "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
-      className
-    )}
-    {...props}
-  />
-))
-TableFooter.displayName = "TableFooter"
-
-const TableRow = React.forwardRef<
-  HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => (
-  <tr
-    ref={ref}
-    className={cn(
-      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
-      className
-    )}
-    {...props}
-  />
-))
-TableRow.displayName = "TableRow"
-
-const TableHead = React.forwardRef<
-  HTMLTableCellElement,
-  React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <th
-    ref={ref}
-    className={cn(
-      "h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
-      className
-    )}
-    {...props}
-  />
-))
-TableHead.displayName = "TableHead"
-
-const TableCell = React.forwardRef<
-  HTMLTableCellElement,
-  React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <td
-    ref={ref}
-    className={cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", className)}
-    {...props}
-  />
-))
-TableCell.displayName = "TableCell"
-
-const TableCaption = React.forwardRef<
-  HTMLTableCaptionElement,
-  React.HTMLAttributes<HTMLTableCaptionElement>
->(({ className, ...props }, ref) => (
-  <caption
-    ref={ref}
-    className={cn("mt-4 text-sm text-muted-foreground", className)}
-    {...props}
-  />
-))
-TableCaption.displayName = "TableCaption"
-
-export {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-}
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\ui\tabs.tsx
@@ -9207,8 +9002,35 @@ export const TOLL_LOCATIONS: TollLocation[] = [
     vehicleTypes: ["car", "truck", "motorcycle"],
     lastUpdated: "2023-11-15",
     status: "active"
+  },
+  {
+    name: "Peaje Nuevo León Norte 1",
+    lat: 26.339940,
+    lng: -100.072232,
+    cost: 385,
+    description: "Peaje principal en carretera Nuevo León",
+    type: "highway",
+    operatingHours: "24/7",
+    acceptedPayments: ["cash", "card", "tag"],
+    vehicleTypes: ["car", "truck", "motorcycle"],
+    lastUpdated: "2024-03-19",
+    status: "active"
+  },
+  {
+    name: "Peaje Nuevo León Norte 2",
+    lat: 26.340124,
+    lng: -100.070719,
+    cost: 385,
+    description: "Peaje secundario en carretera Nuevo León",
+    type: "highway",
+    operatingHours: "24/7",
+    acceptedPayments: ["cash", "card", "tag"],
+    vehicleTypes: ["car", "truck", "motorcycle"],
+    lastUpdated: "2024-03-19",
+    status: "active"
   }
 ];
+
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\data\vehicleData.ts
@@ -9427,6 +9249,75 @@ function useToast() {
 export { useToast, toast };
 
 
+// C:\Users\israe\Documents\GitHub\recentmap\src\hooks\useProfile.ts
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "./use-toast";
+
+export const useProfile = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const updateProfile = useMutation({
+    mutationFn: async (profileData: {
+      username?: string;
+      full_name?: string;
+      phone_number?: string;
+    }) => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(profileData)
+        .eq('id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  return {
+    profile,
+    isLoading,
+    updateProfile,
+  };
+};
+
+
 // C:\Users\israe\Documents\GitHub\recentmap\src\hooks\useServiceRequest.ts
 import { useToast } from "@/components/ui/use-toast";
 import { ServiceRequest } from "@/types/service";
@@ -9564,6 +9455,722 @@ export const useVehicleForm = (
 };
 
 
+// C:\Users\israe\Documents\GitHub\recentmap\src\hooks\useVehicleRequests.ts
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "./use-toast";
+
+export const useVehicleRequests = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: vehicleRequests, isLoading } = useQuery({
+    queryKey: ['vehicleRequests'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vehicle_requests')
+        .select(`
+          *,
+          profiles:profiles(username, full_name, phone_number)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        toast({
+          title: "Error fetching requests",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
+  const createRequest = useMutation({
+    mutationFn: async (requestData: {
+      vehicle_make: string;
+      vehicle_model: string;
+      vehicle_year: string;
+      vehicle_color: string;
+      requires_maneuver: boolean;
+      truck_type: string;
+      pickup_location: { lat: number; lng: number };
+      dropoff_location: { lat: number; lng: number };
+    }) => {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from('vehicle_requests')
+        .insert([
+          {
+            ...requestData,
+            user_id: userData.user.id,
+            status: 'pending'
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Notify webhooks
+      await supabase.functions.invoke('webhook-notify', {
+        body: { requestId: data.id }
+      });
+
+      // Notify admin via email
+      await supabase.functions.invoke('notify-request', {
+        body: { requestId: data.id }
+      });
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vehicleRequests'] });
+      toast({
+        title: "Request Created",
+        description: "Your towing request has been submitted successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateRequest = useMutation({
+    mutationFn: async ({ id, ...updateData }: { 
+      id: string;
+      status?: string;
+      requires_maneuver?: boolean;
+      truck_type?: string;
+    }) => {
+      const { data, error } = await supabase
+        .from('vehicle_requests')
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vehicleRequests'] });
+      toast({
+        title: "Request Updated",
+        description: "The towing request has been updated successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  return {
+    vehicleRequests,
+    isLoading,
+    createRequest,
+    updateRequest,
+  };
+};
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\hooks\useWebhooks.ts
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "./use-toast";
+import { Database } from "@/integrations/supabase/types";
+
+type Tables = Database['public']['Tables']
+type Webhook = Tables['webhooks']['Row']
+type WebhookInsert = Tables['webhooks']['Insert']
+type WebhookUpdate = Tables['webhooks']['Update']
+
+export const useWebhooks = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: webhooks, isLoading } = useQuery({
+    queryKey: ['webhooks'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('webhooks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        toast({
+          title: "Error fetching webhooks",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
+
+      return data as Webhook[];
+    },
+  });
+
+  const createWebhook = useMutation({
+    mutationFn: async (webhookData: WebhookInsert) => {
+      const { data, error } = await supabase
+        .from('webhooks')
+        .insert([webhookData])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Webhook;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      toast({
+        title: "Webhook Created",
+        description: "Your webhook has been created successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateWebhook = useMutation({
+    mutationFn: async ({ id, ...updateData }: WebhookUpdate & { id: string }) => {
+      const { data, error } = await supabase
+        .from('webhooks')
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Webhook;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      toast({
+        title: "Webhook Updated",
+        description: "The webhook has been updated successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteWebhook = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('webhooks')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      toast({
+        title: "Webhook Deleted",
+        description: "The webhook has been deleted successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  return {
+    webhooks,
+    isLoading,
+    createWebhook,
+    updateWebhook,
+    deleteWebhook,
+  };
+};
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\integrations\supabase\client.ts
+// This file is automatically generated. Do not edit it directly.
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from './types';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+// Import the supabase client like this:
+// import { supabase } from "@/integrations/supabase/client";
+
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\integrations\supabase\types.ts
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  public: {
+    Tables: {
+      payment_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          request_id: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          request_id?: string | null
+          status: string
+          stripe_payment_intent_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          request_id?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          phone_number: string | null
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone_number?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone_number?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      vehicle_requests: {
+        Row: {
+          admin_notified: boolean | null
+          created_at: string
+          dropoff_location: Json | null
+          id: string
+          payment_amount: number | null
+          payment_intent_id: string | null
+          payment_status: string | null
+          pickup_location: Json | null
+          requires_maneuver: boolean | null
+          service_notes: string | null
+          status: string
+          truck_type: string
+          user_id: string
+          vehicle_color: string
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_year: string
+        }
+        Insert: {
+          admin_notified?: boolean | null
+          created_at?: string
+          dropoff_location?: Json | null
+          id?: string
+          payment_amount?: number | null
+          payment_intent_id?: string | null
+          payment_status?: string | null
+          pickup_location?: Json | null
+          requires_maneuver?: boolean | null
+          service_notes?: string | null
+          status?: string
+          truck_type: string
+          user_id: string
+          vehicle_color: string
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_year: string
+        }
+        Update: {
+          admin_notified?: boolean | null
+          created_at?: string
+          dropoff_location?: Json | null
+          id?: string
+          payment_amount?: number | null
+          payment_intent_id?: string | null
+          payment_status?: string | null
+          pickup_location?: Json | null
+          requires_maneuver?: boolean | null
+          service_notes?: string | null
+          status?: string
+          truck_type?: string
+          user_id?: string
+          vehicle_color?: string
+          vehicle_make?: string
+          vehicle_model?: string
+          vehicle_year?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhooks: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          secret_key: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          secret_key: string
+          updated_at?: string
+          url: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          secret_key?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhooks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
+export type Tables<
+  PublicTableNameOrOptions extends
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  PublicEnumNameOrOptions extends
+    | keyof PublicSchema["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\integrations\supabase\types\base.ts
+import { Tables } from './tables';
+
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  public: {
+    Tables: Tables;
+    Views: {};
+    Functions: {};
+    Enums: {};
+    CompositeTypes: {};
+  };
+}
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\integrations\supabase\types\index.ts
+export * from './base';
+export * from './tables';
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\integrations\supabase\types\tables.ts
+import { Json } from './base';
+
+interface ProfilesTable {
+  Row: {
+    created_at: string;
+    full_name: string | null;
+    id: string;
+    phone_number: string | null;
+    updated_at: string;
+    username: string | null;
+  };
+  Insert: {
+    created_at?: string;
+    full_name?: string | null;
+    id: string;
+    phone_number?: string | null;
+    updated_at?: string;
+    username?: string | null;
+  };
+  Update: {
+    created_at?: string;
+    full_name?: string | null;
+    id?: string;
+    phone_number?: string | null;
+    updated_at?: string;
+    username?: string | null;
+  };
+  Relationships: [];
+}
+
+interface VehicleRequestsTable {
+  Row: {
+    created_at: string;
+    dropoff_location: Json | null;
+    id: string;
+    pickup_location: Json | null;
+    requires_maneuver: boolean | null;
+    status: string;
+    truck_type: string;
+    user_id: string;
+    vehicle_color: string;
+    vehicle_make: string;
+    vehicle_model: string;
+    vehicle_year: string;
+  };
+  Insert: {
+    created_at?: string;
+    dropoff_location?: Json | null;
+    id?: string;
+    pickup_location?: Json | null;
+    requires_maneuver?: boolean | null;
+    status?: string;
+    truck_type: string;
+    user_id: string;
+    vehicle_color: string;
+    vehicle_make: string;
+    vehicle_model: string;
+    vehicle_year: string;
+  };
+  Update: {
+    created_at?: string;
+    dropoff_location?: Json | null;
+    id?: string;
+    pickup_location?: Json | null;
+    requires_maneuver?: boolean | null;
+    status?: string;
+    truck_type?: string;
+    user_id?: string;
+    vehicle_color?: string;
+    vehicle_make?: string;
+    vehicle_model?: string;
+    vehicle_year?: string;
+  };
+  Relationships: [
+    {
+      foreignKeyName: "vehicle_requests_user_id_fkey";
+      columns: ["user_id"];
+      isOneToOne: false;
+      referencedRelation: "profiles";
+      referencedColumns: ["id"];
+    }
+  ];
+}
+
+interface WebhooksTable {
+  Row: {
+    id: string;
+    created_at: string;
+    updated_at: string;
+    url: string;
+    description: string | null;
+    is_active: boolean;
+    secret_key: string;
+  };
+  Insert: {
+    id?: string;
+    created_at?: string;
+    updated_at?: string;
+    url: string;
+    description?: string | null;
+    is_active?: boolean;
+    secret_key: string;
+  };
+  Update: {
+    url?: string;
+    description?: string | null;
+    is_active?: boolean;
+    secret_key?: string;
+    updated_at?: string;
+  };
+  Relationships: [];
+}
+
+export interface Tables {
+  profiles: ProfilesTable;
+  vehicle_requests: VehicleRequestsTable;
+  webhooks: WebhooksTable;
+}
+
+
 // C:\Users\israe\Documents\GitHub\recentmap\src\lib\utils.ts
 import { twMerge } from "tailwind-merge";
 
@@ -9596,12 +10203,42 @@ export default Index;
 // C:\Users\israe\Documents\GitHub\recentmap\src\providers\StripeProvider.tsx
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
-// Using a test publishable key
-const stripePromise = loadStripe('pk_test_51OxpVXBIrjwXwQdF1HpkQABXYGqpWZBFGPvXVoYZtqxPZqQtQvtgWXxYGHuVZyXxWXwXwXwXwXwXwXwXwXwX');
+// Move Stripe key to a constant
+const STRIPE_PUBLIC_KEY = 'pk_test_51OxpVXBIrjwXwQdF1HpkQABXYGqpWZBFGPvXVoYZtqxPZqQtQvtgWXxYGHuVZyXxWXwXwXwXwXwXwXwXwXwX';
 
 export const StripeProvider = ({ children }: { children: ReactNode }) => {
+  const [stripePromise, setStripePromise] = useState<Promise<any> | null>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const initStripe = async () => {
+      try {
+        const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
+        if (stripe) {
+          setStripePromise(Promise.resolve(stripe));
+        } else {
+          throw new Error('Failed to initialize Stripe');
+        }
+      } catch (error) {
+        console.error('Stripe initialization error:', error);
+        toast({
+          title: "Payment System Error",
+          description: "Unable to initialize payment system. Please try again later.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    initStripe();
+  }, [toast]);
+
+  if (!stripePromise) {
+    return null; // Or a loading spinner
+  }
+
   return (
     <Elements stripe={stripePromise}>
       {children}
@@ -9616,7 +10253,7 @@ const NUEVO_LEON_COORDS = {
   lng: -99.9962
 };
 
-const GEOCODING_DELAY = 1000; // Increased delay to 1 second
+const GEOCODING_DELAY = 1000;
 let lastRequestTime = 0;
 
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -9640,8 +10277,11 @@ const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
         headers: {
           'Accept': 'application/json',
           'User-Agent': 'MRGruas Application (https://mrgruas.com)',
-          'Referer': 'https://mrgruas.com'
-        }
+          'Referer': 'https://mrgruas.com',
+          'Origin': window.location.origin,
+        },
+        mode: 'cors',
+        credentials: 'omit'
       });
       
       if (!response.ok) {
@@ -9650,8 +10290,17 @@ const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
       
       return response;
     } catch (error) {
-      if (i === retries - 1) throw error;
-      await wait(1000 * (i + 1)); // Exponential backoff
+      console.error(`Attempt ${i + 1} failed:`, error);
+      if (i === retries - 1) {
+        // On last retry, try the fallback coordinates
+        return new Response(JSON.stringify([{
+          lat: NUEVO_LEON_COORDS.lat,
+          lon: NUEVO_LEON_COORDS.lng,
+          display_name: 'Ubicación en Nuevo León',
+          importance: 0.5
+        }]));
+      }
+      await wait(1000 * (i + 1));
     }
   }
   throw new Error('Max retries reached');
@@ -9670,10 +10319,10 @@ export const getAddressFromCoordinates = async (lat: number, lng: number): Promi
     );
     
     const data = await response.json();
-    return data.display_name || 'Dirección no encontrada';
+    return data.display_name || 'Ubicación seleccionada';
   } catch (error) {
     console.error('Error fetching address:', error);
-    return 'Ubicación seleccionada'; // Fallback address
+    return 'Ubicación seleccionada';
   }
 };
 
@@ -9701,6 +10350,7 @@ export const searchAddresses = async (query: string): Promise<Array<{
     const data = await response.json();
     
     if (!Array.isArray(data)) {
+      console.warn('Received non-array response:', data);
       return [];
     }
     
@@ -9717,18 +10367,25 @@ export const searchAddresses = async (query: string): Promise<Array<{
       importance: item.importance || 0
     }));
 
-    return results.sort((a, b) => {
-      const distanceWeight = 0.7;
-      const importanceWeight = 0.3;
-      
-      const scoreA = (distanceWeight * (1 / (a.distance + 1))) + (importanceWeight * (a.importance || 0));
-      const scoreB = (distanceWeight * (1 / (b.distance + 1))) + (importanceWeight * (b.importance || 0));
-      
-      return scoreB - scoreA;
-    });
+    return results
+      .filter(result => !isNaN(result.lat) && !isNaN(result.lon))
+      .sort((a, b) => {
+        const distanceWeight = 0.7;
+        const importanceWeight = 0.3;
+        
+        const scoreA = (distanceWeight * (1 / (a.distance + 1))) + (importanceWeight * (a.importance || 0));
+        const scoreB = (distanceWeight * (1 / (b.distance + 1))) + (importanceWeight * (b.importance || 0));
+        
+        return scoreB - scoreA;
+      });
   } catch (error) {
     console.error('Error searching addresses:', error);
-    return [];
+    return [{
+      address: 'Nuevo León, México',
+      lat: NUEVO_LEON_COORDS.lat,
+      lon: NUEVO_LEON_COORDS.lng,
+      distance: 0
+    }];
   }
 };
 
@@ -10571,3 +11228,204 @@ const isTypeBVehicle = (model: string): boolean => {
   return typeBVehicles.some(v => model.includes(v)) || 
          mediumKeywords.some(k => model.includes(k));
 };
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\supabase\functions\notify-request\index.ts
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+// Fetch environment variables and handle undefined values
+const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+const supabaseUrl = Deno.env.get('SUPABASE_URL');
+const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+if (!RESEND_API_KEY || !supabaseUrl || !supabaseKey) {
+  console.error('Missing one or more environment variables.');
+  Deno.exit(1); // Exit if essential variables are missing
+}
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const { requestId } = await req.json();
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Fetch request details with user profile
+    const { data: request, error: requestError } = await supabase
+      .from('vehicle_requests')
+      .select(`
+        *,
+        profiles:profiles(full_name, phone_number)
+      `)
+      .eq('id', requestId)
+      .single();
+
+    if (requestError) throw new Error(`Failed to fetch request: ${requestError.message}`);
+
+    // Send email notification
+    const emailResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: 'MRGruas <onboarding@resend.dev>',
+        to: ['admin@mrgruas.com'],
+        subject: `New Towing Request - ${request.vehicle_make} ${request.vehicle_model}`,
+        html: `
+          <h2>New Towing Request</h2>
+          <p><strong>Customer:</strong> ${request.profiles.full_name}</p>
+          <p><strong>Phone:</strong> ${request.profiles.phone_number}</p>
+          <p><strong>Vehicle:</strong> ${request.vehicle_make} ${request.vehicle_model} (${request.vehicle_year})</p>
+          <p><strong>Color:</strong> ${request.vehicle_color}</p>
+          <p><strong>Truck Type:</strong> ${request.truck_type}</p>
+          <p><strong>Requires Maneuver:</strong> ${request.requires_maneuver ? 'Yes' : 'No'}</p>
+          <h3>Locations</h3>
+          <p><strong>Pickup:</strong> ${JSON.stringify(request.pickup_location)}</p>
+          <p><strong>Dropoff:</strong> ${JSON.stringify(request.dropoff_location)}</p>
+        `,
+      }),
+    });
+
+    if (!emailResponse.ok) {
+      const errorText = await emailResponse.text();
+      throw new Error(`Failed to send email: ${errorText}`);
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, requestId }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  } catch (error) {
+    console.error('Error:', error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
+    );
+  }
+});
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\supabase\functions\webhook-notify\index.ts
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1"
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders })
+  }
+
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    const { requestId } = await req.json()
+
+    // Fetch request details
+    const { data: request, error: requestError } = await supabase
+      .from('vehicle_requests')
+      .select(`
+        *,
+        profiles:profiles(username, full_name, phone_number)
+      `)
+      .eq('id', requestId)
+      .single()
+
+    if (requestError) throw new Error(`Failed to fetch request: ${requestError.message}`)
+
+    // Fetch active webhooks
+    const { data: webhooks, error: webhooksError } = await supabase
+      .from('webhooks')
+      .select('*')
+      .eq('is_active', true)
+
+    if (webhooksError) throw new Error(`Failed to fetch webhooks: ${webhooksError.message}`)
+
+    // Send webhook notifications
+    const notifications = webhooks.map(async (webhook) => {
+      const payload = {
+        event: 'vehicle_request.created',
+        request: {
+          id: request.id,
+          created_at: request.created_at,
+          vehicle_make: request.vehicle_make,
+          vehicle_model: request.vehicle_model,
+          status: request.status,
+          customer: {
+            name: request.profiles.full_name,
+            phone: request.profiles.phone_number
+          },
+          locations: {
+            pickup: request.pickup_location,
+            dropoff: request.dropoff_location
+          }
+        }
+      }
+
+      const signature = await createSignature(JSON.stringify(payload), webhook.secret_key)
+
+      return fetch(webhook.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Webhook-Signature': signature,
+        },
+        body: JSON.stringify(payload),
+      })
+    })
+
+    await Promise.all(notifications)
+
+    return new Response(
+      JSON.stringify({ success: true }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    )
+  } catch (error) {
+    console.error('Error:', error)
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
+    )
+  }
+})
+
+async function createSignature(payload: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(payload)
+  )
+  return Array.from(new Uint8Array(signature))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+}
