@@ -20,9 +20,9 @@ interface LocationSearchProps {
   showCostBreakdown?: boolean;
 }
 
-export const LocationSearch = ({ 
-  label, 
-  onLocationSelect, 
+export const LocationSearch = ({
+  label,
+  onLocationSelect,
   placeholder = "Search address...",
   currentAddress = "",
   currentLocation,
@@ -36,6 +36,9 @@ export const LocationSearch = ({
     lat: number;
     lon: number;
     distance: number;
+    city?: string;
+    state?: string;
+    zip?: string;
   }>>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,11 +55,16 @@ export const LocationSearch = ({
 
       setIsSearching(true);
       setError(null);
-      
+
       try {
         const results = await searchAddresses(query);
-        setSuggestions(results);
-        
+        setSuggestions(results.map(result => ({
+          ...result,
+          city: result.city || '',
+          state: result.state || '',
+          zip: result.zip || ''
+        })));
+
         if (results.length === 0) {
           setError("No se encontraron direcciones. Intente con una búsqueda diferente.");
           toast({
@@ -93,9 +101,9 @@ export const LocationSearch = ({
       setSearchQuery(suggestion.address);
       setSuggestions([]);
       setError(null);
-      
+
       onLocationSelect(location);
-      
+
       toast({
         title: type === 'pickup' ? "Punto de recogida seleccionado" : "Punto de entrega seleccionado",
         description: suggestion.address,
@@ -138,13 +146,13 @@ export const LocationSearch = ({
           placeholder={placeholder}
           icon={icon}
         />
-        
+
         {isSearching && (
           <div className="absolute right-3 top-3">
             <Loader2 className="h-5 w-5 animate-spin text-primary" />
           </div>
         )}
-        
+
         <AnimatePresence>
           {error && (
             <motion.div
@@ -163,7 +171,10 @@ export const LocationSearch = ({
       </Card>
 
       <LocationSuggestions
-        suggestions={suggestions}
+        suggestions={suggestions.map(suggestion => ({
+          ...suggestion,
+          formattedAddress: `${suggestion.address}, ${suggestion.city}, ${suggestion.state}, ${suggestion.zip}`
+        }))}
         error={error}
         isMarking={isMarking}
         onSuggestionSelect={handleSuggestionSelect}

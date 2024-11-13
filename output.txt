@@ -47,7 +47,7 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
-    "@stackbit/cms-git": "^1.0.17",
+    "@stackbit/cms-git": "^1.0.23",
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",
     "@supabase/auth-helpers-react": "^0.5.0",
@@ -287,7 +287,7 @@ export default tseslint.config(
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
-    "@stackbit/cms-git": "^1.0.17",
+    "@stackbit/cms-git": "^1.0.23",
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",
     "@supabase/auth-helpers-react": "^0.5.0",
@@ -1019,9 +1019,6 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
-
-// C:\Users\israe\Documents\GitHub\recentmap\src\components\TollInfoDisplay.tsx
 import { Card } from "@/components/ui/card";
 import { Ticket, Clock, CreditCard } from "lucide-react";
 import { TollLocation } from "@/data/tollData";
@@ -1077,9 +1074,6 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
     </Card>
   );
 };
-
-
-// C:\Users\israe\Documents\GitHub\recentmap\src\components\TowingWrapper.tsx
 import { ReactNode } from 'react';
 import { TowingProvider } from '../contexts/TowingContext';
 
@@ -2234,9 +2228,9 @@ interface LocationSearchProps {
   showCostBreakdown?: boolean;
 }
 
-export const LocationSearch = ({ 
-  label, 
-  onLocationSelect, 
+export const LocationSearch = ({
+  label,
+  onLocationSelect,
   placeholder = "Search address...",
   currentAddress = "",
   currentLocation,
@@ -2250,6 +2244,9 @@ export const LocationSearch = ({
     lat: number;
     lon: number;
     distance: number;
+    city?: string;
+    state?: string;
+    zip?: string;
   }>>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -2266,11 +2263,16 @@ export const LocationSearch = ({
 
       setIsSearching(true);
       setError(null);
-      
+
       try {
         const results = await searchAddresses(query);
-        setSuggestions(results);
-        
+        setSuggestions(results.map(result => ({
+          ...result,
+          city: result.city || '',
+          state: result.state || '',
+          zip: result.zip || ''
+        })));
+
         if (results.length === 0) {
           setError("No se encontraron direcciones. Intente con una búsqueda diferente.");
           toast({
@@ -2307,9 +2309,9 @@ export const LocationSearch = ({
       setSearchQuery(suggestion.address);
       setSuggestions([]);
       setError(null);
-      
+
       onLocationSelect(location);
-      
+
       toast({
         title: type === 'pickup' ? "Punto de recogida seleccionado" : "Punto de entrega seleccionado",
         description: suggestion.address,
@@ -2352,13 +2354,13 @@ export const LocationSearch = ({
           placeholder={placeholder}
           icon={icon}
         />
-        
+
         {isSearching && (
           <div className="absolute right-3 top-3">
             <Loader2 className="h-5 w-5 animate-spin text-primary" />
           </div>
         )}
-        
+
         <AnimatePresence>
           {error && (
             <motion.div
@@ -2377,7 +2379,10 @@ export const LocationSearch = ({
       </Card>
 
       <LocationSuggestions
-        suggestions={suggestions}
+        suggestions={suggestions.map(suggestion => ({
+          ...suggestion,
+          formattedAddress: `${suggestion.address}, ${suggestion.city}, ${suggestion.state}, ${suggestion.zip}`
+        }))}
         error={error}
         isMarking={isMarking}
         onSuggestionSelect={handleSuggestionSelect}
@@ -2398,8 +2403,10 @@ interface LocationSearchInputProps {
   searchQuery: string;
   isSearching: boolean;
   error: string | null;
+  suggestions: Array<{ formattedAddress: string }>;
   onSearchChange: (value: string) => void;
   onSearchClick: () => void;
+  handleSuggestionSelect: (suggestion: { formattedAddress: string }) => void;
   placeholder?: string;
   icon?: React.ReactNode;
 }
@@ -2408,13 +2415,15 @@ export const LocationSearchInput = ({
   searchQuery,
   isSearching,
   error,
+  suggestions,
   onSearchChange,
   onSearchClick,
+  handleSuggestionSelect,
   placeholder = "Buscar dirección...",
   icon = <MapPin className="h-4 w-4 text-primary" />
 }: LocationSearchInputProps) => {
   return (
-    <motion.div 
+    <motion.div
       className="relative"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -2442,6 +2451,7 @@ export const LocationSearchInput = ({
               onSearchClick();
             }
           }}
+          disabled={isSearching}
         />
         <AnimatePresence>
           {isSearching ? (
@@ -2469,7 +2479,7 @@ export const LocationSearchInput = ({
       </div>
       <AnimatePresence>
         {error && (
-          <motion.p 
+          <motion.p
             className="text-sm text-red-500 mt-1 ml-1"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -2479,6 +2489,20 @@ export const LocationSearchInput = ({
           </motion.p>
         )}
       </AnimatePresence>
+      {suggestions.length > 1 && (
+        <div className="space-y-2 mt-4">
+          <h4>Did you mean:</h4>
+          {suggestions.map((suggestion, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleSuggestionSelect(suggestion)}
+              className="block text-left p-2 hover:bg-gray-100 rounded"
+            >
+              {suggestion.formattedAddress}
+            </button>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 };
@@ -2607,6 +2631,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 interface Suggestion {
   address: string;
@@ -2644,7 +2670,7 @@ export const LocationSuggestions = ({
           </Alert>
         </motion.div>
       )}
-      
+
       {suggestions.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -2654,45 +2680,60 @@ export const LocationSuggestions = ({
         >
           <Card className="p-2 space-y-1 bg-white/95 backdrop-blur-sm shadow-lg border-blue-100/50">
             {suggestions.map((suggestion, index) => (
-              <motion.button
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="w-full p-3 text-left hover:bg-primary/5 rounded-lg flex items-center gap-3 
-                         transition-all duration-300 group relative"
-                onClick={() => onSuggestionSelect(suggestion)}
-                disabled={isMarking}
-              >
-                {isMarking ? (
-                  <Target className="h-4 w-4 text-primary animate-pulse flex-shrink-0" />
-                ) : type === 'pickup' ? (
-                  <MapPin className="h-4 w-4 text-green-500 group-hover:text-green-600 flex-shrink-0" />
-                ) : (
-                  <Navigation className="h-4 w-4 text-blue-500 group-hover:text-blue-600 flex-shrink-0" />
-                )}
-                
-                <div className="flex flex-col flex-1">
-                  <span className="text-sm text-gray-700 group-hover:text-gray-900 line-clamp-2">
-                    {suggestion.address}
-                  </span>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="secondary" className="text-xs">
-                      {suggestion.distance.toFixed(1)}km de Nuevo León
-                    </Badge>
-                  </div>
-                </div>
+              <motion.div key={index}>
+                <motion.button
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="w-full p-3 text-left hover:bg-primary/5 rounded-lg flex items-center gap-3 
+                           transition-all duration-300 group relative"
+                  onClick={() => onSuggestionSelect(suggestion)}
+                  disabled={isMarking}
+                >
+                  {isMarking ? (
+                    <Target className="h-4 w-4 text-primary animate-pulse flex-shrink-0" />
+                  ) : type === 'pickup' ? (
+                    <MapPin className="h-4 w-4 text-green-500 group-hover:text-green-600 flex-shrink-0" />
+                  ) : (
+                    <Navigation className="h-4 w-4 text-blue-500 group-hover:text-blue-600 flex-shrink-0" />
+                  )}
 
-                {isMarking && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute inset-0 bg-primary/5 flex items-center justify-center rounded-lg"
-                  >
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  </motion.div>
-                )}
-              </motion.button>
+                  <div className="flex flex-col flex-1">
+                    <span className="text-sm text-gray-700 group-hover:text-gray-900 line-clamp-2">
+                      {suggestion.address}
+                    </span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="secondary" className="text-xs">
+                        {suggestion.distance.toFixed(1)}km de Nuevo León
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {isMarking && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute inset-0 bg-primary/5 flex items-center justify-center rounded-lg"
+                    >
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </motion.div>
+                  )}
+                </motion.button>
+                <MapContainer
+                  center={[suggestion.lat, suggestion.lon]}
+                  zoom={13}
+                  scrollWheelZoom={false}
+                  className="h-64 mt-2 rounded-lg"
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  <Marker position={[suggestion.lat, suggestion.lon]}>
+                    <Popup>{suggestion.address}</Popup>
+                  </Marker>
+                </MapContainer>
+              </motion.div>
             ))}
           </Card>
         </motion.div>
