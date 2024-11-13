@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "analyze": "vite build --mode analyze"
+    "analyze": "vite build --mode analyze",
+    "stripe:login": "stripe login"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

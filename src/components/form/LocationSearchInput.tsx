@@ -1,44 +1,27 @@
-import { Input } from '@/components/ui/input'
-import { Search, Loader2, MapPin } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { motion, AnimatePresence } from 'framer-motion'
-
-export interface SuggestionType {
-  id: string
-  formattedAddress: string
-  name: string
-  lat: number
-  lon: number
-  city?: string
-  state?: string
-  zip?: string
-}
+import { Input } from "@/components/ui/input";
+import { Search, Loader2, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface LocationSearchInputProps {
-  searchQuery: string
-  isSearching: boolean
-  error: string
-  suggestions: SuggestionType[]
-  onSearchChange: (value: string) => void
-  onSearchClick: () => Promise<void>
-  handleSuggestionSelect: (suggestion: SuggestionType) => void
-  placeholder?: string
-  icon?: React.ReactNode
+  searchQuery: string;
+  isSearching: boolean;
+  error: string | null;
+  onSearchChange: (value: string) => void;
+  onSearchClick: () => void;
+  placeholder?: string;
+  icon?: React.ReactNode;
 }
 
 export const LocationSearchInput = ({
   searchQuery,
   isSearching,
   error,
-  suggestions,
   onSearchChange,
   onSearchClick,
-  handleSuggestionSelect,
-  placeholder = 'Buscar dirección...',
-  icon = <MapPin className="h-4 w-4 text-primary" />,
+  placeholder = "Buscar dirección...",
+  icon = <MapPin className="h-4 w-4 text-primary" />
 }: LocationSearchInputProps) => {
-  const suggestionsLength = suggestions ? suggestions.length : 0
-
   return (
     <motion.div
       className="relative"
@@ -64,11 +47,10 @@ export const LocationSearchInput = ({
           `}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              e.preventDefault()
-              onSearchClick()
+              e.preventDefault();
+              onSearchClick();
             }
           }}
-          disabled={isSearching}
         />
         <AnimatePresence>
           {isSearching ? (
@@ -106,27 +88,6 @@ export const LocationSearchInput = ({
           </motion.p>
         )}
       </AnimatePresence>
-
-      {suggestionsLength > 1 && (
-        <div className="space-y-2 mt-4">
-          <h4>Did you mean:</h4>
-          {suggestions.map((suggestion) => (
-            <button
-              key={suggestion.id}
-              onClick={() => handleSuggestionSelect(suggestion)}
-              className="block text-left p-2 hover:bg-gray-100 rounded"
-            >
-              {suggestion.formattedAddress}
-            </button>
-          ))}
-        </div>
-      )}
-      {suggestionsLength === 0 &&
-        searchQuery.length >= 3 &&
-        !isSearching &&
-        !error && (
-          <div className="mt-4 text-gray-500">No suggestions found</div>
-        )}
     </motion.div>
-  )
-}
+  );
+};

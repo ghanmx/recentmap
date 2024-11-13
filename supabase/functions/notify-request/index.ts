@@ -3,11 +3,10 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Fetch environment variables and handle undefined values
+// Fetch environment variables and ensure they are defined
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const supabaseUrl = Deno.env.get('SUPABASE_URL')
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
@@ -24,23 +23,18 @@ serve(async (req) => {
 
   try {
     const { requestId } = await req.json()
-
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Fetch request details with user profile
+    // Fetch request details and profile
     const { data: request, error: requestError } = await supabase
       .from('vehicle_requests')
-      .select(
-        `
-        *,
-        profiles:profiles(full_name, phone_number)
-      `,
-      )
+      .select(`*, profiles:profiles(full_name, phone_number)`)
       .eq('id', requestId)
       .single()
 
-    if (requestError)
+    if (requestError) {
       throw new Error(`Failed to fetch request: ${requestError.message}`)
+    }
 
     // Send email notification
     const emailResponse = await fetch('https://api.resend.com/emails', {
