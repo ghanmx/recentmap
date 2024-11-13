@@ -1,142 +1,92 @@
-
-
+# Main build settings
 [build]
-
-
-
-
-
-
-
-
-
-
   base = "."
-  publish = "build-output/"
+  publish = "dist"  # Ensure this matches your actual build output directory
+  command = "npm run build"  # Adjust to the correct build command
 
-
-  command = "echo 'default context'"
-
+# Plugins
 [[plugins]]
-
   package = "@netlify/plugin-lighthouse"
 
-
-
-
-
-
+# Production context settings
 [context.production]
-  publish = "output/"
-  command = "make publish"
+  publish = "dist/"
+  command = "npm run build"  # Updated from `make publish` to a Node build command
   environment = { NODE_VERSION = "14.15.3" }
 
-
-
+# Deploy Preview settings
 [context.deploy-preview]
   publish = "dist/"
-
-
-
-
 
 [context.deploy-preview.environment]
   NOT_PRIVATE_ITEM = "not so secret"
 
-
-
-
+# Branch Deploy settings
 [context.branch-deploy]
-  command = "echo branch"
+  command = "npm run build"  # Ensure consistent build command
 [context.branch-deploy.environment]
   NODE_ENV = "development"
 
-
-
-
-
-
+# Development environment
 [context.dev.environment]
   NODE_ENV = "development"
 
-
-
-
+# Staging context settings
 [context.staging]
-  command = "echo 'staging'"
+  command = "npm run build"
   base = "staging"
 
-
-
+# Specific branch context
 [context."feat/branch"]
-  command = "echo 'special branch'"
+  command = "npm run build"
   base = "branch"
 
-
-
-
-
-
-
+# Redirects configuration
 [[redirects]]
   from = "/*"
   to = "/blog/:splat"
-
+  status = 200
 
 [[redirects]]
   from = "/old-path"
   to = "/new-path"
   status = 302
   force = true
-  query = {id = ":id"}
-  conditions = {Language = ["en"], Country = ["US"]}
+  query = { id = ":id" }
+  conditions = { Language = ["en"], Country = ["US"] }
   signed = "API_SIGNATURE_TOKEN"
 
   [redirects.headers]
     X-From = "Netlify"
     X-Api-Key = "some-api-key-string"
 
-
 [[redirects]]
   from = "/gated-path"
+  to = "/admin"  # Update this path to your desired endpoint for restricted access
   status = 200
-  conditions = {Role = ["admin"]}
+  conditions = { Role = ["admin"] }
   force = true
-
-
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
+# Headers configuration
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     Content-Security-Policy = "frame-ancestors https://www.facebook.com"
-    cache-control = '''
-    max-age=0,
-    no-cache,
-    no-store,
-    must-revalidate'''
+    cache-control = "max-age=0, no-cache, no-store, must-revalidate"
     Basic-Auth = "someuser:somepassword anotheruser:anotherpassword"
 
+# Functions directory
 [functions]
   directory = "functions/"
 
+# Local development server configuration
 [dev]
   command = "yarn start"
   port = 8888
-
-
-
-
-
-
-
-
-
-
-
   publish = "dist"
