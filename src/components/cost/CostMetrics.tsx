@@ -1,15 +1,15 @@
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { TowTruckType } from "@/utils/towTruckPricing";
-import { motion } from "framer-motion";
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import { TowTruckType } from '@/utils/towTruckPricing'
+import { motion } from 'framer-motion'
 
 export interface CostMetricsProps {
-  totalDistance: number;
-  requiresInvoice: boolean;
-  setRequiresInvoice: (requires: boolean) => void;
-  requiresManeuver: boolean;
-  onManeuverChange: (checked: boolean) => void;
-  selectedTruck: TowTruckType;
+  totalDistance: number
+  requiresInvoice: boolean
+  setRequiresInvoice: (requires: boolean) => void
+  requiresManeuver: boolean
+  onManeuverChange: (checked: boolean) => void
+  selectedTruck: TowTruckType
 }
 
 export const CostMetrics = ({
@@ -21,7 +21,7 @@ export const CostMetrics = ({
   selectedTruck,
 }: CostMetricsProps) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -44,7 +44,8 @@ export const CostMetrics = ({
         <Label htmlFor="maneuver" className="text-sm">
           Requiere maniobra especial
           <span className="block text-xs text-gray-500">
-            +{selectedTruck.maneuverCharge.toFixed(2)} MXN para {selectedTruck.name}
+            +{selectedTruck.maneuverCharge.toFixed(2)} MXN para{' '}
+            {selectedTruck.name}
           </span>
         </Label>
         <Switch
@@ -54,5 +55,5 @@ export const CostMetrics = ({
         />
       </div>
     </motion.div>
-  );
-};
+  )
+}

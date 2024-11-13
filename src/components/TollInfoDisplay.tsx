@@ -1,22 +1,24 @@
-import { Card } from "@/components/ui/card";
-import { Ticket, Clock, CreditCard } from "lucide-react";
-import { TollLocation } from "@/data/tollData";
-import { Separator } from "@/components/ui/separator";
+import { Card } from '@/components/ui/card'
+import { Ticket, Clock, CreditCard } from 'lucide-react'
+import { TollLocation } from '@/data/tollData'
+import { Separator } from '@/components/ui/separator'
 
 interface TollInfoDisplayProps {
-  tolls: TollLocation[];
-  totalCost: number;
+  tolls: TollLocation[]
+  totalCost: number
 }
 
 export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
-  if (tolls.length === 0) return null;
+  if (tolls.length === 0) return null
 
   return (
     <Card className="p-3 md:p-4 bg-yellow-50/80 border border-yellow-200 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Ticket className="w-4 h-4 text-yellow-700" />
-          <h3 className="text-sm md:text-base lg:text-lg font-semibold text-yellow-700">Peajes en la Ruta</h3>
+          <h3 className="text-sm md:text-base lg:text-lg font-semibold text-yellow-700">
+            Peajes en la Ruta
+          </h3>
         </div>
         <div className="text-xs md:text-sm font-semibold text-yellow-700 bg-yellow-100 px-2 md:px-3 py-1 rounded-full">
           Total: ${totalCost.toFixed(2)}
@@ -32,7 +34,9 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
             className="bg-white/50 rounded-lg p-2 md:p-3 space-y-2 hover:bg-white/70 transition-colors"
           >
             <div className="flex justify-between items-center">
-              <span className="text-xs md:text-sm font-medium text-yellow-800">{toll.name}</span>
+              <span className="text-xs md:text-sm font-medium text-yellow-800">
+                {toll.name}
+              </span>
               <span className="text-xs md:text-sm font-semibold text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded-full">
                 ${toll.cost.toFixed(2)}
               </span>
@@ -51,5 +55,5 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
         ))}
       </div>
     </Card>
-  );
-};
+  )
+}

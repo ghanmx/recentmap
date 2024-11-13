@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "./use-toast";
-import { Database } from "@/integrations/supabase/types";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/integrations/supabase/client'
+import { useToast } from './use-toast'
+import { Database } from '@/integrations/supabase/types'
 
 type Tables = Database['public']['Tables']
 type Webhook = Tables['webhooks']['Row']
@@ -9,8 +9,8 @@ type WebhookInsert = Tables['webhooks']['Insert']
 type WebhookUpdate = Tables['webhooks']['Update']
 
 export const useWebhooks = () => {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   const { data: webhooks, isLoading } = useQuery({
     queryKey: ['webhooks'],
@@ -18,20 +18,20 @@ export const useWebhooks = () => {
       const { data, error } = await supabase
         .from('webhooks')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
 
       if (error) {
         toast({
-          title: "Error fetching webhooks",
+          title: 'Error fetching webhooks',
           description: error.message,
-          variant: "destructive",
-        });
-        throw error;
+          variant: 'destructive',
+        })
+        throw error
       }
 
-      return data as Webhook[];
+      return data as Webhook[]
     },
-  });
+  })
 
   const createWebhook = useMutation({
     mutationFn: async (webhookData: WebhookInsert) => {
@@ -39,79 +39,79 @@ export const useWebhooks = () => {
         .from('webhooks')
         .insert([webhookData])
         .select()
-        .single();
+        .single()
 
-      if (error) throw error;
-      return data as Webhook;
+      if (error) throw error
+      return data as Webhook
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] })
       toast({
-        title: "Webhook Created",
-        description: "Your webhook has been created successfully.",
-      });
+        title: 'Webhook Created',
+        description: 'Your webhook has been created successfully.',
+      })
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: error.message,
-        variant: "destructive",
-      });
+        variant: 'destructive',
+      })
     },
-  });
+  })
 
   const updateWebhook = useMutation({
-    mutationFn: async ({ id, ...updateData }: WebhookUpdate & { id: string }) => {
+    mutationFn: async ({
+      id,
+      ...updateData
+    }: WebhookUpdate & { id: string }) => {
       const { data, error } = await supabase
         .from('webhooks')
         .update(updateData)
         .eq('id', id)
         .select()
-        .single();
+        .single()
 
-      if (error) throw error;
-      return data as Webhook;
+      if (error) throw error
+      return data as Webhook
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] })
       toast({
-        title: "Webhook Updated",
-        description: "The webhook has been updated successfully.",
-      });
+        title: 'Webhook Updated',
+        description: 'The webhook has been updated successfully.',
+      })
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: error.message,
-        variant: "destructive",
-      });
+        variant: 'destructive',
+      })
     },
-  });
+  })
 
   const deleteWebhook = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('webhooks')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('webhooks').delete().eq('id', id)
 
-      if (error) throw error;
+      if (error) throw error
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] })
       toast({
-        title: "Webhook Deleted",
-        description: "The webhook has been deleted successfully.",
-      });
+        title: 'Webhook Deleted',
+        description: 'The webhook has been deleted successfully.',
+      })
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: error.message,
-        variant: "destructive",
-      });
+        variant: 'destructive',
+      })
     },
-  });
+  })
 
   return {
     webhooks,
@@ -119,5 +119,5 @@ export const useWebhooks = () => {
     createWebhook,
     updateWebhook,
     deleteWebhook,
-  };
-};
+  }
+}

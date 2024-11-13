@@ -1,30 +1,38 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
-import { VehicleSelector } from "./form/VehicleSelector";
-import { TowTruckSelector } from "./form/TowTruckSelector";
-import { LocationSelector } from "./form/LocationSelector";
-import { UserInfoFields } from "./form/UserInfoFields";
-import { VehicleBasicFields } from "./form/VehicleBasicFields";
-import { ManeuverField } from "./form/ManeuverField";
-import { FormData, formSchema } from "@/types/form";
-import { Card } from "./ui/card";
-import { useTowing } from "@/contexts/TowingContext";
-import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { VehicleFormCopyButton } from "./form/VehicleFormCopyButton";
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Form } from '@/components/ui/form'
+import { VehicleSelector } from './form/VehicleSelector'
+import { TowTruckSelector } from './form/TowTruckSelector'
+import { LocationSelector } from './form/LocationSelector'
+import { UserInfoFields } from './form/UserInfoFields'
+import { VehicleBasicFields } from './form/VehicleBasicFields'
+import { ManeuverField } from './form/ManeuverField'
+import { FormData, formSchema } from '@/types/form'
+import { Card } from './ui/card'
+import { useTowing } from '@/contexts/TowingContext'
+import { useToast } from '@/hooks/use-toast'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { VehicleFormCopyButton } from './form/VehicleFormCopyButton'
 
 interface VehicleFormProps {
-  pickupLocation?: { lat: number; lng: number } | null;
-  dropLocation?: { lat: number; lng: number } | null;
-  pickupAddress?: string;
-  dropAddress?: string;
-  serviceType?: string;
-  onPickupSelect?: (location: { lat: number; lng: number; address: string }) => void;
-  onDropSelect?: (location: { lat: number; lng: number; address: string }) => void;
-  onSelectingPickup?: (selecting: boolean) => void;
-  onSelectingDrop?: (selecting: boolean) => void;
+  pickupLocation?: { lat: number; lng: number } | null
+  dropLocation?: { lat: number; lng: number } | null
+  pickupAddress?: string
+  dropAddress?: string
+  serviceType?: string
+  onPickupSelect?: (location: {
+    lat: number
+    lng: number
+    address: string
+  }) => void
+  onDropSelect?: (location: {
+    lat: number
+    lng: number
+    address: string
+  }) => void
+  onSelectingPickup?: (selecting: boolean) => void
+  onSelectingDrop?: (selecting: boolean) => void
 }
 
 export const VehicleForm = ({
@@ -32,60 +40,60 @@ export const VehicleForm = ({
   dropLocation,
   pickupAddress,
   dropAddress,
-  serviceType = "standard",
+  serviceType = 'standard',
   onPickupSelect,
   onDropSelect,
   onSelectingPickup,
-  onSelectingDrop
+  onSelectingDrop,
 }: VehicleFormProps) => {
-  const { updateSelectedVehicleModel, updateTruckType } = useTowing();
-  const { toast } = useToast();
-  const [isPending, setIsPending] = useState(false);
+  const { updateSelectedVehicleModel, updateTruckType } = useTowing()
+  const { toast } = useToast()
+  const [isPending, setIsPending] = useState(false)
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      userName: "",
-      phone: "",
-      vehicleMake: "",
-      vehicleModel: "",
-      vehicleYear: "",
-      vehicleColor: "",
-      truckType: "A",
+      userName: '',
+      phone: '',
+      vehicleMake: '',
+      vehicleModel: '',
+      vehicleYear: '',
+      vehicleColor: '',
+      truckType: 'A',
       requiresManeuver: false,
-      issueDescription: "",
+      issueDescription: '',
     },
-    mode: "onChange"
-  });
+    mode: 'onChange',
+  })
 
   const handleVehicleModelChange = (value: string) => {
-    updateSelectedVehicleModel(value);
+    updateSelectedVehicleModel(value)
     toast({
-      title: "Modelo de Vehículo Actualizado",
+      title: 'Modelo de Vehículo Actualizado',
       description: `Modelo seleccionado: ${value}`,
-    });
-  };
+    })
+  }
 
-  const handleTruckTypeChange = (value: "A" | "B" | "C" | "D") => {
-    form.setValue("truckType", value, { shouldDirty: true });
-    updateTruckType(value);
+  const handleTruckTypeChange = (value: 'A' | 'B' | 'C' | 'D') => {
+    form.setValue('truckType', value, { shouldDirty: true })
+    updateTruckType(value)
     toast({
-      title: "Tipo de Grúa Actualizado",
+      title: 'Tipo de Grúa Actualizado',
       description: `Tipo de grúa seleccionado: ${value}`,
-    });
-  };
+    })
+  }
 
   const onSubmit = form.handleSubmit(async (data) => {
-    setIsPending(true);
+    setIsPending(true)
     try {
       toast({
-        title: "Formulario Enviado",
-        description: "Los detalles del vehículo y ubicación han sido guardados",
-      });
+        title: 'Formulario Enviado',
+        description: 'Los detalles del vehículo y ubicación han sido guardados',
+      })
     } finally {
-      setIsPending(false);
+      setIsPending(false)
     }
-  });
+  })
 
   return (
     <Form {...form}>
@@ -135,7 +143,7 @@ export const VehicleForm = ({
           <Card className="p-6 bg-gradient-to-br from-white/95 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
             <TowTruckSelector
               form={form}
-              selectedModel={form.watch("vehicleModel")}
+              selectedModel={form.watch('vehicleModel')}
               onTruckTypeChange={handleTruckTypeChange}
             />
           </Card>
@@ -151,5 +159,5 @@ export const VehicleForm = ({
         />
       </form>
     </Form>
-  );
-};
+  )
+}

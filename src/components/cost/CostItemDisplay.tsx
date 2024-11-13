@@ -1,13 +1,13 @@
-import { motion } from "framer-motion";
-import { formatCurrency } from "@/utils/priceCalculator";
+import { motion } from 'framer-motion'
+import { formatCurrency } from '@/utils/priceCalculator'
 
 interface CostItemDisplayProps {
-  label: string;
-  amount: number;
-  icon?: React.ReactNode;
-  indent?: boolean;
-  description?: string;
-  className?: string;
+  label: string
+  amount: number
+  icon?: React.ReactNode
+  indent?: boolean
+  description?: string
+  className?: string
 }
 
 export const CostItemDisplay = ({
@@ -16,10 +16,10 @@ export const CostItemDisplay = ({
   icon,
   indent = false,
   description,
-  className = "",
+  className = '',
 }: CostItemDisplayProps) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
@@ -36,5 +36,5 @@ export const CostItemDisplay = ({
         <p className="text-xs text-gray-500 italic">{description}</p>
       )}
     </motion.div>
-  );
-};
+  )
+}

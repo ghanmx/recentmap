@@ -1,9 +1,10 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1"
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 }
 
 serve(async (req) => {
@@ -21,14 +22,17 @@ serve(async (req) => {
     // Fetch request details
     const { data: request, error: requestError } = await supabase
       .from('vehicle_requests')
-      .select(`
+      .select(
+        `
         *,
         profiles:profiles(username, full_name, phone_number)
-      `)
+      `,
+      )
       .eq('id', requestId)
       .single()
 
-    if (requestError) throw new Error(`Failed to fetch request: ${requestError.message}`)
+    if (requestError)
+      throw new Error(`Failed to fetch request: ${requestError.message}`)
 
     // Fetch active webhooks
     const { data: webhooks, error: webhooksError } = await supabase
@@ -36,7 +40,8 @@ serve(async (req) => {
       .select('*')
       .eq('is_active', true)
 
-    if (webhooksError) throw new Error(`Failed to fetch webhooks: ${webhooksError.message}`)
+    if (webhooksError)
+      throw new Error(`Failed to fetch webhooks: ${webhooksError.message}`)
 
     // Send webhook notifications
     const notifications = webhooks.map(async (webhook) => {
@@ -50,16 +55,19 @@ serve(async (req) => {
           status: request.status,
           customer: {
             name: request.profiles.full_name,
-            phone: request.profiles.phone_number
+            phone: request.profiles.phone_number,
           },
           locations: {
             pickup: request.pickup_location,
-            dropoff: request.dropoff_location
-          }
-        }
+            dropoff: request.dropoff_location,
+          },
+        },
       }
 
-      const signature = await createSignature(JSON.stringify(payload), webhook.secret_key)
+      const signature = await createSignature(
+        JSON.stringify(payload),
+        webhook.secret_key,
+      )
 
       return fetch(webhook.url, {
         method: 'POST',
@@ -73,37 +81,36 @@ serve(async (req) => {
 
     await Promise.all(notifications)
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('Error:', error)
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
-    )
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 })
 
-async function createSignature(payload: string, secret: string): Promise<string> {
+async function createSignature(
+  payload: string,
+  secret: string,
+): Promise<string> {
   const encoder = new TextEncoder()
   const key = await crypto.subtle.importKey(
     'raw',
     encoder.encode(secret),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ['sign']
+    ['sign'],
   )
   const signature = await crypto.subtle.sign(
     'HMAC',
     key,
-    encoder.encode(payload)
+    encoder.encode(payload),
   )
   return Array.from(new Uint8Array(signature))
-    .map(b => b.toString(16).padStart(2, '0'))
+    .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
 }

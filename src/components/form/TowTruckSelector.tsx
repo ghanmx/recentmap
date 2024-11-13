@@ -1,45 +1,50 @@
-import { useEffect } from "react";
-import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { towTruckTypes, getTruckTypeForVehicle } from "@/utils/towTruckPricing";
-import { Truck, AlertTriangle } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
-import { FormData } from "@/types/form";
-import { motion } from "framer-motion";
-import { useTowing } from "@/contexts/TowingContext";
-import { useToast } from "@/hooks/use-toast";
+import { useEffect } from 'react'
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from '@/components/ui/form'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { towTruckTypes, getTruckTypeForVehicle } from '@/utils/towTruckPricing'
+import { Truck, AlertTriangle } from 'lucide-react'
+import { UseFormReturn } from 'react-hook-form'
+import { FormData } from '@/types/form'
+import { motion } from 'framer-motion'
+import { useTowing } from '@/contexts/TowingContext'
+import { useToast } from '@/hooks/use-toast'
 
 interface TowTruckSelectorProps {
-  form: UseFormReturn<FormData>;
-  onTruckTypeChange?: (type: "A" | "B" | "C" | "D") => void;
-  onTollFeesChange?: (fees: number) => void;
-  selectedModel: string;
+  form: UseFormReturn<FormData>
+  onTruckTypeChange?: (type: 'A' | 'B' | 'C' | 'D') => void
+  onTollFeesChange?: (fees: number) => void
+  selectedModel: string
 }
 
-export const TowTruckSelector = ({ 
-  form, 
-  onTruckTypeChange, 
-  onTollFeesChange, 
-  selectedModel 
+export const TowTruckSelector = ({
+  form,
+  onTruckTypeChange,
+  onTollFeesChange,
+  selectedModel,
 }: TowTruckSelectorProps) => {
-  const { updateTruckType } = useTowing();
-  const { toast } = useToast();
+  const { updateTruckType } = useTowing()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (selectedModel) {
-      const recommendedType = getTruckTypeForVehicle(selectedModel);
-      form.setValue('truckType', recommendedType);
-      onTruckTypeChange?.(recommendedType);
-      updateTruckType(recommendedType);
-      
-      const truckInfo = towTruckTypes[recommendedType];
+      const recommendedType = getTruckTypeForVehicle(selectedModel)
+      form.setValue('truckType', recommendedType)
+      onTruckTypeChange?.(recommendedType)
+      updateTruckType(recommendedType)
+
+      const truckInfo = towTruckTypes[recommendedType]
       toast({
-        title: "Tipo de grúa recomendado",
+        title: 'Tipo de grúa recomendado',
         description: `Se ha seleccionado ${truckInfo.name} para ${selectedModel} (capacidad: ${truckInfo.maxWeight.toLocaleString()} kg)`,
         duration: 5000,
-      });
+      })
     }
-  }, [selectedModel, form, onTruckTypeChange, updateTruckType]);
+  }, [selectedModel, form, onTruckTypeChange, updateTruckType])
 
   return (
     <motion.div
@@ -60,16 +65,16 @@ export const TowTruckSelector = ({
             <FormControl>
               <RadioGroup
                 onValueChange={(value) => {
-                  const truckType = value as "A" | "B" | "C" | "D";
-                  field.onChange(truckType);
-                  onTruckTypeChange?.(truckType);
-                  updateTruckType(truckType);
-                  
-                  const selectedTruckInfo = towTruckTypes[truckType];
+                  const truckType = value as 'A' | 'B' | 'C' | 'D'
+                  field.onChange(truckType)
+                  onTruckTypeChange?.(truckType)
+                  updateTruckType(truckType)
+
+                  const selectedTruckInfo = towTruckTypes[truckType]
                   toast({
                     title: `${selectedTruckInfo.name} seleccionada`,
                     description: `Capacidad máxima: ${selectedTruckInfo.maxWeight.toLocaleString()} kg - Tarifa: ${selectedTruckInfo.perKm.toFixed(2)} MXN/km`,
-                  });
+                  })
                 }}
                 value={field.value}
                 className="flex flex-col space-y-3"
@@ -79,12 +84,21 @@ export const TowTruckSelector = ({
                     key={key}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2, delay: Number(key.charCodeAt(0) - 65) * 0.1 }}
+                    transition={{
+                      duration: 0.2,
+                      delay: Number(key.charCodeAt(0) - 65) * 0.1,
+                    }}
                     className="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary/5 transition-colors"
                   >
-                    <RadioGroupItem value={key} id={key} className="border-primary" />
+                    <RadioGroupItem
+                      value={key}
+                      id={key}
+                      className="border-primary"
+                    />
                     <div className="flex items-center gap-2">
-                      <Truck className={`w-5 h-5 ${key === 'D' ? 'text-orange-500' : 'text-primary'}`} />
+                      <Truck
+                        className={`w-5 h-5 ${key === 'D' ? 'text-orange-500' : 'text-primary'}`}
+                      />
                       <span className="font-medium">
                         {type.name} (hasta {type.maxWeight.toLocaleString()}kg)
                       </span>
@@ -98,8 +112,11 @@ export const TowTruckSelector = ({
       />
       <div className="flex items-center gap-2 p-3 bg-yellow-50/50 rounded-lg text-sm text-yellow-700">
         <AlertTriangle className="w-4 h-4" />
-        <p>El tipo de grúa se recomienda según el modelo del vehículo seleccionado</p>
+        <p>
+          El tipo de grúa se recomienda según el modelo del vehículo
+          seleccionado
+        </p>
       </div>
     </motion.div>
-  );
-};
+  )
+}
