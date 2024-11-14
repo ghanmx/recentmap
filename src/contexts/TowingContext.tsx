@@ -55,7 +55,7 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
     address: '',
     lat: 0,
     lon: 0,
-    distance: 0
+    distance: 0,
   })
 
   const updateTowingInfo = (distance: number) => {

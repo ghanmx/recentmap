@@ -124,7 +124,8 @@ export const LocationSelector = ({
                   </FormControl>
                 </div>
               </FormItem>
-            )} />
+            )}
+          />
         </div>
       </Card>
     </motion.div>
