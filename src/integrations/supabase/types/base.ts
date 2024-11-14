@@ -1,4 +1,4 @@
-import { Tables } from './tables'
+import { Tables } from './tables';
 
 export type Json =
   | string
@@ -10,10 +10,10 @@ export type Json =
 
 export type Database = {
   public: {
-    Tables: Tables
-    Views: {}
-    Functions: {}
-    Enums: {}
-    CompositeTypes: {}
-  }
+    Tables: Tables;
+    Views: {};
+    Functions: {};
+    Enums: {};
+    CompositeTypes: {};
+  };
 }

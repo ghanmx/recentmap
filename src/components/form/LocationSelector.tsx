@@ -1,36 +1,23 @@
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-} from '@/components/ui/form'
-import { UseFormReturn } from 'react-hook-form'
-import { FormData } from '@/types/form'
-import { LocationSearch } from './LocationSearch'
-import { MapPin, Navigation } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { useToast } from '@/hooks/use-toast'
-import { useTowing } from '@/contexts/TowingContext'
-import { Card } from '@/components/ui/card'
+import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { UseFormReturn } from "react-hook-form";
+import { FormData } from "@/types/form";
+import { LocationSearch } from "./LocationSearch";
+import { MapPin, Navigation } from "lucide-react";
+import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
+import { useTowing } from "@/contexts/TowingContext";
+import { Card } from "@/components/ui/card";
 
 export interface LocationSelectorProps {
-  form: UseFormReturn<FormData>
-  pickupLocation?: { lat: number; lng: number } | null
-  dropLocation?: { lat: number; lng: number } | null
-  pickupAddress?: string
-  dropAddress?: string
-  onPickupSelect?: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onDropSelect?: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onSelectingPickup?: (selecting: boolean) => void
-  onSelectingDrop?: (selecting: boolean) => void
+  form: UseFormReturn<FormData>;
+  pickupLocation?: { lat: number; lng: number } | null;
+  dropLocation?: { lat: number; lng: number } | null;
+  pickupAddress?: string;
+  dropAddress?: string;
+  onPickupSelect?: (location: { lat: number; lng: number; address: string }) => void;
+  onDropSelect?: (location: { lat: number; lng: number; address: string }) => void;
+  onSelectingPickup?: (selecting: boolean) => void;
+  onSelectingDrop?: (selecting: boolean) => void;
 }
 
 export const LocationSelector = ({
@@ -42,19 +29,16 @@ export const LocationSelector = ({
   onPickupSelect,
   onDropSelect,
   onSelectingPickup,
-  onSelectingDrop,
+  onSelectingDrop
 }: LocationSelectorProps) => {
-  const { toast } = useToast()
-  const { updateLocation } = useTowing()
+  const { toast } = useToast();
+  const { updateLocation } = useTowing();
 
-  const handleLocationUpdate = (
-    location: { lat: number; lng: number; address: string },
-    type: 'pickup' | 'drop',
-  ) => {
-    updateLocation(type, location)
-    const handler = type === 'pickup' ? onPickupSelect : onDropSelect
-    handler?.(location)
-  }
+  const handleLocationUpdate = (location: { lat: number; lng: number; address: string }, type: 'pickup' | 'drop') => {
+    updateLocation(type, location);
+    const handler = type === 'pickup' ? onPickupSelect : onDropSelect;
+    handler?.(location);
+  };
 
   return (
     <motion.div
@@ -83,9 +67,7 @@ export const LocationSelector = ({
                       icon={<MapPin className="h-4 w-4 text-green-500" />}
                       currentAddress={pickupAddress}
                       currentLocation={pickupLocation}
-                      onLocationSelect={(loc) =>
-                        handleLocationUpdate(loc, 'pickup')
-                      }
+                      onLocationSelect={(loc) => handleLocationUpdate(loc, 'pickup')}
                       type="pickup"
                     />
                   </FormControl>
@@ -116,17 +98,16 @@ export const LocationSelector = ({
                       icon={<Navigation className="h-4 w-4 text-blue-500" />}
                       currentAddress={dropAddress}
                       currentLocation={dropLocation}
-                      onLocationSelect={(loc) =>
-                        handleLocationUpdate(loc, 'drop')
-                      }
+                      onLocationSelect={(loc) => handleLocationUpdate(loc, 'drop')}
                       type="drop"
                     />
                   </FormControl>
                 </div>
               </FormItem>
-            )} />
+            )}
+          />
         </div>
       </Card>
     </motion.div>
-  )
-}
+  );
+};

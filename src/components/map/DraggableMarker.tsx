@@ -1,38 +1,38 @@
-import L from 'leaflet'
-import { Marker, Popup } from 'react-leaflet'
-import { useEffect, useRef } from 'react'
+import L from "leaflet";
+import { Marker, Popup } from "react-leaflet";
+import { useEffect, useRef } from "react";
 
 interface DraggableMarkerProps {
-  position: L.LatLngExpression
-  onDragEnd: (latlng: L.LatLng) => void
-  icon?: L.Icon
-  label: string
-  draggable?: boolean
+  position: L.LatLngExpression;
+  onDragEnd: (latlng: L.LatLng) => void;
+  icon?: L.Icon;
+  label: string;
+  draggable?: boolean;
 }
 
-export const DraggableMarker = ({
-  position,
-  onDragEnd,
-  icon,
+export const DraggableMarker = ({ 
+  position, 
+  onDragEnd, 
+  icon, 
   label,
-  draggable = true,
+  draggable = true 
 }: DraggableMarkerProps) => {
-  const markerRef = useRef<L.Marker>(null)
+  const markerRef = useRef<L.Marker>(null);
 
   useEffect(() => {
     if (markerRef.current) {
-      markerRef.current.setLatLng(position as L.LatLng)
+      markerRef.current.setLatLng(position as L.LatLng);
     }
-  }, [position])
+  }, [position]);
 
   const handleDragEnd = (e: L.DragEndEvent) => {
-    const marker = e.target
-    onDragEnd(marker.getLatLng())
-  }
+    const marker = e.target;
+    onDragEnd(marker.getLatLng());
+  };
 
   return (
-    <Marker
-      position={position}
+    <Marker 
+      position={position} 
       draggable={draggable}
       icon={icon}
       eventHandlers={{
@@ -44,5 +44,5 @@ export const DraggableMarker = ({
         <div className="font-semibold">{label}</div>
       </Popup>
     </Marker>
-  )
-}
+  );
+};

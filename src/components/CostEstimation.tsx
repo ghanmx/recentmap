@@ -1,67 +1,58 @@
-import { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useTowing } from '@/contexts/TowingContext'
-import { towTruckTypes } from '@/utils/towTruckPricing'
-import PaymentWindow from './payment/PaymentWindow'
-import { CostHeader } from './cost/CostHeader'
-import { CostMetrics } from './cost/CostMetrics'
-import { CostBreakdown } from './cost/CostBreakdown'
-import { useToast } from '@/hooks/use-toast'
-import { TollLocation } from '@/data/tollData'
-import { Button } from './ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog'
-import { TermsAndConditions } from './legal/TermsAndConditions'
-import { ScrollArea } from './ui/scroll-area'
-import { Info } from 'lucide-react'
+import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTowing } from "@/contexts/TowingContext";
+import { towTruckTypes } from "@/utils/towTruckPricing";
+import PaymentWindow from "./payment/PaymentWindow";
+import { CostHeader } from "./cost/CostHeader";
+import { CostMetrics } from "./cost/CostMetrics";
+import { CostBreakdown } from "./cost/CostBreakdown";
+import { useToast } from "@/hooks/use-toast";
+import { TollLocation } from "@/data/tollData";
+import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "./ui/dialog";
+import { TermsAndConditions } from "./legal/TermsAndConditions";
+import { ScrollArea } from "./ui/scroll-area";
+import { Info } from "lucide-react";
 
 export const CostEstimation = () => {
-  const {
-    totalDistance,
-    detectedTolls,
-    totalTollCost,
-    truckType,
+  const { 
+    totalDistance, 
+    detectedTolls, 
+    totalTollCost, 
+    truckType, 
     requiresManeuver,
     updateManeuverRequired,
     selectedVehicleModel,
-  } = useTowing()
+  } = useTowing();
+  
+  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [requiresInvoice, setRequiresInvoice] = useState(false);
+  const [showPaymentWindow, setShowPaymentWindow] = useState(false);
+  const { toast } = useToast();
 
-  const [showBreakdown, setShowBreakdown] = useState(false)
-  const [requiresInvoice, setRequiresInvoice] = useState(false)
-  const [showPaymentWindow, setShowPaymentWindow] = useState(false)
-  const { toast } = useToast()
+  const selectedTruck = towTruckTypes[truckType || 'A'];
+  const baseCost = totalDistance * selectedTruck.perKm;
+  const flagDropFee = selectedTruck.flagDropFee;
+  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0;
+  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost;
+  const tax = requiresInvoice ? subtotal * 0.16 : 0;
+  const finalCost = subtotal + tax;
 
-  const selectedTruck = towTruckTypes[truckType || 'A']
-  const baseCost = totalDistance * selectedTruck.perKm
-  const flagDropFee = selectedTruck.flagDropFee
-  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
-  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
-  const tax = requiresInvoice ? subtotal * 0.16 : 0
-  const finalCost = subtotal + tax
-
-  const handleBreakdownToggle = useCallback(
-    (value: boolean) => {
-      setShowBreakdown(value)
-      if (value) {
-        toast({
-          title: 'Desglose de costos',
-          description: 'Ahora puedes ver el detalle de los costos del servicio',
-        })
-      }
-    },
-    [toast],
-  )
+  const handleBreakdownToggle = useCallback((value: boolean) => {
+    setShowBreakdown(value);
+    if (value) {
+      toast({
+        title: "Desglose de costos",
+        description: "Ahora puedes ver el detalle de los costos del servicio",
+      });
+    }
+  }, [toast]);
 
   const processedTolls = detectedTolls.map((toll: TollLocation) => ({
     name: toll.name,
     cost: toll.cost,
-    direction: toll.direction || 'outbound',
-  }))
+    direction: toll.direction || 'outbound'
+  }));
 
   return (
     <motion.div
@@ -73,8 +64,8 @@ export const CostEstimation = () => {
         <div className="flex justify-between items-center">
           <Dialog>
             <DialogTrigger asChild>
-              <Button
-                variant="outline"
+              <Button 
+                variant="outline" 
                 size="sm"
                 className="flex items-center gap-2 text-primary hover:text-primary/80"
               >
@@ -85,8 +76,7 @@ export const CostEstimation = () => {
             <DialogContent className="max-w-4xl h-[80vh]">
               <DialogTitle>Términos y Condiciones del Servicio</DialogTitle>
               <DialogDescription>
-                Por favor, lea cuidadosamente los términos y condiciones antes
-                de proceder.
+                Por favor, lea cuidadosamente los términos y condiciones antes de proceder.
               </DialogDescription>
               <ScrollArea className="h-full pr-4">
                 <TermsAndConditions />
@@ -95,7 +85,7 @@ export const CostEstimation = () => {
           </Dialog>
         </div>
 
-        <CostHeader
+        <CostHeader 
           showBreakdown={showBreakdown}
           setShowBreakdown={handleBreakdownToggle}
           finalCost={finalCost}
@@ -107,7 +97,7 @@ export const CostEstimation = () => {
           {showBreakdown && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="space-y-4"
             >
@@ -146,16 +136,16 @@ export const CostEstimation = () => {
           amount={finalCost}
           onPaymentSubmit={(result) => {
             if (result.success) {
-              setShowPaymentWindow(false)
+              setShowPaymentWindow(false);
               toast({
-                title: 'Pago procesado',
+                title: "Pago procesado",
                 description: `Pago de ${finalCost.toFixed(2)} MXN procesado exitosamente para ${selectedTruck.name}`,
-                className: 'bg-green-50 border-green-200',
-              })
+                className: "bg-green-50 border-green-200",
+              });
             }
           }}
         />
       </div>
     </motion.div>
-  )
-}
+  );
+};

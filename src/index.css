@@ -131,24 +131,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&display=swap');
 
 .select-content,
-[role='listbox'],
-[role='combobox'] {
+[role="listbox"],
+[role="combobox"] {
   z-index: 1000;
 }
 
 .metallic-effect {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(
-    45deg,
-    #999 5%,
-    #fff 10%,
-    #ccc 30%,
-    #ddd 50%,
-    #ccc 70%,
-    #fff 80%,
-    #999 95%
-  );
+  background: linear-gradient(45deg,
+      #999 5%,
+      #fff 10%,
+      #ccc 30%,
+      #ddd 50%,
+      #ccc 70%,
+      #fff 80%,
+      #999 95%);
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
@@ -157,18 +155,16 @@
   position: absolute;
   top: -50%;
   left: -50%;
-  content: '';
+  content: "";
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    30deg,
-    transparent 20%,
-    transparent 40%,
-    rgb(255, 255, 255, 0.4) 50%,
-    rgb(255, 255, 255, 0.4) 55%,
-    transparent 70%,
-    transparent 100%
-  );
+  background: linear-gradient(30deg,
+      transparent 20%,
+      transparent 40%,
+      rgb(255, 255, 255, 0.4) 50%,
+      rgb(255, 255, 255, 0.4) 55%,
+      transparent 70%,
+      transparent 100%);
   transform: rotate(30deg);
   animation: shine-metal 3s infinite linear;
 }
@@ -189,9 +185,7 @@
   overflow: hidden;
   border-radius: 0.875rem;
   padding: 2rem;
-  box-shadow:
-    0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   width: 200px;
   height: 180px;
   background: linear-gradient(to bottom, #dbdbdb, #f9f9f9, #dbdbdb);
@@ -201,18 +195,16 @@
   position: absolute;
   top: 0;
   z-index: 1;
-  content: '';
+  content: "";
   width: 300%;
   height: 300%;
-  background: linear-gradient(
-    30deg,
-    transparent 20%,
-    transparent 40%,
-    rgb(255, 255, 255, 0.4) 50%,
-    rgb(255, 255, 255, 0.4) 55%,
-    transparent 70%,
-    transparent 100%
-  );
+  background: linear-gradient(30deg,
+      transparent 20%,
+      transparent 40%,
+      rgb(255, 255, 255, 0.4) 50%,
+      rgb(255, 255, 255, 0.4) 55%,
+      transparent 70%,
+      transparent 100%);
   transition: transform 2s ease-in;
   transform: translateX(100%) rotate(var(--shine-deg));
 }
@@ -232,11 +224,7 @@
 }
 
 .bg-grid-pattern {
-  background-image: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.1) 1px,
-      transparent 1px
-    ),
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
   background-size: 20px 20px;
 }

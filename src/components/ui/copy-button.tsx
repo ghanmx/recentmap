@@ -1,36 +1,36 @@
-import { Button } from '@/components/ui/button'
-import { Copy, Check } from 'lucide-react'
-import { useState } from 'react'
-import { useToast } from '@/hooks/use-toast'
+import { Button } from "@/components/ui/button";
+import { Copy, Check } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface CopyButtonProps {
-  text: string
-  onCopy?: () => void
-  className?: string
+  text: string;
+  onCopy?: () => void;
+  className?: string;
 }
 
 export const CopyButton = ({ text, onCopy, className }: CopyButtonProps) => {
-  const [copied, setCopied] = useState(false)
-  const { toast } = useToast()
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
       toast({
-        title: 'Copiado',
-        description: 'La información ha sido copiada al portapapeles',
-      })
-      onCopy?.()
-      setTimeout(() => setCopied(false), 2000)
+        title: "Copiado",
+        description: "La información ha sido copiada al portapapeles",
+      });
+      onCopy?.();
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       toast({
-        title: 'Error',
-        description: 'No se pudo copiar al portapapeles',
-        variant: 'destructive',
-      })
+        title: "Error",
+        description: "No se pudo copiar al portapapeles",
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   return (
     <Button
@@ -44,7 +44,7 @@ export const CopyButton = ({ text, onCopy, className }: CopyButtonProps) => {
       ) : (
         <Copy className="h-4 w-4" />
       )}
-      <span className="ml-2">{copied ? 'Copiado' : 'Copiar'}</span>
+      <span className="ml-2">{copied ? "Copiado" : "Copiar"}</span>
     </Button>
-  )
-}
+  );
+};
