@@ -1,16 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { TollLocation } from '@/data/tollData'
 
-interface LocationType {
-  address: string
-  lat: number
-  lon: number
-  distance: number
-  city?: string
-  state?: string
-  zip?: string
-}
-
 interface LocationInfo {
   pickup?: { lat: number; lng: number; address: string }
   drop?: { lat: number; lng: number; address: string }
@@ -30,14 +20,12 @@ interface TowingContextType {
   requiresManeuver: boolean
   selectedVehicleModel: string
   tollInfo: TollInfo | null
-  location: LocationType
   updateTowingInfo: (distance: number) => void
   updateTollInfo: (tolls: TollLocation[], tollCost: number) => void
   updateTruckType: (type: 'A' | 'B' | 'C' | 'D') => void
   updateManeuverRequired: (required: boolean) => void
   updateSelectedVehicleModel: (model: string) => void
   updateLocationInfo: (info: LocationInfo) => void
-  updateLocation: (location: LocationType) => void
 }
 
 const TowingContext = createContext<TowingContextType | undefined>(undefined)
@@ -51,12 +39,6 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
   const [requiresManeuver, setRequiresManeuver] = useState(false)
   const [selectedVehicleModel, setSelectedVehicleModel] = useState('')
   const [tollInfo, setTollInfo] = useState<TollInfo | null>(null)
-  const [location, setLocation] = useState<LocationType>({
-    address: '',
-    lat: 0,
-    lon: 0,
-    distance: 0,
-  })
 
   const updateTowingInfo = (distance: number) => {
     setTotalDistance(distance)
@@ -85,10 +67,6 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
     // The actual state updates will be handled by the map component
   }
 
-  const updateLocation = (newLocation: LocationType) => {
-    setLocation(newLocation)
-  }
-
   return (
     <TowingContext.Provider
       value={{
@@ -100,14 +78,12 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
         requiresManeuver,
         selectedVehicleModel,
         tollInfo,
-        location,
         updateTowingInfo,
         updateTollInfo,
         updateTruckType,
         updateManeuverRequired,
         updateSelectedVehicleModel,
         updateLocationInfo,
-        updateLocation,
       }}
     >
       {children}

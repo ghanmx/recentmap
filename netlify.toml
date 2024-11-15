@@ -1,8 +1,8 @@
 # Main build settings
 [build]
   base = "."
-  publish = "dist"  # Asegúrate de que este sea el directorio correcto de salida
-  command = "npm run build"
+  publish = "dist"  # Ensure this matches your actual build output directory
+  command = "npm run build"  # Adjust to the correct build command
 
 # Plugins
 [[plugins]]
@@ -11,7 +11,7 @@
 # Production context settings
 [context.production]
   publish = "dist/"
-  command = "npm run build"  # Comando actualizado
+  command = "npm run build"  # Updated from `make publish` to a Node build command
   environment = { NODE_VERSION = "14.15.3" }
 
 # Deploy Preview settings
@@ -23,8 +23,9 @@
 
 # Branch Deploy settings
 [context.branch-deploy]
-  command = "npm run build"  # Comando consistente
-  environment = { NODE_ENV = "development" }
+  command = "npm run build"  # Ensure consistent build command
+[context.branch-deploy.environment]
+  NODE_ENV = "development"
 
 # Development environment
 [context.dev.environment]
@@ -61,7 +62,7 @@
 
 [[redirects]]
   from = "/gated-path"
-  to = "/admin"  # Actualiza con la ruta deseada para acceso restringido
+  to = "/admin"  # Update this path to your desired endpoint for restricted access
   status = 200
   conditions = { Role = ["admin"] }
   force = true

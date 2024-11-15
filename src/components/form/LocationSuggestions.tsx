@@ -6,18 +6,18 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
 interface Suggestion {
-  address: string
-  lat: number
-  lon: number
-  distance: number
+  address: string;
+  lat: number;
+  lon: number;
+  distance: number;
 }
 
 interface LocationSuggestionsProps {
-  suggestions: Suggestion[]
-  error: string | null
-  isMarking: boolean
-  onSuggestionSelect: (suggestion: Suggestion) => void
-  type?: 'pickup' | 'drop'
+  suggestions: Suggestion[];
+  error: string | null;
+  isMarking: boolean;
+  onSuggestionSelect: (suggestion: Suggestion) => void;
+  type?: 'pickup' | 'drop';
 }
 
 export const LocationSuggestions = ({
@@ -25,7 +25,7 @@ export const LocationSuggestions = ({
   error,
   isMarking,
   onSuggestionSelect,
-  type = 'pickup',
+  type = 'pickup'
 }: LocationSuggestionsProps) => {
   return (
     <AnimatePresence>
@@ -95,5 +95,5 @@ export const LocationSuggestions = ({
         </motion.div>
       )}
     </AnimatePresence>
-  )
-}
+  );
+};
