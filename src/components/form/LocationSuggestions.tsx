@@ -1,15 +1,17 @@
-import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, Target, Loader2, Navigation } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle } from 'lucide-react'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Target, Loader2, Navigation, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface Suggestion {
   address: string;
   lat: number;
   lon: number;
   distance: number;
+  city?: string;
+  state?: string;
+  zip?: string;
 }
 
 interface LocationSuggestionsProps {
@@ -53,12 +55,12 @@ export const LocationSuggestions = ({
             {suggestions.map((suggestion, index) => (
               <motion.button
                 key={index}
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -5 }}
                 animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -5 }}
                 transition={{ delay: index * 0.05 }}
-                className="w-full p-3 text-left hover:bg-primary/5 rounded-lg flex items-center gap-3 
-                         transition-all duration-300 group relative"
-                onClick={() => onSuggestionSelect(suggestion)}
+                className="w-full p-3 text-left hover:bg-primary/5 rounded-lg flex items-center gap-3 transition-all duration-300 group relative"
+                onClick={() => !isMarking && onSuggestionSelect(suggestion)}
                 disabled={isMarking}
               >
                 {isMarking ? (
@@ -71,11 +73,11 @@ export const LocationSuggestions = ({
 
                 <div className="flex flex-col flex-1">
                   <span className="text-sm text-gray-700 group-hover:text-gray-900 line-clamp-2">
-                    {suggestion.address}
+                    {suggestion.address}, {suggestion.city}, {suggestion.state}
                   </span>
                   <div className="flex items-center gap-2 mt-1">
                     <Badge variant="secondary" className="text-xs">
-                      {suggestion.distance.toFixed(1)}km de Nuevo León
+                      {suggestion.distance.toFixed(1)} km
                     </Badge>
                   </div>
                 </div>
@@ -93,6 +95,10 @@ export const LocationSuggestions = ({
             ))}
           </Card>
         </motion.div>
+      )}
+
+      {suggestions.length === 0 && !isMarking && !error && (
+        <div className="mt-4 text-gray-500">No suggestions available</div>
       )}
     </AnimatePresence>
   );
