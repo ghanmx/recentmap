@@ -87,7 +87,7 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
 }>
     { children }
     </TowingContext.Provider>
-  );
+    );
 };
 
 export const useTowing = () => {

@@ -16,6 +16,7 @@
     "stripe:login": "stripe login"
   },
   "dependencies": {
+    "@formspree/react": "^2.5.1",
     "@hookform/resolvers": "^3.9.0",
     "@mapbox/polyline": "^1.2.1",
     "@radix-ui/react-accordion": "^1.2.0",
