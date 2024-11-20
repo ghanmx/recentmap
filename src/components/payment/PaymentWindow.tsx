@@ -1,121 +1,176 @@
-import React from 'react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { useToast } from '@/hooks/use-toast'
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
-import { CreditCard, Calendar, CheckCircle, Shield } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import {
-  processPayment,
-  validatePaymentDetails,
-} from '@/utils/paymentProcessor'
+import React from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
+import { CreditCard } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useTowing, UserDetails } from "@/contexts/TowingContext";
+import { generateInvoiceNumber, createBillHTML } from "@/utils/billingUtils";
+import { sendBillEmails } from "@/utils/emailService";
+import { PaymentForm } from "./PaymentForm";
 
-interface PaymentWindowProps {
-  isOpen: boolean
-  onClose: () => void
-  onPaymentSubmit?: (result: { success: boolean; error?: string }) => void
-  amount: number
+export interface PaymentWindowProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onPaymentSubmit?: (result: { success: boolean; error?: string }) => void;
+  amount: number;
+  userDetails: UserDetails;
 }
 
-const PaymentWindow = ({
-  isOpen,
-  onClose,
-  onPaymentSubmit,
+const PaymentWindow: React.FC<PaymentWindowProps> = ({ 
+  isOpen, 
+  onClose, 
+  onPaymentSubmit, 
   amount = 0,
+  userDetails
 }: PaymentWindowProps) => {
-  const stripe = useStripe()
-  const elements = useElements()
-  const { toast } = useToast()
-  const [isProcessing, setIsProcessing] = React.useState(false)
-  const [cardComplete, setCardComplete] = React.useState(false)
+  const stripe = useStripe();
+  const elements = useElements();
+  const { toast } = useToast();
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const [cardComplete, setCardComplete] = React.useState(false);
+  const { 
+    totalDistance,
+    detectedTolls,
+    totalTollCost,
+    truckType,
+    requiresManeuver,
+    pickupLocation,
+    dropLocation,
+  } = useTowing();
 
   React.useEffect(() => {
     if (isOpen) {
-      setCardComplete(false)
+      setCardComplete(false);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const handleClose = () => {
     if (isProcessing) {
       toast({
-        title: 'Pago en Proceso',
-        description: 'Por favor, espere mientras procesamos su pago',
-        variant: 'destructive',
-      })
-      return
+        title: "Pago en Proceso",
+        description: "Por favor espere mientras procesamos su pago",
+        variant: "destructive",
+      });
+      return;
     }
-    onClose()
-  }
+    onClose();
+  };
+
+  const generateBill = async (paymentMethod: string, paymentId: string) => {
+    if (!userDetails || !pickupLocation || !dropLocation) {
+      throw new Error("Missing required details for bill generation");
+    }
+
+    const invoiceNumber = generateInvoiceNumber();
+    const services = [
+      { description: "Servicio Base de Grúa", amount: amount - totalTollCost },
+      ...(detectedTolls.map(toll => ({
+        description: `Peaje - ${toll.name}`,
+        amount: toll.cost
+      }))),
+      ...(requiresManeuver ? [{
+        description: "Cargo por Maniobra Especial",
+        amount: 0
+      }] : [])
+    ];
+
+    const billDetails = {
+      invoiceNumber,
+      date: new Date(),
+      userName: userDetails.name,
+      userEmail: userDetails.email,
+      phone: userDetails.phone,
+      vehicleDetails: {
+        make: userDetails.vehicleMake,
+        model: userDetails.vehicleModel,
+        year: userDetails.vehicleYear,
+        color: userDetails.vehicleColor
+      },
+      locations: {
+        pickup: {
+          address: pickupLocation.address || "",
+          coordinates: { lat: pickupLocation.lat, lng: pickupLocation.lng }
+        },
+        dropoff: {
+          address: dropLocation.address || "",
+          coordinates: { lat: dropLocation.lat, lng: dropLocation.lng }
+        }
+      },
+      services,
+      totalAmount: amount,
+      paymentMethod,
+      paymentId
+    };
+
+    const billHtml = createBillHTML(billDetails);
+    await sendBillEmails(billDetails, billHtml);
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
+    event.preventDefault();
 
     if (!cardComplete) {
       toast({
-        title: 'Datos Incompletos',
-        description: 'Por favor, complete todos los datos de la tarjeta',
-        variant: 'destructive',
-      })
-      return
+        title: "Datos Incompletos",
+        description: "Por favor complete todos los datos de la tarjeta",
+        variant: "destructive",
+      });
+      return;
     }
 
-    setIsProcessing(true)
+    setIsProcessing(true);
 
     if (!stripe || !elements) {
       toast({
-        title: 'Error',
-        description: 'Sistema de pago no disponible. Intente más tarde.',
-        variant: 'destructive',
-      })
-      setIsProcessing(false)
-      return
+        title: "Error",
+        description: "Sistema de pago no disponible. Intente más tarde.",
+        variant: "destructive",
+      });
+      setIsProcessing(false);
+      return;
     }
 
-    const cardElement = elements.getElement(CardElement)
-    if (!validatePaymentDetails(cardElement)) {
-      setIsProcessing(false)
-      return
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      toast({
+        title: "Error",
+        description: "Elemento de tarjeta no encontrado.",
+        variant: "destructive",
+      });
+      setIsProcessing(false);
+      return;
     }
 
     try {
       const { error, paymentMethod } = await stripe.createPaymentMethod({
         type: 'card',
         card: cardElement,
-      })
+      });
 
       if (error) {
-        throw error
+        throw error;
       }
 
-      const result = await processPayment(amount)
+      await generateBill("Tarjeta de Crédito", paymentMethod.id);
 
-      if (result.success) {
-        toast({
-          title: 'Pago Exitoso',
-          description: `Transacción completada. ID: ${result.transactionId}`,
-        })
-        onPaymentSubmit?.({ success: true })
-        onClose()
-      } else {
-        throw new Error(result.error)
-      }
+      toast({
+        title: "Pago Exitoso",
+        description: "El pago ha sido procesado y la factura ha sido enviada.",
+      });
+      
+      onPaymentSubmit?.({ success: true });
+      onClose();
     } catch (err: any) {
       toast({
-        title: 'Error en el Pago',
-        description: err.message || 'Ocurrió un error al procesar el pago',
-        variant: 'destructive',
-      })
-      onPaymentSubmit?.({ success: false, error: err.message })
+        title: "Error en el Pago",
+        description: err.message || "Ocurrió un error durante el proceso de pago",
+        variant: "destructive",
+      });
+      onPaymentSubmit?.({ success: false, error: err.message });
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -126,84 +181,17 @@ const PaymentWindow = ({
             Pago Seguro
           </DialogTitle>
         </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-              <CardElement
-                onChange={(e) => setCardComplete(e.complete)}
-                options={{
-                  style: {
-                    base: {
-                      fontSize: '16px',
-                      color: '#424770',
-                      '::placeholder': {
-                        color: '#aab7c4',
-                      },
-                    },
-                    invalid: {
-                      color: '#9e2146',
-                    },
-                  },
-                  hidePostalCode: true,
-                }}
-              />
-            </div>
-
-            <div className="flex items-center justify-between text-sm text-gray-600">
-              <span className="flex items-center gap-1.5">
-                <Shield className="w-4 h-4" />
-                Encriptación SSL Segura
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4" />
-                {new Date().toLocaleDateString()}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between px-2">
-              <span className="text-sm text-gray-600">Cargo por Servicio</span>
-              <span className="text-lg font-semibold text-primary">
-                ${amount.toFixed(2)}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex gap-3 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isProcessing}
-              className="border-gray-300 hover:bg-gray-100"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={!stripe || isProcessing || !cardComplete}
-              className={cn(
-                'bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white min-w-[120px]',
-                isProcessing && 'opacity-80',
-              )}
-            >
-              {isProcessing ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Procesando...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4" />
-                  Pagar ${amount.toFixed(2)}
-                </span>
-              )}
-            </Button>
-          </div>
-        </form>
+        
+        <PaymentForm
+          amount={amount}
+          isProcessing={isProcessing}
+          cardComplete={cardComplete}
+          onClose={handleClose}
+          onSubmit={handleSubmit}
+        />
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default PaymentWindow
+export default PaymentWindow;

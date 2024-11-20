@@ -1,0 +1,18 @@
+name: Formspree Deployment
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Deploy
+      uses: formspree/cli-action@main
+      with:
+        deployKey: ${{ secrets.FORMSPREE_DEPLOY_KEY }}
+
+        
