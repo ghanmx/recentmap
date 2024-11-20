@@ -3,7 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useTowing, UserDetails } from "@/contexts/TowingContext";
+import { useTowing, UserDetails } from "@/utils/TowingContext";
+import {useTowing} form "@/contex/TowingContext";
 import { generateInvoiceNumber, createBillHTML } from "@/utils/billingUtils";
 import { sendBillEmails } from "@/utils/emailService";
 import { PaymentForm } from "./PaymentForm";

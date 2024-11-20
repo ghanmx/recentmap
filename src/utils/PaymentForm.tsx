@@ -1,26 +1,26 @@
-import React from 'react';
+import React from 'react'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { CreditCard, Calendar, CheckCircle, Shield } from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/hooks/use-toast'
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { CreditCard, Calendar, CheckCircle, Shield } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import {
   processPayment,
   validatePaymentDetails,
-} from '@/utils/paymentProcessor';
+} from '@/utils/paymentProcessor'
 
 interface PaymentWindowProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onPaymentSubmit?: (result: { success: boolean; error?: string }) => void;
-  amount: number;
+  isOpen: boolean
+  onClose: () => void
+  onPaymentSubmit?: (result: { success: boolean; error?: string }) => void
+  amount: number
 }
 
 const PaymentWindow = ({
@@ -29,17 +29,17 @@ const PaymentWindow = ({
   onPaymentSubmit,
   amount = 0,
 }: PaymentWindowProps) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = React.useState(false);
-  const [cardComplete, setCardComplete] = React.useState(false);
+  const stripe = useStripe()
+  const elements = useElements()
+  const { toast } = useToast()
+  const [isProcessing, setIsProcessing] = React.useState(false)
+  const [cardComplete, setCardComplete] = React.useState(false)
 
   React.useEffect(() => {
     if (isOpen) {
-      setCardComplete(false);
+      setCardComplete(false)
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   const handleClose = () => {
     if (isProcessing) {
@@ -47,75 +47,75 @@ const PaymentWindow = ({
         title: 'Pago en Proceso',
         description: 'Por favor, espere mientras procesamos su pago',
         variant: 'destructive',
-      });
-      return;
+      })
+      return
     }
-    onClose();
-  };
+    onClose()
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+    event.preventDefault()
 
     if (!cardComplete) {
       toast({
         title: 'Datos Incompletos',
         description: 'Por favor, complete todos los datos de la tarjeta',
         variant: 'destructive',
-      });
-      return;
+      })
+      return
     }
 
-    setIsProcessing(true);
+    setIsProcessing(true)
 
     if (!stripe || !elements) {
       toast({
         title: 'Error',
         description: 'Sistema de pago no disponible. Intente más tarde.',
         variant: 'destructive',
-      });
-      setIsProcessing(false);
-      return;
+      })
+      setIsProcessing(false)
+      return
     }
 
-    const cardElement = elements.getElement(CardElement);
+    const cardElement = elements.getElement(CardElement)
     if (!validatePaymentDetails(cardElement)) {
-      setIsProcessing(false);
-      return;
+      setIsProcessing(false)
+      return
     }
 
     try {
       const { error, paymentMethod } = await stripe.createPaymentMethod({
         type: 'card',
         card: cardElement,
-      });
+      })
 
       if (error) {
-        throw error;
+        throw error
       }
 
-      const result = await processPayment(amount);
+      const result = await processPayment(amount)
 
       if (result.success) {
         toast({
           title: 'Pago Exitoso',
           description: `Transacción completada. ID: ${result.transactionId}`,
-        });
-        onPaymentSubmit?.({ success: true });
-        onClose();
+        })
+        onPaymentSubmit?.({ success: true })
+        onClose()
       } else {
-        throw new Error(result.error);
+        throw new Error(result.error)
       }
     } catch (err: any) {
       toast({
         title: 'Error en el Pago',
         description: err.message || 'Ocurrió un error al procesar el pago',
         variant: 'destructive',
-      });
-      onPaymentSubmit?.({ success: false, error: err.message });
+      })
+      onPaymentSubmit?.({ success: false, error: err.message })
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(false)
     }
-  };
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -203,7 +203,7 @@ const PaymentWindow = ({
         </form>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default PaymentWindow;
+export default PaymentWindow

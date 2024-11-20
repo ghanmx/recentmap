@@ -1,14 +1,14 @@
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { Button } from "@/components/ui/button";
-import { Shield, Calendar, CheckCircle, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { Button } from '@/components/ui/button'
+import { Shield, Calendar, CheckCircle, Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface PaymentFormProps {
-  amount: number;
-  isProcessing: boolean;
-  cardComplete: boolean;
-  onClose: () => void;
-  onSubmit: (e: React.FormEvent) => Promise<void>;
+  amount: number
+  isProcessing: boolean
+  cardComplete: boolean
+  onClose: () => void
+  onSubmit: (e: React.FormEvent) => Promise<void>
 }
 
 export const PaymentForm = ({
@@ -16,13 +16,13 @@ export const PaymentForm = ({
   isProcessing,
   cardComplete,
   onClose,
-  onSubmit
+  onSubmit,
 }: PaymentFormProps) => {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div className="space-y-4">
         <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <CardElement 
+          <CardElement
             options={{
               style: {
                 base: {
@@ -74,8 +74,8 @@ export const PaymentForm = ({
           type="submit"
           disabled={isProcessing || !cardComplete}
           className={cn(
-            "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white min-w-[120px]",
-            isProcessing && "opacity-80"
+            'bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white min-w-[120px]',
+            isProcessing && 'opacity-80',
           )}
         >
           {isProcessing ? (
@@ -92,5 +92,5 @@ export const PaymentForm = ({
         </Button>
       </div>
     </form>
-  );
-};
+  )
+}

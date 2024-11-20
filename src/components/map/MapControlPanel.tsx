@@ -1,21 +1,21 @@
-import { MapControls } from "./MapControls";
-import { RouteStreetInfo } from "./RouteStreetInfo";
-import { showLocationNotification } from "@/utils/notificationUtils";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { MapControls } from './MapControls'
+import { RouteStreetInfo } from './RouteStreetInfo'
+import { showLocationNotification } from '@/utils/notificationUtils'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Card } from '@/components/ui/card'
+import { useToast } from '@/hooks/use-toast'
+import { Loader2 } from 'lucide-react'
 
 interface MapControlPanelProps {
-  selectingPickup: boolean;
-  selectingDrop: boolean;
-  setSelectingPickup: (value: boolean) => void;
-  setSelectingDrop: (value: boolean) => void;
-  pickupLocation: { lat: number; lng: number } | null;
-  dropLocation: { lat: number; lng: number } | null;
-  pickupAddress?: string;
-  dropAddress?: string;
-  isLoading?: boolean;
+  selectingPickup: boolean
+  selectingDrop: boolean
+  setSelectingPickup: (value: boolean) => void
+  setSelectingDrop: (value: boolean) => void
+  pickupLocation: { lat: number; lng: number } | null
+  dropLocation: { lat: number; lng: number } | null
+  pickupAddress?: string
+  dropAddress?: string
+  isLoading?: boolean
 }
 
 export const MapControlPanel = ({
@@ -29,7 +29,7 @@ export const MapControlPanel = ({
   dropAddress,
   isLoading = false,
 }: MapControlPanelProps) => {
-  const { toast } = useToast();
+  const { toast } = useToast()
 
   return (
     <div className="px-4 sm:px-6 flex flex-col items-center gap-6 pointer-events-auto max-w-3xl mx-auto w-full">
@@ -54,22 +54,24 @@ export const MapControlPanel = ({
             selectingPickup={selectingPickup}
             selectingDrop={selectingDrop}
             onPickupClick={() => {
-              setSelectingPickup(true);
-              setSelectingDrop(false);
-              showLocationNotification('pickup', { lat: 0, lng: 0 });
+              setSelectingPickup(true)
+              setSelectingDrop(false)
+              showLocationNotification('pickup', { lat: 0, lng: 0 })
               toast({
-                title: "Seleccionando punto de recogida",
-                description: "Haz clic en el mapa para seleccionar el punto de recogida"
-              });
+                title: 'Seleccionando punto de recogida',
+                description:
+                  'Haz clic en el mapa para seleccionar el punto de recogida',
+              })
             }}
             onDropClick={() => {
-              setSelectingDrop(true);
-              setSelectingPickup(false);
-              showLocationNotification('drop', { lat: 0, lng: 0 });
+              setSelectingDrop(true)
+              setSelectingPickup(false)
+              showLocationNotification('drop', { lat: 0, lng: 0 })
               toast({
-                title: "Seleccionando punto de entrega",
-                description: "Haz clic en el mapa para seleccionar el punto de entrega"
-              });
+                title: 'Seleccionando punto de entrega',
+                description:
+                  'Haz clic en el mapa para seleccionar el punto de entrega',
+              })
             }}
           />
         </Card>
@@ -94,5 +96,5 @@ export const MapControlPanel = ({
         )}
       </AnimatePresence>
     </div>
-  );
-};
+  )
+}

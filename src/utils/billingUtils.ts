@@ -1,41 +1,41 @@
-import { formatCurrency } from "./priceCalculator";
+import { formatCurrency } from './priceCalculator'
 
 export interface BillDetails {
-  invoiceNumber: string;
-  date: Date;
-  userName: string;
-  userEmail: string;
-  phone: string;
+  invoiceNumber: string
+  date: Date
+  userName: string
+  userEmail: string
+  phone: string
   vehicleDetails: {
-    make: string;
-    model: string;
-    year: string;
-    color: string;
-  };
+    make: string
+    model: string
+    year: string
+    color: string
+  }
   locations: {
     pickup: {
-      address: string;
-      coordinates: { lat: number; lng: number; }
-    };
+      address: string
+      coordinates: { lat: number; lng: number }
+    }
     dropoff: {
-      address: string;
-      coordinates: { lat: number; lng: number; }
-    };
-  };
+      address: string
+      coordinates: { lat: number; lng: number }
+    }
+  }
   services: {
-    description: string;
-    amount: number;
-  }[];
-  totalAmount: number;
-  paymentMethod: string;
-  paymentId: string;
+    description: string
+    amount: number
+  }[]
+  totalAmount: number
+  paymentMethod: string
+  paymentId: string
 }
 
 export const generateInvoiceNumber = () => {
-  const date = new Date();
-  const random = Math.floor(Math.random() * 10000);
-  return `INV-${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${random}`;
-};
+  const date = new Date()
+  const random = Math.floor(Math.random() * 10000)
+  return `INV-${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${random}`
+}
 
 export const createBillHTML = (details: BillDetails): string => {
   return `
@@ -85,12 +85,16 @@ export const createBillHTML = (details: BillDetails): string => {
           </tr>
         </thead>
         <tbody>
-          ${details.services.map(service => `
+          ${details.services
+            .map(
+              (service) => `
             <tr>
               <td>${service.description}</td>
               <td>${formatCurrency(service.amount)}</td>
             </tr>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </tbody>
       </table>
 
@@ -109,5 +113,5 @@ export const createBillHTML = (details: BillDetails): string => {
       </footer>
     </body>
     </html>
-  `;
-};
+  `
+}

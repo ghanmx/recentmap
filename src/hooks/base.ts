@@ -18,7 +18,7 @@ export function useBase<T>(initialValue: T) {
     setError,
     loading,
     setLoading,
-    reset
+    reset,
   }
 }
 
@@ -52,6 +52,6 @@ export function useAsync<T>(asyncFn: () => Promise<T>, immediate = true) {
     value,
     error,
     loading,
-    execute
+    execute,
   }
 }

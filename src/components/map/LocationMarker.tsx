@@ -1,14 +1,14 @@
-import { useMapEvents } from "react-leaflet";
-import { useToast } from "@/hooks/use-toast";
-import { Marker, Popup } from "react-leaflet";
-import { pickupIcon, dropIcon } from "@/utils/mapUtils";
+import { useMapEvents } from 'react-leaflet'
+import { useToast } from '@/hooks/use-toast'
+import { Marker, Popup } from 'react-leaflet'
+import { pickupIcon, dropIcon } from '@/utils/mapUtils'
 
 interface LocationMarkerProps {
-  onLocationSelect: (location: { lat: number; lng: number }) => void;
-  selectingPickup: boolean;
-  selectingDrop: boolean;
-  pickupLocation?: { lat: number; lng: number } | null;
-  dropLocation?: { lat: number; lng: number } | null;
+  onLocationSelect: (location: { lat: number; lng: number }) => void
+  selectingPickup: boolean
+  selectingDrop: boolean
+  pickupLocation?: { lat: number; lng: number } | null
+  dropLocation?: { lat: number; lng: number } | null
 }
 
 export const LocationMarker = ({
@@ -16,22 +16,22 @@ export const LocationMarker = ({
   selectingPickup,
   selectingDrop,
   pickupLocation,
-  dropLocation
+  dropLocation,
 }: LocationMarkerProps) => {
-  const { toast } = useToast();
+  const { toast } = useToast()
 
   useMapEvents({
     click(e) {
       if (selectingPickup || selectingDrop) {
-        onLocationSelect(e.latlng);
+        onLocationSelect(e.latlng)
         toast({
           title: `${selectingPickup ? 'Punto de Recogida' : 'Punto de Entrega'} Seleccionado`,
-          description: "La ubicación ha sido establecida en el mapa",
+          description: 'La ubicación ha sido establecida en el mapa',
           duration: 3000,
-        });
+        })
       }
     },
-  });
+  })
 
   return (
     <>
@@ -44,13 +44,10 @@ export const LocationMarker = ({
         </Marker>
       )}
       {dropLocation && (
-        <Marker
-          position={[dropLocation.lat, dropLocation.lng]}
-          icon={dropIcon}
-        >
+        <Marker position={[dropLocation.lat, dropLocation.lng]} icon={dropIcon}>
           <Popup>Punto de Entrega</Popup>
         </Marker>
       )}
     </>
-  );
-};
+  )
+}
