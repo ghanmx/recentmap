@@ -5,7 +5,7 @@ import { DownloadButtons } from "../form/DownloadButtons";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { ReservationL ist } from "@/features/reservations/components/ReservationList";
+import { ReservationList } from "@/features/reservations/components/ReservationList";
 import { ReservationFilters } from "@/features/reservations/components/ReservationFilters";
 
 interface ReservationManagementProps {
