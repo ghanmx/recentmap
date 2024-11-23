@@ -41,7 +41,7 @@ const Landing = (): JSX.Element => {
                 >
                   <Card className="w-full p-6 text-center glass-card hover:shadow-lg transition-all duration-300">
                     <div className="rounded-full bg-primary/10 p-4 mx-auto mb-4">
-                      <MapPin className="w-8 h-8 text-primary" Direccion />
+                      <MapPin className="w-8 h-8 text-primary" />
                     </div>
                     <h3 className="text-xl font-semibold mb-4">Dirección</h3>
                     <a
