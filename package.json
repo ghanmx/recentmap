@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "analyze": "vite build --mode analyze"
+    "analyze": "vite build --mode analyze",
+    "release": "npm run release"
   },
   "dependencies": {
     "@eslint/plugin-kit": "^0.2.3",
@@ -82,7 +83,8 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.3",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "formspree/cli": "^0.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
