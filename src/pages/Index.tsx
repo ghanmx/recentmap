@@ -10,17 +10,17 @@ const TowMap = lazy(() => import("@/components/TowMap"))
 
 const FEATURED_IMAGES = [
   {
-    src: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
+    src: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fmrgruas.github.io%2F&psig=AOvVaw0W-StWu4TaPfbI_4cmaWwn&ust=1732460736484000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDe-s7d8okDFQAAAAAdAAAAABAE",
     alt: "Featured service 1",
     title: "Professional Service"
   },
   {
-    src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+    src: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fmrgruas.github.io%2F&psig=AOvVaw0W-StWu4TaPfbI_4cmaWwn&ust=1732460736484000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDe-s7d8okDFQAAAAAdAAAAABAJ",
     alt: "Featured service 2",
     title: "24/7 Support"
   },
   {
-    src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+    src: "https://mrgruas.github.io/img/TipoA.gif",
     alt: "Featured service 3",
     title: "Nationwide Coverage"
   }
@@ -74,7 +74,7 @@ const LoadingSpinner = () => (
         transition={{ delay: 0.2 }}
         className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-blue-600 to-primary bg-clip-text text-transparent font-heading"
       >
-        Loading Your Experience
+        Cargando las rutas
       </motion.h2>
       <motion.p
         initial={{ opacity: 0, y: 20 }}
@@ -82,7 +82,7 @@ const LoadingSpinner = () => (
         transition={{ delay: 0.3 }}
         className="mt-4 text-lg font-medium bg-gradient-to-r from-primary via-blue-600 to-primary bg-clip-text text-transparent animate-pulse"
       >
-        Preparing the map...
+        Preparando el mapa...
       </motion.p>
       <Separator className="my-4 bg-blue-200/20" />
       <motion.div
@@ -91,9 +91,9 @@ const LoadingSpinner = () => (
         transition={{ delay: 0.4 }}
         className="mt-2 text-sm text-muted-foreground text-center leading-relaxed"
       >
-        Please wait while we prepare your interactive experience
+        Porfavor espera en lo que preparamos tu mapa interactivo
         <span className="block mt-1 text-xs text-blue-500/70 hover:text-blue-600/70 transition-colors">
-          This may take a few moments
+          Esto tomara un momento...
         </span>
       </motion.div>
     </div>

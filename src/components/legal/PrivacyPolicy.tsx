@@ -15,7 +15,7 @@ export const PrivacyPolicy = () => {
               1. Identidad y Domicilio del Responsable
             </h3>
             <p className="text-gray-600">
-              [Nombre de la Empresa], con domicilio en [Dirección completa], es
+              [MrGrùas], con domicilio en [ Agualeguas Km 6+100 #200 Ebano, 65336 Sabinas Hidalgo, N.L.], es
               responsable del tratamiento de sus datos personales.
             </p>
           </section>

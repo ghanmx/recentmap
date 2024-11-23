@@ -52,7 +52,7 @@ const Landing = (): JSX.Element => {
                     >
                       México 85D, Autopista Monterrey - Nuevo Laredo
                       <br />
-                      Sabinas Hidalgo, N.L., México
+                      Agualeguas Km 6+100 #200 Ebano, 65336 Sabinas Hidalgo, N.L.
                     </a>
                   </Card>
                 </motion.div>
@@ -126,7 +126,7 @@ const Landing = (): JSX.Element => {
                     <MapPin className="w-5 h-5 text-primary mt-1" />
                     <p className="text-gray-300">
                       México 85D, Autopista Monterrey - Nuevo Laredo<br />
-                      Sabinas Hidalgo, N.L., México
+                      Agualeguas Km 6+100 #200 Ebano, 65336 Sabinas Hidalgo, N.L., México
                     </p>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -183,7 +183,7 @@ const Landing = (): JSX.Element => {
               className="mt-12 pt-8 border-t border-gray-700 text-center"
             >
               <p className="text-gray-400">
-                © {new Date().getFullYear()} M.R. Grúas. Todos los derechos reservados.
+                © {new Date().getFullYear()} I.M.R. Grúas. Todos los derechos reservados.
               </p>
             </motion.div>
           </div>

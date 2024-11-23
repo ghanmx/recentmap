@@ -15,10 +15,10 @@ export const MapHeader = () => {
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-blue-700 bg-clip-text text-transparent">
-              Tow Truck Service
+              Servicio de asistencia vial
             </h1>
             <p className="text-xs sm:text-sm text-gray-600">
-              Professional Assistance 24/7
+              Asistencia Profesional  24/7
             </p>
           </div>
         </div>
@@ -44,13 +44,13 @@ export const MapHeader = () => {
                 <div className="flex items-center gap-2 bg-green-50 px-4 py-3 rounded-full border border-green-200 shadow-sm">
                   <MapPin className="w-4 h-4 text-green-600" />
                   <span className="text-sm font-medium text-green-700">
-                    Available in your area
+                    Disponible en todo el país
                   </span>
                 </div>
                 <div className="flex items-center gap-2 bg-blue-50 px-4 py-3 rounded-full border border-blue-200 shadow-sm">
                   <Phone className="w-4 h-4 text-blue-600" />
                   <span className="text-sm font-medium text-blue-700">
-                    24/7 Support
+                    Asistencia 24/7
                   </span>
                 </div>
               </div>
@@ -62,13 +62,13 @@ export const MapHeader = () => {
           <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full border border-green-200 shadow-sm">
             <MapPin className="w-4 h-4 text-green-600" />
             <span className="text-sm font-medium text-green-700">
-              Available in your area
+              Disponible en todo el país
             </span>
           </div>
           <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full border border-blue-200 shadow-sm">
             <Phone className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium text-blue-700">
-              24/7 Support
+              Asistencia 24/7
             </span>
           </div>
         </div>

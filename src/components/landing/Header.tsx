@@ -17,11 +17,11 @@ export const Header = (): JSX.Element => {
             </a>
           </h1>
         </div>
-        
+
         <Navigation />
-        
+
         <div className="hidden md:flex items-center gap-3">
-          <Button 
+          <Button
             variant="outline"
             size="sm"
             onClick={() => navigate('/map')}
@@ -30,8 +30,8 @@ export const Header = (): JSX.Element => {
             <MapIcon className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
             Solicitar Servicio
           </Button>
-          
-          <Button 
+
+          <Button
             variant="default"
             size="sm"
             className="animate-pulse hover:animate-none group"
