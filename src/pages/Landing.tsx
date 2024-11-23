@@ -17,9 +17,9 @@ const Landing = (): JSX.Element => {
         <Hero />
         <main>
           <Services />
-          
+
           <section id="contact" className="py-20 px-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -35,18 +35,18 @@ const Landing = (): JSX.Element => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.02 }}
                   className="flex flex-col items-center"
                 >
                   <Card className="w-full p-6 text-center glass-card hover:shadow-lg transition-all duration-300">
                     <div className="rounded-full bg-primary/10 p-4 mx-auto mb-4">
-                      <MapPin className="w-8 h-8 text-primary" />
+                      <MapPin className="w-8 h-8 text-primary" Direccion />
                     </div>
                     <h3 className="text-xl font-semibold mb-4">Dirección</h3>
-                    <a 
-                      href="https://goo.gl/maps/Bm2taxCFni9G7ZjD6" 
-                      target="_blank" 
+                    <a
+                      href="https://goo.gl/maps/Bm2taxCFni9G7ZjD6"
+                      target="_blank"
                       rel="noreferrer"
                       className="text-gray-600 hover:text-primary transition-colors"
                     >
@@ -57,7 +57,7 @@ const Landing = (): JSX.Element => {
                   </Card>
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.02 }}
                   className="flex flex-col items-center"
                 >
@@ -66,8 +66,8 @@ const Landing = (): JSX.Element => {
                       <Phone className="w-8 h-8 text-primary" />
                     </div>
                     <h3 className="text-xl font-semibold mb-4">Teléfono</h3>
-                    <a 
-                      href="tel:+5218180107110" 
+                    <a
+                      href="tel:+5218180107110"
                       className="text-gray-600 hover:text-primary transition-colors"
                     >
                       +52 1 81 8010 7110
@@ -75,7 +75,7 @@ const Landing = (): JSX.Element => {
                   </Card>
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.02 }}
                   className="flex flex-col items-center"
                 >
@@ -84,8 +84,8 @@ const Landing = (): JSX.Element => {
                       <Mail className="w-8 h-8 text-primary" />
                     </div>
                     <h3 className="text-xl font-semibold mb-4">Email</h3>
-                    <a 
-                      href="mailto:gruasmartinezreyes@hotmail.com" 
+                    <a
+                      href="mailto:gruasmartinezreyes@hotmail.com"
                       className="text-gray-600 hover:text-primary transition-colors break-words"
                     >
                       gruasmartinezreyes@hotmail.com
@@ -100,7 +100,7 @@ const Landing = (): JSX.Element => {
         <footer className="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-16">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -108,12 +108,12 @@ const Landing = (): JSX.Element => {
               >
                 <h3 className="text-2xl font-bold gradient-text">M.R. Grúas</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Servicio profesional de grúas y asistencia vial disponible las 24 horas del día, 
+                  Servicio profesional de grúas y asistencia vial disponible las 24 horas del día,
                   los 7 días de la semana. Su seguridad y satisfacción son nuestra prioridad.
                 </p>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -144,7 +144,7 @@ const Landing = (): JSX.Element => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -153,20 +153,20 @@ const Landing = (): JSX.Element => {
               >
                 <h3 className="text-2xl font-bold gradient-text">Síguenos</h3>
                 <div className="flex flex-wrap gap-4">
-                  <a 
-                    href="#" 
+                  <a
+                    href="#"
                     className="px-4 py-2 bg-gray-800 rounded-full text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-300"
                   >
                     Facebook
                   </a>
-                  <a 
-                    href="#" 
+                  <a
+                    href="#"
                     className="px-4 py-2 bg-gray-800 rounded-full text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-300"
                   >
                     Twitter
                   </a>
-                  <a 
-                    href="#" 
+                  <a
+                    href="#"
                     className="px-4 py-2 bg-gray-800 rounded-full text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-300"
                   >
                     Instagram
@@ -175,7 +175,7 @@ const Landing = (): JSX.Element => {
               </motion.div>
             </div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
