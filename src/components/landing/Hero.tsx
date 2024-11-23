@@ -13,13 +13,13 @@ export const Hero = () => {
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.7 }}
-          src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
+          src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fmrgruas.github.io%2F&psig=AOvVaw0W-StWu4TaPfbI_4cmaWwn&ust=1732460736484000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDe-s7d8okDFQAAAAAdAAAAABAE"
           alt="Hero background"
           className="w-full h-full object-cover brightness-50"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50" />
       </div>
-      
+
       <div className="relative z-10 container mx-auto px-4 text-center text-white">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

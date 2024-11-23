@@ -8,6 +8,7 @@ import { RouteDisplay } from "./map/RouteDisplay";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTowing } from "@/contexts/TowingContext";
 import PaymentWindow from "./payment/PaymentWindow";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface QuestionPage {
   id: number;
@@ -44,6 +45,13 @@ export const FloatingQuestionsPanel = ({
   const [currentPage, setCurrentPage] = useState(0);
   const [showPaymentWindow, setShowPaymentWindow] = useState(false);
   const { totalDistance, truckType, requiresManeuver, totalTollCost } = useTowing();
+
+  console.log('FloatingQuestionsPanel rendered:', {
+    currentPage,
+    showPaymentWindow,
+    pickupLocation,
+    dropLocation
+  });
 
   const handlePaymentSubmit = async (result: { success: boolean; error?: string }) => {
     if (result.success) {
@@ -98,41 +106,48 @@ export const FloatingQuestionsPanel = ({
         position="right"
         className="w-full max-w-md mx-auto bg-white/95 backdrop-blur-sm shadow-lg"
       >
-        <div className="space-y-6 p-6">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentPage}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="min-h-[50vh] max-h-[50vh] overflow-y-auto"
-            >
-              {pages[currentPage].component}
-            </motion.div>
-          </AnimatePresence>
+        <ScrollArea className="h-[calc(100vh-12rem)]">
+          <div className="space-y-6 p-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPage}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="min-h-[50vh]"
+              >
+                {pages[currentPage].component}
+              </motion.div>
+            </AnimatePresence>
 
-          <div className="flex justify-between mt-4 pt-4 border-t border-gray-200">
-            <Button
-              variant="outline"
-              onClick={() => handlePageChange('prev')}
-              disabled={currentPage === 0}
-              className="w-24 bg-white/80 hover:bg-white/95 transition-all"
+            <motion.div
+              className="flex justify-between mt-4 pt-4 border-t border-gray-200"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
             >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Anterior
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => handlePageChange('next')}
-              disabled={currentPage === pages.length - 1}
-              className="w-24 bg-white/80 hover:bg-white/95 transition-all"
-            >
-              Siguiente
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
+              <Button
+                variant="outline"
+                onClick={() => handlePageChange('prev')}
+                disabled={currentPage === 0}
+                className="w-24 bg-white/80 hover:bg-white/95 transition-all"
+              >
+                <ChevronLeft className="w-4 h-4 mr-2" />
+                Anterior
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => handlePageChange('next')}
+                disabled={currentPage === pages.length - 1}
+                className="w-24 bg-white/80 hover:bg-white/95 transition-all"
+              >
+                Siguiente
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            </motion.div>
           </div>
-        </div>
+        </ScrollArea>
       </FloatingPanel>
 
       <PaymentWindow
