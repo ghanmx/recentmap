@@ -1,92 +1,46 @@
-# Main build settings
 [build]
-  base = "."
-  publish = "dist"  # Ensure this matches your actual build output directory
-  command = "npm run build"  # Adjust to the correct build command
-
-# Plugins
-[[plugins]]
-  package = "@netlify/plugin-lighthouse"
-
-# Production context settings
-[context.production]
-  publish = "dist/"
-  command = "npm run build"  # Updated from `make publish` to a Node build command
-  environment = { NODE_VERSION = "14.15.3" }
-
-# Deploy Preview settings
-[context.deploy-preview]
-  publish = "dist/"
-
-[context.deploy-preview.environment]
-  NOT_PRIVATE_ITEM = "not so secret"
-
-# Branch Deploy settings
-[context.branch-deploy]
-  command = "npm run build"  # Ensure consistent build command
-[context.branch-deploy.environment]
-  NODE_ENV = "development"
-
-# Development environment
-[context.dev.environment]
-  NODE_ENV = "development"
-
-# Staging context settings
-[context.staging]
   command = "npm run build"
-  base = "staging"
+  publish = "dist"
+  functions = "netlify/functions"
 
-# Specific branch context
-[context."feat/branch"]
-  command = "npm run build"
-  base = "branch"
-
-# Redirects configuration
-[[redirects]]
-  from = "/*"
-  to = "/blog/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/old-path"
-  to = "/new-path"
-  status = 302
-  force = true
-  query = { id = ":id" }
-  conditions = { Language = ["en"], Country = ["US"] }
-  signed = "API_SIGNATURE_TOKEN"
-
-  [redirects.headers]
-    X-From = "Netlify"
-    X-Api-Key = "some-api-key-string"
-
-[[redirects]]
-  from = "/gated-path"
-  to = "/admin"  # Update this path to your desired endpoint for restricted access
-  status = 200
-  conditions = { Role = ["admin"] }
-  force = true
+[dev]
+  command = "npm run dev"
+  port = 3000
+  targetPort = 5173
+  publish = "dist"
+  autoLaunch = true
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Headers configuration
+[build.environment]
+  NODE_VERSION = "20.11.1"
+  NPM_VERSION = "10.2.4"
+
+[functions]
+  node_bundler = "esbuild"
+
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
-    Content-Security-Policy = "frame-ancestors https://www.facebook.com"
-    cache-control = "max-age=0, no-cache, no-store, must-revalidate"
-    Basic-Auth = "someuser:somepassword anotheruser:anotherpassword"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:;"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
-# Functions directory
-[functions]
-  directory = "functions/"
-
-# Local development server configuration
-[dev]
-  command = "yarn start"
-  port = 8888
-  publish = "dist"
+[build.processing]
+  skip_processing = false
+[build.processing.css]
+  bundle = true
+  minify = true
+[build.processing.js]
+  bundle = true
+  minify = true
+[build.processing.html]
+  pretty_urls = true
+[build.processing.images]
+  compress = true

@@ -1,26 +1,23 @@
-import { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useTowing } from '@/contexts/TowingContext'
-import { towTruckTypes } from '@/utils/towTruckPricing'
-import PaymentWindow from './payment/PaymentWindow'
-import { CostHeader } from './cost/CostHeader'
-import { CostMetrics } from './cost/CostMetrics'
-import { CostBreakdown } from './cost/CostBreakdown'
-import { useToast } from '@/hooks/use-toast'
-import { TollLocation } from '@/data/tollData'
-import { Button } from './ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog'
-import { TermsAndConditions } from './legal/TermsAndConditions'
-import { ScrollArea } from './ui/scroll-area'
-import { Info } from 'lucide-react'
+import { useState, useCallback } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { useTowing } from "@/contexts/TowingContext"
+import { towTruckTypes } from "@/utils/towTruckPricing"
+import { CostHeader } from "./cost/CostHeader"
+import { CostMetrics } from "./cost/CostMetrics"
+import { CostBreakdown } from "./cost/CostBreakdown"
+import { useToast } from "@/hooks/use-toast"
+import { TollLocation } from "@/data/tollData"
+import { Button } from "./ui/button"
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "./ui/dialog"
+import { TermsAndConditions } from "./legal/TermsAndConditions"
+import { ScrollArea } from "./ui/scroll-area"
+import { Info, AlertTriangle } from "lucide-react"
 
-export const CostEstimation = () => {
+interface CostEstimationProps {
+  onShowPayment: () => void
+}
+
+export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
   const {
     totalDistance,
     detectedTolls,
@@ -33,7 +30,6 @@ export const CostEstimation = () => {
 
   const [showBreakdown, setShowBreakdown] = useState(false)
   const [requiresInvoice, setRequiresInvoice] = useState(false)
-  const [showPaymentWindow, setShowPaymentWindow] = useState(false)
   const { toast } = useToast()
 
   const selectedTruck = towTruckTypes[truckType || 'A']
@@ -44,24 +40,33 @@ export const CostEstimation = () => {
   const tax = requiresInvoice ? subtotal * 0.16 : 0
   const finalCost = subtotal + tax
 
-  const handleBreakdownToggle = useCallback(
-    (value: boolean) => {
-      setShowBreakdown(value)
-      if (value) {
-        toast({
-          title: 'Desglose de costos',
-          description: 'Ahora puedes ver el detalle de los costos del servicio',
-        })
-      }
-    },
-    [toast],
-  )
+  console.log('Cost Calculation:', {
+    baseCost,
+    flagDropFee,
+    maneuverCost,
+    totalTollCost,
+    subtotal,
+    tax,
+    finalCost,
+    detectedTolls
+  })
+
+  const handleBreakdownToggle = useCallback((value: boolean) => {
+    setShowBreakdown(value)
+    if (value) {
+      toast({
+        title: "Desglose de costos",
+        description: "Ahora puedes ver el detalle de los costos del servicio",
+      })
+    }
+  }, [toast])
 
   const processedTolls = detectedTolls.map((toll: TollLocation) => ({
-    name: toll.name,
-    cost: toll.cost,
-    direction: toll.direction || 'outbound',
+    ...toll,
+    direction: toll.direction || 'outbound'
   }))
+
+  const showHighCostWarning = finalCost > 5000
 
   return (
     <motion.div
@@ -85,8 +90,7 @@ export const CostEstimation = () => {
             <DialogContent className="max-w-4xl h-[80vh]">
               <DialogTitle>Términos y Condiciones del Servicio</DialogTitle>
               <DialogDescription>
-                Por favor, lea cuidadosamente los términos y condiciones antes
-                de proceder.
+                Por favor, lea cuidadosamente los términos y condiciones antes de proceder.
               </DialogDescription>
               <ScrollArea className="h-full pr-4">
                 <TermsAndConditions />
@@ -94,6 +98,17 @@ export const CostEstimation = () => {
             </DialogContent>
           </Dialog>
         </div>
+
+        {showHighCostWarning && (
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-center gap-2 text-yellow-800"
+          >
+            <AlertTriangle className="w-5 h-5 text-yellow-600" />
+            <span className="text-sm">Este servicio tiene un costo elevado. Considere verificar los detalles.</span>
+          </motion.div>
+        )}
 
         <CostHeader
           showBreakdown={showBreakdown}
@@ -107,7 +122,7 @@ export const CostEstimation = () => {
           {showBreakdown && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="space-y-4"
             >
@@ -129,7 +144,7 @@ export const CostEstimation = () => {
                 finalCost={finalCost}
                 detectedTolls={processedTolls}
                 requiresInvoice={requiresInvoice}
-                setShowPaymentWindow={setShowPaymentWindow}
+                setShowPaymentWindow={onShowPayment}
                 maneuverCost={maneuverCost}
                 requiresManeuver={requiresManeuver}
                 selectedTruck={selectedTruck}
@@ -139,23 +154,7 @@ export const CostEstimation = () => {
             </motion.div>
           )}
         </AnimatePresence>
-
-        <PaymentWindow
-          isOpen={showPaymentWindow}
-          onClose={() => setShowPaymentWindow(false)}
-          amount={finalCost}
-          onPaymentSubmit={(result) => {
-            if (result.success) {
-              setShowPaymentWindow(false)
-              toast({
-                title: 'Pago procesado',
-                description: `Pago de ${finalCost.toFixed(2)} MXN procesado exitosamente para ${selectedTruck.name}`,
-                className: 'bg-green-50 border-green-200',
-              })
-            }
-          }}
-        />
       </div>
     </motion.div>
   )
-}
+} 

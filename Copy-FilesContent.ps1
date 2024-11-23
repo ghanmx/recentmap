@@ -42,8 +42,8 @@ function Copy-FilesContent {
         $file = $_.FullName
         $extension = [System.IO.Path]::GetExtension($file)
 
-        # Exclude specific file types and directories
-        if ($extension -match "\.(ico|jpg|jpeg|png|svg|bmp|gif|db|gz)" -or
+        # Enhanced exclusion list
+        if ($extension -match "\.(ico|jpg|jpeg|png|svg|bmp|gif|db|gz|lock|log)" -or
             $file -like "*node_modules*" -or
             $file -like "*settings.json" -or
             $file -like "*.next*" -or
@@ -51,7 +51,7 @@ function Copy-FilesContent {
             $file -like "*vendor-chunks*" -or
             $file -like "*next.config.js" -or
             $file -like "*package-lock.json" -or
-            $file -like "C:\Users\israe\Documents\GitHub\webapp\apps\server*") {
+            $file -like "*\server*") {
             Write-Host "Skipping file: $file"
             return
         }

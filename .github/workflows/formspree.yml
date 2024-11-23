@@ -9,8 +9,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
       - name: Deploy
-        uses: formspree/cli-action@main
+        uses: formspree/cli-action@v1
         with:
           deployKey: ${{ secrets.FORMSPREE_DEPLOY_KEY }}
