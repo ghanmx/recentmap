@@ -53,10 +53,17 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground font-sans;
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading font-semibold;
   }
 }
@@ -95,21 +102,29 @@
 }
 
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .metallic-effect {
   @apply relative overflow-hidden;
   background: linear-gradient(45deg,
-    #999 5%,
-    #fff 10%,
-    #ccc 30%,
-    #ddd 50%,
-    #ccc 70%,
-    #fff 80%,
-    #999 95%);
+      #999 5%,
+      #fff 10%,
+      #ccc 30%,
+      #ddd 50%,
+      #ccc 70%,
+      #fff 80%,
+      #999 95%);
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
@@ -120,19 +135,24 @@
   width: 200%;
   height: 200%;
   background: linear-gradient(30deg,
-    transparent 20%,
-    transparent 40%,
-    rgb(255, 255, 255, 0.4) 50%,
-    rgb(255, 255, 255, 0.4) 55%,
-    transparent 70%,
-    transparent 100%);
+      transparent 20%,
+      transparent 40%,
+      rgb(255, 255, 255, 0.4) 50%,
+      rgb(255, 255, 255, 0.4) 55%,
+      transparent 70%,
+      transparent 100%);
   transform: rotate(30deg);
   animation: shine-metal 3s infinite linear;
 }
 
 @keyframes shine-metal {
-  from { transform: translateX(-100%) rotate(30deg); }
-  to { transform: translateX(100%) rotate(30deg); }
+  from {
+    transform: translateX(-100%) rotate(30deg);
+  }
+
+  to {
+    transform: translateX(100%) rotate(30deg);
+  }
 }
 
 .card-shine-effect {
@@ -147,12 +167,12 @@
   width: 300%;
   height: 300%;
   background: linear-gradient(30deg,
-    transparent 20%,
-    transparent 40%,
-    rgb(255, 255, 255, 0.4) 50%,
-    rgb(255, 255, 255, 0.4) 55%,
-    transparent 70%,
-    transparent 100%);
+      transparent 20%,
+      transparent 40%,
+      rgb(255, 255, 255, 0.4) 50%,
+      rgb(255, 255, 255, 0.4) 55%,
+      transparent 70%,
+      transparent 100%);
   transition: transform 2s ease-in;
   transform: translateX(100%) rotate(var(--shine-deg));
 }
@@ -162,8 +182,13 @@
 }
 
 @keyframes shine-card {
-  0% { transform: translateX(100%) rotate(var(--shine-deg)); }
-  100% { transform: translateX(-100%) rotate(var(--shine-deg)); }
+  0% {
+    transform: translateX(100%) rotate(var(--shine-deg));
+  }
+
+  100% {
+    transform: translateX(-100%) rotate(var(--shine-deg));
+  }
 }
 
 .bg-grid-pattern {
