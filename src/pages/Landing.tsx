@@ -1,11 +1,11 @@
-import React from 'react';
-import { Header } from '@/components/landing/Header';
-import { MetaTags } from '@/components/landing/MetaTags';
-import { Services } from '@/components/landing/Services';
-import { Hero } from '@/components/landing/Hero';
-import { Mail, MapPin, Phone } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
+import React from 'react'
+import { Header } from '@/components/landing/Header'
+import { MetaTags } from '@/components/landing/MetaTags'
+import { Services } from '@/components/landing/Services'
+import { Hero } from '@/components/landing/Hero'
+import { Mail, MapPin, Phone } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Card } from '@/components/ui/card'
 
 const Landing = (): JSX.Element => {
   return (
@@ -30,7 +30,8 @@ const Landing = (): JSX.Element => {
                   Nos gustaría saber tu opinión
                 </h2>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                  Dispuestos a brindar ayuda y responder a las preguntas que pueda tener.
+                  Dispuestos a brindar ayuda y responder a las preguntas que
+                  pueda tener.
                 </p>
               </div>
 
@@ -43,16 +44,15 @@ const Landing = (): JSX.Element => {
                     <div className="rounded-full bg-primary/10 p-4 mx-auto mb-4">
                       <MapPin className="w-8 h-8 text-primary" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-4">Dirección</h3>
+                    <h3 className="text-xl font-semibold mb-4">Telefono</h3>
                     <a
                       href="https://goo.gl/maps/Bm2taxCFni9G7ZjD6"
                       target="_blank"
                       rel="noreferrer"
                       className="text-gray-600 hover:text-primary transition-colors"
                     >
-                      México 85D, Autopista Monterrey - Nuevo Laredo
+                      +52 1 81 8010 7110
                       <br />
-                      Agualeguas Km 6+100 #200 Ebano, 65336 Sabinas Hidalgo, N.L.
                     </a>
                   </Card>
                 </motion.div>
@@ -65,12 +65,14 @@ const Landing = (): JSX.Element => {
                     <div className="rounded-full bg-primary/10 p-4 mx-auto mb-4">
                       <Phone className="w-8 h-8 text-primary" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-4">Teléfono</h3>
+                    <h3 className="text-xl font-semibold mb-4">Direccion</h3>
                     <a
                       href="tel:+5218180107110"
                       className="text-gray-600 hover:text-primary transition-colors"
                     >
-                      +52 1 81 8010 7110
+                      Autopista Monterrey - Nuevo Laredo
+                      <br />
+                      Sabinas - Hidalgo, México
                     </a>
                   </Card>
                 </motion.div>
@@ -108,8 +110,9 @@ const Landing = (): JSX.Element => {
               >
                 <h3 className="text-2xl font-bold gradient-text">M.R. Grúas</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Servicio profesional de grúas y asistencia vial disponible las 24 horas del día,
-                  los 7 días de la semana. Su seguridad y satisfacción son nuestra prioridad.
+                  Servicio profesional de grúas y asistencia vial disponible las
+                  24 horas del día, los 7 días de la semana. Su seguridad y
+                  satisfacción son nuestra prioridad.
                 </p>
               </motion.div>
 
@@ -125,19 +128,27 @@ const Landing = (): JSX.Element => {
                   <div className="flex items-start space-x-3">
                     <MapPin className="w-5 h-5 text-primary mt-1" />
                     <p className="text-gray-300">
-                      México 85D, Autopista Monterrey - Nuevo Laredo<br />
-                      Agualeguas Km 6+100 #200 Ebano, 65336 Sabinas Hidalgo, N.L., México
+                      México 85D, Autopista Monterrey - Nuevo Laredo
+                      <br />
+                      Agualeguas Km 6+100 #200 Ebano, 65336 Sabinas Hidalgo,
+                      N.L., México
                     </p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Phone className="w-5 h-5 text-primary" />
-                    <a href="tel:+5218180107110" className="text-gray-300 hover:text-white transition-colors">
+                    <a
+                      href="tel:+5218180107110"
+                      className="text-gray-300 hover:text-white transition-colors"
+                    >
                       +52 1 81 8010 7110
                     </a>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Mail className="w-5 h-5 text-primary" />
-                    <a href="mailto:gruasmartinezreyes@hotmail.com" className="text-gray-300 hover:text-white transition-colors break-all">
+                    <a
+                      href="mailto:gruasmartinezreyes@hotmail.com"
+                      className="text-gray-300 hover:text-white transition-colors break-all"
+                    >
                       gruasmartinezreyes@hotmail.com
                     </a>
                   </div>
@@ -183,14 +194,15 @@ const Landing = (): JSX.Element => {
               className="mt-12 pt-8 border-t border-gray-700 text-center"
             >
               <p className="text-gray-400">
-                © {new Date().getFullYear()} I.M.R. Grúas. Todos los derechos reservados.
+                © {new Date().getFullYear()} I.M.R. Grúas. Todos los derechos
+                reservados.
               </p>
             </motion.div>
           </div>
         </footer>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Landing;
+export default Landing

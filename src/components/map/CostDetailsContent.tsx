@@ -1,16 +1,16 @@
-import { motion } from "framer-motion";
-import { formatCurrency } from "@/utils/priceCalculator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { TollInfoDisplay } from "@/components/TollInfoDisplay";
+import { motion } from 'framer-motion'
+import { formatCurrency } from '@/utils/priceCalculator'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { TollInfoDisplay } from '@/components/TollInfoDisplay'
 
 interface CostDetailsContentProps {
-  totalDistance: number;
-  baseCost: number;
-  flagDropFee: number;
-  maneuverCost: number;
-  requiresManeuver: boolean;
-  totalTollCost: number;
-  detectedTolls: any[];
+  totalDistance: number
+  baseCost: number
+  flagDropFee: number
+  maneuverCost: number
+  requiresManeuver: boolean
+  totalTollCost: number
+  detectedTolls: any[]
 }
 
 export const CostDetailsContent = ({
@@ -31,8 +31,12 @@ export const CostDetailsContent = ({
           className="p-3 bg-primary/5 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
         >
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-700">Distancia ({totalDistance.toFixed(1)} km):</span>
-            <span className="font-medium text-primary">{formatCurrency(baseCost)}</span>
+            <span className="text-sm text-gray-700">
+              Distancia ({totalDistance.toFixed(1)} km):
+            </span>
+            <span className="font-medium text-primary">
+              {formatCurrency(baseCost)}
+            </span>
           </div>
         </motion.div>
 
@@ -44,7 +48,9 @@ export const CostDetailsContent = ({
         >
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-700">Banderazo:</span>
-            <span className="font-medium text-primary">{formatCurrency(flagDropFee)}</span>
+            <span className="font-medium text-primary">
+              {formatCurrency(flagDropFee)}
+            </span>
           </div>
         </motion.div>
 
@@ -57,7 +63,9 @@ export const CostDetailsContent = ({
           >
             <div className="flex justify-between items-center">
               <span className="text-sm text-orange-700">Maniobra:</span>
-              <span className="font-medium text-orange-600">{formatCurrency(maneuverCost)}</span>
+              <span className="font-medium text-orange-600">
+                {formatCurrency(maneuverCost)}
+              </span>
             </div>
           </motion.div>
         )}
@@ -71,7 +79,9 @@ export const CostDetailsContent = ({
           >
             <div className="flex justify-between items-center">
               <span className="text-sm text-yellow-700">Peajes:</span>
-              <span className="font-medium text-yellow-600">{formatCurrency(totalTollCost)}</span>
+              <span className="font-medium text-yellow-600">
+                {formatCurrency(totalTollCost)}
+              </span>
             </div>
           </motion.div>
         )}
@@ -88,5 +98,5 @@ export const CostDetailsContent = ({
         </motion.div>
       )}
     </ScrollArea>
-  );
-};
+  )
+}

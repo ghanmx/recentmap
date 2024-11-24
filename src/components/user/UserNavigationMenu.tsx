@@ -1,6 +1,13 @@
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu"
-import { History, Plus, Bell, Settings } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu'
+import { History, Plus, Bell, Settings } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export const UserNavigationMenu = () => {
   const navigate = useNavigate()
@@ -15,11 +22,13 @@ export const UserNavigationMenu = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink 
+              <NavigationMenuLink
                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 onClick={() => navigate('/user/reservations')}
               >
-                <div className="text-sm font-medium leading-none">Historial de Reservas</div>
+                <div className="text-sm font-medium leading-none">
+                  Historial de Reservas
+                </div>
                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                   Ver y gestionar tus reservas anteriores
                 </p>
@@ -35,11 +44,13 @@ export const UserNavigationMenu = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink 
+              <NavigationMenuLink
                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 onClick={() => navigate('/new-reservation')}
               >
-                <div className="text-sm font-medium leading-none">Crear Reserva</div>
+                <div className="text-sm font-medium leading-none">
+                  Crear Reserva
+                </div>
                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                   Solicita un nuevo servicio de grúa
                 </p>
@@ -55,11 +66,13 @@ export const UserNavigationMenu = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink 
+              <NavigationMenuLink
                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 onClick={() => navigate('/user/notifications')}
               >
-                <div className="text-sm font-medium leading-none">Centro de Notificaciones</div>
+                <div className="text-sm font-medium leading-none">
+                  Centro de Notificaciones
+                </div>
                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                   Revisa tus alertas y actualizaciones
                 </p>
@@ -75,11 +88,13 @@ export const UserNavigationMenu = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink 
+              <NavigationMenuLink
                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 onClick={() => navigate('/user/settings')}
               >
-                <div className="text-sm font-medium leading-none">Ajustes de Cuenta</div>
+                <div className="text-sm font-medium leading-none">
+                  Ajustes de Cuenta
+                </div>
                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                   Gestiona tu perfil y métodos de pago
                 </p>

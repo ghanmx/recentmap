@@ -1,29 +1,35 @@
 import { useState, Suspense, lazy } from 'react'
 import { useToast } from '@/components/ui/use-toast'
-import { TowingWrapper } from "@/components/TowingWrapper"
-import { Loader2 } from "lucide-react"
-import { motion } from "framer-motion"
-import { Separator } from "@/components/ui/separator"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { TowingWrapper } from '@/components/TowingWrapper'
+import { Loader2 } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Separator } from '@/components/ui/separator'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
 
-const TowMap = lazy(() => import("@/components/TowMap"))
+const TowMap = lazy(() => import('@/components/TowMap'))
 
 const FEATURED_IMAGES = [
   {
-    src: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fmrgruas.github.io%2F&psig=AOvVaw0W-StWu4TaPfbI_4cmaWwn&ust=1732460736484000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDe-s7d8okDFQAAAAAdAAAAABAE",
-    alt: "Featured service 1",
-    title: "Professional Service"
+    src: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fmrgruas.github.io%2F&psig=AOvVaw0W-StWu4TaPfbI_4cmaWwn&ust=1732460736484000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDe-s7d8okDFQAAAAAdAAAAABAE',
+    alt: 'Featured service 1',
+    title: 'Professional Service',
   },
   {
-    src: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fmrgruas.github.io%2F&psig=AOvVaw0W-StWu4TaPfbI_4cmaWwn&ust=1732460736484000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDe-s7d8okDFQAAAAAdAAAAABAJ",
-    alt: "Featured service 2",
-    title: "24/7 Support"
+    src: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fmrgruas.github.io%2F&psig=AOvVaw0W-StWu4TaPfbI_4cmaWwn&ust=1732460736484000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDe-s7d8okDFQAAAAAdAAAAABAJ',
+    alt: 'Featured service 2',
+    title: '24/7 Support',
   },
   {
-    src: "https://mrgruas.github.io/img/TipoA.gif",
-    alt: "Featured service 3",
-    title: "Nationwide Coverage"
-  }
+    src: 'https://mrgruas.github.io/img/TipoA.gif',
+    alt: 'Featured service 3',
+    title: 'Nationwide Coverage',
+  },
 ]
 
 const LoadingSpinner = () => (

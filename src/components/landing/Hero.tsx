@@ -1,10 +1,10 @@
-import { motion } from 'framer-motion';
-import { MapIcon } from 'lucide-react';
-import { Button } from '../ui/button';
-import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion'
+import { MapIcon } from 'lucide-react'
+import { Button } from '../ui/button'
+import { useNavigate } from 'react-router-dom'
 
 export const Hero = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
@@ -13,7 +13,7 @@ export const Hero = () => {
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.7 }}
-          src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fmrgruas.github.io%2F&psig=AOvVaw0W-StWu4TaPfbI_4cmaWwn&ust=1732460736484000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDe-s7d8okDFQAAAAAdAAAAABAE"
+          src="https://mrgruas.imgix.net/call-to-action-bg.png"
           alt="Hero background"
           className="w-full h-full object-cover brightness-50"
         />
@@ -46,7 +46,7 @@ export const Hero = () => {
               size="lg"
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-black"
-              onClick={() => window.location.href = 'tel:+5218180107110'}
+              onClick={() => (window.location.href = 'tel:+5218180107110')}
             >
               Llamar Ahora
             </Button>
@@ -54,5 +54,5 @@ export const Hero = () => {
         </motion.div>
       </div>
     </section>
-  );
-};
+  )
+}

@@ -18,7 +18,7 @@ export const MapHeader = () => {
               Servicio de asistencia vial
             </h1>
             <p className="text-xs sm:text-sm text-gray-600">
-              Asistencia Profesional  24/7
+              Asistencia Profesional 24/7
             </p>
           </div>
         </div>

@@ -1,6 +1,13 @@
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu"
-import { ClipboardList, Users, BarChart3, Settings } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu'
+import { ClipboardList, Users, BarChart3, Settings } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export const AdminNavigationMenu = () => {
   const navigate = useNavigate()
@@ -15,11 +22,13 @@ export const AdminNavigationMenu = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink 
+              <NavigationMenuLink
                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 onClick={() => navigate('/admin/reservations')}
               >
-                <div className="text-sm font-medium leading-none">Ver Reservas</div>
+                <div className="text-sm font-medium leading-none">
+                  Ver Reservas
+                </div>
                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                   Gestiona todas las reservas activas y completadas
                 </p>
@@ -35,11 +44,13 @@ export const AdminNavigationMenu = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink 
+              <NavigationMenuLink
                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 onClick={() => navigate('/admin/users')}
               >
-                <div className="text-sm font-medium leading-none">Gestión de Usuarios</div>
+                <div className="text-sm font-medium leading-none">
+                  Gestión de Usuarios
+                </div>
                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                   Administra las cuentas de usuarios y permisos
                 </p>
@@ -55,11 +66,13 @@ export const AdminNavigationMenu = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink 
+              <NavigationMenuLink
                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 onClick={() => navigate('/admin/reports')}
               >
-                <div className="text-sm font-medium leading-none">Métricas y Estadísticas</div>
+                <div className="text-sm font-medium leading-none">
+                  Métricas y Estadísticas
+                </div>
                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                   Accede a reportes detallados del servicio
                 </p>
@@ -75,11 +88,13 @@ export const AdminNavigationMenu = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink 
+              <NavigationMenuLink
                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 onClick={() => navigate('/admin/settings')}
               >
-                <div className="text-sm font-medium leading-none">Ajustes del Sistema</div>
+                <div className="text-sm font-medium leading-none">
+                  Ajustes del Sistema
+                </div>
                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                   Configura precios y tipos de grúas
                 </p>

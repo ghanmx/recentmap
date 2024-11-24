@@ -1,17 +1,23 @@
-import { useState, useCallback } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { useTowing } from "@/contexts/TowingContext"
-import { towTruckTypes } from "@/utils/towTruckPricing"
-import { CostHeader } from "./cost/CostHeader"
-import { CostMetrics } from "./cost/CostMetrics"
-import { CostBreakdown } from "./cost/CostBreakdown"
-import { useToast } from "@/hooks/use-toast"
-import { TollLocation } from "@/data/tollData"
-import { Button } from "./ui/button"
-import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "./ui/dialog"
-import { TermsAndConditions } from "./legal/TermsAndConditions"
-import { ScrollArea } from "./ui/scroll-area"
-import { Info, AlertTriangle } from "lucide-react"
+import { useState, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTowing } from '@/contexts/TowingContext'
+import { towTruckTypes } from '@/utils/towTruckPricing'
+import { CostHeader } from './cost/CostHeader'
+import { CostMetrics } from './cost/CostMetrics'
+import { CostBreakdown } from './cost/CostBreakdown'
+import { useToast } from '@/hooks/use-toast'
+import { TollLocation } from '@/data/tollData'
+import { Button } from './ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+} from './ui/dialog'
+import { TermsAndConditions } from './legal/TermsAndConditions'
+import { ScrollArea } from './ui/scroll-area'
+import { Info, AlertTriangle } from 'lucide-react'
 
 interface CostEstimationProps {
   onShowPayment: () => void
@@ -48,22 +54,25 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
     subtotal,
     tax,
     finalCost,
-    detectedTolls
+    detectedTolls,
   })
 
-  const handleBreakdownToggle = useCallback((value: boolean) => {
-    setShowBreakdown(value)
-    if (value) {
-      toast({
-        title: "Desglose de costos",
-        description: "Ahora puedes ver el detalle de los costos del servicio",
-      })
-    }
-  }, [toast])
+  const handleBreakdownToggle = useCallback(
+    (value: boolean) => {
+      setShowBreakdown(value)
+      if (value) {
+        toast({
+          title: 'Desglose de costos',
+          description: 'Ahora puedes ver el detalle de los costos del servicio',
+        })
+      }
+    },
+    [toast],
+  )
 
   const processedTolls = detectedTolls.map((toll: TollLocation) => ({
     ...toll,
-    direction: toll.direction || 'outbound'
+    direction: toll.direction || 'outbound',
   }))
 
   const showHighCostWarning = finalCost > 5000
@@ -90,7 +99,8 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
             <DialogContent className="max-w-4xl h-[80vh]">
               <DialogTitle>Términos y Condiciones del Servicio</DialogTitle>
               <DialogDescription>
-                Por favor, lea cuidadosamente los términos y condiciones antes de proceder.
+                Por favor, lea cuidadosamente los términos y condiciones antes
+                de proceder.
               </DialogDescription>
               <ScrollArea className="h-full pr-4">
                 <TermsAndConditions />
@@ -106,7 +116,10 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
             className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-center gap-2 text-yellow-800"
           >
             <AlertTriangle className="w-5 h-5 text-yellow-600" />
-            <span className="text-sm">Este servicio tiene un costo elevado. Considere verificar los detalles.</span>
+            <span className="text-sm">
+              Este servicio tiene un costo elevado. Considere verificar los
+              detalles.
+            </span>
           </motion.div>
         )}
 
@@ -122,7 +135,7 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
           {showBreakdown && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
+              animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               className="space-y-4"
             >
@@ -157,4 +170,4 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
       </div>
     </motion.div>
   )
-} 
+}

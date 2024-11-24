@@ -1,21 +1,21 @@
-import { ChevronDown, ChevronUp, Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/utils/priceCalculator";
-import { motion } from "framer-motion";
-import { TowTruckType } from "@/utils/towTruckPricing";
+import { ChevronDown, ChevronUp, Info } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { formatCurrency } from '@/utils/priceCalculator'
+import { motion } from 'framer-motion'
+import { TowTruckType } from '@/utils/towTruckPricing'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip'
 
 export interface CostHeaderProps {
-  showBreakdown: boolean;
-  setShowBreakdown: (show: boolean) => void;
-  finalCost: number;
-  truckType: "A" | "B" | "C" | "D";
-  selectedTruck: TowTruckType;
+  showBreakdown: boolean
+  setShowBreakdown: (show: boolean) => void
+  finalCost: number
+  truckType: 'A' | 'B' | 'C' | 'D'
+  selectedTruck: TowTruckType
 }
 
 export const CostHeader = ({
@@ -28,8 +28,8 @@ export const CostHeader = ({
   console.log('CostHeader rendered:', {
     showBreakdown,
     finalCost,
-    truckType
-  });
+    truckType,
+  })
 
   return (
     <div className="flex justify-between items-center bg-white/50 p-4 rounded-lg backdrop-blur-sm border border-primary/10">
@@ -72,5 +72,5 @@ export const CostHeader = ({
         </Button>
       </div>
     </div>
-  );
-};
+  )
+}

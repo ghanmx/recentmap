@@ -66,12 +66,12 @@ export const FloatingPanel = ({
 
     const panelContent = (
         <motion.div
-      className= "flex flex-col h-full"
+            className= "flex flex-col h-full"
     initial = {{ opacity: 0, y: 20 }
 }
 animate = {{ opacity: 1, y: 0 }}
 transition = {{ duration: 0.5 }}
-    >
+        >
     <FloatingPanelHeader />
     < ScrollArea className = "flex-1 px-6 py-4" >
         <div className="space-y-6" >
@@ -81,29 +81,29 @@ transition = {{ duration: 0.5 }}
                 </div>
                 </ScrollArea>
                 </motion.div>
-  )
+    )
 
 if (!isVisible) {
     return (
         <Button
-        variant= "secondary"
+                variant= "secondary"
     size = "sm"
     onClick = {() => setIsVisible(true)
 }
 className = {
     cn(
-          "fixed z-[1000] bg-white/95 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-105",
+                    "fixed z-[1000] bg-white/95 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-105",
         position === "right" && "right-4 top-20",
     position === "left" && "left-4 top-20",
     position === "top" && "top-4 right-4",
     position === "bottom" && "bottom-4 right-4"
-        )}
-      >
+                )}
+            >
     <Maximize2 className="w-4 h-4 mr-2" />
         Mostrar { title }
 </Button>
-    )
-  }
+        )
+    }
 
 return (
     <>
@@ -112,7 +112,7 @@ return (
         <Sheet open={ isMobileOpen } onOpenChange = { setIsMobileOpen } >
             <SheetTrigger asChild >
             <Button
-              variant="outline"
+                            variant="outline"
 size = "icon"
 className = "bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
     >
@@ -126,8 +126,9 @@ className = "bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-a
             </div>
 
 {/* Desktop View */ }
+{/* Desktop View */ }
 <Draggable
-        handle=".drag-handle"
+                handle=".drag-handle"
 onStart = { handleDragStart }
 onStop = { handleDragStop }
 bounds = "parent"
@@ -136,15 +137,15 @@ defaultPosition = {{ x: 0, y: 0 }}
 cancel = ".no-drag"
     >
     <motion.div
-          initial={ { x: position === "right" ? 100 : -100 } }
+                    initial={ { x: position === "right" ? 100 : -100 } }
 animate = {{ x: 0 }}
 className = {
     cn(
-            "fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300",
-            "max-h-[80vh] overflow-hidden z-[1000] hidden lg:block",
+                        "fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300",
+                        "max-h-[80vh] overflow-hidden z-[1000] hidden lg:block",
         isMaximized
             ? "inset-4 !transform-none"
-              : cn(
+                            : cn(
                 position === "right" && "right-6 top-24",
                 position === "left" && "left-6 top-24",
                 position === "top" && "top-6 inset-x-6",
@@ -153,10 +154,10 @@ className = {
     isDragging && "cursor-grabbing shadow-2xl scale-[1.02]",
     !isMaximized && "hover:shadow-lg hover:shadow-primary/5",
     className
-          )}
-        >
+                    )}
+                >
     <FloatingPanelControls
-            isCollapsed={ isCollapsed }
+                        isCollapsed={ isCollapsed }
 isMaximized = { isMaximized }
 isDragging = { isDragging }
 onCollapse = { toggleCollapsed }
@@ -165,18 +166,18 @@ onClose = { handlePanelClose }
 title = { title }
     />
     <div
-            className={
+                        className={
     cn(
         "transition-all duration-300",
         isCollapsed ? "h-0" : isMaximized ? "h-[calc(100vh-8rem)]" : "max-h-[calc(80vh-4rem)]",
         !isCollapsed && "animate-in fade-in-50"
     )
 }
-          >
+                    >
     { panelContent }
     </div>
     </motion.div>
     </Draggable>
     </>
-  )
-}
+    )
+}  

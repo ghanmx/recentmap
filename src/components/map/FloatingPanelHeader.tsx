@@ -1,4 +1,4 @@
-import { Truck } from 'lucide-react'
+import { Truck, MapPin, Phone } from 'lucide-react'
 
 export const FloatingPanelHeader = () => {
   return (

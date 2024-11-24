@@ -1,20 +1,23 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Truck, Link, Warehouse, Car, Shield, Wrench } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import React from 'react'
+import { motion } from 'framer-motion'
+import { Truck, Link, Warehouse, Car, Shield, Wrench } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 const services = [
-  { icon: Truck, title: "Grúas de plataforma" },
-  { icon: Link, title: "Grúas de arrastre" },
-  { icon: Warehouse, title: "Grúas carga pesada" },
-  { icon: Car, title: "Arrastre" },
-  { icon: Shield, title: "Resguardo de vehículos" },
-  { icon: Wrench, title: "Servicios adicionales" }
-];
+  { icon: Truck, title: 'Grúas de plataforma' },
+  { icon: Link, title: 'Grúas de arrastre' },
+  { icon: Warehouse, title: 'Grúas carga pesada' },
+  { icon: Car, title: 'Arrastre' },
+  { icon: Shield, title: 'Resguardo de vehículos' },
+  { icon: Wrench, title: 'Servicios adicionales' },
+]
 
 export const Services = (): JSX.Element => {
   return (
-    <section id="Servicios" className="py-20 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <section
+      id="Servicios"
+      className="py-20 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"
+    >
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -26,7 +29,8 @@ export const Services = (): JSX.Element => {
             Servicios
           </h3>
           <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Brindamos el mejor servicio a tiempo a un precio razonable porque sabemos lo importante que es su tiempo.
+            Brindamos el mejor servicio a tiempo a un precio razonable porque
+            sabemos lo importante que es su tiempo.
           </p>
         </motion.div>
 
@@ -57,5 +61,5 @@ export const Services = (): JSX.Element => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
