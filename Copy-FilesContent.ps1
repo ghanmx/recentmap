@@ -43,6 +43,7 @@ function Copy-FilesContent {
         $extension = [System.IO.Path]::GetExtension($file)
 
         # Enhanced exclusion list
+  
         if ($extension -match "\.(ico|jpg|jpeg|png|svg|bmp|gif|db|gz|lock|log)" -or
             $file -like "*node_modules*" -or
             $file -like "*settings.json" -or
@@ -51,10 +52,12 @@ function Copy-FilesContent {
             $file -like "*vendor-chunks*" -or
             $file -like "*next.config.js" -or
             $file -like "*package-lock.json" -or
-            $file -like "*\server*") {
+            $file -like "*\server*" -or
+            $file -like "*\index-SV8g5SpG.js*") {
+
             Write-Host "Skipping file: $file"
             return
-        }
+        }    
 
         # Include text-based file types
         if ($extension -in @(".tsx", ".js", ".ts", ".config.mjs", ".json", ".alo")) {

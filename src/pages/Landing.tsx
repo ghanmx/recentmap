@@ -25,11 +25,11 @@ const Landing = (): JSX.Element => {
               viewport={{ once: true }}
               className="container mx-auto max-w-6xl"
             >
-              <div className="text-center mb-12">
+              <div className="text-center mb-4">
                 <h2 className="text-4xl font-bold font-heading bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-4">
                   Nos gustaría saber tu opinión
                 </h2>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-lg text-black-600 max-w-2xl mx-auto">
                   Dispuestos a brindar ayuda y responder a las preguntas que
                   pueda tener.
                 </p>
@@ -41,12 +41,12 @@ const Landing = (): JSX.Element => {
                   className="flex flex-col items-center"
                 >
                   <Card className="w-full p-6 text-center glass-card hover:shadow-lg transition-all duration-300">
-                    <div className="rounded-full bg-primary/10 p-4 mx-auto mb-4">
+                    <div className="rounded-full bg-primary/10 p-4 mx-auto mb-12">
                       <MapPin className="w-8 h-8 text-primary" />
                     </div>
                     <h3 className="text-xl font-semibold mb-4">Telefono</h3>
                     <a
-                      href="https://goo.gl/maps/Bm2taxCFni9G7ZjD6"
+                      href="tel:+5218180107110"
                       target="_blank"
                       rel="noreferrer"
                       className="text-gray-600 hover:text-primary transition-colors"
@@ -67,7 +67,7 @@ const Landing = (): JSX.Element => {
                     </div>
                     <h3 className="text-xl font-semibold mb-4">Direccion</h3>
                     <a
-                      href="tel:+5218180107110"
+                      href="https://goo.gl/maps/Bm2taxCFni9G7ZjD6"
                       className="text-gray-600 hover:text-primary transition-colors"
                     >
                       Autopista Monterrey - Nuevo Laredo

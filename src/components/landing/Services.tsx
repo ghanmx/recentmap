@@ -1,13 +1,13 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Truck, Link, Warehouse, Car, Shield, Wrench } from 'lucide-react'
+import { Truck, Link, Warehouse, Car, Shield, Wrench, Route, BaggageClaim, BusFront } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 const services = [
   { icon: Truck, title: 'Grúas de plataforma' },
-  { icon: Link, title: 'Grúas de arrastre' },
-  { icon: Warehouse, title: 'Grúas carga pesada' },
-  { icon: Car, title: 'Arrastre' },
+  { icon: BaggageClaim, title: 'Grúas de arrastre' },
+  { icon: BusFront, title: 'Grúas carga pesada' },
+  { icon: Route, title: 'Arrastre' },
   { icon: Shield, title: 'Resguardo de vehículos' },
   { icon: Wrench, title: 'Servicios adicionales' },
 ]
