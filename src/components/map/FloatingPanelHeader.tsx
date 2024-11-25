@@ -1,66 +1,33 @@
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { GripVertical, ChevronUp, ChevronDown, Maximize2, Minimize2, X } from "lucide-react";
+import { Truck, MapPin, Phone } from 'lucide-react'
 
-interface FloatingPanelHeaderProps {
-  title: string;
-  isCollapsed: boolean;
-  isMaximized: boolean;
-  onCollapse: () => void;
-  onMaximize: () => void;
-  onClose: () => void;
-}
-
-export const FloatingPanelHeader = ({
-  title,
-  isCollapsed,
-  isMaximized,
-  onCollapse,
-  onMaximize,
-  onClose,
-}: FloatingPanelHeaderProps) => {
+export const FloatingPanelHeader = () => {
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        {!isMaximized && (
-          <motion.div 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="drag-handle cursor-grab active:cursor-grabbing p-1.5 hover:bg-primary/10 rounded-md"
-          >
-            <GripVertical className="h-4 w-4 text-primary/70" />
-          </motion.div>
-        )}
-        <h3 className="font-heading font-semibold text-primary/90">{title}</h3>
+    <div className="p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-b">
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 bg-primary/10 rounded-xl shadow-inner">
+          <Truck className="w-6 h-6 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-heading font-bold bg-gradient-to-r from-primary to-blue-700 bg-clip-text text-transparent">
+            MRGruas
+          </h1>
+          <p className="text-sm text-gray-600">Servicio Profesional 24/7</p>
+        </div>
       </div>
-      
-      <div className="flex gap-1">
-        {[
-          {
-            onClick: onCollapse,
-            icon: isCollapsed ? <ChevronUp className="h-4 w-4 text-primary/70" /> : <ChevronDown className="h-4 w-4 text-primary/70" />
-          },
-          {
-            onClick: onMaximize,
-            icon: isMaximized ? <Minimize2 className="h-4 w-4 text-primary/70" /> : <Maximize2 className="h-4 w-4 text-primary/70" />
-          },
-          {
-            onClick: onClose,
-            icon: <X className="h-4 w-4 text-primary/70" />
-          }
-        ].map((control, index) => (
-          <motion.div key={index} whileHover={{ scale: 1.05 }}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={control.onClick}
-              className="p-1.5 h-8 w-8 hover:bg-primary/10 no-drag rounded-full"
-            >
-              {control.icon}
-            </Button>
-          </motion.div>
-        ))}
+      <div className="mt-4 flex gap-2">
+        <div className="flex-1 flex items-center gap-2 bg-green-50 px-3 py-2 rounded-full border border-green-200">
+          <MapPin className="w-4 h-4 text-green-600" />
+          <span className="text-sm font-medium text-green-700">
+            Disponible en tu área
+          </span>
+        </div>
+        <div className="flex-1 flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-full border border-blue-200">
+          <Phone className="w-4 h-4 text-blue-600" />
+          <span className="text-sm font-medium text-blue-700">
+            Soporte 24/7
+          </span>
+        </div>
       </div>
     </div>
-  );
-};
+  )
+}
