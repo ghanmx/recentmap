@@ -1,15 +1,10 @@
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { UseFormReturn } from 'react-hook-form'
-import { FormData } from '@/types/form'
+import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { UseFormReturn } from "react-hook-form";
+import { FormData } from "@/types/form";
 
 interface UserInfoFieldsProps {
-  form: UseFormReturn<FormData>
+  form: UseFormReturn<FormData>;
 }
 
 export const UserInfoFields = ({ form }: UserInfoFieldsProps) => {
@@ -35,15 +30,11 @@ export const UserInfoFields = ({ form }: UserInfoFieldsProps) => {
           <FormItem>
             <FormLabel>Phone Number</FormLabel>
             <FormControl>
-              <Input
-                {...field}
-                type="tel"
-                placeholder="Enter your phone number"
-              />
+              <Input {...field} type="tel" placeholder="Enter your phone number" />
             </FormControl>
           </FormItem>
         )}
       />
     </div>
-  )
-}
+  );
+};

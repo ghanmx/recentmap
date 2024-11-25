@@ -1,18 +1,14 @@
-import { Button } from '@/components/ui/button'
-import { CreditCard, Copy, CheckCircle2 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Button } from "@/components/ui/button";
+import { CreditCard, Copy, CheckCircle2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface EnhancedFormActionsProps {
-  onCopy: () => void
-  isCopied: boolean
-  isPending: boolean
+  onCopy: () => void;
+  isCopied: boolean;
+  isPending: boolean;
 }
 
-export const EnhancedFormActions = ({
-  onCopy,
-  isCopied,
-  isPending,
-}: EnhancedFormActionsProps) => {
+export const EnhancedFormActions = ({ onCopy, isCopied, isPending }: EnhancedFormActionsProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -33,7 +29,7 @@ export const EnhancedFormActions = ({
             ) : (
               <Copy className="h-5 w-5 text-blue-500 group-hover:scale-110 transition-transform" />
             )}
-            {isCopied ? '¡Copiado!' : 'Copiar Información'}
+            {isCopied ? "¡Copiado!" : "Copiar Información"}
           </span>
           <span className="absolute inset-0 bg-white/10 transform -skew-x-12 group-hover:translate-x-full transition-transform duration-700 ease-out" />
         </Button>
@@ -58,5 +54,5 @@ export const EnhancedFormActions = ({
         </Button>
       </div>
     </motion.div>
-  )
-}
+  );
+};

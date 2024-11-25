@@ -7,7 +7,10 @@ export const TermsAndConditions = () => {
 
   const scrollToTop = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+      ;(scrollRef.current as HTMLElement).scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
     }
   }
 

@@ -1,26 +1,16 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { useToast } from '@/hooks/use-toast'
-import { ServiceRequest } from '@/types/service'
-import { motion } from 'framer-motion'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { ServiceRequest } from "@/types/service";
+import { motion } from "framer-motion";
 
 interface ReservationListProps {
-  reservations: ServiceRequest[]
-  isLoading: boolean
+  reservations: ServiceRequest[];
+  isLoading: boolean;
 }
 
-export const ReservationList = ({
-  reservations,
-  isLoading,
-}: ReservationListProps) => {
-  const { toast } = useToast()
+export const ReservationList = ({ reservations, isLoading }: ReservationListProps) => {
+  const { toast } = useToast();
 
   return (
     <motion.div
@@ -45,19 +35,13 @@ export const ReservationList = ({
             <TableRow key={reservation.id}>
               <TableCell>{reservation.id}</TableCell>
               <TableCell>
-                <span
-                  className={`px-2 py-1 rounded-full text-xs ${
-                    reservation.status === 'completed'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}
-                >
+                <span className={`px-2 py-1 rounded-full text-xs ${
+                  reservation.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                }`}>
                   {reservation.status}
                 </span>
               </TableCell>
-              <TableCell>
-                {reservation.createdAt.toLocaleDateString()}
-              </TableCell>
+              <TableCell>{reservation.createdAt.toLocaleDateString()}</TableCell>
               <TableCell>{reservation.username}</TableCell>
               <TableCell>{`${reservation.vehicleYear} ${reservation.vehicleMake} ${reservation.vehicleModel}`}</TableCell>
               <TableCell>
@@ -66,9 +50,9 @@ export const ReservationList = ({
                   size="sm"
                   onClick={() => {
                     toast({
-                      title: 'Ver Detalles',
+                      title: "Ver Detalles",
                       description: `Viendo reserva ${reservation.id}`,
-                    })
+                    });
                   }}
                 >
                   Ver
@@ -79,5 +63,5 @@ export const ReservationList = ({
         </TableBody>
       </Table>
     </motion.div>
-  )
-}
+  );
+};

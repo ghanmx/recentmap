@@ -1,37 +1,23 @@
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-} from '@/components/ui/form'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Car } from 'lucide-react'
-import { UseFormReturn } from 'react-hook-form'
-import { FormData } from '@/types/form'
-import { motion } from 'framer-motion'
+import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Car } from "lucide-react";
+import { UseFormReturn } from "react-hook-form";
+import { FormData } from "@/types/form";
+import { motion } from "framer-motion";
 
 export interface VehicleSelectorProps {
-  form: UseFormReturn<FormData>
-  onVehicleModelChange: (value: string) => void
+  form: UseFormReturn<FormData>;
+  onVehicleModelChange: (value: string) => void;
 }
 
-export const VehicleSelector = ({
-  form,
-  onVehicleModelChange,
-}: VehicleSelectorProps) => {
+export const VehicleSelector = ({ form, onVehicleModelChange }: VehicleSelectorProps) => {
   const vehicles = [
-    { value: 'sedan', label: 'Sedán' },
-    { value: 'suv', label: 'SUV' },
-    { value: 'pickup', label: 'Pickup' },
-    { value: 'van', label: 'Van' },
-    { value: 'truck', label: 'Camión' },
-  ]
+    { value: "sedan", label: "Sedán" },
+    { value: "suv", label: "SUV" },
+    { value: "pickup", label: "Pickup" },
+    { value: "van", label: "Van" },
+    { value: "truck", label: "Camión" },
+  ];
 
   return (
     <motion.div
@@ -52,8 +38,8 @@ export const VehicleSelector = ({
             <FormControl>
               <Select
                 onValueChange={(value) => {
-                  field.onChange(value)
-                  onVehicleModelChange(value)
+                  field.onChange(value);
+                  onVehicleModelChange(value);
                 }}
                 defaultValue={field.value}
               >
@@ -73,5 +59,5 @@ export const VehicleSelector = ({
         )}
       />
     </motion.div>
-  )
-}
+  );
+};

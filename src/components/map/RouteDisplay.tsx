@@ -1,19 +1,16 @@
-import { Card } from '@/components/ui/card'
-import { Route, Shield } from 'lucide-react'
-import { useTowing } from '@/contexts/TowingContext'
+import { Card } from "@/components/ui/card";
+import { Route, Shield } from "lucide-react";
+import { useTowing } from "@/contexts/TowingContext";
 
 interface RouteDisplayProps {
-  pickupLocation: { lat: number; lng: number } | null
-  dropLocation: { lat: number; lng: number } | null
+  pickupLocation: { lat: number; lng: number } | null;
+  dropLocation: { lat: number; lng: number } | null;
 }
 
-export const RouteDisplay = ({
-  pickupLocation,
-  dropLocation,
-}: RouteDisplayProps) => {
-  const { totalDistance } = useTowing()
+export const RouteDisplay = ({ pickupLocation, dropLocation }: RouteDisplayProps) => {
+  const { totalDistance } = useTowing();
 
-  if (!pickupLocation || !dropLocation) return null
+  if (!pickupLocation || !dropLocation) return null;
 
   return (
     <Card className="p-4 space-y-4 bg-gradient-to-br from-white/95 via-blue-50/95 to-white/95 backdrop-blur-md shadow-xl border border-blue-100/50">
@@ -27,5 +24,5 @@ export const RouteDisplay = ({
         </div>
       </div>
     </Card>
-  )
-}
+  );
+};

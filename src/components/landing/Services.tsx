@@ -1,6 +1,16 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Truck, Link, Warehouse, Car, Shield, Wrench, Route, BaggageClaim, BusFront } from 'lucide-react'
+import {
+  Truck,
+  Link,
+  Warehouse,
+  Car,
+  Shield,
+  Wrench,
+  Route,
+  BaggageClaim,
+  BusFront,
+} from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 const services = [
