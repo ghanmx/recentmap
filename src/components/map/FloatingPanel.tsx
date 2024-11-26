@@ -12,11 +12,11 @@ import { FloatingPanelContent } from "./FloatingPanelContent";
 import { FloatingPanelControls } from "./FloatingPanelControls";
 import { FloatingPanelProps } from "./types/floating-panel";
 
-export const FloatingPanel = ({ 
-  children, 
-  className, 
+export const FloatingPanel = ({
+  children,
+  className,
   position = "right",
-  title = "Panel" 
+  title = "Panel"
 }: FloatingPanelProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -65,9 +65,9 @@ export const FloatingPanel = ({
       <div className="lg:hidden fixed top-4 left-4 z-[1000]">
         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
           <SheetTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               className="bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
             >
               <Menu className="h-4 w-4" />
@@ -90,7 +90,7 @@ export const FloatingPanel = ({
         defaultPosition={{ x: 0, y: 0 }}
         cancel=".no-drag"
       >
-        <motion.div 
+        <motion.div
           initial={{ x: position === "right" ? 100 : -100 }}
           animate={{ x: 0 }}
           className={cn(

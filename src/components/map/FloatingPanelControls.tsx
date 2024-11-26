@@ -1,14 +1,20 @@
-import { useState } from "react";
-import { DollarSign } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { FloatingPanelControlsProps } from "./types/floating-panel";
-import { useTowing } from "@/contexts/TowingContext";
-import { formatCurrency } from "@/utils/priceCalculator";
-import { towTruckTypes } from "@/utils/towTruckPricing";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { FloatingPanelHeader } from "./FloatingPanelHeader";
-import { CostDetailsContent } from "./CostDetailsContent";
+import { useState } from 'react'
+import { DollarSign, Info } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { FloatingPanelControlsProps } from './types/floating-panel'
+import { useTowing } from '@/contexts/TowingContext'
+import { formatCurrency } from '@/utils/priceCalculator'
+import { towTruckTypes } from '@/utils/towTruckPricing'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Card } from '@/components/ui/card'
+import { FloatingPanelHeader } from './FloatingPanelHeader'
+import { CostDetailsContent } from './CostDetailsContent'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 export const FloatingPanelControls = ({
   isCollapsed,
@@ -18,6 +24,7 @@ export const FloatingPanelControls = ({
   onClose,
   title
 }: FloatingPanelControlsProps) => {
+<<<<<<< HEAD
   const [showCostDetails, setShowCostDetails] = useState(false);
   const { totalDistance, truckType, requiresManeuver, totalTollCost, detectedTolls } = useTowing();
   const selectedTruck = towTruckTypes[truckType || 'A'];
@@ -25,15 +32,43 @@ export const FloatingPanelControls = ({
   const flagDropFee = selectedTruck.flagDropFee;
   const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0;
   const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost;
+=======
+  const [showCostDetails, setShowCostDetails] = useState(false)
+  const {
+    totalDistance,
+    truckType,
+    requiresManeuver,
+    totalTollCost,
+    detectedTolls,
+  } = useTowing()
+  const selectedTruck = towTruckTypes[truckType || 'A']
+  const baseCost = totalDistance * selectedTruck.perKm
+  const flagDropFee = selectedTruck.flagDropFee
+  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
+  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
+
+  console.log('FloatingPanelControls rendered:', {
+    totalDistance,
+    truckType,
+    subtotal,
+    showCostDetails,
+  })
+>>>>>>> 62d78799d3f8f7bff48bf67621ee7523da26a411
 
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
+<<<<<<< HEAD
         "flex flex-col gap-3 p-4",
         "bg-gradient-to-br from-white/95 via-primary/5 to-primary/10",
         "backdrop-blur-sm rounded-t-xl border-b border-primary/20"
+=======
+        'flex flex-col h-full',
+        'bg-gradient-to-br from-white/95 via-primary/5 to-primary/10',
+        'backdrop-blur-sm border-t border-primary/20',
+>>>>>>> 62d78799d3f8f7bff48bf67621ee7523da26a411
       )}
     >
       <FloatingPanelHeader
@@ -46,6 +81,7 @@ export const FloatingPanelControls = ({
       />
       
       {!isCollapsed && (
+<<<<<<< HEAD
         <AnimatePresence>
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -66,6 +102,45 @@ export const FloatingPanelControls = ({
                 </div>
                 <span className="font-bold text-xl text-primary">{formatCurrency(subtotal)}</span>
               </motion.button>
+=======
+        <div className="flex flex-col justify-between flex-grow">
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4 space-y-4 px-4"
+            >
+              <Card className="p-4 bg-white/50 backdrop-blur-sm border border-primary/10 hover:shadow-lg transition-all duration-300">
+                <TooltipProvider>
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={() => setShowCostDetails(!showCostDetails)}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg hover:from-primary/10 hover:to-primary/20 transition-all duration-300"
+                  >
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="h-5 w-5 text-primary" />
+                      <span className="text-primary font-medium text-lg">
+                        Costo Estimado:
+                      </span>
+                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-xl text-primary">
+                            {formatCurrency(subtotal)}
+                          </span>
+                          <Info className="h-4 w-4 text-primary/60" />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click para ver desglose de costos</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </motion.button>
+                </TooltipProvider>
+>>>>>>> 62d78799d3f8f7bff48bf67621ee7523da26a411
 
               <AnimatePresence>
                 {showCostDetails && (
@@ -92,5 +167,10 @@ export const FloatingPanelControls = ({
         </AnimatePresence>
       )}
     </motion.div>
+<<<<<<< HEAD
   );
 };
+=======
+  )
+}
+>>>>>>> 62d78799d3f8f7bff48bf67621ee7523da26a411

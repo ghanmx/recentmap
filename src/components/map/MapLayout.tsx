@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react'
 
 interface MapLayoutProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export const MapLayout = ({ children }: MapLayoutProps) => {
@@ -12,5 +12,5 @@ export const MapLayout = ({ children }: MapLayoutProps) => {
         {children}
       </div>
     </div>
-  );
-};
+  )
+}

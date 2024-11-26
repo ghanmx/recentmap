@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Download, FileText } from "lucide-react";
-import { downloadServiceInfo } from "@/utils/downloadUtils";
+import { Button } from '@/components/ui/button'
+import { Download, FileText } from 'lucide-react'
+import { downloadServiceInfo } from '@/utils/downloadUtils'
 
 interface DownloadButtonsProps {
-  onDownload: (format: 'csv' | 'txt') => Promise<void>;
+  onDownload: (format: 'csv' | 'txt') => Promise<void>
 }
 
 export const DownloadButtons = ({ onDownload }: DownloadButtonsProps) => {
@@ -28,5 +28,5 @@ export const DownloadButtons = ({ onDownload }: DownloadButtonsProps) => {
         TXT
       </Button>
     </div>
-  );
-};
+  )
+}

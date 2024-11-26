@@ -1,16 +1,16 @@
-import { Input } from "@/components/ui/input";
-import { Search, Loader2, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { Input } from '@/components/ui/input'
+import { Search, Loader2, MapPin } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface LocationSearchInputProps {
-  searchQuery: string;
-  isSearching: boolean;
-  error: string | null;
-  onSearchChange: (value: string) => void;
-  onSearchClick: () => void;
-  placeholder?: string;
-  icon?: React.ReactNode;
+  searchQuery: string
+  isSearching: boolean
+  error: string | null
+  onSearchChange: (value: string) => void
+  onSearchClick: () => void
+  placeholder?: string
+  icon?: React.ReactNode
 }
 
 export const LocationSearchInput = ({
@@ -19,11 +19,11 @@ export const LocationSearchInput = ({
   error,
   onSearchChange,
   onSearchClick,
-  placeholder = "Buscar dirección...",
-  icon = <MapPin className="h-4 w-4 text-primary" />
+  placeholder = 'Buscar dirección...',
+  icon = <MapPin className="h-4 w-4 text-primary" />,
 }: LocationSearchInputProps) => {
   return (
-    <motion.div 
+    <motion.div
       className="relative"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -47,8 +47,8 @@ export const LocationSearchInput = ({
           `}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              e.preventDefault();
-              onSearchClick();
+              e.preventDefault()
+              onSearchClick()
             }
           }}
         />
@@ -78,7 +78,7 @@ export const LocationSearchInput = ({
       </div>
       <AnimatePresence>
         {error && (
-          <motion.p 
+          <motion.p
             className="text-sm text-red-500 mt-1 ml-1"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -89,5 +89,5 @@ export const LocationSearchInput = ({
         )}
       </AnimatePresence>
     </motion.div>
-  );
-};
+  )
+}
