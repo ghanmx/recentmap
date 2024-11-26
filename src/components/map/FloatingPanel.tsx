@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Maximize2, Menu } from "lucide-react";
+import { Maximize2, Menu, GripVertical, ChevronUp, ChevronDown, Minimize2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
@@ -12,11 +12,11 @@ import { FloatingPanelContent } from "./FloatingPanelContent";
 import { FloatingPanelControls } from "./FloatingPanelControls";
 import { FloatingPanelProps } from "./types/floating-panel";
 
-export const FloatingPanel = ({
-  children,
-  className,
+export const FloatingPanel = ({ 
+  children, 
+  className, 
   position = "right",
-  title = "Panel",
+  title = "Panel" 
 }: FloatingPanelProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -30,7 +30,7 @@ export const FloatingPanel = ({
     setIsDragging(true);
     toast({
       title: "Panel móvil",
-      description: "Puedes mover este panel a cualquier parte de la pantalla.",
+      description: "Puedes mover este panel a cualquier parte de la pantalla",
       duration: 2000,
     });
   };
@@ -65,18 +65,15 @@ export const FloatingPanel = ({
       <div className="lg:hidden fixed top-4 left-4 z-[1000]">
         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
           <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
+            <Button 
+              variant="outline" 
+              size="icon" 
               className="bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
             >
               <Menu className="h-4 w-4" />
             </Button>
           </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="w-full max-w-xs p-0 bg-white/95 backdrop-blur-sm"
-          >
+          <SheetContent side="left" className="w-80 p-0 bg-white/95 backdrop-blur-sm">
             <ScrollArea className="h-full">
               <FloatingPanelContent>{children}</FloatingPanelContent>
             </ScrollArea>
@@ -93,20 +90,18 @@ export const FloatingPanel = ({
         defaultPosition={{ x: 0, y: 0 }}
         cancel=".no-drag"
       >
-        <motion.div
+        <motion.div 
           initial={{ x: position === "right" ? 100 : -100 }}
           animate={{ x: 0 }}
           className={cn(
             "fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300",
-            "max-h-[80vh] overflow-auto",
-            isMaximized
-              ? "inset-4 !transform-none"
-              : cn(
-                position === "right" && "right-6 top-24",
-                position === "left" && "left-6 top-24",
-                position === "top" && "top-6 inset-x-6",
-                position === "bottom" && "bottom-6 inset-x-6"
-              ),
+            "max-h-[80vh] overflow-hidden",
+            isMaximized ? "inset-4 !transform-none" : cn(
+              position === "right" && "right-6 top-24",
+              position === "left" && "left-6 top-24",
+              position === "top" && "top-6 inset-x-6",
+              position === "bottom" && "bottom-6 inset-x-6",
+            ),
             "z-[1000] hidden lg:block",
             isDragging && "cursor-grabbing shadow-2xl scale-[1.02]",
             !isMaximized && "hover:shadow-lg hover:shadow-primary/5",
@@ -123,23 +118,17 @@ export const FloatingPanel = ({
               setIsVisible(false);
               toast({
                 title: "Panel oculto",
-                description: "Haz clic en 'Mostrar Panel' para restaurar.",
+                description: "Haz clic en 'Mostrar Panel' para restaurar",
                 duration: 2000,
               });
             }}
             title={title}
           />
-          <div
-            className={cn(
-              "transition-all duration-300 overflow-auto",
-              isCollapsed
-                ? "h-0"
-                : isMaximized
-                  ? "h-[calc(100vh-8rem)]"
-                  : "max-h-[calc(80vh-4rem)]",
-              !isCollapsed && "animate-in fade-in-50"
-            )}
-          >
+          <div className={cn(
+            "transition-all duration-300",
+            isCollapsed ? "h-0" : isMaximized ? "h-[calc(100vh-8rem)]" : "max-h-[calc(80vh-4rem)]",
+            !isCollapsed && "animate-in fade-in-50"
+          )}>
             <ScrollArea className="h-full">
               <FloatingPanelContent>{children}</FloatingPanelContent>
             </ScrollArea>

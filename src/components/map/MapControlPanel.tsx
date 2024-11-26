@@ -34,22 +34,22 @@ export const MapControlPanel = ({
   const handlePickupClick = () => {
     setSelectingPickup(true);
     setSelectingDrop(false);
-    showLocationNotification("pickup", { lat: 0, lng: 0 });
+    showLocationNotification('pickup', { lat: 0, lng: 0 });
     toast({
       title: "Seleccionando punto de recogida",
-      description: "Haz clic en el mapa para seleccionar el punto de recogida.",
-      className: "bg-green-50 border-green-200",
+      description: "Haz clic en el mapa para seleccionar el punto de recogida",
+      className: "bg-green-50 border-green-200"
     });
   };
 
   const handleDropClick = () => {
     setSelectingDrop(true);
     setSelectingPickup(false);
-    showLocationNotification("drop", { lat: 0, lng: 0 });
+    showLocationNotification('drop', { lat: 0, lng: 0 });
     toast({
       title: "Seleccionando punto de entrega",
-      description: "Haz clic en el mapa para seleccionar el punto de entrega.",
-      className: "bg-blue-50 border-blue-200",
+      description: "Haz clic en el mapa para seleccionar el punto de entrega",
+      className: "bg-blue-50 border-blue-200"
     });
   };
 
@@ -63,7 +63,7 @@ export const MapControlPanel = ({
       >
         <Card className="relative w-full bg-white/95 backdrop-blur-md shadow-md rounded-lg p-4 border border-primary/10 hover:border-primary/20 transition-all duration-300">
           {isLoading && (
-            <motion.div
+            <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -72,7 +72,7 @@ export const MapControlPanel = ({
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
             </motion.div>
           )}
-          <MapControls
+          <MapControls 
             selectingPickup={selectingPickup}
             selectingDrop={selectingDrop}
             onPickupClick={handlePickupClick}
@@ -80,25 +80,25 @@ export const MapControlPanel = ({
           />
         </Card>
       </motion.div>
-
+      
       <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0, y: 10, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -10, scale: 0.95 }}
-          transition={{ duration: 0.2 }}
-          className="mt-3 w-full"
-        >
-          {(pickupLocation || dropLocation) && (
-            <RouteStreetInfo
+        {(pickupLocation || dropLocation) && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="mt-3 w-full"
+          >
+            <RouteStreetInfo 
               pickupLocation={pickupLocation}
               dropLocation={dropLocation}
               pickupAddress={pickupAddress}
               dropAddress={dropAddress}
               isLoading={isLoading}
             />
-          )}
-        </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

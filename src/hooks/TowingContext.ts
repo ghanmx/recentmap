@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { TollLocation } from '@/data/tollData';
-import { useToast } from '@/hooks/use-toast';
+import { TollLocation } from '../data/tollData';
+import { useToast } from './use-toast';
 
 interface LocationInfo {
     pickup?: { lat: number; lng: number; address: string };
@@ -42,9 +42,9 @@ interface TowingContextType {
     setLoadingLocations: (loading: boolean) => void;
 }
 
-const TowingContext = createContext<TowingContextType | undefined>(undefined);
+const TowingContext = createContext<TowingContextType | null>(null);
 
-export const TowingProvider = ({ children }: { children: ReactNode }) => {
+export const TowingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [totalDistance, setTotalDistance] = useState(0);
     const [totalCost, setTotalCost] = useState(0);
     const [detectedTolls, setDetectedTolls] = useState<TollLocation[]>([]);
@@ -56,7 +56,6 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
     const [isLoadingLocations, setIsLoadingLocations] = useState(false);
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
     const { toast } = useToast();
-
     const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
         subtotal: 0,
         tax: 0,
@@ -67,37 +66,27 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
 
     const updateTowingInfo = (distance: number) => {
         setTotalDistance(distance);
-        // Update cost calculations based on distance
         const newCost = calculateTotalCost(distance, truckType, requiresManeuver, totalTollCost);
         setTotalCost(newCost);
-
-        setPaymentInfo(prev => ({
-            ...prev,
-            subtotal: newCost,
-            total: newCost * 1.16 // Including IVA
-        }));
+        setPaymentInfo(prev => ({ ...prev, subtotal: newCost, total: newCost * 1.16 }));
     };
 
     const updateTollInfo = (tolls: TollLocation[], tollCost: number) => {
         setDetectedTolls(tolls);
         setTotalTollCost(tollCost);
         setTollInfo({ tolls, totalTollCost: tollCost });
-
-        // Update total cost when tolls change
         const newCost = calculateTotalCost(totalDistance, truckType, requiresManeuver, tollCost);
         setTotalCost(newCost);
     };
 
     const updateTruckType = (type: "A" | "B" | "C" | "D") => {
         setTruckType(type);
-        // Recalculate costs when truck type changes
         const newCost = calculateTotalCost(totalDistance, type, requiresManeuver, totalTollCost);
         setTotalCost(newCost);
     };
 
     const updateManeuverRequired = (required: boolean) => {
         setRequiresManeuver(required);
-        // Recalculate costs when maneuver requirement changes
         const newCost = calculateTotalCost(totalDistance, truckType, required, totalTollCost);
         setTotalCost(newCost);
     };
@@ -109,27 +98,14 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
     const updateLocationInfo = async (info: LocationInfo) => {
         setIsLoadingLocations(true);
         try {
-            // Update locations and recalculate route/costs
             if (info.pickup) {
-                // Handle pickup location update
-                toast({
-                    title: "Ubicación de Recogida Actualizada",
-                    description: info.pickup.address,
-                });
+                toast({ title: "Ubicación de Recogida Actualizada", description: info.pickup.address });
             }
             if (info.drop) {
-                // Handle drop location update
-                toast({
-                    title: "Ubicación de Entrega Actualizada",
-                    description: info.drop.address,
-                });
+                toast({ title: "Ubicación de Entrega Actualizada", description: info.drop.address });
             }
         } catch (error) {
-            toast({
-                title: "Error",
-                description: "No se pudo actualizar la ubicación",
-                variant: "destructive",
-            });
+            toast({ title: "Error", description: "No se pudo actualizar la ubicación", variant: "destructive" });
         } finally {
             setIsLoadingLocations(false);
         }
@@ -138,21 +114,11 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
     const processPayment = async (amount: number): Promise<boolean> => {
         setIsProcessingPayment(true);
         try {
-            // Simulate payment processing
             await new Promise(resolve => setTimeout(resolve, 2000));
-
-            toast({
-                title: "Pago Procesado",
-                description: `Se ha procesado el pago por $${amount.toFixed(2)} MXN`,
-            });
-
+            toast({ title: "Pago Procesado", description: `Se ha procesado el pago por $${amount.toFixed(2)} MXN` });
             return true;
         } catch (error) {
-            toast({
-                title: "Error en el Pago",
-                description: "No se pudo procesar el pago",
-                variant: "destructive",
-            });
+            toast({ title: "Error en el Pago", description: "No se pudo procesar el pago", variant: "destructive" });
             return false;
         } finally {
             setIsProcessingPayment(false);
@@ -163,50 +129,49 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
         setIsLoadingLocations(loading);
     };
 
-    return (
-        <TowingContext.Provider value= {{
+    const contextValue: TowingContextType = {
         totalDistance,
-            totalCost,
-            detectedTolls,
-            totalTollCost,
-            truckType,
-            requiresManeuver,
-            selectedVehicleModel,
-            tollInfo,
-            paymentInfo,
-            isLoadingLocations,
-            isProcessingPayment,
-            updateTowingInfo,
-            updateTollInfo,
-            updateTruckType,
-            updateManeuverRequired,
-            updateSelectedVehicleModel,
-            updateLocationInfo,
-            processPayment,
-            setLoadingLocations
-    }
-}>
-    { children }
-    </TowingContext.Provider>
-  );
+        totalCost,
+        detectedTolls,
+        totalTollCost,
+        truckType,
+        requiresManeuver,
+        selectedVehicleModel,
+        tollInfo,
+        paymentInfo,
+        isLoadingLocations,
+        isProcessingPayment,
+        updateTowingInfo,
+        updateTollInfo,
+        updateTruckType,
+        updateManeuverRequired,
+        updateSelectedVehicleModel,
+        updateLocationInfo,
+        processPayment,
+        setLoadingLocations
+    };
+
+    return (
+        <TowingContext.Provider value= { contextValue } >
+        { children }
+        </TowingContext.Provider>
+    );
 };
 
 export const useTowing = () => {
     const context = useContext(TowingContext);
-    if (context === undefined) {
+    if (context === null) {
         throw new Error('useTowing must be used within a TowingProvider');
     }
     return context;
 };
 
-// Helper function to calculate total cost
 const calculateTotalCost = (
     distance: number,
     truckType: "A" | "B" | "C" | "D",
     requiresManeuver: boolean,
     tollCost: number
 ): number => {
-    // Base calculation logic
     const baseRate = {
         A: 18.82,
         B: 20.62,
@@ -219,14 +184,14 @@ const calculateTotalCost = (
         B: 1336.73,
         C: 1524.21,
         D: 2101.65
-    }[truckType] : 0;
+    }[truckType] || 0 : 0;
 
     const flagDropFee = {
         A: 528.69,
         B: 607.43,
         C: 721.79,
         D: 885.84
-    }[truckType];
+    }[truckType] || 0;
 
     return (distance * baseRate) + maneuverCost + flagDropFee + tollCost;
 };
