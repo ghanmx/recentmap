@@ -5,6 +5,8 @@ import { SidebarProvider } from './contexts/SidebarContext'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './routes'
 import { Toaster } from '@/components/ui/toaster'
+import { ThemeProvider } from "@/providers/ThemeProvider";
+
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -1,11 +1,11 @@
-import React from 'react'
-import { Navigation } from './Navigation'
-import { Button } from '../ui/button'
-import { Phone, MapIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import React from 'react';
+import { Navigation } from './Navigation';
+import { Button } from '../ui/button';
+import { Phone, MapIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const Header = (): JSX.Element => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-800 z-50 transition-all duration-300">
@@ -17,11 +17,11 @@ export const Header = (): JSX.Element => {
             </a>
           </h1>
         </div>
-
+        
         <Navigation />
-
+        
         <div className="hidden md:flex items-center gap-3">
-          <Button
+          <Button 
             variant="outline"
             size="sm"
             onClick={() => navigate('/map')}
@@ -30,12 +30,12 @@ export const Header = (): JSX.Element => {
             <MapIcon className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
             Solicitar Servicio
           </Button>
-
-          <Button
+          
+          <Button 
             variant="default"
             size="sm"
             className="animate-pulse hover:animate-none group"
-            onClick={() => (window.location.href = 'tel:+5218180107110')}
+            onClick={() => window.location.href = 'tel:+5218180107110'}
           >
             <Phone className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
             Llámanos
@@ -43,5 +43,5 @@ export const Header = (): JSX.Element => {
         </div>
       </div>
     </header>
-  )
-}
+  );
+};

@@ -1,21 +1,21 @@
-import { Button } from '@/components/ui/button'
-import { CopyButton } from '@/components/ui/copy-button'
-import { Download, CreditCard } from 'lucide-react'
+import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
+import { Download, CreditCard } from "lucide-react";
 
 interface VehicleFormActionsProps {
-  onDownload: (format: 'csv' | 'txt') => Promise<void>
-  onCopy: () => void
-  onSubmit: () => void
-  isPending: boolean
-  formData: string
+  onDownload: (format: 'csv' | 'txt') => Promise<void>;
+  onCopy: () => void;
+  onSubmit: () => void;
+  isPending: boolean;
+  formData: string;
 }
 
-export const VehicleFormActions = ({
-  onDownload,
-  onCopy,
-  onSubmit,
+export const VehicleFormActions = ({ 
+  onDownload, 
+  onCopy, 
+  onSubmit, 
   isPending,
-  formData,
+  formData 
 }: VehicleFormActionsProps) => {
   return (
     <div className="flex flex-wrap gap-4">
@@ -61,5 +61,5 @@ export const VehicleFormActions = ({
         )}
       </Button>
     </div>
-  )
-}
+  );
+};

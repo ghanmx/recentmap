@@ -1,13 +1,13 @@
-import React from 'react'
-import { motion } from 'framer-motion'
+import React from 'react';
+import { motion } from 'framer-motion';
 
 const navItems = [
-  { href: '#intro', label: 'Inicio' },
-  { href: '#about', label: 'Nosotros' },
-  { href: '#Servicios', label: 'Servicios' },
-  { href: '#call-to-action', label: 'Llámanos' },
-  { href: '#contact', label: 'Contacto' },
-]
+  { href: "#intro", label: "Inicio" },
+  { href: "#about", label: "Nosotros" },
+  { href: "#Servicios", label: "Servicios" },
+  { href: "#call-to-action", label: "Llámanos" },
+  { href: "#contact", label: "Contacto" }
+];
 
 export const Navigation = (): JSX.Element => {
   return (
@@ -31,5 +31,5 @@ export const Navigation = (): JSX.Element => {
         ))}
       </ul>
     </nav>
-  )
-}
+  );
+};

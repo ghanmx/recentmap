@@ -1,15 +1,10 @@
-import { motion } from 'framer-motion'
-import { FileText, Info } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { motion } from "framer-motion";
+import { FileText, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const EnhancedFormHeader = () => {
   return (
-    <motion.div
+    <motion.div 
       className="space-y-4"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -21,12 +16,8 @@ export const EnhancedFormHeader = () => {
             <FileText className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl font-semibold text-gray-800">
-              Información del Servicio
-            </h2>
-            <p className="text-gray-600 text-sm">
-              Complete los detalles del vehículo y servicio requerido
-            </p>
+            <h2 className="text-2xl font-semibold text-gray-800">Información del Servicio</h2>
+            <p className="text-gray-600 text-sm">Complete los detalles del vehículo y servicio requerido</p>
           </div>
         </div>
         <TooltipProvider>
@@ -43,5 +34,5 @@ export const EnhancedFormHeader = () => {
         </TooltipProvider>
       </div>
     </motion.div>
-  )
-}
+  );
+};

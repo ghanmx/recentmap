@@ -8,15 +8,15 @@
     "build": "tsc -b && vite build",
     "build:dev": "tsc -b && vite build --mode development",
     "lint": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --c .ts,.tsx --fix",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "preview": "vite preview",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "analyze": "vite build --mode analyze",
-    "release": "npm run release"
+    "analyze": "vite build --mode analyze"
   },
   "dependencies": {
     "@eslint/plugin-kit": "^0.2.3",
+    "@formspree/react": "^2.5.1",
     "@hookform/resolvers": "^3.9.0",
     "@mapbox/polyline": "^1.2.1",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -68,7 +68,7 @@
     "lovable-tagger": "^1.0.14",
     "lru-cache": "^11.0.2",
     "lucide-react": "^0.451.0",
-    "next-themes": "^0.3.0",
+    "next-themes": "^0.4.3",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
@@ -83,8 +83,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.3",
-    "zod": "^3.23.8",
-    "formspree/cli": "^0.1.1"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
@@ -99,15 +98,13 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
-    "packages-update": "^2.0.0",
     "postcss": "^8.4.47",
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.4.1",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1",
-    "formspree/cli-action": "^1.0.0"
+    "vite": "^5.4.1"
   },
   "eslintConfig": {
     "extends": [

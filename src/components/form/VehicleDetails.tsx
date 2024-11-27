@@ -1,18 +1,13 @@
-import { UseFormReturn } from 'react-hook-form'
-import { FormData } from '@/types/form'
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { UseFormReturn } from "react-hook-form";
+import { FormData } from "@/types/form";
+import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 interface VehicleDetailsProps {
-  onBrandChange: (brand: string) => void
-  onModelChange: (model: string) => void
-  onYearChange: (year: string) => void
-  onColorChange: (color: string) => void
+  onBrandChange: (brand: string) => void;
+  onModelChange: (model: string) => void;
+  onYearChange: (year: string) => void;
+  onColorChange: (color: string) => void;
 }
 
 export const VehicleDetails = ({
@@ -60,5 +55,5 @@ export const VehicleDetails = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

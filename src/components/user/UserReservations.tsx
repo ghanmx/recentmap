@@ -1,9 +1,9 @@
-import { Card } from '@/components/ui/card'
-import { motion } from 'framer-motion'
+import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 export const UserReservations = () => {
   return (
-    <motion.div
+    <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="space-y-4"
@@ -13,5 +13,5 @@ export const UserReservations = () => {
         <p className="text-gray-600">No hay reservas activas</p>
       </Card>
     </motion.div>
-  )
-}
+  );
+};

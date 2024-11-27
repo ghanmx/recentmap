@@ -59,7 +59,7 @@ const TowMap = () => {
           if (tollInfo.tolls.length > 0) {
             toast({
               title: 'Peajes Detectados',
-              description: `Se detectaron ${tollInfo.tolls.length} peajes en la ruta con un costo total de $${tollInfo.totalTollCost.toFixed(2)}`,
+              description: `Se detectaron ${tollInfo.tolls.length} peajes en la ruta con un costo total de ${tollInfo.totalTollCost.toFixed(2)}`,
               duration: 5000,
             });
           } else {
@@ -181,7 +181,6 @@ const TowMap = () => {
           setDropLocation={setDropLocation}
           onRouteCalculated={(distance) => showRouteNotification(distance)}
           isLoading={isLoading}
-          mapRef={mapRef}
         />
       </div>
 
@@ -208,5 +207,4 @@ const TowMap = () => {
     </div>
   );
 };
-
 export default TowMap;

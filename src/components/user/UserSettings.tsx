@@ -1,22 +1,22 @@
-import { Card } from '@/components/ui/card'
-import { motion } from 'framer-motion'
-import { Settings, LogOut } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { useToast } from '@/hooks/use-toast'
+import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { Settings, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export const UserSettings = () => {
-  const { toast } = useToast()
+  const { toast } = useToast();
 
   const handleLogout = () => {
     // Add your logout logic here
     toast({
-      title: 'Cerraste sesión',
-      description: 'Tu sesión ha sido cerrada correctamente.',
-    })
-  }
+      title: "Cerraste sesión",
+      description: "Tu sesión ha sido cerrada correctamente.",
+    });
+  };
 
   return (
-    <motion.div
+    <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="space-y-4"
@@ -29,7 +29,7 @@ export const UserSettings = () => {
         </div>
       </Card>
 
-      <Button
+      <Button 
         variant="destructive"
         className="w-full mt-6"
         onClick={handleLogout}
@@ -38,5 +38,5 @@ export const UserSettings = () => {
         Cerrar Sesión
       </Button>
     </motion.div>
-  )
-}
+  );
+};
