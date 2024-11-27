@@ -9,11 +9,11 @@ interface MapControlsProps {
   onDropClick: () => void;
 }
 
-export const MapControls = ({ 
-  selectingPickup, 
-  selectingDrop, 
-  onPickupClick, 
-  onDropClick 
+export const MapControls = ({
+  selectingPickup,
+  selectingDrop,
+  onPickupClick,
+  onDropClick
 }: MapControlsProps) => {
   return (
     <div className="flex flex-col sm:flex-row gap-3">

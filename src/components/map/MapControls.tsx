@@ -8,21 +8,21 @@ interface MapControlsProps {
   onDropClick: () => void;
 }
 
-export const MapControls = ({ 
-  selectingPickup, 
-  selectingDrop, 
-  onPickupClick, 
-  onDropClick 
+export const MapControls = ({
+  selectingPickup,
+  selectingDrop,
+  onPickupClick,
+  onDropClick
 }: MapControlsProps) => {
   return (
     <div className="flex flex-col sm:flex-row gap-3">
-      <MapButton 
+      <MapButton
         icon={<MapPin className="h-4 w-4" />}
         label="Punto de Recogida"
         isActive={selectingPickup}
         onClick={onPickupClick}
       />
-      <MapButton 
+      <MapButton
         icon={<Navigation className="h-4 w-4" />}
         label="Punto de Entrega"
         isActive={selectingDrop}

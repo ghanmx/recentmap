@@ -1,44 +1,34 @@
-import { useState } from 'react'
-import { FloatingPanel } from './map/FloatingPanel'
-import { Button } from './ui/button'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { VehicleForm } from './VehicleForm'
-import { CostEstimation } from './CostEstimation'
-import { RouteDisplay } from './map/RouteDisplay'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useTowing } from '@/contexts/TowingContext'
-import PaymentWindow from './payment/PaymentWindow'
-import { ScrollArea } from './ui/scroll-area'
+import { useState } from "react";
+import { FloatingPanel } from "./map/FloatingPanel";
+import { Button } from "./ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { VehicleForm } from "./VehicleForm";
+import { CostEstimation } from "./CostEstimation";
+import { RouteDisplay } from "./map/RouteDisplay";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTowing } from "@/contexts/TowingContext";
+import PaymentWindow from "./payment/PaymentWindow";
 
 interface QuestionPage {
-  id: number
-  title: string
-  component: React.ReactNode
+  id: number;
+  title: string;
+  component: React.ReactNode;
 }
 
 interface LocationData {
-  lat: number
-  lng: number
+  lat: number;
+  lng: number;
 }
 
 interface FloatingQuestionsPanelProps {
-  pickupLocation: LocationData | null
-  dropLocation: LocationData | null
-  pickupAddress: string
-  dropAddress: string
-  onPickupSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onDropSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onSelectingPickup: () => void
-  onSelectingDrop: () => void
-  className?: string
+  pickupLocation: LocationData | null;
+  dropLocation: LocationData | null;
+  pickupAddress: string;
+  dropAddress: string;
+  onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
+  onDropSelect: (location: { lat: number; lng: number; address: string }) => void;
+  onSelectingPickup: () => void;
+  onSelectingDrop: () => void;
 }
 
 export const FloatingQuestionsPanel = ({
@@ -50,26 +40,21 @@ export const FloatingQuestionsPanel = ({
   onDropSelect,
   onSelectingPickup,
   onSelectingDrop,
-  className,
 }: FloatingQuestionsPanelProps) => {
-  const [currentPage, setCurrentPage] = useState(0)
-  const [showPaymentWindow, setShowPaymentWindow] = useState(false)
-  const { totalDistance, truckType, requiresManeuver, totalTollCost } =
-    useTowing()
+  const [currentPage, setCurrentPage] = useState(0);
+  const [showPaymentWindow, setShowPaymentWindow] = useState(false);
+  const { totalDistance, truckType, requiresManeuver, totalTollCost } = useTowing();
 
-  const handlePaymentSubmit = async (result: {
-    success: boolean
-    error?: string
-  }) => {
+  const handlePaymentSubmit = async (result: { success: boolean; error?: string }) => {
     if (result.success) {
-      setShowPaymentWindow(false)
+      setShowPaymentWindow(false);
     }
-  }
+  };
 
   const pages: QuestionPage[] = [
     {
       id: 1,
-      title: 'Detalles del Servicio',
+      title: "Detalles del Servicio",
       component: (
         <VehicleForm
           pickupLocation={pickupLocation}
@@ -85,7 +70,7 @@ export const FloatingQuestionsPanel = ({
     },
     {
       id: 2,
-      title: 'Costos y Ruta',
+      title: "Costos y Ruta",
       component: (
         <div className="space-y-6">
           <CostEstimation onShowPayment={() => setShowPaymentWindow(true)} />
@@ -95,74 +80,69 @@ export const FloatingQuestionsPanel = ({
           />
         </div>
       ),
-    },
-  ]
+    }
+  ];
 
   const handlePageChange = (direction: 'next' | 'prev') => {
-    setCurrentPage((prev) =>
+    setCurrentPage(prev =>
       direction === 'next'
         ? Math.min(pages.length - 1, prev + 1)
-        : Math.max(0, prev - 1),
-    )
-  }
+        : Math.max(0, prev - 1)
+    );
+  };
+
+  const finalCost = totalDistance * (truckType === 'D' ? 32.35 : 18.82) + totalTollCost;
 
   return (
     <>
       <FloatingPanel
         title={pages[currentPage].title}
         position="right"
-        className={`w-full max-w-md mx-auto bg-white/95 backdrop-blur-sm shadow-lg ${className}`}
+        className="w-full max-w-md mx-auto bg-white/95 backdrop-blur-sm shadow-lg"
       >
-        <ScrollArea className="h-[calc(100vh-12rem)]">
-          <div className="space-y-6 p-6">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentPage}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="min-h-[50vh]"
-              >
-                {pages[currentPage].component}
-              </motion.div>
-            </AnimatePresence>
-
+        <div className="space-y-6 p-6">
+          <AnimatePresence mode="wait">
             <motion.div
-              className="flex justify-between mt-4 pt-4 border-t border-gray-200"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              key={currentPage}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="min-h-[400px]"
             >
-              <Button
-                variant="outline"
-                onClick={() => handlePageChange('prev')}
-                disabled={currentPage === 0}
-                className="w-24 bg-white/80 hover:bg-white/95 transition-all"
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Anterior
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handlePageChange('next')}
-                disabled={currentPage === pages.length - 1}
-                className="w-24 bg-white/80 hover:bg-white/95 transition-all"
-              >
-                Siguiente
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
+              {pages[currentPage].component}
             </motion.div>
+          </AnimatePresence>
+
+          <div className="flex justify-between mt-4 pt-4 border-t border-gray-200">
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange('prev')}
+              disabled={currentPage === 0}
+              className="w-24 bg-white/80 hover:bg-white/95 transition-all"
+            >
+              <ChevronLeft className="w-4 h-4 mr-2" />
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange('next')}
+              disabled={currentPage === pages.length - 1}
+              className="w-24 bg-white/80 hover:bg-white/95 transition-all"
+            >
+              Siguiente
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
           </div>
-        </ScrollArea>
+        </div>
       </FloatingPanel>
 
       <PaymentWindow
         isOpen={showPaymentWindow}
         onClose={() => setShowPaymentWindow(false)}
-        amount={totalDistance * (truckType === 'D' ? 32.35 : 18.82)}
+        finalCost={finalCost}
         onPaymentSubmit={handlePaymentSubmit}
       />
     </>
-  )
-}
+  );
+};

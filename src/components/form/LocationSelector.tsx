@@ -18,7 +18,7 @@ export interface LocationSelectorProps {
   onSelectingDrop?: (selecting: boolean) => void;
 }
 
-export const LocationSelector = ({ 
+export const LocationSelector = ({
   form,
   pickupLocation,
   dropLocation,
@@ -34,20 +34,20 @@ export const LocationSelector = ({
   // Sincronizar direcciones con el formulario
   useEffect(() => {
     if (pickupAddress) {
-      form.setValue('pickupLocation', { 
+      form.setValue('pickupLocation', {
         lat: pickupLocation?.lat || 0,
         lng: pickupLocation?.lng || 0,
-        address: pickupAddress 
+        address: pickupAddress
       });
     }
   }, [pickupAddress, pickupLocation, form]);
 
   useEffect(() => {
     if (dropAddress) {
-      form.setValue('dropoffLocation', { 
+      form.setValue('dropoffLocation', {
         lat: dropLocation?.lat || 0,
         lng: dropLocation?.lng || 0,
-        address: dropAddress 
+        address: dropAddress
       });
     }
   }, [dropAddress, dropLocation, form]);

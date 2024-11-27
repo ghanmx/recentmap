@@ -42,22 +42,22 @@ interface TowingContextType {
     setLoadingLocations: (loading: boolean) => void;
 }
 
-const TowingContext = createContext<TowingContextType | undefined>(undefined);
+const TowingContext = createContext < TowingContextType | undefined > (undefined);
 
 export const TowingProvider = ({ children }: { children: ReactNode }) => {
     const [totalDistance, setTotalDistance] = useState(0);
     const [totalCost, setTotalCost] = useState(0);
-    const [detectedTolls, setDetectedTolls] = useState<TollLocation[]>([]);
+    const [detectedTolls, setDetectedTolls] = useState < TollLocation[] > ([]);
     const [totalTollCost, setTotalTollCost] = useState(0);
-    const [truckType, setTruckType] = useState<"A" | "B" | "C" | "D">("A");
+    const [truckType, setTruckType] = useState < "A" | "B" | "C" | "D" > ("A");
     const [requiresManeuver, setRequiresManeuver] = useState(false);
     const [selectedVehicleModel, setSelectedVehicleModel] = useState("");
-    const [tollInfo, setTollInfo] = useState<TollInfo | null>(null);
+    const [tollInfo, setTollInfo] = useState < TollInfo | null > (null);
     const [isLoadingLocations, setIsLoadingLocations] = useState(false);
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
     const { toast } = useToast();
 
-    const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
+    const [paymentInfo, setPaymentInfo] = useState < PaymentInfo > ({
         subtotal: 0,
         tax: 0,
         total: 0,
@@ -153,13 +153,13 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const setLoadingLocations = (loading: boolean) => {
+    const setLoadingLocations = (loading) => {
         setIsLoadingLocations(loading);
     };
 
     return (
-        <TowingContext.Provider value= {{
-        totalDistance,
+        <TowingContext.Provider value={{
+            totalDistance,
             totalCost,
             detectedTolls,
             totalTollCost,
@@ -178,10 +178,10 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
             updateLocationInfo,
             processPayment,
             setLoadingLocations
-    }
-}>
-    { children }
-    </TowingContext.Provider>
+        }
+        }>
+            {children}
+        </TowingContext.Provider>
     );
 };
 

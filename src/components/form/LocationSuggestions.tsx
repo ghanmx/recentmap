@@ -37,7 +37,7 @@ export const LocationSuggestions = ({
           </Alert>
         </motion.div>
       )}
-      
+
       {suggestions.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}

@@ -19,9 +19,9 @@ interface LocationSearchProps {
   type?: 'pickup' | 'drop';
 }
 
-export const LocationSearch = ({ 
-  label, 
-  onLocationSelect, 
+export const LocationSearch = ({
+  label,
+  onLocationSelect,
   placeholder = "Buscar dirección...",
   currentAddress = "",
   currentLocation,
@@ -56,7 +56,7 @@ export const LocationSearch = ({
 
       setIsSearching(true);
       setError(null);
-      
+
       try {
         const results = await searchAddresses(query, {
           fuzzyMatch: true,
@@ -64,7 +64,7 @@ export const LocationSearch = ({
           countryCode: 'MX',
           proximity: COMPANY_LOCATION
         });
-        
+
         const resultsWithDistance = results
           .map(result => ({
             ...result,
@@ -80,7 +80,7 @@ export const LocationSearch = ({
           });
 
         setSuggestions(resultsWithDistance);
-        
+
         if (results.length === 0) {
           setError("No se encontraron direcciones. Intente con una búsqueda diferente.");
         }
@@ -105,9 +105,9 @@ export const LocationSearch = ({
       setSearchQuery(suggestion.address);
       setSuggestions([]);
       setError(null);
-      
+
       onLocationSelect(location);
-      
+
       toast({
         title: type === 'pickup' ? "Punto de recogida seleccionado" : "Punto de entrega seleccionado",
         description: suggestion.address,
@@ -130,7 +130,7 @@ export const LocationSearch = ({
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-2"
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
@@ -152,13 +152,13 @@ export const LocationSearch = ({
           }}
           onSearchClick={handleSearchClick}
           placeholder={placeholder}
-          icon={type === 'pickup' ? 
-            <MapPin className="h-4 w-4 text-green-500" /> : 
+          icon={type === 'pickup' ?
+            <MapPin className="h-4 w-4 text-green-500" /> :
             <Navigation className="h-4 w-4 text-red-500" />
           }
         />
       </div>
-      
+
       <LocationSuggestions
         suggestions={suggestions}
         error={error}

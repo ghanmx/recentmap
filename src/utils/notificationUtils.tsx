@@ -7,7 +7,7 @@ const notificationTimestamps: { [key: string]: number } = {};
 const shouldShowNotification = (type: string): boolean => {
   const now = Date.now();
   const lastShown = notificationTimestamps[type] || 0;
-  
+
   if (now - lastShown > NOTIFICATION_COOLDOWN) {
     notificationTimestamps[type] = now;
     return true;
@@ -17,7 +17,7 @@ const shouldShowNotification = (type: string): boolean => {
 
 export const showLocationNotification = (type: 'pickup' | 'drop', coords: { lat: number; lng: number }) => {
   if (!shouldShowNotification(`location_${type}`)) return;
-  
+
   toast({
     title: `${type === 'pickup' ? 'Pickup' : 'Drop-off'} Location Set`,
     description: (
@@ -33,7 +33,7 @@ export const showLocationNotification = (type: 'pickup' | 'drop', coords: { lat:
 
 export const showRouteNotification = (distance: number) => {
   if (!shouldShowNotification('route')) return;
-  
+
   toast({
     title: "Route Calculated",
     description: (
@@ -49,7 +49,7 @@ export const showRouteNotification = (distance: number) => {
 
 export const showRouteErrorNotification = (error: string) => {
   if (!shouldShowNotification('route_error')) return;
-  
+
   toast({
     title: "Route Calculation Error",
     description: (
@@ -65,7 +65,7 @@ export const showRouteErrorNotification = (error: string) => {
 
 export const showPaymentNotification = (success: boolean, error?: string) => {
   if (!shouldShowNotification('payment')) return;
-  
+
   if (success) {
     toast({
       title: "Payment Successful",

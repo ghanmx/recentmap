@@ -8,10 +8,10 @@ interface LoadingStateProps {
   size?: "sm" | "md" | "lg";
 }
 
-export const LoadingState = ({ 
-  text = "Loading...", 
+export const LoadingState = ({
+  text = "Loading...",
   className,
-  size = "md" 
+  size = "md"
 }: LoadingStateProps) => {
   const sizeClasses = {
     sm: "h-4 w-4",

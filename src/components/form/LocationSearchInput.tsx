@@ -23,7 +23,7 @@ export const LocationSearchInput = ({
   icon = <MapPin className="h-4 w-4 text-primary" />
 }: LocationSearchInputProps) => {
   return (
-    <motion.div 
+    <motion.div
       className="relative"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -78,7 +78,7 @@ export const LocationSearchInput = ({
       </div>
       <AnimatePresence>
         {error && (
-          <motion.p 
+          <motion.p
             className="text-sm text-red-500 mt-1 ml-1"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

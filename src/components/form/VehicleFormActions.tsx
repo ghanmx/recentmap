@@ -10,12 +10,12 @@ interface VehicleFormActionsProps {
   formData: string;
 }
 
-export const VehicleFormActions = ({ 
-  onDownload, 
-  onCopy, 
-  onSubmit, 
+export const VehicleFormActions = ({
+  onDownload,
+  onCopy,
+  onSubmit,
   isPending,
-  formData 
+  formData
 }: VehicleFormActionsProps) => {
   return (
     <div className="flex flex-wrap gap-4">

@@ -23,17 +23,19 @@ export const FloatingPanelHeader = ({
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         {!isMaximized && (
-          <motion.div 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <motion.div
+            whileHover={{ scale: 1.00 }}
+            whileTap={{ scale: 0.80 }}
             className="drag-handle cursor-grab active:cursor-grabbing p-1.5 hover:bg-primary/10 rounded-md"
           >
-            <GripVertical className="h-4 w-4 text-primary/70" />
+            <GripVertical className="h-4 w-4 text-primary/50" />
           </motion.div>
         )}
-        <h3 className="font-heading font-semibold text-primary/90">{title}</h3>
+        <h3 className="font-heading font-semibold text-primary/60 text-sm truncate">
+          {title}
+        </h3>
       </div>
-      
+
       <div className="flex gap-1">
         {[
           {
@@ -49,7 +51,7 @@ export const FloatingPanelHeader = ({
             icon: <X className="h-4 w-4 text-primary/70" />
           }
         ].map((control, index) => (
-          <motion.div key={index} whileHover={{ scale: 1.05 }}>
+          <motion.div key={index} whileHover={{ scale: 1.00 }}>
             <Button
               variant="ghost"
               size="sm"
