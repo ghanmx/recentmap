@@ -1,41 +1,44 @@
-import { useState, useCallback } from "react";
-import { useToast } from "./use-toast";
+import { useState, useCallback } from 'react'
+import { useToast } from './use-toast'
 
 interface UseLoadingStateOptions {
-  successMessage?: string;
-  errorMessage?: string;
+  successMessage?: string
+  errorMessage?: string
 }
 
 export const useLoadingState = (options: UseLoadingStateOptions = {}) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false)
+  const { toast } = useToast()
 
-  const withLoading = useCallback(async <T,>(
-    callback: () => Promise<T>,
-  ): Promise<T | undefined> => {
-    setIsLoading(true);
-    try {
-      const result = await callback();
-      if (options.successMessage) {
+  const withLoading = useCallback(
+    async <T>(callback: () => Promise<T>): Promise<T | undefined> => {
+      setIsLoading(true)
+      try {
+        const result = await callback()
+        if (options.successMessage) {
+          toast({
+            title: 'Success',
+            description: options.successMessage,
+          })
+        }
+        return result
+      } catch (error) {
         toast({
-          title: "Success",
-          description: options.successMessage,
-        });
+          title: 'Error',
+          description:
+            options.errorMessage ||
+            (error instanceof Error ? error.message : 'An error occurred'),
+          variant: 'destructive',
+        })
+      } finally {
+        setIsLoading(false)
       }
-      return result;
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: options.errorMessage || (error instanceof Error ? error.message : "An error occurred"),
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [options.successMessage, options.errorMessage, toast]);
+    },
+    [options.successMessage, options.errorMessage, toast],
+  )
 
   return {
     isLoading,
     withLoading,
-  };
-};
+  }
+}

@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { DollarSign } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { FloatingPanelControlsProps } from "./types/floating-panel";
-import { useTowing } from "@/contexts/TowingContext";
-import { formatCurrency } from "@/utils/priceCalculator";
-import { towTruckTypes } from "@/utils/towTruckPricing";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { FloatingPanelHeader } from "./FloatingPanelHeader";
-import { CostDetailsContent } from "./CostDetailsContent";
+import { useState } from 'react'
+import { DollarSign } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { FloatingPanelControlsProps } from './types/floating-panel'
+import { useTowing } from '@/contexts/TowingContext'
+import { formatCurrency } from '@/utils/priceCalculator'
+import { towTruckTypes } from '@/utils/towTruckPricing'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Card } from '@/components/ui/card'
+import { FloatingPanelHeader } from './FloatingPanelHeader'
+import { CostDetailsContent } from './CostDetailsContent'
 
 export const FloatingPanelControls = ({
   isCollapsed,
@@ -16,24 +16,30 @@ export const FloatingPanelControls = ({
   onCollapse,
   onMaximize,
   onClose,
-  title
+  title,
 }: FloatingPanelControlsProps) => {
-  const [showCostDetails, setShowCostDetails] = useState(false);
-  const { totalDistance, truckType, requiresManeuver, totalTollCost, detectedTolls } = useTowing();
-  const selectedTruck = towTruckTypes[truckType || 'A'];
-  const baseCost = totalDistance * selectedTruck.perKm;
-  const flagDropFee = selectedTruck.flagDropFee;
-  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0;
-  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost;
+  const [showCostDetails, setShowCostDetails] = useState(false)
+  const {
+    totalDistance,
+    truckType,
+    requiresManeuver,
+    totalTollCost,
+    detectedTolls,
+  } = useTowing()
+  const selectedTruck = towTruckTypes[truckType || 'A']
+  const baseCost = totalDistance * selectedTruck.perKm
+  const flagDropFee = selectedTruck.flagDropFee
+  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
+  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
 
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "flex flex-col gap-3 p-4",
-        "bg-gradient-to-br from-white/95 via-primary/5 to-primary/10",
-        "backdrop-blur-sm rounded-t-xl border-b border-primary/20"
+        'flex flex-col gap-3 p-4',
+        'bg-gradient-to-br from-white/95 via-primary/5 to-primary/10',
+        'backdrop-blur-sm rounded-t-xl border-b border-primary/20',
       )}
     >
       <FloatingPanelHeader
@@ -44,12 +50,12 @@ export const FloatingPanelControls = ({
         onMaximize={onMaximize}
         onClose={onClose}
       />
-      
+
       {!isCollapsed && (
         <AnimatePresence>
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
+            animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="space-y-4"
           >
@@ -62,9 +68,13 @@ export const FloatingPanelControls = ({
               >
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-5 w-5 text-primary" />
-                  <span className="text-primary font-medium text-lg">Costo Estimado:</span>
+                  <span className="text-primary font-medium text-lg">
+                    Costo Estimado:
+                  </span>
                 </div>
-                <span className="font-bold text-xl text-primary">{formatCurrency(subtotal)}</span>
+                <span className="font-bold text-xl text-primary">
+                  {formatCurrency(subtotal)}
+                </span>
               </motion.button>
 
               <AnimatePresence>
@@ -92,5 +102,5 @@ export const FloatingPanelControls = ({
         </AnimatePresence>
       )}
     </motion.div>
-  );
-};
+  )
+}

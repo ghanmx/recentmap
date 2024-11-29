@@ -3,53 +3,53 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 221 83% 53%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 160 84% 39%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221 83% 53%;
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(220, 90%, 12%);
+  --card: hsl(0, 0%, 98%);
+  --card-foreground: hsl(220, 90%, 15%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(220, 90%, 12%);
+  --primary: hsl(221, 85%, 57%);
+  --primary-foreground: hsl(210, 50%, 95%);
+  --secondary: hsl(160, 90%, 50%);
+  --secondary-foreground: hsl(210, 50%, 95%);
+  --muted: hsl(210, 25%, 90%);
+  --muted-foreground: hsl(215, 20%, 50%);
+  --accent: hsl(210, 60%, 88%);
+  --accent-foreground: hsl(222, 50%, 12%);
+  --destructive: hsl(0, 85%, 60%);
+  --destructive-foreground: hsl(210, 90%, 96%);
+  --border: hsl(215, 40%, 90%);
+  --input: hsl(215, 40%, 95%);
+  --ring: hsl(221, 85%, 57%);
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  --background: hsl(222.2, 84%, 5%);
+  --foreground: hsl(210, 90%, 95%);
+  --card: hsl(222.2, 84%, 15%);
+  --card-foreground: hsl(210, 90%, 96%);
+  --popover: hsl(222.2, 84%, 5%);
+  --popover-foreground: hsl(210, 90%, 95%);
+  --primary: hsl(210, 90%, 95%);
+  --primary-foreground: hsl(222.2, 50%, 10%);
+  --secondary: hsl(217.2, 60%, 25%);
+  --muted: hsl(217.2, 60%, 25%);
+  --muted-foreground: hsl(215, 20%, 80%);
+  --accent: hsl(217.2, 60%, 25%);
+  --accent-foreground: hsl(210, 90%, 95%);
+  --destructive: hsl(0, 65%, 45%);
+  --destructive-foreground: hsl(210, 90%, 95%);
+  --border: hsl(217.2, 60%, 25%);
+  --input: hsl(217.2, 60%, 25%);
+  --ring: hsl(212.7, 26.8%, 85%);
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-gray-300;
+    /* Applying specific gray for borders */
   }
 
   body {
@@ -66,11 +66,12 @@
   }
 }
 
+/* Component Styles & Additional Functionalities */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&display=swap');
 
 .select-content,
-[role="listbox"],
-[role="combobox"] {
+[role='listbox'],
+[role='combobox'] {
   @apply z-[1000];
 }
 
@@ -83,7 +84,7 @@
 }
 
 .gradient-border::before {
-  content: "";
+  content: '';
   @apply absolute inset-0 bg-gradient-to-r from-primary/50 via-secondary/50 to-primary/50 opacity-50 blur-xl transition-all duration-500;
 }
 
@@ -92,16 +93,24 @@
 }
 
 .gradient-text {
-  @apply bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent;
+  background-image: linear-gradient(to right,
+      hsl(219, 66%, 30%),
+      hsl(0, 0%, 60%),
+      hsl(219, 66%, 30%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
+/* Animation */
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
   0% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
 
   50% {
@@ -109,48 +118,75 @@
   }
 
   100% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
 }
 
-.metallic-effect {
-  @apply relative overflow-hidden;
-  background: linear-gradient(45deg,
-      #999 5%,
-      #fff 10%,
-      #ccc 30%,
-      #ddd 50%,
-      #ccc 70%,
-      #fff 80%,
-      #999 95%);
-  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+/* Section for specific styles continued... */
+
+/* Custom Scrollbar Styles */
+.scrollbar {
+  @apply flex touch-none select-none transition-colors;
 }
 
-.metallic-effect::after {
-  @apply absolute -top-1/2 -left-1/2;
-  content: "";
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(30deg,
-      transparent 20%,
-      transparent 40%,
-      rgb(255, 255, 255, 0.4) 50%,
-      rgb(255, 255, 255, 0.4) 55%,
-      transparent 70%,
-      transparent 100%);
-  transform: rotate(30deg);
-  animation: shine-metal 3s infinite linear;
+.scrollbar::-webkit-scrollbar {
+  @apply w-2 h-2;
 }
 
-@keyframes shine-metal {
-  from {
-    transform: translateX(-100%) rotate(30deg);
-  }
 
-  to {
-    transform: translateX(100%) rotate(30deg);
-  }
+.scrollbar::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-gray-300;
+}
+
+.scrollbar-track {
+  @apply bg-transparent;
+}
+
+q {
+  quotes: '“' '”' '‘' '’';
+}
+
+blockquote {
+  @apply my-4 border-l-4 border-gray-300 pl-4;
+}
+
+blockquote p {
+  @apply text-lg italic;
+}
+
+blockquote p:last-child {
+  @apply mb-0;
+}
+
+/* Custom Typography Styles */
+.font-heading {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.font-body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Custom Button Styles */
+.btn {
+  @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:hover:bg-gray-800 dark:hover:text-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:focus:ring-gray-400;
+}
+
+/* Custom Button Styles Continued... */
+.btn-primary {
+  @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary-dark;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-white hover:bg-secondary-dark focus:ring-secondary-dark;
+}
+
+.btn-accent {
+  @apply bg-accent text-white hover:bg-accent-dark focus:ring-accent-dark;
+}
+
+.btn-destructive {
+  @apply bg-destructive text-white hover:bg-destructive-dark focus:ring-destructive-dark;
 }
 
 .card-shine-effect {
@@ -161,7 +197,7 @@
 
 .card-shine-effect:after {
   @apply absolute top-0 z-[1];
-  content: "";
+  content: '';
   width: 300%;
   height: 300%;
   background: linear-gradient(30deg,
@@ -190,7 +226,9 @@
 }
 
 .bg-grid-pattern {
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+  background-image: linear-gradient(to right,
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
   background-size: 20px 20px;
 }
@@ -216,4 +254,50 @@
   /* or scroll */
   max-height: 300px;
   /* Adjust as needed */
+}
+
+.gradient-text {
+  background-image: linear-gradient(to right,
+      hsl(219, 66%, 30%),
+      hsl(0, 0%, 60%),
+      hsl(219, 66%, 30%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  position: relative;
+  /* Enable positioning for shiny border effect */
+  display: inline-block;
+  /* Ensure it works like an inline element */
+}
+
+.gradient-text::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: transparent;
+  /* Make sure the text is transparent */
+  background-image: linear-gradient(45deg,
+      rgba(255, 255, 255, 0.5),
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.5));
+  -webkit-background-clip: text;
+  background-clip: text;
+  z-index: -1;
+  /* Place it behind the text */
+  filter: blur(2px);
+  /* Soft glow effect */
+  animation: shine 1.5s infinite;
+  /* Optional shine animation */
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }

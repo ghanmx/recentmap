@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { Card } from "@/components/ui/card";
+import { motion } from 'framer-motion'
+import { Loader2 } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { Card } from '@/components/ui/card'
 
 export const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -15,9 +15,9 @@ export const LoadingSpinner = () => (
           <div className="absolute inset-0 bg-blue-500/10 blur-xl rounded-full" />
           <Loader2 className="h-12 w-12 animate-spin text-primary relative z-10 mx-auto" />
         </div>
-        
+
         <Separator className="my-6 bg-blue-200/20" />
-        
+
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -26,7 +26,7 @@ export const LoadingSpinner = () => (
         >
           Cargando
         </motion.h2>
-        
+
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -38,4 +38,4 @@ export const LoadingSpinner = () => (
       </Card>
     </motion.div>
   </div>
-);
+)

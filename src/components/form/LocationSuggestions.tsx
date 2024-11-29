@@ -1,27 +1,27 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Target, Loader2 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion'
+import { MapPin, Target, Loader2 } from 'lucide-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
 
 interface Suggestion {
-  address: string;
-  lat: number;
-  lon: number;
-  distance: number;
+  address: string
+  lat: number
+  lon: number
+  distance: number
 }
 
 interface LocationSuggestionsProps {
-  suggestions: Suggestion[];
-  error: string | null;
-  isMarking: boolean;
-  onSuggestionSelect: (suggestion: Suggestion) => void;
+  suggestions: Suggestion[]
+  error: string | null
+  isMarking: boolean
+  onSuggestionSelect: (suggestion: Suggestion) => void
 }
 
 export const LocationSuggestions = ({
   suggestions,
   error,
   isMarking,
-  onSuggestionSelect
+  onSuggestionSelect,
 }: LocationSuggestionsProps) => {
   return (
     <AnimatePresence>
@@ -84,5 +84,5 @@ export const LocationSuggestions = ({
         </motion.div>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}

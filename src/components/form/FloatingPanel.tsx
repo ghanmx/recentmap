@@ -79,11 +79,11 @@ export const FloatingPanel = ({
           isMaximized
             ? 'inset-4 !transform-none'
             : cn(
-              position === 'right' && 'right-6 top-24',
-              position === 'left' && 'left-6 top-24',
-              position === 'top' && 'top-6 inset-x-6',
-              position === 'bottom' && 'bottom-6 inset-x-6',
-            ),
+                position === 'right' && 'right-6 top-24',
+                position === 'left' && 'left-6 top-24',
+                position === 'top' && 'top-6 inset-x-6',
+                position === 'bottom' && 'bottom-6 inset-x-6',
+              ),
           'z-[1000]',
           isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
           !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',

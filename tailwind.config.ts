@@ -89,4 +89,5 @@ export default {
     require('@tailwindcss/forms'),
     require('@tailwindcss/aspect-ratio'),
   ],
+  mode: 'aot',
 } satisfies Config

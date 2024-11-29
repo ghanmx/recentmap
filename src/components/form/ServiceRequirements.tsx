@@ -1,20 +1,26 @@
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { Wrench } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
-import { FormData } from "@/types/form";
-import { motion } from "framer-motion";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form'
+import { Textarea } from '@/components/ui/textarea'
+import { Wrench } from 'lucide-react'
+import { UseFormReturn } from 'react-hook-form'
+import { FormData } from '@/types/form'
+import { motion } from 'framer-motion'
 
 export interface ServiceRequirementsProps {
-  form: UseFormReturn<FormData>;
-  requiresManeuver?: boolean;
-  onManeuverChange?: (checked: boolean) => void;
+  form: UseFormReturn<FormData>
+  requiresManeuver?: boolean
+  onManeuverChange?: (checked: boolean) => void
 }
 
-export const ServiceRequirements = ({ 
+export const ServiceRequirements = ({
   form,
   requiresManeuver,
-  onManeuverChange 
+  onManeuverChange,
 }: ServiceRequirementsProps) => {
   return (
     <motion.div
@@ -33,7 +39,9 @@ export const ServiceRequirements = ({
         name="issueDescription"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 font-medium">Descripción del Problema</FormLabel>
+            <FormLabel className="text-gray-700 font-medium">
+              Descripción del Problema
+            </FormLabel>
             <FormControl>
               <Textarea
                 {...field}
@@ -47,5 +55,5 @@ export const ServiceRequirements = ({
         )}
       />
     </motion.div>
-  );
-};
+  )
+}

@@ -1,13 +1,15 @@
-import { ReactNode } from "react";
-import { motion } from "framer-motion";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import Draggable from 'react-draggable';
+import { ReactNode } from 'react'
+import { motion } from 'framer-motion'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import Draggable from 'react-draggable'
 
 interface FloatingPanelContentProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
-export const FloatingPanelContent = ({ children }: FloatingPanelContentProps) => {
+export const FloatingPanelContent = ({
+  children,
+}: FloatingPanelContentProps) => {
   return (
     <motion.div
       className="flex flex-col h-full"
@@ -15,9 +17,7 @@ export const FloatingPanelContent = ({ children }: FloatingPanelContentProps) =>
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="px-6 py-4 Draggable">
-        {children}
-      </div>
+      <div className="px-6 py-4 Draggable">{children}</div>
     </motion.div>
-  );
-};
+  )
+}

@@ -1,15 +1,15 @@
-import { TowTruckType } from "@/utils/towTruckPricing";
-import { CostItemDisplay } from "./CostItemDisplay";
-import { Flag, TrendingUp, Truck } from "lucide-react";
-import { formatCurrency } from "@/utils/priceCalculator";
+import { TowTruckType } from '@/utils/towTruckPricing'
+import { CostItemDisplay } from './CostItemDisplay'
+import { Flag, TrendingUp, Truck } from 'lucide-react'
+import { formatCurrency } from '@/utils/priceCalculator'
 
 interface ServiceCostSectionProps {
-  flagDropFee: number;
-  baseCost: number;
-  totalDistance: number;
-  selectedTruck: TowTruckType;
-  maneuverCost: number;
-  requiresManeuver: boolean;
+  flagDropFee: number
+  baseCost: number
+  totalDistance: number
+  selectedTruck: TowTruckType
+  maneuverCost: number
+  requiresManeuver: boolean
 }
 
 export const ServiceCostSection = ({
@@ -35,7 +35,7 @@ export const ServiceCostSection = ({
         icon={<TrendingUp className="w-4 h-4 text-primary" />}
         description={`${totalDistance.toFixed(2)} km × ${formatCurrency(selectedTruck.perKm)}/km`}
       />
-      
+
       {requiresManeuver && (
         <CostItemDisplay
           label={`Cargo por maniobra especial (${selectedTruck.name})`}
@@ -45,5 +45,5 @@ export const ServiceCostSection = ({
         />
       )}
     </div>
-  );
-};
+  )
+}

@@ -1,16 +1,16 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Truck, Link, Warehouse, Car, Shield, Wrench } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import React from 'react'
+import { motion } from 'framer-motion'
+import { Truck, Link, Warehouse, Car, Shield, Wrench } from 'lucide-react'
+import { Card } from '@/components/ui/card'
 
 const services = [
-  { icon: Truck, title: "Grúas de plataforma" },
-  { icon: Link, title: "Grúas de arrastre" },
-  { icon: Warehouse, title: "Grúas carga pesada" },
-  { icon: Car, title: "Arrastre" },
-  { icon: Shield, title: "Resguardo de vehículos" },
-  { icon: Wrench, title: "Servicios adicionales" }
-];
+  { icon: Truck, title: 'Grúas de plataforma' },
+  { icon: Link, title: 'Grúas de arrastre' },
+  { icon: Warehouse, title: 'Grúas carga pesada' },
+  { icon: Car, title: 'Arrastre' },
+  { icon: Shield, title: 'Resguardo de vehículos' },
+  { icon: Wrench, title: 'Servicios adicionales' },
+]
 
 export const Services = (): JSX.Element => {
   return (
@@ -26,7 +26,8 @@ export const Services = (): JSX.Element => {
             Servicios
           </h3>
           <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Brindamos el mejor servicio a tiempo a un precio razonable porque sabemos lo importante que es su tiempo.
+            Brindamos el mejor servicio a tiempo a un precio razonable porque
+            sabemos lo importante que es su tiempo.
           </p>
         </motion.div>
 
@@ -57,5 +58,5 @@ export const Services = (): JSX.Element => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}

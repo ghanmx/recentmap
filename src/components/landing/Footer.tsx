@@ -1,6 +1,6 @@
-import React from 'react';
-import { Mail, MapPin, Phone } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React from 'react'
+import { Mail, MapPin, Phone } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 export const Footer = () => {
   return (
@@ -15,8 +15,9 @@ export const Footer = () => {
           >
             <h3 className="text-2xl font-bold text-[#0EA5E9]">M.R. Grúas</h3>
             <p className="text-gray-300 leading-relaxed">
-              Servicio profesional de grúas y asistencia vial disponible las 24 horas del día,
-              los 7 días de la semana. Su seguridad y satisfacción son nuestra prioridad.
+              Servicio profesional de grúas y asistencia vial disponible las 24
+              horas del día, los 7 días de la semana. Su seguridad y
+              satisfacción son nuestra prioridad.
             </p>
           </motion.div>
 
@@ -32,19 +33,26 @@ export const Footer = () => {
               <div className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-[#0EA5E9] mt-1" />
                 <p className="text-gray-300">
-                  México 85D, Autopista Monterrey - Nuevo Laredo<br />
+                  México 85D, Autopista Monterrey - Nuevo Laredo
+                  <br />
                   Sabinas Hidalgo, N.L., México
                 </p>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-[#0EA5E9]" />
-                <a href="tel:+5218180107110" className="text-gray-300 hover:text-white transition-colors">
+                <a
+                  href="tel:+5218180107110"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
                   +52 1 81 8010 7110
                 </a>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-[#0EA5E9]" />
-                <a href="mailto:gruasmartinezreyes@hotmail.com" className="text-gray-300 hover:text-white transition-colors break-all">
+                <a
+                  href="mailto:gruasmartinezreyes@hotmail.com"
+                  className="text-gray-300 hover:text-white transition-colors break-all"
+                >
                   gruasmartinezreyes@hotmail.com
                 </a>
               </div>
@@ -90,10 +98,11 @@ export const Footer = () => {
           className="mt-12 pt-8 border-t border-gray-700 text-center"
         >
           <p className="text-gray-400">
-            © {new Date().getFullYear()} M.R. Grúas. Todos los derechos reservados.
+            © {new Date().getFullYear()} M.R. Grúas. Todos los derechos
+            reservados.
           </p>
         </motion.div>
       </div>
     </footer>
-  );
-};
+  )
+}

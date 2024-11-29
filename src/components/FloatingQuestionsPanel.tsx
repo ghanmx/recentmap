@@ -1,34 +1,42 @@
-import { useState } from "react";
-import { FloatingPanel } from "./map/FloatingPanel";
-import { Button } from "./ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { VehicleForm } from "./VehicleForm";
-import { CostEstimation } from "./CostEstimation";
-import { RouteDisplay } from "./map/RouteDisplay";
-import { motion, AnimatePresence } from "framer-motion";
-import { useTowing } from "@/contexts/TowingContext";
-import PaymentWindow from "./payment/PaymentWindow";
+import { useState } from 'react'
+import { FloatingPanel } from './map/FloatingPanel'
+import { Button } from './ui/button'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { VehicleForm } from './VehicleForm'
+import { CostEstimation } from './CostEstimation'
+import { RouteDisplay } from './map/RouteDisplay'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTowing } from '@/contexts/TowingContext'
+import PaymentWindow from './payment/PaymentWindow'
 
 interface QuestionPage {
-  id: number;
-  title: string;
-  component: React.ReactNode;
+  id: number
+  title: string
+  component: React.ReactNode
 }
 
 interface LocationData {
-  lat: number;
-  lng: number;
+  lat: number
+  lng: number
 }
 
 interface FloatingQuestionsPanelProps {
-  pickupLocation: LocationData | null;
-  dropLocation: LocationData | null;
-  pickupAddress: string;
-  dropAddress: string;
-  onPickupSelect: (location: { lat: number; lng: number; address: string }) => void;
-  onDropSelect: (location: { lat: number; lng: number; address: string }) => void;
-  onSelectingPickup: () => void;
-  onSelectingDrop: () => void;
+  pickupLocation: LocationData | null
+  dropLocation: LocationData | null
+  pickupAddress: string
+  dropAddress: string
+  onPickupSelect: (location: {
+    lat: number
+    lng: number
+    address: string
+  }) => void
+  onDropSelect: (location: {
+    lat: number
+    lng: number
+    address: string
+  }) => void
+  onSelectingPickup: () => void
+  onSelectingDrop: () => void
 }
 
 export const FloatingQuestionsPanel = ({
@@ -41,20 +49,24 @@ export const FloatingQuestionsPanel = ({
   onSelectingPickup,
   onSelectingDrop,
 }: FloatingQuestionsPanelProps) => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [showPaymentWindow, setShowPaymentWindow] = useState(false);
-  const { totalDistance, truckType, requiresManeuver, totalTollCost } = useTowing();
+  const [currentPage, setCurrentPage] = useState(0)
+  const [showPaymentWindow, setShowPaymentWindow] = useState(false)
+  const { totalDistance, truckType, requiresManeuver, totalTollCost } =
+    useTowing()
 
-  const handlePaymentSubmit = async (result: { success: boolean; error?: string }) => {
+  const handlePaymentSubmit = async (result: {
+    success: boolean
+    error?: string
+  }) => {
     if (result.success) {
-      setShowPaymentWindow(false);
+      setShowPaymentWindow(false)
     }
-  };
+  }
 
   const pages: QuestionPage[] = [
     {
       id: 1,
-      title: "Detalles del Servicio",
+      title: 'Detalles del Servicio',
       component: (
         <VehicleForm
           pickupLocation={pickupLocation}
@@ -70,7 +82,7 @@ export const FloatingQuestionsPanel = ({
     },
     {
       id: 2,
-      title: "Costos y Ruta",
+      title: 'Costos y Ruta',
       component: (
         <div className="space-y-6">
           <CostEstimation onShowPayment={() => setShowPaymentWindow(true)} />
@@ -80,18 +92,19 @@ export const FloatingQuestionsPanel = ({
           />
         </div>
       ),
-    }
-  ];
+    },
+  ]
 
   const handlePageChange = (direction: 'next' | 'prev') => {
-    setCurrentPage(prev =>
+    setCurrentPage((prev) =>
       direction === 'next'
         ? Math.min(pages.length - 1, prev + 1)
-        : Math.max(0, prev - 1)
-    );
-  };
+        : Math.max(0, prev - 1),
+    )
+  }
 
-  const finalCost = totalDistance * (truckType === 'D' ? 32.35 : 18.82) + totalTollCost;
+  const finalCost =
+    totalDistance * (truckType === 'D' ? 32.35 : 18.82) + totalTollCost
 
   return (
     <>
@@ -144,5 +157,5 @@ export const FloatingQuestionsPanel = ({
         onPaymentSubmit={handlePaymentSubmit}
       />
     </>
-  );
-};
+  )
+}

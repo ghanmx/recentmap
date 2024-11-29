@@ -1,14 +1,10 @@
-import { ReactNode } from 'react';
-import { TowingProvider } from '../contexts/TowingContext';
+import { ReactNode } from 'react'
+import { TowingProvider } from '../contexts/TowingContext'
 
 interface TowingWrapperProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export const TowingWrapper = ({ children }: TowingWrapperProps) => {
-  return (
-    <TowingProvider>
-      {children}
-    </TowingProvider>
-  );
-};
+  return <TowingProvider>{children}</TowingProvider>
+}

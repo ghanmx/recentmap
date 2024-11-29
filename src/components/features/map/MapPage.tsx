@@ -1,7 +1,7 @@
-import TowMap from "@/components/TowMap";
+import TowMap from '@/components/TowMap'
 
 const MapPage = () => {
-  return <TowMap />;
-};
+  return <TowMap />
+}
 
-export default MapPage;
+export default MapPage

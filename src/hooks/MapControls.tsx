@@ -1,18 +1,18 @@
-import { MapPin, Navigation } from "lucide-react";
-import { MapButton } from "../components/ui/MapButton";
+import { MapPin, Navigation } from 'lucide-react'
+import { MapButton } from '../components/ui/MapButton'
 
 interface MapControlsProps {
-  selectingPickup: boolean;
-  selectingDrop: boolean;
-  onPickupClick: () => void;
-  onDropClick: () => void;
+  selectingPickup: boolean
+  selectingDrop: boolean
+  onPickupClick: () => void
+  onDropClick: () => void
 }
 
 export const MapControls = ({
   selectingPickup,
   selectingDrop,
   onPickupClick,
-  onDropClick
+  onDropClick,
 }: MapControlsProps) => {
   return (
     <div className="flex flex-col sm:flex-row gap-3">
@@ -29,5 +29,5 @@ export const MapControls = ({
         onClick={onDropClick}
       />
     </div>
-  );
-};
+  )
+}

@@ -1,16 +1,16 @@
-import { Card } from "@/components/ui/card";
-import { Ticket, Clock, CreditCard } from "lucide-react";
-import { TollLocation } from "@/data/tollData";
-import { Separator } from "@/components/ui/separator";
-import { motion } from "framer-motion";
+import { Card } from '@/components/ui/card'
+import { Ticket, Clock, CreditCard } from 'lucide-react'
+import { TollLocation } from '@/data/tollData'
+import { Separator } from '@/components/ui/separator'
+import { motion } from 'framer-motion'
 
 interface TollInfoDisplayProps {
-  tolls: TollLocation[];
-  totalCost: number;
+  tolls: TollLocation[]
+  totalCost: number
 }
 
 export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
-  if (tolls.length === 0) return null;
+  if (tolls.length === 0) return null
 
   return (
     <Card className="p-6 bg-gradient-to-br from-white/95 via-yellow-50/30 to-white/80 backdrop-blur-sm border border-yellow-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -49,7 +49,9 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
             >
               <Card className="bg-gradient-to-br from-white/80 to-yellow-50/30 backdrop-blur-sm p-4 space-y-3 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-yellow-900">{toll.name}</span>
+                  <span className="font-medium text-yellow-900">
+                    {toll.name}
+                  </span>
                   <span className="text-sm font-semibold text-yellow-700 bg-yellow-100 px-3 py-1 rounded-full">
                     ${toll.cost.toFixed(2)}
                   </span>
@@ -70,5 +72,5 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
         </div>
       </motion.div>
     </Card>
-  );
-};
+  )
+}

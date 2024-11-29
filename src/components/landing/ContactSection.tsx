@@ -1,7 +1,7 @@
-import React from 'react';
-import { Mail, MapPin, Phone } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
+import React from 'react'
+import { Mail, MapPin, Phone } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Card } from '@/components/ui/card'
 
 export const ContactSection = () => {
   return (
@@ -17,7 +17,8 @@ export const ContactSection = () => {
             Nos gustaría saber tu opinión
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Dispuestos a brindar ayuda y responder a las preguntas que pueda tener.
+            Dispuestos a brindar ayuda y responder a las preguntas que pueda
+            tener.
           </p>
         </div>
 
@@ -82,5 +83,5 @@ export const ContactSection = () => {
         </div>
       </motion.div>
     </section>
-  );
-};
+  )
+}

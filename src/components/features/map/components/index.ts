@@ -1,2 +1,2 @@
-export { MapControlPanel } from "./MapControlPanel";
-export { MapControls } from "./MapControls";
+export { MapControlPanel } from './MapControlPanel'
+export { MapControls } from './MapControls'

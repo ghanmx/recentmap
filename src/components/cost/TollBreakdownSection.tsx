@@ -1,34 +1,38 @@
-import { TollLocation } from "@/data/tollData";
-import { CostItemDisplay } from "./CostItemDisplay";
-import { ArrowRight, ArrowLeft, Info, MapPin } from "lucide-react";
-import { calculateTotalTollCost } from "@/utils/tollUtils";
-import { motion } from "framer-motion";
-import { formatCurrency } from "@/utils/priceCalculator";
-import { 
+import { TollLocation } from '@/data/tollData'
+import { CostItemDisplay } from './CostItemDisplay'
+import { ArrowRight, ArrowLeft, Info, MapPin } from 'lucide-react'
+import { calculateTotalTollCost } from '@/utils/tollUtils'
+import { motion } from 'framer-motion'
+import { formatCurrency } from '@/utils/priceCalculator'
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
-import { Card } from "@/components/ui/card";
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { Card } from '@/components/ui/card'
 
 interface TollBreakdownSectionProps {
-  tolls: TollLocation[];
-  direction: 'outbound' | 'return';
-  showDetails?: boolean;
+  tolls: TollLocation[]
+  direction: 'outbound' | 'return'
+  showDetails?: boolean
 }
 
-export const TollBreakdownSection = ({ 
-  tolls, 
+export const TollBreakdownSection = ({
+  tolls,
   direction,
-  showDetails = false 
+  showDetails = false,
 }: TollBreakdownSectionProps) => {
-  if (tolls.length === 0) return null;
+  if (tolls.length === 0) return null
 
-  const isOutbound = direction === 'outbound';
-  const icon = isOutbound ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />;
-  const label = isOutbound ? 'Peajes de ida:' : 'Peajes de regreso:';
-  const totalCost = calculateTotalTollCost(tolls);
+  const isOutbound = direction === 'outbound'
+  const icon = isOutbound ? (
+    <ArrowRight className="w-4 h-4" />
+  ) : (
+    <ArrowLeft className="w-4 h-4" />
+  )
+  const label = isOutbound ? 'Peajes de ida:' : 'Peajes de regreso:'
+  const totalCost = calculateTotalTollCost(tolls)
 
   return (
     <motion.div
@@ -56,13 +60,17 @@ export const TollBreakdownSection = ({
                     <div>
                       <div className="font-medium text-sm">{toll.name}</div>
                       {showDetails && toll.description && (
-                        <div className="text-xs text-gray-500">{toll.description}</div>
+                        <div className="text-xs text-gray-500">
+                          {toll.description}
+                        </div>
                       )}
                     </div>
                   </div>
-                  <span className="font-medium text-primary">{formatCurrency(toll.cost)}</span>
+                  <span className="font-medium text-primary">
+                    {formatCurrency(toll.cost)}
+                  </span>
                 </div>
-                
+
                 {showDetails && (
                   <div className="pl-6 space-y-1">
                     {toll.kilometer && (
@@ -84,7 +92,7 @@ export const TollBreakdownSection = ({
                   </div>
                 )}
               </div>
-              
+
               <Tooltip>
                 <TooltipTrigger className="absolute top-3 right-3">
                   <Info className="w-4 h-4 text-primary/60 hover:text-primary" />
@@ -113,5 +121,5 @@ export const TollBreakdownSection = ({
         />
       </motion.div>
     </motion.div>
-  );
-};
+  )
+}
