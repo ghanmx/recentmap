@@ -1,20 +1,4 @@
-export interface TollLocation {
-  name: string
-  lat: number
-  lng: number
-  cost: number
-  description: string
-  type: 'highway' | 'urban'
-  operatingHours: string
-  acceptedPayments: ('cash' | 'card' | 'tag')[]
-  vehicleTypes: ('car' | 'truck' | 'motorcycle')[]
-  lastUpdated: string
-  status: 'active' | 'maintenance' | 'closed'
-  direction?: 'outbound' | 'return'
-  kilometer?: string
-  route?: string
-  distance?: number
-}
+import { TollLocation } from '@/types/location'
 
 export const TOLL_LOCATIONS: TollLocation[] = [
   {
@@ -31,6 +15,7 @@ export const TOLL_LOCATIONS: TollLocation[] = [
     status: 'active',
     route: 'Monterrey - Nuevo Laredo',
     distance: 123.1,
+    location: 'Monterrey - Nuevo Laredo'
   },
   {
     name: 'Agualeguas',

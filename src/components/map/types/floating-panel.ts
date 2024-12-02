@@ -1,5 +1,3 @@
-import { TollLocation } from '@/types/towing'
-
 export interface FloatingPanelProps {
   children: React.ReactNode
   title: string
@@ -18,14 +16,6 @@ export interface FloatingPanelControlsProps {
   onDetailsToggle?: () => void
 }
 
-export interface FloatingPanelHeaderProps {
-  title: string
-  onCollapse: () => void
-  onMaximize: () => void
-  onClose: () => void
-  onDetailsToggle?: () => void
-}
-
 export interface CostDetailsContentProps {
   baseCost: number
   flagDropFee: number
@@ -37,11 +27,10 @@ export interface CostDetailsContentProps {
   requiresManeuver?: boolean
 }
 
-export interface MapControlsProps {
-  selectingPickup: boolean
-  selectingDrop: boolean
-  setSelectingPickup: (value: boolean) => void
-  setSelectingDrop: (value: boolean) => void
-  onPickupClick?: () => void
-  onDropClick?: () => void
+export interface FloatingPanelHeaderProps {
+  title: string
+  onCollapse: () => void
+  onMaximize: () => void
+  onClose: () => void
+  onDetailsToggle?: () => void
 }

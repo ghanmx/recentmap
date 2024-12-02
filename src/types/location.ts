@@ -12,10 +12,10 @@ export interface TollLocation {
   lat: number
   lng: number
   description: string
-  type: string
+  type: 'highway' | 'urban'
   operatingHours: string
-  acceptedPayments: string[]
-  vehicleTypes: string[]
+  acceptedPayments: ('cash' | 'card' | 'tag')[]
+  vehicleTypes: ('car' | 'truck' | 'motorcycle')[]
   lastUpdated: string
   status: 'active' | 'inactive'
   direction?: 'outbound' | 'return'

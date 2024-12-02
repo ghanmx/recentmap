@@ -1,25 +1,23 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { TollLocation } from '@/data/tollData'; 
-import { useToast } from '@/hooks/use-toast';
-import { calculateTotalCost } from '@/utils/costCalculator';
-import { LocationInfo, TollInfo, PaymentInfo, TowingContextType } from '../../types/towing';
+import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { TollLocation } from '@/types/location'
+import { useToast } from '@/hooks/use-toast'
+import { calculateTotalCost } from '@/utils/costCalculator'
+import { LocationInfo, TollInfo, PaymentInfo, TowingContextType } from '@/types/towing'
 
-// Crear el contexto
-const TowingContext = createContext<TowingContextType | undefined>(undefined);
+const TowingContext = createContext<TowingContextType | undefined>(undefined)
 
 export const TowingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Estados
-  const [totalDistance, setTotalDistance] = useState(0);
-  const [totalCost, setTotalCost] = useState(0);
-  const [detectedTolls, setDetectedTolls] = useState<TollLocation[]>([]);
-  const [totalTollCost, setTotalTollCost] = useState(0);
-  const [truckType, setTruckType] = useState<"A" | "B" | "C" | "D">("A");
-  const [requiresManeuver, setRequiresManeuver] = useState(false);
-  const [selectedVehicleModel, setSelectedVehicleModel] = useState('');
-  const [tollInfo, setTollInfo] = useState<TollInfo | null>(null);
-  const [isLoadingLocations, setIsLoadingLocations] = useState(false);
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const { toast } = useToast();
+  const [totalDistance, setTotalDistance] = useState(0)
+  const [totalCost, setTotalCost] = useState(0)
+  const [detectedTolls, setDetectedTolls] = useState<TollLocation[]>([])
+  const [totalTollCost, setTotalTollCost] = useState(0)
+  const [truckType, setTruckType] = useState<"A" | "B" | "C" | "D">("A")
+  const [requiresManeuver, setRequiresManeuver] = useState(false)
+  const [selectedVehicleModel, setSelectedVehicleModel] = useState('')
+  const [tollInfo, setTollInfo] = useState<TollInfo | null>(null)
+  const [isLoadingLocations, setIsLoadingLocations] = useState(false)
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
+  const { toast } = useToast()
 
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
     subtotal: 0,
@@ -120,14 +118,13 @@ export const TowingProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     >
       {children}
     </TowingContext.Provider>
-  );
-};
+  )
+}
 
-// Hook personalizado para usar el contexto
 export const useTowing = () => {
-  const context = useContext(TowingContext);
+  const context = useContext(TowingContext)
   if (context === undefined) {
-    throw new Error('useTowing must be used within a TowingProvider');
+    throw new Error('useTowing must be used within a TowingProvider')
   }
-  return context;
-};
+  return context
+}
