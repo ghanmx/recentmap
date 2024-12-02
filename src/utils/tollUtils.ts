@@ -1,4 +1,4 @@
-import { TollLocation } from '@/data/tollData'
+import { TollLocation } from '@/types/toll'
 
 /**
  * Separates tolls by direction (outbound/return)

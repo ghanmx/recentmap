@@ -1,147 +1,119 @@
-import { Card } from '@/components/ui/card'
+import { useState } from 'react'
+import { useProfile } from '@/hooks/useProfile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { useState } from 'react'
-import { useUserProfile } from './hooks/useUserProfile'
-import { Loader2, User } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Card } from '@/components/ui/card'
+import { useToast } from '@/hooks/use-toast'
 
 export const UserProfile = () => {
-  const { profile, isLoading, updateProfile } = useUserProfile()
-  const [editMode, setEditMode] = useState(false)
+  const { profile, loading: isLoading, updateProfile } = useProfile()
+  const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
-    full_name: '',
-    username: '',
-    phone_number: '',
-    bio: '',
+    username: profile?.username || '',
+    full_name: profile?.full_name || '',
+    phone_number: profile?.phone_number || '',
   })
+  const { toast } = useToast()
+  const [isPending, setIsPending] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsPending(true)
+    try {
+      const updatedProfile = await updateProfile(formData)
+      if (updatedProfile) {
+        toast({
+          title: 'Profile updated',
+          description: 'Your profile has been successfully updated.',
+        })
+        setIsEditing(false)
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update profile. Please try again.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsPending(false)
+    }
+  }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    )
-  }
-
-  const handleEdit = () => {
-    setFormData({
-      full_name: profile?.full_name || '',
-      username: profile?.username || '',
-      phone_number: profile?.phone_number || '',
-      bio: profile?.bio || '',
-    })
-    setEditMode(true)
-  }
-
-  const handleSave = async () => {
-    await updateProfile.mutateAsync(formData)
-    setEditMode(false)
+    return <div>Loading...</div>
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-4"
-    >
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <User className="h-8 w-8 text-primary" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-semibold">
-                {profile?.full_name || 'Usuario'}
-              </h3>
-              <p className="text-gray-500">@{profile?.username || 'username'}</p>
-            </div>
-          </div>
-          {!editMode && (
-            <Button onClick={handleEdit}>Editar Perfil</Button>
-          )}
+    <Card className="p-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Username
+          </label>
+          <Input
+            type="text"
+            value={formData.username}
+            onChange={(e) =>
+              setFormData({ ...formData, username: e.target.value })
+            }
+            disabled={!isEditing || isPending}
+          />
         </div>
 
-        {editMode ? (
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Nombre Completo</label>
-              <Input
-                value={formData.full_name}
-                onChange={(e) =>
-                  setFormData({ ...formData, full_name: e.target.value })
-                }
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Nombre de Usuario</label>
-              <Input
-                value={formData.username}
-                onChange={(e) =>
-                  setFormData({ ...formData, username: e.target.value })
-                }
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Teléfono</label>
-              <Input
-                value={formData.phone_number}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone_number: e.target.value })
-                }
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Biografía</label>
-              <Textarea
-                value={formData.bio}
-                onChange={(e) =>
-                  setFormData({ ...formData, bio: e.target.value })
-                }
-                className="mt-1"
-              />
-            </div>
-            <div className="flex justify-end gap-2">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Full Name
+          </label>
+          <Input
+            type="text"
+            value={formData.full_name}
+            onChange={(e) =>
+              setFormData({ ...formData, full_name: e.target.value })
+            }
+            disabled={!isEditing || isPending}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Phone Number
+          </label>
+          <Input
+            type="tel"
+            value={formData.phone_number}
+            onChange={(e) =>
+              setFormData({ ...formData, phone_number: e.target.value })
+            }
+            disabled={!isEditing || isPending}
+          />
+        </div>
+
+        <div className="flex justify-end space-x-2">
+          {isEditing ? (
+            <>
               <Button
+                type="button"
                 variant="outline"
-                onClick={() => setEditMode(false)}
-                disabled={updateProfile.isPending}
+                onClick={() => setIsEditing(false)}
+                disabled={isPending}
               >
-                Cancelar
+                Cancel
               </Button>
-              <Button
-                onClick={handleSave}
-                disabled={updateProfile.isPending}
-              >
-                {updateProfile.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Guardar Cambios
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Saving...' : 'Save'}
               </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Teléfono</label>
-              <p className="mt-1 text-gray-600">
-                {profile?.phone_number || 'No especificado'}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium">Biografía</label>
-              <p className="mt-1 text-gray-600">
-                {profile?.bio || 'No hay biografía disponible'}
-              </p>
-            </div>
-          </div>
-        )}
-      </Card>
-    </motion.div>
+            </>
+          ) : (
+            <Button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              disabled={isPending}
+            >
+              Edit Profile
+            </Button>
+          )}
+        </div>
+      </form>
+    </Card>
   )
 }

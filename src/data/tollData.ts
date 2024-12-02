@@ -8,7 +8,7 @@ export const TOLL_LOCATIONS: TollLocation[] = [
   ...monterreyTolls,
   ...saltilloTolls,
   ...zacatecasTolls,
-  ...monclovaTolls
+  ...monclovaTolls,
 ]
 
 export type { TollLocation }

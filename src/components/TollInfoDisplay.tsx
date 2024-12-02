@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card'
 import { Ticket, Clock, CreditCard } from 'lucide-react'
-import { TollLocation } from '@/data/tollData'
+import { TollLocation } from '@/types/toll'
 import { Separator } from '@/components/ui/separator'
 import { motion } from 'framer-motion'
 
@@ -74,3 +74,4 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
     </Card>
   )
 }
+

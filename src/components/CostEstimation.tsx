@@ -6,7 +6,7 @@ import { CostHeader } from './cost/CostHeader'
 import { CostMetrics } from './cost/CostMetrics'
 import { CostBreakdown } from './cost/CostBreakdown'
 import { useToast } from '@/hooks/use-toast'
-import { TollLocation } from '@/data/tollData'
+import { TollLocation } from '@/types/toll'
 import { Button } from './ui/button'
 import {
   Dialog,

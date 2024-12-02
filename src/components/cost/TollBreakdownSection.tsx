@@ -1,4 +1,4 @@
-import { TollLocation } from '@/data/tollData'
+import { TollLocation } from '@/types/toll'
 import { CostItemDisplay } from './CostItemDisplay'
 import { ArrowRight, ArrowLeft, Info, MapPin } from 'lucide-react'
 import { calculateTotalTollCost } from '@/utils/tollUtils'
