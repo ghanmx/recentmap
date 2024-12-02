@@ -158,7 +158,7 @@ export const TowingProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   );
 };
 
-mexport const useTowing = () => {
+export const useTowing = () => {
   const context = useContext(TowingContext);
   if (context === null) {
     throw new Error('useTowing must be used within a TowingProvider');
