@@ -1,5 +1,3 @@
-import { TollLocation } from '@/types/location'
-
 export interface FloatingPanelProps {
   children: React.ReactNode
   title: string
@@ -15,6 +13,7 @@ export interface FloatingPanelControlsProps {
   onMaximize: () => void
   onClose: () => void
   title: string
+  onDetailsToggle?: () => void
 }
 
 export interface FloatingPanelHeaderProps {
