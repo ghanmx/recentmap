@@ -1,10 +1,10 @@
 import { RouteStreetInfo } from '@/features/map/components/RouteStreetInfo'
-import { MapControls } from '@/features/map/components/MapControls'
+import { MapControls } from './MapControls'
 import { useToast } from '@/hooks/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { Loader2 } from 'lucide-react'
-import { useMapNotifications } from '../hooks/useMapNotifications'
+import { useMapNotifications } from '@/features/map/hooks/useMapNotifications'
 import { Location } from '@/types/location'
 
 interface MapControlPanelProps {

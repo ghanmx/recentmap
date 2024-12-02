@@ -1,4 +1,4 @@
-import { TollLocation } from '@/types/location'
+import { TollLocation } from '@/types/towing'
 
 export interface FloatingPanelProps {
   children: React.ReactNode
