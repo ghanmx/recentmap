@@ -1,130 +1,141 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
-import { TollLocation } from '@/types/location'
-import { useToast } from '@/hooks/use-toast'
-import { calculateTotalCost } from '@/utils/costCalculator'
-import { LocationInfo, TollInfo, PaymentInfo, TowingContextType } from '@/types/towing'
+import { createClient } from '@supabase/supabase-js'
+import { Database } from './types'
+import { TollLocation } from '@/types/toll'
 
-const TowingContext = createContext<TowingContextType | undefined>(undefined)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-export const TowingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [totalDistance, setTotalDistance] = useState(0)
-  const [totalCost, setTotalCost] = useState(0)
-  const [detectedTolls, setDetectedTolls] = useState<TollLocation[]>([])
-  const [totalTollCost, setTotalTollCost] = useState(0)
-  const [truckType, setTruckType] = useState<"A" | "B" | "C" | "D">("A")
-  const [requiresManeuver, setRequiresManeuver] = useState(false)
-  const [selectedVehicleModel, setSelectedVehicleModel] = useState('')
-  const [tollInfo, setTollInfo] = useState<TollInfo | null>(null)
-  const [isLoadingLocations, setIsLoadingLocations] = useState(false)
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
-  const { toast } = useToast()
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey)
 
-  const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
-    subtotal: 0,
-    tax: 0,
-    total: 0,
-    isPending: false,
-    isProcessing: false,
-  });
+export const getTowingRequests = async () => {
+  const { data, error } = await supabase
+    .from('towing_requests')
+    .select('*')
+    .order('created_at', { ascending: false })
 
-  // Funciones para actualizar el estado
-  const updateTowingInfo = (distance: number) => {
-    setTotalDistance(distance);
-    const newCost = calculateTotalCost(distance, truckType, requiresManeuver, totalTollCost);
-    setTotalCost(newCost);
-    setPaymentInfo(prev => ({
-      ...prev,
-      subtotal: newCost,
-      total: newCost * 1.16,
-    }));
-  };
+  if (error) {
+    throw error
+  }
 
-  const updateTollInfo = (tolls: TollLocation[], tollCost: number) => {
-    setDetectedTolls(tolls);
-    setTotalTollCost(tollCost);
-    setTollInfo({ tolls, totalTollCost: tollCost });
-    const newCost = calculateTotalCost(totalDistance, truckType, requiresManeuver, tollCost);
-    setTotalCost(newCost);
-  };
-
-  const updateTruckType = (type: "A" | "B" | "C" | "D") => {
-    setTruckType(type);
-    const newCost = calculateTotalCost(totalDistance, type, requiresManeuver, totalTollCost);
-    setTotalCost(newCost);
-  };
-
-  const updateManeuverRequired = (required: boolean) => {
-    setRequiresManeuver(required);
-    const newCost = calculateTotalCost(totalDistance, truckType, required, totalTollCost);
-    setTotalCost(newCost);
-  };
-
-  const updateSelectedVehicleModel = (model: string) => {
-    setSelectedVehicleModel(model);
-  };
-
-  const updateLocationInfo = async (info: LocationInfo) => {
-    setIsLoadingLocations(true);
-    try {
-      if (info.pickup) {
-        toast({ title: "Pickup Location Updated", description: info.pickup.address });
-      }
-      if (info.drop) {
-        toast({ title: "Drop-off Location Updated", description: info.drop.address });
-      }
-    } catch (error) {
-      toast({ title: "Error", description: "Could not update the location", variant: "destructive" });
-    } finally {
-      setIsLoadingLocations(false);
-    }
-  };
-
-  const processPayment = async (amount: number): Promise<boolean> => {
-    setIsProcessingPayment(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      toast({ title: "Payment Processed", description: `Processed payment of ${amount.toFixed(2)} MXN` });
-      return true;
-    } catch (error) {
-      toast({ title: "Payment Error", description: "Could not process the payment", variant: "destructive" });
-      return false;
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  };
-
-  return (
-    <TowingContext.Provider
-      value={{
-        totalDistance,
-        totalCost,
-        detectedTolls,
-        totalTollCost,
-        truckType,
-        requiresManeuver,
-        selectedVehicleModel,
-        tollInfo,
-        paymentInfo,
-        isLoadingLocations,
-        isProcessingPayment,
-        updateTowingInfo,
-        updateTollInfo,
-        updateTruckType,
-        updateManeuverRequired,
-        updateSelectedVehicleModel,
-        updateLocationInfo,
-        processPayment,
-      }}
-    >
-      {children}
-    </TowingContext.Provider>
-  )
+  return data
 }
 
-export const useTowing = () => {
-  const context = useContext(TowingContext)
-  if (context === undefined) {
-    throw new Error('useTowing must be used within a TowingProvider')
+export const createTowingRequest = async (request: any) => {
+  const { data, error } = await supabase
+    .from('towing_requests')
+    .insert([request])
+    .select()
+
+  if (error) {
+    throw error
   }
-  return context
+
+  return data[0]
+}
+
+export const updateTowingRequest = async (id: string, updates: any) => {
+  const { data, error } = await supabase
+    .from('towing_requests')
+    .update(updates)
+    .eq('id', id)
+    .select()
+
+  if (error) {
+    throw error
+  }
+
+  return data[0]
+}
+
+export const deleteTowingRequest = async (id: string) => {
+  const { error } = await supabase
+    .from('towing_requests')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    throw error
+  }
+}
+
+export const getTowingRequestById = async (id: string) => {
+  const { data, error } = await supabase
+    .from('towing_requests')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const getTowingRequestsByUser = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('towing_requests')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const updateTolls = (tolls: TollLocation[], tollCost: number) => {
+  const updatedTolls = tolls.map(toll => ({
+    ...toll,
+    cost: toll.cost + (tollCost / tolls.length)
+  }))
+
+  return {
+    tolls: updatedTolls,
+    totalTollCost: updatedTolls.reduce((sum, toll) => sum + toll.cost, 0)
+  }
+}
+
+export const calculateTowingCost = (distance: number, vehicleType: string) => {
+  const baseRate = vehicleType === 'heavy' ? 2.5 : 1.8
+  return distance * baseRate
+}
+
+export const validateTowingRequest = (request: any) => {
+  const requiredFields = ['pickup_location', 'drop_location', 'vehicle_type']
+  const missingFields = requiredFields.filter(field => !request[field])
+
+  if (missingFields.length > 0) {
+    throw new Error(`Missing required fields: ${missingFields.join(', ')}`)
+  }
+
+  return true
+}
+
+export const processTowingPayment = async (paymentDetails: any) => {
+  const { data, error } = await supabase
+    .from('payments')
+    .insert([paymentDetails])
+    .select()
+
+  if (error) {
+    throw error
+  }
+
+  return data[0]
+}
+
+export const getTowingMetrics = async () => {
+  const { data, error } = await supabase
+    .from('towing_metrics')
+    .select('*')
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
 }
