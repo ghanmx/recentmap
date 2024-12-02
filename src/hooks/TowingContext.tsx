@@ -152,7 +152,7 @@ export const TowingProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   return (
-    <TowingContext.Provider value={contextValue} >
+    <TowingContext.Provider value={contextValue}>
       {children}
     </TowingContext.Provider>
   );
