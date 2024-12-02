@@ -1,24 +1,33 @@
-import { MapControls } from './MapControls'
-import { RouteStreetInfo } from './RouteStreetInfo'
-import { showLocationNotification } from '@/utils/notificationUtils'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Card } from '@/components/ui/card'
-import { useToast } from '@/hooks/use-toast'
-import { Loader2 } from 'lucide-react'
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
+import { RouteStreetInfo, MapControls } from '@/components';
 
 interface MapControlPanelProps {
-  selectingPickup: boolean
-  selectingDrop: boolean
-  setSelectingPickup: (value: boolean) => void
-  setSelectingDrop: (value: boolean) => void
-  pickupLocation: { lat: number; lng: number } | null
-  dropLocation: { lat: number; lng: number } | null
-  pickupAddress?: string
-  dropAddress?: string
-  isLoading?: boolean
+  className?: string;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+  onCenter?: () => void;
+  selectingPickup?: boolean;
+  selectingDrop?: boolean;
+  setSelectingPickup?: (value: boolean) => void;
+  setSelectingDrop?: (value: boolean) => void;
+  pickupLocation?: { lat: number; lng: number };
+  dropLocation?: { lat: number; lng: number };
+  pickupAddress?: string;
+  dropAddress?: string;
+  isLoading?: boolean;
 }
 
-export const MapControlPanel = ({
+export const MapControlPanel: React.FC<MapControlPanelProps> = ({
+  className,
+  onZoomIn,
+  onZoomOut,
+  onCenter,
   selectingPickup,
   selectingDrop,
   setSelectingPickup,
@@ -28,33 +37,35 @@ export const MapControlPanel = ({
   pickupAddress,
   dropAddress,
   isLoading = false,
-}: MapControlPanelProps) => {
-  const { toast } = useToast()
+}) => {
+  const { toast } = useToast();
 
   const handlePickupClick = () => {
-    setSelectingPickup(true)
-    setSelectingDrop(false)
-    showLocationNotification('pickup', { lat: 0, lng: 0 })
-    toast({
-      title: 'Seleccionando punto de recogida',
-      description: 'Haz clic en el mapa para seleccionar el punto de recogida',
-      className: 'bg-green-50 border-green-200',
-    })
-  }
+    if (setSelectingPickup && setSelectingDrop) {
+      setSelectingPickup(true);
+      setSelectingDrop(false);
+      toast({
+        title: 'Seleccionando punto de recogida',
+        description: 'Haz clic en el mapa para seleccionar el punto de recogida',
+        className: 'bg-green-50 border-green-200',
+      });
+    }
+  };
 
   const handleDropClick = () => {
-    setSelectingDrop(true)
-    setSelectingPickup(false)
-    showLocationNotification('drop', { lat: 0, lng: 0 })
-    toast({
-      title: 'Seleccionando punto de entrega',
-      description: 'Haz clic en el mapa para seleccionar el punto de entrega',
-      className: 'bg-blue-50 border-blue-200',
-    })
-  }
+    if (setSelectingDrop && setSelectingPickup) {
+      setSelectingDrop(true);
+      setSelectingPickup(false);
+      toast({
+        title: 'Seleccionando punto de entrega',
+        description: 'Haz clic en el mapa para seleccionar el punto de entrega',
+        className: 'bg-blue-50 border-blue-200',
+      });
+    }
+  };
 
   return (
-    <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-3 sm:px-4">
+    <div className={cn('fixed top-16 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-3 sm:px-4', className)}>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -100,6 +111,26 @@ export const MapControlPanel = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <div className="flex flex-col space-y-2 mt-4">
+        {onZoomIn && (
+          <Button variant="secondary" size="sm" onClick={onZoomIn} className="w-8 h-8 p-0">
+            +
+          </Button>
+        )}
+        {onZoomOut && (
+          <Button variant="secondary" size="sm" onClick={onZoomOut} className="w-8 h-8 p-0">
+            -
+          </Button>
+        )}
+        {onCenter && (
+          <Button variant="secondary" size="sm" onClick={onCenter} className="w-8 h-8 p-0">
+            ⌖
+          </Button>
+        )}
+      </div>
     </div>
-  )
-}
+  );
+};
+
+export default MapControlPanel;
