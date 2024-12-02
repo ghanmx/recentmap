@@ -1,19 +1,13 @@
 import { useState } from 'react'
-import {
-  useStripe,
-  useElements,
-  CardElement,
-  PaymentMethodResult,
-} from '@stripe/react-stripe-js'
+import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/use-toast'
-import { Loader2 } from 'lucide-react'
 import type { Stripe, StripeElements } from '@stripe/stripe-js'
 
 interface PaymentFormProps {
   amount: number
   onSuccess: () => void
-  onError: (error: Error) => void
+  onError: (error: string) => void
 }
 
 export const PaymentForm = ({ amount, onSuccess, onError }: PaymentFormProps) => {
@@ -40,6 +34,8 @@ export const PaymentForm = ({ amount, onSuccess, onError }: PaymentFormProps) =>
         throw new Error(paymentMethodError.message)
       }
 
+      // Process payment with your backend
+      // This is a placeholder for the actual payment processing
       const response = await fetch('/api/process-payment', {
         method: 'POST',
         headers: {
@@ -47,7 +43,7 @@ export const PaymentForm = ({ amount, onSuccess, onError }: PaymentFormProps) =>
         },
         body: JSON.stringify({
           paymentMethodId: paymentMethod.id,
-          amount: amount * 100, // Convert to cents
+          amount,
         }),
       })
 
@@ -55,23 +51,17 @@ export const PaymentForm = ({ amount, onSuccess, onError }: PaymentFormProps) =>
         throw new Error('Payment processing failed')
       }
 
-      const result = await response.json()
-
-      if (result.error) {
-        throw new Error(result.error)
-      }
-
+      onSuccess()
       toast({
         title: 'Payment Successful',
         description: 'Your payment has been processed successfully.',
       })
-
-      onSuccess()
     } catch (error) {
-      onError(error as Error)
+      const errorMessage = error instanceof Error ? error.message : 'Payment processing failed'
+      onError(errorMessage)
       toast({
-        title: 'Error',
-        description: 'Payment failed. Please try again.',
+        title: 'Payment Failed',
+        description: errorMessage,
         variant: 'destructive',
       })
     } finally {
@@ -80,7 +70,7 @@ export const PaymentForm = ({ amount, onSuccess, onError }: PaymentFormProps) =>
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="p-4 border rounded-lg">
         <CardElement
           options={{
@@ -99,20 +89,12 @@ export const PaymentForm = ({ amount, onSuccess, onError }: PaymentFormProps) =>
           }}
         />
       </div>
-
       <Button
         type="submit"
         disabled={!stripe || isProcessing}
         className="w-full"
       >
-        {isProcessing ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Processing...
-          </>
-        ) : (
-          `Pay $${amount.toFixed(2)}`
-        )}
+        {isProcessing ? 'Processing...' : `Pay $${amount.toFixed(2)}`}
       </Button>
     </form>
   )

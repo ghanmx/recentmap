@@ -1,55 +1,59 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/integrations/supabase/client'
-import { UserProfile } from '@/types/user'
+import { Profile } from '@/types/user'
 
 export const useProfile = () => {
-  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    fetchProfile()
+  }, [])
+
+  const fetchProfile = async () => {
+    try {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user) {
-        const { data } = await supabase
+        const { data: profile } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single()
 
-        setProfile(data)
+        setProfile(profile)
       }
-      
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+    } finally {
       setLoading(false)
     }
+  }
 
-    fetchProfile()
-  }, [])
-
-  const updateProfile = async (updates: Partial<UserProfile>) => {
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (user) {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id)
-        .select()
-        .single()
-
-      if (error) throw error
+  const updateProfile = async (updates: Partial<Profile>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
       
-      setProfile(data)
-      return data
+      if (user) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .update(updates)
+          .eq('id', user.id)
+          .select()
+          .single()
+
+        if (error) throw error
+        return data
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      return null
     }
-    
-    return null
   }
 
   return {
     profile,
     loading,
-    isLoading: loading,
     updateProfile,
   }
 }

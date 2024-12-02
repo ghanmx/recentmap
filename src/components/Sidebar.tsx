@@ -10,6 +10,17 @@ import { useSidebar } from '@/contexts/SidebarContext'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Location } from '@/types/location'
 
+interface NavContentProps {
+  pickupLocation: Location | null
+  dropLocation: Location | null
+  pickupAddress: string
+  dropAddress: string
+  onPickupSelect: (location: Location) => void
+  onDropSelect: (location: Location) => void
+  onSelectingPickup: () => void
+  onSelectingDrop: () => void
+}
+
 const NavContent = ({
   pickupLocation,
   dropLocation,
@@ -19,16 +30,7 @@ const NavContent = ({
   onDropSelect,
   onSelectingPickup,
   onSelectingDrop,
-}: {
-  pickupLocation: Location | null
-  dropLocation: Location | null
-  pickupAddress: string
-  dropAddress: string
-  onPickupSelect: (location: Location) => void
-  onDropSelect: (location: Location) => void
-  onSelectingPickup: () => void
-  onSelectingDrop: () => void
-}) => (
+}: NavContentProps) => (
   <>
     <div className="sticky top-0 z-10 p-4 border-b bg-gradient-to-r from-primary/10 to-primary/5 backdrop-blur-sm">
       <h1 className="text-xl md:text-2xl lg:text-3xl font-heading font-bold text-primary text-center">
@@ -80,6 +82,16 @@ const Sidebar = () => {
     setSelectingDrop(false)
   }
 
+  const handleSelectingPickup = () => {
+    setSelectingPickup(true)
+    setSelectingDrop(false)
+  }
+
+  const handleSelectingDrop = () => {
+    setSelectingDrop(true)
+    setSelectingPickup(false)
+  }
+
   return (
     <>
       <div className="lg:hidden fixed top-4 left-4 z-[1000]">
@@ -101,8 +113,8 @@ const Sidebar = () => {
               dropAddress={dropAddress}
               onPickupSelect={handlePickupSelect}
               onDropSelect={handleDropSelect}
-              onSelectingPickup={setSelectingPickup}
-              onSelectingDrop={setSelectingDrop}
+              onSelectingPickup={handleSelectingPickup}
+              onSelectingDrop={handleSelectingDrop}
             />
           </SheetContent>
         </Sheet>
@@ -139,8 +151,8 @@ const Sidebar = () => {
           dropAddress={dropAddress}
           onPickupSelect={handlePickupSelect}
           onDropSelect={handleDropSelect}
-          onSelectingPickup={setSelectingPickup}
-          onSelectingDrop={setSelectingDrop}
+          onSelectingPickup={handleSelectingPickup}
+          onSelectingDrop={handleSelectingDrop}
         />
       </aside>
 

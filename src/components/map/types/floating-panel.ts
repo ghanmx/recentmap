@@ -1,3 +1,5 @@
+import { TollLocation } from '@/types/location'
+
 export interface FloatingPanelControlsProps {
   isCollapsed: boolean
   isMaximized: boolean
@@ -18,13 +20,13 @@ export interface CostDetailsContentProps {
   flagDropFee: number
   maneuverCost: number
   totalTollCost: number
-  subtotal: number
+  total: number
   detectedTolls: TollLocation[]
 }
 
 export interface MapControlsProps {
   selectingPickup: boolean
   selectingDrop: boolean
-  setSelectingPickup: (selecting: boolean) => void
-  setSelectingDrop: (selecting: boolean) => void
+  onPickupClick: () => void
+  onDropClick: () => void
 }
