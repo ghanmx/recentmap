@@ -1,72 +1,46 @@
-import { useState, useEffect } from 'react'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
 import { Profile } from '@/types/user'
-import { useToast } from './use-toast'
 
 export const useProfile = () => {
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const { toast } = useToast()
+  const { data: profile, isLoading: loading } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user?.id) return null
 
-  const fetchProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', userId)
+        .eq('id', user.id)
         .single()
 
-      if (error) throw error
-      setProfile(data)
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-      toast({
-        title: 'Error',
-        description: 'Could not fetch profile',
-        variant: 'destructive',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
+      return data as Profile | null
+    },
+  })
 
-  const updateProfile = async (updates: Partial<Profile>) => {
-    try {
+  const updateProfileMutation = useMutation({
+    mutationFn: async (updates: Partial<Profile>) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user?.id) return null
+
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('id', profile?.id)
+        .eq('id', user.id)
         .select()
         .single()
 
       if (error) throw error
-      setProfile(data)
-      return data
-    } catch (error) {
-      console.error('Error updating profile:', error)
-      toast({
-        title: 'Error',
-        description: 'Could not update profile',
-        variant: 'destructive',
-      })
-      return null
-    }
-  }
-
-  useEffect(() => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user?.id) {
-      await fetchProfile(user.id)
-    }
-  }, [])
+      return data as Profile
+    },
+  })
 
   return {
     profile,
     loading,
     isLoading: loading,
-    updateProfile: Object.assign(updateProfile, {
-      mutateAsync: updateProfile,
-      isPending: loading
-    })
+    updateProfile: updateProfileMutation.mutateAsync,
+    isPending: updateProfileMutation.isPending
   }
 }
