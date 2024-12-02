@@ -1,46 +1,49 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
 import { Profile } from '@/types/user'
 
 export const useProfile = () => {
-  const { data: profile, isLoading: loading } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user?.id) return null
+  const queryClient = useQueryClient()
+  const userId = supabase.auth.getUser()?.data.user?.id
 
-      const { data } = await supabase
+  const { data: profile, isLoading: loading } = useQuery({
+    queryKey: ['profile', userId],
+    queryFn: async () => {
+      if (!userId) return null
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', userId)
         .single()
 
-      return data as Profile | null
+      if (error) throw error
+      return data as Profile
     },
+    enabled: !!userId,
   })
 
-  const updateProfileMutation = useMutation({
+  const { mutateAsync: updateProfile, isPending } = useMutation({
     mutationFn: async (updates: Partial<Profile>) => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user?.id) return null
-
+      if (!userId) return null
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('id', user.id)
+        .eq('id', userId)
         .select()
         .single()
 
       if (error) throw error
       return data as Profile
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile', userId] })
+    },
   })
 
   return {
     profile,
-    loading,
     isLoading: loading,
-    updateProfile: updateProfileMutation.mutateAsync,
-    isPending: updateProfileMutation.isPending
+    updateProfile,
+    isPending,
   }
 }

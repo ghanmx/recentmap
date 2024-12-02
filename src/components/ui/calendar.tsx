@@ -14,7 +14,7 @@ const components = {
   IconRight: () => <ChevronRight className="h-4 w-4" />,
 } as const
 
-function Calendar({
+export function Calendar({
   className,
   classNames,
   showOutsideDays = true,
@@ -58,11 +58,11 @@ function Calendar({
         day_hidden: "invisible",
         ...classNames,
       }}
-      components={components}
+      components={{
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
+      }}
       {...props}
     />
   )
 }
-Calendar.displayName = "Calendar"
-
-export { Calendar }
