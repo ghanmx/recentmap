@@ -72,13 +72,13 @@ const Sidebar = () => {
 
   const handlePickupSelect = (location: Location) => {
     setPickupLocation(location)
-    setPickupAddress(location.address)
+    setPickupAddress(location.address || '')
     setSelectingPickup(false)
   }
 
   const handleDropSelect = (location: Location) => {
     setDropLocation(location)
-    setDropAddress(location.address)
+    setDropAddress(location.address || '')
     setSelectingDrop(false)
   }
 

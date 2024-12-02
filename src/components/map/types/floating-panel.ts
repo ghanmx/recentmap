@@ -19,7 +19,8 @@ export interface FloatingPanelControlsProps {
 
 export interface FloatingPanelHeaderProps {
   title: string
-  onCollapse?: () => void
+  onCollapse: () => void
+  onDetailsToggle?: () => void
 }
 
 export interface CostDetailsContentProps {
