@@ -8,6 +8,7 @@ import { RouteDisplay } from './map/RouteDisplay'
 import { CostEstimation } from './CostEstimation'
 import { useSidebar } from '@/contexts/SidebarContext'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Location } from '@/types/location'
 
 const NavContent = ({
   pickupLocation,
@@ -19,22 +20,14 @@ const NavContent = ({
   onSelectingPickup,
   onSelectingDrop,
 }: {
-  pickupLocation?: { lat: number; lng: number } | null
-  dropLocation?: { lat: number; lng: number } | null
-  pickupAddress?: string
-  dropAddress?: string
-  onPickupSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onDropSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onSelectingPickup: (selecting: boolean) => void
-  onSelectingDrop: (selecting: boolean) => void
+  pickupLocation: Location | null
+  dropLocation: Location | null
+  pickupAddress: string
+  dropAddress: string
+  onPickupSelect: (location: Location) => void
+  onDropSelect: (location: Location) => void
+  onSelectingPickup: () => void
+  onSelectingDrop: () => void
 }) => (
   <>
     <div className="sticky top-0 z-10 p-4 border-b bg-gradient-to-r from-primary/10 to-primary/5 backdrop-blur-sm">
@@ -48,15 +41,14 @@ const NavContent = ({
         <VehicleForm
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
-          pickupAddress={pickupAddress}
-          dropAddress={dropAddress}
-          serviceType="standard"
+          pickupAddress={pickupAddress || ''}
+          dropAddress={dropAddress || ''}
           onPickupSelect={onPickupSelect}
           onDropSelect={onDropSelect}
           onSelectingPickup={onSelectingPickup}
           onSelectingDrop={onSelectingDrop}
         />
-        <CostEstimation />
+        <CostEstimation onShowPayment={() => {}} />
         <RouteDisplay
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}

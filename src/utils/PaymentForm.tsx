@@ -16,6 +16,25 @@ import {
   validatePaymentDetails,
 } from '@/utils/paymentProcessor'
 
+const createPaymentMethod = async (stripe: Stripe, elements: StripeElements) => {
+  const cardElement = elements?.getElement(CardElement)
+  if (!cardElement) return null
+
+  const { paymentMethod, error } = await stripe.createPaymentMethod({
+    type: 'card',
+    card: cardElement,
+    billing_details: {
+      // Add any billing details if needed
+    },
+  } as CreatePaymentMethodData)
+
+  if (error) {
+    throw error
+  }
+
+  return paymentMethod
+}
+
 interface PaymentWindowProps {
   isOpen: boolean
   onClose: () => void
@@ -207,3 +226,4 @@ const PaymentWindow = ({
 }
 
 export default PaymentWindow
+

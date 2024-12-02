@@ -8,6 +8,7 @@ import { RouteDisplay } from './map/RouteDisplay'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTowing } from '@/contexts/TowingContext'
 import PaymentWindow from './payment/PaymentWindow'
+import { Location } from '@/types/location'
 
 interface QuestionPage {
   id: number
@@ -15,26 +16,13 @@ interface QuestionPage {
   component: React.ReactNode
 }
 
-interface LocationData {
-  lat: number
-  lng: number
-}
-
 interface FloatingQuestionsPanelProps {
-  pickupLocation: LocationData | null
-  dropLocation: LocationData | null
+  pickupLocation: Location | null
+  dropLocation: Location | null
   pickupAddress: string
   dropAddress: string
-  onPickupSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onDropSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
+  onPickupSelect: (location: Location) => void
+  onDropSelect: (location: Location) => void
   onSelectingPickup: () => void
   onSelectingDrop: () => void
 }

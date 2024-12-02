@@ -1,16 +1,7 @@
-// Interface representing a Location entity
 export interface Location {
-  id: string
-  name: string
+  lat: number
+  lng: number
   address?: string
-  city?: string
-  state?: string
-  country?: string
-  postalCode?: string
-  latitude?: number
-  longitude?: number
-  createdAt?: Date
-  updatedAt?: Date
 }
 
 // Input structure for creating or updating a location

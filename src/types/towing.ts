@@ -1,51 +1,49 @@
-import { Dispatch, SetStateAction } from 'react';
+export interface TollLocation {
+  name: string
+  location: string
+  cost: number
+  lat: number
+  lng: number
+  description: string
+  type: string
+}
 
 export interface LocationInfo {
-  pickup?: {
-    address: string;
-  };
-  drop?: {
-    address: string;
-  };
+  pickup?: { lat: number; lng: number; address: string }
+  drop?: { lat: number; lng: number; address: string }
 }
 
 export interface TollInfo {
-  tolls: TollLocation[];
-  totalTollCost: number;
-}
-
-export interface TollLocation {
-  name: string;               // Name of the toll
-  location: string;           // Ensure this is defined in all instances
-  cost: number;               // Cost of the toll
+  tolls: TollLocation[]
+  totalTollCost: number
 }
 
 export interface PaymentInfo {
-  subtotal: number;           // Subtotal payment
-  tax: number;                // Tax amount
-  total: number;              // Total payment including tax
-  isPending: boolean;         // Payment pending status
-  isProcessing: boolean;      // Currently processing payment status
+  subtotal: number
+  tax: number
+  total: number
+  isPending: boolean
+  isProcessing: boolean
 }
 
 export interface TowingContextType {
-  totalDistance: number;      // Total distance being towed
-  totalCost: number;          // Total cost of towing
-  detectedTolls: TollLocation[]; // List of detected toll locations
-  totalTollCost: number;      // Total cost associated with tolls
-  truckType: 'A' | 'B' | 'C' | 'D'; // Type of truck
-  requiresManeuver: boolean;   // Indicates if maneuver is required
-  selectedVehicleModel: string; // Model of selected vehicle
-  tollInfo: TollInfo | null;    // Information about tolls
-  paymentInfo: PaymentInfo;      // Information about payments
-  isLoadingLocations: boolean;   // Loading status for locations
-  isProcessingPayment: boolean;   // Processing payment status
-  updateTowingInfo: (distance: number) => void; // Update towing info
-  updateTollInfo: (tolls: TollLocation[], tollCost: number) => void; // Update toll info
-  updateTruckType: (type: 'A' | 'B' | 'C' | 'D') => void; // Update truck type
-  updateManeuverRequired: (required: boolean) => void; // Update if maneuver is needed
-  updateSelectedVehicleModel: (model: string) => void; // Update selected vehicle model
-  updateLocationInfo: (info: LocationInfo) => Promise<void>; // Update location info
-  processPayment: (amount: number) => Promise<boolean>; // Process payment
-  setIsLoadingLocations: Dispatch<SetStateAction<boolean>>; // Update loading state
+  totalDistance: number
+  totalCost: number
+  detectedTolls: TollLocation[]
+  totalTollCost: number
+  truckType: 'A' | 'B' | 'C' | 'D'
+  requiresManeuver: boolean
+  selectedVehicleModel: string
+  tollInfo: TollInfo | null
+  paymentInfo: PaymentInfo
+  isLoadingLocations: boolean
+  isProcessingPayment: boolean
+  updateTowingInfo: (distance: number) => void
+  updateTollInfo: (tolls: TollLocation[], tollCost: number) => void
+  updateTruckType: (type: 'A' | 'B' | 'C' | 'D') => void
+  updateManeuverRequired: (required: boolean) => void
+  updateSelectedVehicleModel: (model: string) => void
+  updateLocationInfo: (info: LocationInfo) => void
+  processPayment: (amount: number) => Promise<boolean>
+  setLoadingLocations: (loading: boolean) => void
 }
