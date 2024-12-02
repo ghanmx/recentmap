@@ -4,12 +4,18 @@ import { Profile } from '@/types/user'
 
 export const useProfile = () => {
   const queryClient = useQueryClient()
-  const userId = supabase.auth.getUser()?.data.user?.id
 
-  const { data: profile, isLoading: loading } = useQuery({
-    queryKey: ['profile', userId],
+  const fetchUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    return user?.id
+  }
+
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ['profile'],
     queryFn: async () => {
+      const userId = await fetchUser()
       if (!userId) return null
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -19,12 +25,13 @@ export const useProfile = () => {
       if (error) throw error
       return data as Profile
     },
-    enabled: !!userId,
   })
 
   const { mutateAsync: updateProfile, isPending } = useMutation({
     mutationFn: async (updates: Partial<Profile>) => {
+      const userId = await fetchUser()
       if (!userId) return null
+
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)
@@ -36,13 +43,13 @@ export const useProfile = () => {
       return data as Profile
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile', userId] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
 
   return {
     profile,
-    isLoading: loading,
+    isLoading,
     updateProfile,
     isPending,
   }

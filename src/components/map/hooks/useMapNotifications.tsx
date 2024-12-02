@@ -3,7 +3,7 @@ import { useToast } from '@/hooks/use-toast'
 export const useMapNotifications = () => {
   const { toast } = useToast()
 
-  const showLocationSelectionNotification = (type: 'pickup' | 'drop'): void => {
+  const showLocationSelectionNotification = (type: 'pickup' | 'drop') => {
     toast({
       title: type === 'pickup' ? 'Seleccionando punto de recogida' : 'Seleccionando punto de entrega',
       description: `Haz clic en el mapa para seleccionar el punto de ${type === 'pickup' ? 'recogida' : 'entrega'}`,
@@ -11,7 +11,7 @@ export const useMapNotifications = () => {
     })
   }
 
-  const showRouteCalculationError = (error: string): void => {
+  const showRouteCalculationError = (error: string) => {
     toast({
       title: 'Error al calcular la ruta',
       description: error,
@@ -19,7 +19,7 @@ export const useMapNotifications = () => {
     })
   }
 
-  const showLocationUpdateSuccess = (type: 'pickup' | 'drop', address: string): void => {
+  const showLocationUpdateSuccess = (type: 'pickup' | 'drop', address: string) => {
     toast({
       title: `${type === 'pickup' ? 'Punto de recogida' : 'Punto de entrega'} actualizado`,
       description: address,
