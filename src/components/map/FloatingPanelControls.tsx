@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useState } from 'react'
 import { DollarSign } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -9,13 +10,22 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { FloatingPanelHeader } from './FloatingPanelHeader'
 import { CostDetailsContent } from './CostDetailsContent'
+=======
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+>>>>>>> 9be972714dcd52670efd3631000fe9ccdda8228a
 
-export const FloatingPanelControls = ({
-  isCollapsed,
-  isMaximized,
-  onCollapse,
-  onMaximize,
+interface FloatingPanelControlsProps {
+  onClose: () => void;
+  onSave?: () => void;
+  onCancel?: () => void;
+  className?: string;
+}
+
+export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
   onClose,
+<<<<<<< HEAD
   title,
 }: FloatingPanelControlsProps) => {
   const [showCostDetails, setShowCostDetails] = useState(false)
@@ -104,3 +114,37 @@ export const FloatingPanelControls = ({
     </motion.div>
   )
 }
+=======
+  onSave,
+  onCancel,
+  className,
+}) => {
+  return (
+    <div className={cn('flex justify-end space-x-2 p-4 border-t', className)}>
+      {onCancel && (
+        <Button
+          variant="outline"
+          onClick={onCancel}
+        >
+          Cancel
+        </Button>
+      )}
+      {onSave && (
+        <Button
+          onClick={onSave}
+        >
+          Save
+        </Button>
+      )}
+      <Button
+        variant="ghost"
+        onClick={onClose}
+      >
+        Close
+      </Button>
+    </div>
+  );
+};
+
+export default FloatingPanelControls;
+>>>>>>> 9be972714dcd52670efd3631000fe9ccdda8228a

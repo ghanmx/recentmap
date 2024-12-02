@@ -708,12 +708,59 @@ export default defineConfig(() => ({
     "version": "0.2.0",
     "configurations": [
         {
+            "command": "npm start",
+            "name": "Run npm start",
+            "request": "launch",
+            "type": "node-terminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run autoprefixer",
+            "runtimeExecutable": "autoprefixer",
+            "cwd": "${workspaceFolder}",
+            "args": []
+        },
+        {
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "name": "Launch via NPM",
+            "request": "launch",
+            "runtimeArgs": [
+                "run-script",
+                "debug"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node"
+        },
+        {
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "request": "attach",
+            "type": "chrome",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Iniciar Chrome para localhost",
             "url": "http://localhost:8080",
             "webRoot": "${workspaceFolder}"
-        }
+        },
+        {
+            "name": "Launch with Auto Complete",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "timeout": 30000,
+            "sourceMaps": true,
+            "trace": true
+        },
     ]
 }
 
@@ -4006,7 +4053,7 @@ export const FloatingPanel = ({
           position === 'right' && 'right-4 top-20',
           position === 'left' && 'left-4 top-20',
           position === 'top' && 'top-4 right-4',
-          position === 'bottom' && 'bottom-4 right-4',
+          position === 'bottom' && 'bottom-4 right-4'
         )}
       >
         <Maximize2 className="w-4 h-4 mr-2" />
@@ -4026,25 +4073,23 @@ export const FloatingPanel = ({
       <div
         className={cn(
           'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
-          isMaximized
-            ? 'inset-4 !transform-none'
-            : cn(
-                position === 'right' && 'right-6 top-24',
-                position === 'left' && 'left-6 top-24',
-                position === 'top' && 'top-6 inset-x-6',
-                position === 'bottom' && 'bottom-6 inset-x-6',
-              ),
+          isMaximized ? 'inset-4 !transform-none' : cn(
+            position === 'right' && 'right-6 top-24',
+            position === 'left' && 'left-6 top-24',
+            position === 'top' && 'top-6 inset-x-6',
+            position === 'bottom' && 'bottom-6 inset-x-6'
+          ),
           'z-[1000]',
           isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
           !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',
-          className,
+          className
         )}
       >
         <div
           className={cn(
             'flex items-center justify-between p-3 border-b',
             'bg-gradient-to-r from-primary/5 to-primary/10',
-            'rounded-t-lg',
+            'rounded-t-lg'
           )}
         >
           <div className="flex items-center gap-2">
@@ -4062,11 +4107,7 @@ export const FloatingPanel = ({
               onClick={() => setIsCollapsed(!isCollapsed)}
               className="p-1.5 h-8 w-8 hover:bg-primary/10"
             >
-              {isCollapsed ? (
-                <ChevronUp className="h-4 w-4 text-primary/70" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-primary/70" />
-              )}
+              {isCollapsed ? <ChevronUp className="h-4 w-4 text-primary/70" /> : <ChevronDown className="h-4 w-4 text-primary/70" />}
             </Button>
             <Button
               variant="ghost"
@@ -4074,11 +4115,7 @@ export const FloatingPanel = ({
               onClick={() => setIsMaximized(!isMaximized)}
               className="p-1.5 h-8 w-8 hover:bg-primary/10"
             >
-              {isMaximized ? (
-                <Minimize2 className="h-4 w-4 text-primary/70" />
-              ) : (
-                <Maximize2 className="h-4 w-4 text-primary/70" />
-              )}
+              {isMaximized ? <Minimize2 className="h-4 w-4 text-primary/70" /> : <Maximize2 className="h-4 w-4 text-primary/70" />}
             </Button>
             <Button
               variant="ghost"
@@ -4099,9 +4136,9 @@ export const FloatingPanel = ({
         </div>
         <div
           className={cn(
-            'transition-all duration-300 overflow-hidden',
+            'transition-all duration-300 overflow-scroll',
             isCollapsed ? 'h-0' : isMaximized ? 'p-6' : 'p-4',
-            !isCollapsed && 'animate-in fade-in-50',
+            !isCollapsed && 'animate-in fade-in-50'
           )}
         >
           {children}
@@ -4413,37 +4450,24 @@ export const LocationSearchInput = ({
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\form\LocationSelector.tsx
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-} from '@/components/ui/form'
-import { UseFormReturn } from 'react-hook-form'
-import { FormData } from '@/types/form'
-import { LocationSearch } from './LocationSearch'
-import { MapPin, Navigation } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
-import { useEffect } from 'react'
+import { FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form';
+import { UseFormReturn } from 'react-hook-form';
+import { FormData } from '@/types/form';
+import { LocationSearch } from './LocationSearch';
+import { MapPin, Navigation } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
 
 export interface LocationSelectorProps {
-  form: UseFormReturn<FormData>
-  pickupLocation?: { lat: number; lng: number } | null
-  dropLocation?: { lat: number; lng: number } | null
-  pickupAddress?: string
-  dropAddress?: string
-  onPickupSelect?: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onDropSelect?: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onSelectingPickup?: (selecting: boolean) => void
-  onSelectingDrop?: (selecting: boolean) => void
+  form: UseFormReturn<FormData>;
+  pickupLocation?: { lat: number; lng: number } | null;
+  dropLocation?: { lat: number; lng: number } | null;
+  pickupAddress?: string;
+  dropAddress?: string;
+  onPickupSelect?: (location: { lat: number; lng: number; address: string }) => void;
+  onDropSelect?: (location: { lat: number; lng: number; address: string }) => void;
+  onSelectingPickup?: (selecting: boolean) => void;
+  onSelectingDrop?: (selecting: boolean) => void;
 }
 
 export const LocationSelector = ({
@@ -4457,62 +4481,60 @@ export const LocationSelector = ({
   onSelectingPickup,
   onSelectingDrop,
 }: LocationSelectorProps) => {
-  const { toast } = useToast()
+  const { toast } = useToast();
 
-  // Sincronizar direcciones con el formulario
+  // Sync pickup address with the form
   useEffect(() => {
     if (pickupAddress) {
       form.setValue('pickupLocation', {
         lat: pickupLocation?.lat || 0,
         lng: pickupLocation?.lng || 0,
         address: pickupAddress,
-      })
+      });
     }
-  }, [pickupAddress, pickupLocation, form])
+  }, [pickupAddress, pickupLocation, form]);
 
+  // Sync drop address with the form
   useEffect(() => {
     if (dropAddress) {
       form.setValue('dropoffLocation', {
         lat: dropLocation?.lat || 0,
         lng: dropLocation?.lng || 0,
         address: dropAddress,
-      })
+      });
     }
-  }, [dropAddress, dropLocation, form])
+  }, [dropAddress, dropLocation, form]);
 
+  // Handle location selection
   const handleLocationSelect = async (
     location: { lat: number; lng: number; address: string },
-    type: 'pickup' | 'drop',
+    type: 'pickup' | 'drop'
   ) => {
     if (type === 'pickup') {
-      form.setValue('pickupLocation', location)
-      onPickupSelect?.(location)
-      onSelectingPickup?.(false)
+      form.setValue('pickupLocation', location);
+      onPickupSelect?.(location);
+      onSelectingPickup?.(false);
     } else {
-      form.setValue('dropoffLocation', location)
-      onDropSelect?.(location)
-      onSelectingDrop?.(false)
+      form.setValue('dropoffLocation', location);
+      onDropSelect?.(location);
+      onSelectingDrop?.(false);
     }
 
     toast({
-      title:
-        type === 'pickup'
-          ? 'Ubicación de recogida actualizada'
-          : 'Ubicación de entrega actualizada',
+      title: type === 'pickup' ? 'Ubicación de recogida actualizada' : 'Ubicación de entrega actualizada',
       description: location.address,
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-6">
+      {/* Pickup Location */}
       <FormField
         control={form.control}
         name="pickupLocation"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-lg font-semibold">
-              Ubicación de Recogida
-            </FormLabel>
+            <FormLabel className="text-lg font-semibold">Ubicación de Recogida</FormLabel>
             <FormControl>
               <LocationSearch
                 label="Ubicación de Recogida"
@@ -4520,9 +4542,7 @@ export const LocationSelector = ({
                 icon={<MapPin className="h-4 w-4 text-primary" />}
                 currentAddress={pickupAddress}
                 currentLocation={pickupLocation}
-                onLocationSelect={(location) =>
-                  handleLocationSelect(location, 'pickup')
-                }
+                onLocationSelect={(location) => handleLocationSelect(location, 'pickup')}
                 type="pickup"
               />
             </FormControl>
@@ -4530,14 +4550,13 @@ export const LocationSelector = ({
         )}
       />
 
+      {/* Dropoff Location */}
       <FormField
         control={form.control}
         name="dropoffLocation"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-lg font-semibold">
-              Ubicación de Entrega
-            </FormLabel>
+            <FormLabel className="text-lg font-semibold">Ubicación de Entrega</FormLabel>
             <FormControl>
               <LocationSearch
                 label="Ubicación de Entrega"
@@ -4545,9 +4564,7 @@ export const LocationSelector = ({
                 icon={<Navigation className="h-4 w-4 text-primary" />}
                 currentAddress={dropAddress}
                 currentLocation={dropLocation}
-                onLocationSelect={(location) =>
-                  handleLocationSelect(location, 'drop')
-                }
+                onLocationSelect={(location) => handleLocationSelect(location, 'drop')}
                 type="drop"
               />
             </FormControl>
@@ -4555,8 +4572,8 @@ export const LocationSelector = ({
         )}
       />
     </div>
-  )
-}
+  );
+};
 
 
 
@@ -6504,7 +6521,7 @@ export const FloatingPanel = ({
           position === 'right' && 'right-4 top-20',
           position === 'left' && 'left-4 top-20',
           position === 'top' && 'top-4 right-4',
-          position === 'bottom' && 'bottom-4 right-4',
+          position === 'bottom' && 'bottom-4 right-4'
         )}
       >
         <Maximize2 className="w-4 h-4 mr-2" />
@@ -6555,15 +6572,15 @@ export const FloatingPanel = ({
             isMaximized
               ? 'inset-4 !transform-none'
               : cn(
-                  position === 'right' && 'right-6 top-24',
-                  position === 'left' && 'left-6 top-24',
-                  position === 'top' && 'top-6 inset-x-6',
-                  position === 'bottom' && 'bottom-6 inset-x-6',
-                ),
+                position === 'right' && 'right-6 top-24',
+                position === 'left' && 'left-6 top-24',
+                position === 'top' && 'top-6 inset-x-6',
+                position === 'bottom' && 'bottom-6 inset-x-6'
+              ),
             'z-[1000] hidden lg:block',
             isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
             !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',
-            className,
+            className
           )}
         >
           <FloatingPanelControls
@@ -6590,7 +6607,7 @@ export const FloatingPanel = ({
                 : isMaximized
                   ? 'h-[calc(100vh-8rem)]'
                   : 'max-h-[calc(80vh-4rem)]',
-              !isCollapsed && 'animate-in fade-in-50',
+              !isCollapsed && 'animate-in fade-in-50'
             )}
           >
             <ScrollArea className="h-full">

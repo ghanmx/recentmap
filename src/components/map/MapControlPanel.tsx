@@ -1,23 +1,15 @@
-import { MapControls } from './MapControls'
-import { RouteStreetInfo } from './RouteStreetInfo'
-import { showLocationNotification } from '@/utils/notificationUtils'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Card } from '@/components/ui/card'
-import { useToast } from '@/hooks/use-toast'
-import { Loader2 } from 'lucide-react'
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface MapControlPanelProps {
-  selectingPickup: boolean
-  selectingDrop: boolean
-  setSelectingPickup: (value: boolean) => void
-  setSelectingDrop: (value: boolean) => void
-  pickupLocation: { lat: number; lng: number } | null
-  dropLocation: { lat: number; lng: number } | null
-  pickupAddress?: string
-  dropAddress?: string
-  isLoading?: boolean
+  className?: string;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+  onCenter?: () => void;
 }
 
+<<<<<<< HEAD
 export const MapControlPanel = ({
   selectingPickup,
   selectingDrop,
@@ -103,3 +95,48 @@ export const MapControlPanel = ({
     </div>
   )
 }
+=======
+export const MapControlPanel: React.FC<MapControlPanelProps> = ({
+  className,
+  onZoomIn,
+  onZoomOut,
+  onCenter,
+}) => {
+  return (
+    <div className={cn('flex flex-col space-y-2', className)}>
+      {onZoomIn && (
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onZoomIn}
+          className="w-8 h-8 p-0"
+        >
+          +
+        </Button>
+      )}
+      {onZoomOut && (
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onZoomOut}
+          className="w-8 h-8 p-0"
+        >
+          -
+        </Button>
+      )}
+      {onCenter && (
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onCenter}
+          className="w-8 h-8 p-0"
+        >
+          ⌖
+        </Button>
+      )}
+    </div>
+  );
+};
+
+export default MapControlPanel;
+>>>>>>> 9be972714dcd52670efd3631000fe9ccdda8228a
