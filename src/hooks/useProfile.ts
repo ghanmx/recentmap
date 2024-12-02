@@ -1,65 +1,50 @@
-import { useState, useEffect } from 'react'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
 import { Profile } from '@/types/user'
 
 export const useProfile = () => {
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [isPending, setIsPending] = useState(false)
+  const {
+    data: profile,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const { data: user } = await supabase.auth.getUser()
+      if (!user.user?.id) return null
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user?.id) {
-          const { data } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single()
-          setProfile(data)
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.user.id)
+        .single()
 
-    fetchProfile()
-  }, [])
+      return data as Profile | null
+    },
+  })
 
-  const updateProfile = async (updates: Partial<Profile>) => {
-    setIsPending(true)
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user?.id) throw new Error('No user found')
+  const { mutateAsync: updateProfile, isPending } = useMutation({
+    mutationFn: async (updates: Partial<Profile>) => {
+      const { data: user } = await supabase.auth.getUser()
+      if (!user.user?.id) return null
 
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('id', user.id)
+        .eq('id', user.user.id)
         .select()
         .single()
 
       if (error) throw error
-      setProfile(data)
-      return data
-    } catch (error) {
-      console.error('Error updating profile:', error)
-      return null
-    } finally {
-      setIsPending(false)
-    }
-  }
+      return data as Profile
+    },
+  })
 
   return {
     profile,
     loading,
-    isLoading: loading,
-    updateProfile: Object.assign(updateProfile, {
-      isPending,
-      mutateAsync: updateProfile
-    })
+    error,
+    updateProfile,
+    isPending,
   }
 }

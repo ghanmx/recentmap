@@ -64,7 +64,7 @@ const TowMap = () => {
           dropLocation={dropLocation}
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
-          onLocationSelect={(location: Location) => handleLocationSelect(location, selectingPickup ? 'pickup' : 'drop')}
+          onLocationSelect={handleLocationSelect}
           setPickupLocation={(location: Location | null) => handleLocationSelect(location as Location, 'pickup')}
           setDropLocation={(location: Location | null) => handleLocationSelect(location as Location, 'drop')}
           isLoading={isLoading}
