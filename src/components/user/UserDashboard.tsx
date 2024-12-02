@@ -2,26 +2,13 @@ import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { UserReservations } from './UserReservations'
 import { UserNotifications } from './UserNotifications'
-import { UserSettings } from './UserSettings'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useToast } from '@/hooks/use-toast'
-import { useState, useEffect } from 'react'
+import { UserProfile } from './UserProfile'
+import { motion } from 'framer-motion'
+import { useUserProfile } from './hooks/useUserProfile'
 import { Loader2 } from 'lucide-react'
 
 export const UserDashboard = () => {
-  const { toast } = useToast()
-  const [userName, setUserName] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    // Simulate API call to fetch user name
-    const timer = setTimeout(() => {
-      setUserName('John Doe')
-      setIsLoading(false)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [])
+  const { profile, isLoading } = useUserProfile()
 
   return (
     <motion.div
@@ -37,16 +24,20 @@ export const UserDashboard = () => {
           </div>
         ) : (
           <h1 className="text-3xl font-bold gradient-text mb-4">
-            Bienvenido, {userName}
+            Bienvenido, {profile?.full_name || 'Usuario'}
           </h1>
         )}
 
-        <Tabs defaultValue="reservations" className="w-full">
+        <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-3 glass-card">
+            <TabsTrigger value="profile">Mi Perfil</TabsTrigger>
             <TabsTrigger value="reservations">Mis Reservas</TabsTrigger>
             <TabsTrigger value="notifications">Notificaciones</TabsTrigger>
-            <TabsTrigger value="settings">Configuración</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="profile" className="mt-6">
+            <UserProfile />
+          </TabsContent>
 
           <TabsContent value="reservations" className="mt-6">
             <Card className="glass-card p-6">
@@ -57,12 +48,6 @@ export const UserDashboard = () => {
           <TabsContent value="notifications" className="mt-6">
             <Card className="glass-card p-6">
               <UserNotifications />
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="settings" className="mt-6">
-            <Card className="glass-card p-6">
-              <UserSettings />
             </Card>
           </TabsContent>
         </Tabs>
