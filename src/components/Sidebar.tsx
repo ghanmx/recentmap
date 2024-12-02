@@ -41,8 +41,8 @@ const NavContent = ({
         <VehicleForm
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
-          pickupAddress={pickupAddress || ''}
-          dropAddress={dropAddress || ''}
+          pickupAddress={pickupAddress}
+          dropAddress={dropAddress}
           onPickupSelect={onPickupSelect}
           onDropSelect={onDropSelect}
           onSelectingPickup={onSelectingPickup}
@@ -60,37 +60,22 @@ const NavContent = ({
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const { isOpen: isDesktopSidebarVisible, toggle: toggleDesktopSidebar } =
-    useSidebar()
-  const [pickupLocation, setPickupLocation] = useState<{
-    lat: number
-    lng: number
-  } | null>(null)
-  const [dropLocation, setDropLocation] = useState<{
-    lat: number
-    lng: number
-  } | null>(null)
+  const { isOpen: isDesktopSidebarVisible, toggle: toggleDesktopSidebar } = useSidebar()
+  const [pickupLocation, setPickupLocation] = useState<Location | null>(null)
+  const [dropLocation, setDropLocation] = useState<Location | null>(null)
   const [pickupAddress, setPickupAddress] = useState('')
   const [dropAddress, setDropAddress] = useState('')
   const [selectingPickup, setSelectingPickup] = useState(false)
   const [selectingDrop, setSelectingDrop] = useState(false)
 
-  const handlePickupSelect = (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => {
-    setPickupLocation({ lat: location.lat, lng: location.lng })
+  const handlePickupSelect = (location: Location) => {
+    setPickupLocation(location)
     setPickupAddress(location.address)
     setSelectingPickup(false)
   }
 
-  const handleDropSelect = (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => {
-    setDropLocation({ lat: location.lat, lng: location.lng })
+  const handleDropSelect = (location: Location) => {
+    setDropLocation(location)
     setDropAddress(location.address)
     setSelectingDrop(false)
   }

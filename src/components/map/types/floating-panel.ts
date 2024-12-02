@@ -1,12 +1,3 @@
-import { ReactNode } from 'react'
-
-export interface FloatingPanelProps {
-  children: ReactNode
-  className?: string
-  position?: 'left' | 'right' | 'top' | 'bottom'
-  title?: string
-}
-
 export interface FloatingPanelControlsProps {
   isCollapsed: boolean
   isMaximized: boolean
@@ -15,4 +6,25 @@ export interface FloatingPanelControlsProps {
   onMaximize: () => void
   onClose: () => void
   title: string
+}
+
+export interface FloatingPanelHeaderProps {
+  title: string
+  onDetailsToggle?: () => void
+}
+
+export interface CostDetailsContentProps {
+  baseCost: number
+  flagDropFee: number
+  maneuverCost: number
+  totalTollCost: number
+  subtotal: number
+  detectedTolls: TollLocation[]
+}
+
+export interface MapControlsProps {
+  selectingPickup: boolean
+  selectingDrop: boolean
+  setSelectingPickup: (selecting: boolean) => void
+  setSelectingDrop: (selecting: boolean) => void
 }
