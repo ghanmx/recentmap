@@ -24,6 +24,8 @@ export interface FloatingPanelHeaderProps {
   onMaximize: () => void
   onClose: () => void
   onDetailsToggle?: () => void
+  isCollapsed: boolean
+  isMaximized: boolean
 }
 
 export interface CostDetailsContentProps {
