@@ -1,4 +1,4 @@
-import { TollLocation } from '@/types/location'
+import { Location } from '@/types/location'
 
 export interface FloatingPanelProps {
   children: React.ReactNode
@@ -28,5 +28,5 @@ export interface CostDetailsContentProps {
   maneuverCost: number
   totalTollCost: number
   subtotal: number
-  detectedTolls: TollLocation[]
+  detectedTolls: Location[]
 }
