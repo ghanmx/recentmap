@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 
 export const UserProfile = () => {
-  const { profile, loading: isLoading, updateProfile } = useProfile()
+  const { profile, isLoading, updateProfile, isPending } = useProfile()
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
     username: profile?.username || '',
@@ -14,11 +14,9 @@ export const UserProfile = () => {
     phone_number: profile?.phone_number || '',
   })
   const { toast } = useToast()
-  const [isPending, setIsPending] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsPending(true)
     try {
       const updatedProfile = await updateProfile(formData)
       if (updatedProfile) {
@@ -34,8 +32,6 @@ export const UserProfile = () => {
         description: 'Failed to update profile. Please try again.',
         variant: 'destructive',
       })
-    } finally {
-      setIsPending(false)
     }
   }
 

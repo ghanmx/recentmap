@@ -8,7 +8,7 @@ import { useUserProfile } from './hooks/useUserProfile'
 import { Loader2 } from 'lucide-react'
 
 export const UserDashboard = () => {
-  const { profile, isLoading } = useUserProfile()
+  const { profile, loading } = useUserProfile()
 
   return (
     <motion.div
@@ -17,7 +17,7 @@ export const UserDashboard = () => {
       className="container mx-auto p-6 space-y-6"
     >
       <div className="glass-card p-6 rounded-xl border border-primary/10">
-        {isLoading ? (
+        {loading ? (
           <div className="flex items-center gap-2 text-primary">
             <Loader2 className="h-5 w-5 animate-spin" />
             <span>Cargando...</span>

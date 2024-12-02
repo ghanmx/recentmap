@@ -15,13 +15,17 @@ export interface FloatingPanelControlsProps {
   onMaximize: () => void
   onClose: () => void
   title: string
+  onDetailsToggle?: () => void
 }
 
 export interface FloatingPanelHeaderProps {
   title: string
-  onDetailsToggle: () => void
   isCollapsed: boolean
   isMaximized: boolean
+  onCollapse: () => void
+  onMaximize: () => void
+  onClose: () => void
+  onDetailsToggle?: () => void
 }
 
 export interface CostDetailsContentProps {
@@ -31,4 +35,6 @@ export interface CostDetailsContentProps {
   totalTollCost: number
   subtotal: number
   detectedTolls: TollLocation[]
+  totalDistance?: number
+  requiresManeuver?: boolean
 }
