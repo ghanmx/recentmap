@@ -21,6 +21,8 @@ export interface FloatingPanelControlsProps {
 export interface FloatingPanelHeaderProps {
   title: string
   onCollapse: () => void
+  onMaximize: () => void
+  onClose: () => void
   onDetailsToggle?: () => void
 }
 

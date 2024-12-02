@@ -52,10 +52,11 @@ const TowMap = () => {
     }
   }
 
-  const handleLocationSelect = async (location: Location, type: 'pickup' | 'drop') => {
+  const handleLocationSelect = async (location: Location) => {
     try {
       const address = await getAddressFromCoordinates(location.lat, location.lng)
-      handleMapLocationSelect({ ...location, address }, type)
+      const locationWithAddress = { ...location }
+      handleMapLocationSelect(locationWithAddress, selectingPickup ? 'pickup' : 'drop')
     } catch (error) {
       console.error('Error getting address:', error)
       toast({
@@ -79,14 +80,12 @@ const TowMap = () => {
           dropLocation={dropLocation}
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
-          onLocationSelect={(location: Location) => 
-            handleLocationSelect(location, selectingPickup ? 'pickup' : 'drop')
-          }
+          onLocationSelect={handleLocationSelect}
           setPickupLocation={(location: Location | null) => 
-            location && handleLocationSelect(location, 'pickup')
+            location && handleLocationSelect(location)
           }
           setDropLocation={(location: Location | null) => 
-            location && handleLocationSelect(location, 'drop')
+            location && handleLocationSelect(location)
           }
           isLoading={isLoading}
           mapRef={mapRef}
@@ -111,8 +110,8 @@ const TowMap = () => {
         dropLocation={dropLocation}
         pickupAddress={pickupAddress}
         dropAddress={dropAddress}
-        onPickupSelect={(location: Location) => handleLocationSelect(location, 'pickup')}
-        onDropSelect={(location: Location) => handleLocationSelect(location, 'drop')}
+        onPickupSelect={(location: Location) => handleLocationSelect(location)}
+        onDropSelect={(location: Location) => handleLocationSelect(location)}
         onSelectingPickup={() => setSelectingPickup(true)}
         onSelectingDrop={() => setSelectingDrop(true)}
       />

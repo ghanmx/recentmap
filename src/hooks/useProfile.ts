@@ -6,26 +6,14 @@ import { useToast } from './use-toast'
 export const useProfile = () => {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
-  const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
 
-  useEffect(() => {
-    fetchProfile()
-  }, [])
-
-  const fetchProfile = async () => {
+  const fetchProfile = async (userId: string) => {
     try {
-      setLoading(true)
-      setIsLoading(true)
-
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) throw new Error('No user found')
-
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', userId)
         .single()
 
       if (error) throw error
@@ -39,19 +27,15 @@ export const useProfile = () => {
       })
     } finally {
       setLoading(false)
-      setIsLoading(false)
     }
   }
 
   const updateProfile = async (updates: Partial<Profile>) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('No user found')
-
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('id', user.id)
+        .eq('id', profile?.id)
         .select()
         .single()
 
@@ -69,13 +53,20 @@ export const useProfile = () => {
     }
   }
 
+  useEffect(() => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user?.id) {
+      await fetchProfile(user.id)
+    }
+  }, [])
+
   return {
     profile,
     loading,
-    isLoading,
+    isLoading: loading,
     updateProfile: Object.assign(updateProfile, {
       mutateAsync: updateProfile,
-      isPending: loading,
-    }),
+      isPending: loading
+    })
   }
 }
