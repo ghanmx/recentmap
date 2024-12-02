@@ -1,3 +1,5 @@
+import { TollLocation } from './toll'
+
 export interface TowingContextType {
   totalDistance: number
   totalCost: number
@@ -26,30 +28,6 @@ export interface TowingContextType {
   fetchMetrics: () => Promise<{ totalRequests: number; totalPayments: number }>
 }
 
-export interface TollLocation {
-  name: string
-  location: string
-  cost: number
-  lat: number
-  lng: number
-  description: string
-  type: string
-  operatingHours: string
-  acceptedPayments: string[]
-  vehicleTypes: string[]
-  lastUpdated: string
-  status: 'active' | 'inactive'
-  direction?: 'outbound' | 'return'
-  kilometer?: string
-  route?: string
-  distance?: number
-}
-
-export interface LocationInfo {
-  pickup?: { lat: number; lng: number; address: string }
-  drop?: { lat: number; lng: number; address: string }
-}
-
 export interface TollInfo {
   tolls: TollLocation[]
   totalTollCost: number
@@ -61,4 +39,9 @@ export interface PaymentInfo {
   total: number
   isPending: boolean
   isProcessing: boolean
+}
+
+export interface LocationInfo {
+  pickup?: { lat: number; lng: number; address: string }
+  drop?: { lat: number; lng: number; address: string }
 }
