@@ -53,9 +53,18 @@ const TowMap = () => {
   }
 
   const handleMapLocationSelect = async (location: Location) => {
-    const address = await getAddressFromCoordinates(location.lat, location.lng)
-    const locationWithAddress = { ...location, address }
-    handleLocationSelect(locationWithAddress, selectingPickup ? 'pickup' : 'drop')
+    try {
+      const address = await getAddressFromCoordinates(location.lat, location.lng)
+      const locationWithAddress = { ...location, address }
+      handleLocationSelect(locationWithAddress, selectingPickup ? 'pickup' : 'drop')
+    } catch (error) {
+      console.error('Error getting address:', error)
+      toast({
+        title: 'Error',
+        description: 'No se pudo obtener la dirección',
+        variant: 'destructive',
+      })
+    }
   }
 
   return (

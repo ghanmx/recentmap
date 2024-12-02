@@ -19,7 +19,7 @@ export interface FloatingPanelControlsProps {
 
 export interface FloatingPanelHeaderProps {
   title: string
-  onDetailsToggle: () => void
+  onCollapse?: () => void
 }
 
 export interface CostDetailsContentProps {
@@ -27,6 +27,5 @@ export interface CostDetailsContentProps {
   flagDropFee: number
   maneuverCost: number
   totalTollCost: number
-  subtotal: number
   detectedTolls: TollLocation[]
 }
