@@ -5,7 +5,7 @@ export interface Location {
 }
 
 export interface TollLocation {
-  id: string
+  id?: string
   name: string
   location: string
   cost: number
@@ -18,4 +18,8 @@ export interface TollLocation {
   vehicleTypes: string[]
   lastUpdated: string
   status: 'active' | 'inactive'
+  direction?: 'outbound' | 'return'
+  kilometer?: string
+  route?: string
+  distance?: number
 }
