@@ -1,23 +1,20 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Truck, Link, Warehouse, Car, Shield, Wrench, Route, BaggageClaim, BusFront } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Truck, Link, Warehouse, Car, Shield, Wrench } from 'lucide-react'
+import { Card } from '@/components/ui/card'
 
 const services = [
   { icon: Truck, title: 'Grúas de plataforma' },
-  { icon: BaggageClaim, title: 'Grúas de arrastre' },
-  { icon: BusFront, title: 'Grúas carga pesada' },
-  { icon: Route, title: 'Arrastre' },
+  { icon: Link, title: 'Grúas de arrastre' },
+  { icon: Warehouse, title: 'Grúas carga pesada' },
+  { icon: Car, title: 'Arrastre' },
   { icon: Shield, title: 'Resguardo de vehículos' },
   { icon: Wrench, title: 'Servicios adicionales' },
 ]
 
 export const Services = (): JSX.Element => {
   return (
-    <section
-      id="Servicios"
-      className="py-20 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"
-    >
+    <section id="Servicios" className="relative py-20">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -43,18 +40,18 @@ export const Services = (): JSX.Element => {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="group hover:shadow-lg transition-all duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50">
-                <CardHeader className="text-center">
-                  <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
+              <Card className="group hover:shadow-xl transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50 p-6">
+                <div className="text-center space-y-4">
+                  <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors flex items-center justify-center">
                     <service.icon className="w-8 h-8 text-primary" />
                   </div>
-                  <CardTitle className="text-xl font-heading group-hover:text-primary transition-colors">
+                  <h4 className="text-xl font-heading font-semibold group-hover:text-primary transition-colors">
                     {service.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-center text-gray-600 dark:text-gray-300">
-                  <p>Servicio disponible 24/7</p>
-                </CardContent>
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Servicio disponible 24/7
+                  </p>
+                </div>
               </Card>
             </motion.div>
           ))}

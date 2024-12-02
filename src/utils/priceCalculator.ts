@@ -1,7 +1,12 @@
-import { towTruckTypes, TowTruckType } from './towTruckPricing'
+import { TowTruckType, towTruckTypes } from './towTruckPricing'
 
 export const formatCurrency = (amount: number): string => {
-  return `$${amount.toFixed(2)} MXN`
+  return new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: 'MXN',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount)
 }
 
 export const calculateTotalCost = (
@@ -11,12 +16,26 @@ export const calculateTotalCost = (
   tollCosts: number = 0,
   requiresInvoice: boolean = false,
 ): number => {
-  const truck = towTruckTypes[truckType || 'A']
+  const truck =
+    towTruckTypes[truckType as keyof typeof towTruckTypes] || towTruckTypes.A
   const baseCost = calculateBaseCost(distance, truckType)
   const maneuverCost = requiresManeuver ? truck.maneuverCharge : 0
   const flagDropFee = truck.flagDropFee
   const subtotal = baseCost + maneuverCost + tollCosts + flagDropFee
   const tax = requiresInvoice ? subtotal * 0.16 : 0
+
+  console.log('Cost calculation:', {
+    distance,
+    truckType,
+    baseCost,
+    maneuverCost,
+    flagDropFee,
+    tollCosts,
+    subtotal,
+    tax,
+    total: subtotal + tax,
+  })
+
   return subtotal + tax
 }
 
@@ -24,7 +43,8 @@ export const calculateBaseCost = (
   distance: number,
   truckType: string,
 ): number => {
-  const truck = towTruckTypes[truckType || 'A']
+  const truck =
+    towTruckTypes[truckType as keyof typeof towTruckTypes] || towTruckTypes.A
   return distance * truck.perKm
 }
 

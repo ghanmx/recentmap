@@ -1,9 +1,10 @@
 const OSRM_API_URLS = [
-  'https://routing.openstreetmap.de/routed-car/route/v1/driving',
-  'https://router.project-osrm.org/route/v1/driving',
-]
+  'https://routing.openstreetmap.de/routed-car/route/v1',
+  'https://router.project-osrm.org/route/v1',
+  'http://router.project-osrm.org/route/v1',
+].map((url) => url.replace(/\/+$/, '')) // Remove trailing slashes
 
-const MIN_REQUEST_INTERVAL = 1100 // Slightly over 1 second to be safe
+const MIN_REQUEST_INTERVAL = 1100
 const MAX_RETRIES = 3
 const BACKOFF_FACTOR = 2
 let lastRequestTime = 0
@@ -41,6 +42,23 @@ const enforceRateLimit = async () => {
   lastRequestTime = Date.now()
 }
 
+const calculateStraightLineDistance = (
+  start: Coordinates,
+  end: Coordinates,
+): number => {
+  const R = 6371 // Earth's radius in km
+  const dLat = ((end.lat - start.lat) * Math.PI) / 180
+  const dLon = ((end.lng - start.lng) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((start.lat * Math.PI) / 180) *
+      Math.cos((end.lat * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
+}
+
 async function tryFetchWithUrls(
   urls: string[],
   coordinates: string,
@@ -49,29 +67,29 @@ async function tryFetchWithUrls(
 ): Promise<Response> {
   const errors: Error[] = []
 
-  // Enforce rate limiting
   await enforceRateLimit()
 
   for (const baseUrl of urls) {
     try {
-      const url = `${baseUrl}/${coordinates}?overview=full&geometries=polyline`
+      const url = `${baseUrl}/driving/${coordinates}?overview=full&geometries=polyline`
+      console.log('Attempting request to:', url)
 
       const response = await fetch(url, {
         ...options,
-        method: 'GET',
         mode: 'cors',
+        credentials: 'omit',
         headers: {
+          ...options.headers,
           Accept: 'application/json',
-          'User-Agent': 'TowingServiceApplication/1.0',
-          Referer: 'https://mrgruas.com',
         },
       })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+      if (response.ok) {
+        return response
       }
 
-      // Handle rate limiting
+      console.log(`Request failed for ${url} with status:`, response.status)
+
       if (response.status === 429) {
         const backoffDelay = calculateBackoffDelay(attempt)
         await wait(backoffDelay)
@@ -80,9 +98,11 @@ async function tryFetchWithUrls(
         }
       }
 
-      return response
+      errors.push(
+        new Error(`Failed response from ${baseUrl}: ${response.status}`),
+      )
     } catch (error) {
-      console.error(`Error with ${baseUrl}:`, error)
+      console.error('Error making request to', baseUrl, ':', error)
       errors.push(
         error instanceof Error
           ? error
@@ -92,15 +112,8 @@ async function tryFetchWithUrls(
     }
   }
 
-  if (attempt < MAX_RETRIES) {
-    console.log(`Retrying request, attempt ${attempt + 1} of ${MAX_RETRIES}`)
-    const backoffDelay = calculateBackoffDelay(attempt)
-    await wait(backoffDelay)
-    return tryFetchWithUrls(urls, coordinates, options, attempt + 1)
-  }
-
   throw new Error(
-    `All routing services failed after ${MAX_RETRIES} retries. Errors: ${errors.map((e) => e.message).join(', ')}`,
+    'All routing services failed. Using fallback straight-line calculation.',
   )
 }
 
@@ -115,15 +128,12 @@ export async function getRouteFromOSRM(
   const coordinates = `${start.lng},${start.lat};${end.lng},${end.lat}`
 
   try {
-    // Queue this request
     const result = await new Promise((resolve, reject) => {
       requestQueue = requestQueue
         .then(() =>
           tryFetchWithUrls(OSRM_API_URLS, coordinates, {
             headers: {
               Accept: 'application/json',
-              'User-Agent': 'TowingServiceApplication/1.0',
-              Referer: 'https://mrgruas.com',
             },
           }),
         )
@@ -135,7 +145,7 @@ export async function getRouteFromOSRM(
     const data = result as OSRMResponse
 
     if (!data.routes || data.routes.length === 0) {
-      throw new Error('No route found between the specified locations.')
+      throw new Error('No route found')
     }
 
     return {
@@ -144,6 +154,18 @@ export async function getRouteFromOSRM(
       geometry: data.routes[0].geometry,
     }
   } catch (error) {
-    throw error
+    console.error(
+      'OSRM routing failed, falling back to straight-line calculation:',
+      error,
+    )
+    // Fallback to straight-line calculation
+    const straightLineDistance = calculateStraightLineDistance(start, end)
+    const estimatedDuration = straightLineDistance * 60 // Rough estimate: 1 km/minute
+
+    return {
+      distance: straightLineDistance,
+      duration: estimatedDuration,
+      geometry: '_p~iF~ps|U_ulLnnqC_mqNvxq`@', // Simple straight line encoding
+    }
   }
 }

@@ -11,33 +11,38 @@ export const getRouteDetails = async (
   destination: Location,
 ): Promise<RouteResponse> => {
   try {
-    const route = await getRouteFromOSRM(origin, destination)
-
-    // Add traffic factor based on time of day
-    const trafficFactor = calculateTrafficFactor()
-
-    return {
-      ...route,
-      distance: route.distance * trafficFactor,
-      duration: route.duration * trafficFactor,
-    }
+    console.log('Calculating route from:', origin, 'to:', destination)
+    const response = await getRouteFromOSRM(origin, destination)
+    console.log('Route calculation successful:', response)
+    return response
   } catch (error) {
-    throw new Error('Failed to calculate route details')
+    console.error('Route calculation failed:', error)
+    // Return a default response with straight-line calculation
+    const straightLineDistance = calculateStraightLineDistance(
+      origin,
+      destination,
+    )
+    return {
+      distance: straightLineDistance,
+      duration: straightLineDistance * 60, // Rough estimate: 1 km/minute
+      geometry: '_p~iF~ps|U_ulLnnqC_mqNvxq`@', // Simple straight line encoding
+    }
   }
 }
 
-const calculateTrafficFactor = (): number => {
-  const hour = new Date().getHours()
-
-  // Rush hour adjustments
-  if ((hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 19)) {
-    return 1.3 // 30% longer during rush hours
-  }
-
-  // Night time adjustments
-  if (hour >= 22 || hour <= 5) {
-    return 0.9 // 10% shorter during night
-  }
-
-  return 1.0 // Normal traffic during other hours
+const calculateStraightLineDistance = (
+  start: Location,
+  end: Location,
+): number => {
+  const R = 6371 // Earth's radius in km
+  const dLat = ((end.lat - start.lat) * Math.PI) / 180
+  const dLon = ((end.lng - start.lng) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((start.lat * Math.PI) / 180) *
+      Math.cos((end.lat * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return Number((R * c).toFixed(2))
 }

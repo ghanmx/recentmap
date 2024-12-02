@@ -4,45 +4,32 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
-import { CreditCard, Calendar, CheckCircle, Shield, Info } from 'lucide-react'
+import { CreditCard, Calendar, CheckCircle, Shield } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 
 interface PaymentWindowProps {
   isOpen: boolean
   onClose: () => void
   onPaymentSubmit?: (result: { success: boolean; error?: string }) => void
-  amount: number
+  finalCost: number
 }
 
 const PaymentWindow = ({
   isOpen,
   onClose,
   onPaymentSubmit,
-  amount = 0,
+  finalCost = 0,
 }: PaymentWindowProps) => {
   const stripe = useStripe()
   const elements = useElements()
   const { toast } = useToast()
   const [isProcessing, setIsProcessing] = React.useState(false)
   const [cardComplete, setCardComplete] = React.useState(false)
-
-  console.log('PaymentWindow rendered:', {
-    isOpen,
-    isProcessing,
-    cardComplete,
-    amount,
-  })
 
   React.useEffect(() => {
     if (isOpen) {
@@ -53,8 +40,8 @@ const PaymentWindow = ({
   const handleClose = () => {
     if (isProcessing) {
       toast({
-        title: 'Pago en Proceso',
-        description: 'Por favor espere mientras procesamos su pago',
+        title: 'Payment in Progress',
+        description: 'Please wait while we process your payment',
         variant: 'destructive',
       })
       return
@@ -67,8 +54,8 @@ const PaymentWindow = ({
 
     if (!cardComplete) {
       toast({
-        title: 'Datos Incompletos',
-        description: 'Por favor complete todos los datos de la tarjeta',
+        title: 'Incomplete Card Details',
+        description: 'Please fill in all card information before proceeding',
         variant: 'destructive',
       })
       return
@@ -79,7 +66,7 @@ const PaymentWindow = ({
     if (!stripe || !elements) {
       toast({
         title: 'Error',
-        description: 'Sistema de pago no disponible. Intente más tarde.',
+        description: 'Payment system is not ready. Please try again later.',
         variant: 'destructive',
       })
       setIsProcessing(false)
@@ -90,7 +77,7 @@ const PaymentWindow = ({
     if (!cardElement) {
       toast({
         title: 'Error',
-        description: 'Elemento de tarjeta no encontrado.',
+        description: 'Card element not found.',
         variant: 'destructive',
       })
       setIsProcessing(false)
@@ -107,19 +94,21 @@ const PaymentWindow = ({
         throw error
       }
 
+      // Simulate payment processing
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
       toast({
-        title: 'Pago Exitoso',
-        description: 'Su pago ha sido procesado exitosamente.',
+        title: 'Payment Successful',
+        description: 'Your payment has been processed successfully.',
       })
 
       onPaymentSubmit?.({ success: true })
       onClose()
     } catch (err: any) {
       toast({
-        title: 'Error en el Pago',
-        description: err.message || 'Ocurrió un error al procesar el pago',
+        title: 'Payment Failed',
+        description:
+          err.message || 'An error occurred during payment processing',
         variant: 'destructive',
       })
       onPaymentSubmit?.({ success: false, error: err.message })
@@ -134,17 +123,12 @@ const PaymentWindow = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
             <CreditCard className="w-5 h-5 text-primary" />
-            Pago Seguro
+            Secure Payment
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <motion.div
-            className="space-y-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <div className="space-y-4">
             <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
               <CardElement
                 onChange={(e) => setCardComplete(e.complete)}
@@ -167,19 +151,10 @@ const PaymentWindow = ({
             </div>
 
             <div className="flex items-center justify-between text-sm text-gray-600">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="flex items-center gap-1.5 cursor-help">
-                      <Shield className="w-4 h-4" />
-                      Encriptación SSL
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Sus datos están protegidos con encriptación SSL</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <span className="flex items-center gap-1.5">
+                <Shield className="w-4 h-4" />
+                Secure SSL Encryption
+              </span>
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />
                 {new Date().toLocaleDateString()}
@@ -187,12 +162,12 @@ const PaymentWindow = ({
             </div>
 
             <div className="flex items-center justify-between px-2">
-              <span className="text-sm text-gray-600">Costo del Servicio</span>
+              <span className="text-sm text-gray-600">Service Fee</span>
               <span className="text-lg font-semibold text-primary">
-                ${amount.toFixed(2)}
+                ${finalCost.toFixed(2)}
               </span>
             </div>
-          </motion.div>
+          </div>
 
           <div className="flex gap-3 justify-end">
             <Button
@@ -202,7 +177,7 @@ const PaymentWindow = ({
               disabled={isProcessing}
               className="border-gray-300 hover:bg-gray-100"
             >
-              Cancelar
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -215,12 +190,12 @@ const PaymentWindow = ({
               {isProcessing ? (
                 <span className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Procesando...
+                  Processing...
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" />
-                  Pagar ${amount.toFixed(2)}
+                  Pay ${finalCost.toFixed(2)}
                 </span>
               )}
             </Button>

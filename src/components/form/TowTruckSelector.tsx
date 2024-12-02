@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { towTruckTypes, getTruckTypeForVehicle } from '@/utils/towTruckPricing'
-import { Truck, AlertTriangle } from 'lucide-react'
+import { Truck } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 import { FormData } from '@/types/form'
 import { motion } from 'framer-motion'
@@ -17,14 +17,12 @@ import { useToast } from '@/hooks/use-toast'
 interface TowTruckSelectorProps {
   form: UseFormReturn<FormData>
   onTruckTypeChange?: (type: 'A' | 'B' | 'C' | 'D') => void
-  onTollFeesChange?: (fees: number) => void
   selectedModel: string
 }
 
 export const TowTruckSelector = ({
   form,
   onTruckTypeChange,
-  onTollFeesChange,
   selectedModel,
 }: TowTruckSelectorProps) => {
   const { updateTruckType } = useTowing()
@@ -110,13 +108,6 @@ export const TowTruckSelector = ({
           </FormItem>
         )}
       />
-      <div className="flex items-center gap-2 p-3 bg-yellow-50/50 rounded-lg text-sm text-yellow-700">
-        <AlertTriangle className="w-4 h-4" />
-        <p>
-          El tipo de grúa se recomienda según el modelo del vehículo
-          seleccionado
-        </p>
-      </div>
     </motion.div>
   )
 }

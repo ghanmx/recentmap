@@ -17,7 +17,7 @@ import {
 } from './ui/dialog'
 import { TermsAndConditions } from './legal/TermsAndConditions'
 import { ScrollArea } from './ui/scroll-area'
-import { Info, AlertTriangle } from 'lucide-react'
+import { Info } from 'lucide-react'
 
 interface CostEstimationProps {
   onShowPayment: () => void
@@ -56,7 +56,6 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
     finalCost,
     detectedTolls,
   })
-
   const handleBreakdownToggle = useCallback(
     (value: boolean) => {
       setShowBreakdown(value)
@@ -71,11 +70,10 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
   )
 
   const processedTolls = detectedTolls.map((toll: TollLocation) => ({
-    ...toll,
+    name: toll.name,
+    cost: toll.cost,
     direction: toll.direction || 'outbound',
   }))
-
-  const showHighCostWarning = finalCost > 5000
 
   return (
     <motion.div
@@ -108,20 +106,6 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
             </DialogContent>
           </Dialog>
         </div>
-
-        {showHighCostWarning && (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-center gap-2 text-yellow-800"
-          >
-            <AlertTriangle className="w-5 h-5 text-yellow-600" />
-            <span className="text-sm">
-              Este servicio tiene un costo elevado. Considere verificar los
-              detalles.
-            </span>
-          </motion.div>
-        )}
 
         <CostHeader
           showBreakdown={showBreakdown}

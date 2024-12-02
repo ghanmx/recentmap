@@ -16,6 +16,7 @@ interface MapControlPanelProps {
   pickupAddress?: string
   dropAddress?: string
   isLoading?: boolean
+  className?: string // Added className prop
 }
 
 export const MapControlPanel = ({

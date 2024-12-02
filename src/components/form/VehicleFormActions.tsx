@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { CopyButton } from '@/components/ui/copy-button'
 import { Download, CreditCard } from 'lucide-react'
+import styles from './VehicleFormActions.module.css'
 
 interface VehicleFormActionsProps {
   onDownload: (format: 'csv' | 'txt') => Promise<void>
@@ -18,44 +19,44 @@ export const VehicleFormActions = ({
   formData,
 }: VehicleFormActionsProps) => {
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className={styles.container}>
       <Button
         type="button"
         variant="outline"
         onClick={() => onDownload('csv')}
-        className="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50"
+        className={styles.csvButton}
       >
-        <Download className="w-4 h-4 mr-2" />
+        <Download className={styles.icon} />
         CSV
       </Button>
       <Button
         type="button"
         variant="outline"
         onClick={() => onDownload('txt')}
-        className="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50"
+        className={styles.txtButton}
       >
-        <Download className="w-4 h-4 mr-2" />
+        <Download className={styles.icon} />
         TXT
       </Button>
       <CopyButton
         text={formData}
         onCopy={onCopy}
-        className="flex-1 bg-white hover:bg-gray-50"
+        className={styles.copyButton}
       />
       <Button
         type="submit"
         disabled={isPending}
         onClick={onSubmit}
-        className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600"
+        className={styles.submitButton}
       >
         {isPending ? (
-          <span className="flex items-center gap-2">
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <span className={styles.loadingContainer}>
+            <div className={styles.spinner} />
             Procesando...
           </span>
         ) : (
-          <span className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4" />
+          <span className={styles.buttonContent}>
+            <CreditCard className={styles.icon} />
             Continuar al Pago
           </span>
         )}

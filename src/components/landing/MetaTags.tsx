@@ -6,7 +6,7 @@ export const MetaTags = (): JSX.Element => {
       <meta charSet="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>M R Grúas</title>
-      <link rel="icon" href="https://mrgruas.imgix.net/1logo.png" />
+      <link rel="icon" href="img/Logo.png" />
       <meta name="twitter:card" content="summary" />
       <meta
         name="twitter:title"
@@ -15,7 +15,7 @@ export const MetaTags = (): JSX.Element => {
       <meta name="twitter:site" content="@israelrys" />
       <meta
         name="twitter:image"
-        content="https://mrgruas.imgix.net/1logo.png"
+        content="https://mrgruas.github.io/img/6.webp"
       />
       <meta name="twitter:creator" content="@israelrys" />
       <meta property="og:url" content="https://mrgruas.github.io/" />

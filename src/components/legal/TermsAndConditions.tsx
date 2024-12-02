@@ -1,100 +1,16 @@
 import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useRef } from 'react'
 
 export const TermsAndConditions = () => {
-  const scrollRef = useRef(null)
-
-  const scrollToTop = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }
-
-  const scrollToSection = (sectionId) => {
-    const section = document.getElementById(sectionId)
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
   return (
-    <Card className="p-6 max-w-4xl mx-auto bg-white/95 backdrop-blur-sm shadow-lg rounded-lg">
-      <ScrollArea ref={scrollRef} className="h-[70vh] pr-4">
+    <Card className="p-6 max-w-4xl mx-auto bg-white/95 backdrop-blur-sm">
+      <ScrollArea className="h-[70vh] pr-4">
         <div className="space-y-6">
-          {/* Navigation Links */}
-          <nav className="space-y-2 mb-4">
-            <p className="font-semibold text-gray-700">Ir a:</p>
-            <ul className="list-disc pl-6 text-blue-600 space-y-1">
-              <li>
-                <button
-                  onClick={() => scrollToSection('acceptance')}
-                  className="underline"
-                >
-                  1. Aceptación de los Términos
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollToSection('special-maneuvers')}
-                  className="underline"
-                >
-                  2. Maniobras Especiales y Cargos Adicionales
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollToSection('cancellation')}
-                  className="underline"
-                >
-                  3. Política de Cancelación y Reembolsos
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollToSection('client-responsibilities')}
-                  className="underline"
-                >
-                  4. Responsabilidades del Cliente
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollToSection('liability')}
-                  className="underline"
-                >
-                  5. Limitación de Responsabilidad
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollToSection('modifications')}
-                  className="underline"
-                >
-                  6. Modificaciones
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollToSection('applicable-law')}
-                  className="underline"
-                >
-                  7. Ley Aplicable
-                </button>
-              </li>
-            </ul>
-          </nav>
-
-          <h2 className="text-2xl font-bold text-primary" id="title">
+          <h2 className="text-2xl font-bold text-primary">
             Términos y Condiciones del Servicio
           </h2>
 
-          {/* Section 1 */}
-          <section
-            className="space-y-4"
-            aria-labelledby="acceptance"
-            id="acceptance"
-          >
+          <section className="space-y-4">
             <h3 className="text-lg font-semibold">
               1. Aceptación de los Términos
             </h3>
@@ -105,12 +21,7 @@ export const TermsAndConditions = () => {
             </p>
           </section>
 
-          {/* Section 2 */}
-          <section
-            className="space-y-4 bg-yellow-50/50 p-4 rounded-lg border border-yellow-200"
-            aria-labelledby="special-maneuvers"
-            id="special-maneuvers"
-          >
+          <section className="space-y-4 bg-yellow-50/50 p-4 rounded-lg border border-yellow-200">
             <h3 className="text-lg font-semibold text-yellow-800">
               2. Maniobras Especiales y Cargos Adicionales
             </h3>
@@ -142,12 +53,7 @@ export const TermsAndConditions = () => {
             </div>
           </section>
 
-          {/* Section 3 */}
-          <section
-            className="space-y-4 bg-red-50/50 p-4 rounded-lg border border-red-200"
-            aria-labelledby="cancellation"
-            id="cancellation"
-          >
+          <section className="space-y-4 bg-red-50/50 p-4 rounded-lg border border-red-200">
             <h3 className="text-lg font-semibold text-red-800">
               3. Política de Cancelación y Reembolsos
             </h3>
@@ -172,12 +78,7 @@ export const TermsAndConditions = () => {
             </div>
           </section>
 
-          {/* Section 4 */}
-          <section
-            className="space-y-4"
-            aria-labelledby="client-responsibilities"
-            id="client-responsibilities"
-          >
+          <section className="space-y-4">
             <h3 className="text-lg font-semibold">
               4. Responsabilidades del Cliente
             </h3>
@@ -203,12 +104,7 @@ export const TermsAndConditions = () => {
             </div>
           </section>
 
-          {/* Section 5 */}
-          <section
-            className="space-y-4"
-            aria-labelledby="liability"
-            id="liability"
-          >
+          <section className="space-y-4">
             <h3 className="text-lg font-semibold">
               5. Limitación de Responsabilidad
             </h3>
@@ -227,12 +123,7 @@ export const TermsAndConditions = () => {
             </ul>
           </section>
 
-          {/* Section 6 */}
-          <section
-            className="space-y-4"
-            aria-labelledby="modifications"
-            id="modifications"
-          >
+          <section className="space-y-4">
             <h3 className="text-lg font-semibold">6. Modificaciones</h3>
             <p className="text-gray-600">
               Nos reservamos el derecho de modificar estos términos y
@@ -241,12 +132,7 @@ export const TermsAndConditions = () => {
             </p>
           </section>
 
-          {/* Section 7 */}
-          <section
-            className="space-y-4"
-            aria-labelledby="applicable-law"
-            id="applicable-law"
-          >
+          <section className="space-y-4">
             <h3 className="text-lg font-semibold">7. Ley Aplicable</h3>
             <p className="text-gray-600">
               Estos términos y condiciones se rigen por las leyes de México.
@@ -256,15 +142,6 @@ export const TermsAndConditions = () => {
           </section>
         </div>
       </ScrollArea>
-
-      {/* Back to Top Button */}
-      <button
-        onClick={scrollToTop}
-        className="fixed bottom-6 right-6 bg-primary text-white p-3 rounded-full shadow-md hover:bg-primary-dark"
-        aria-label="Scroll back to top"
-      >
-        ↑
-      </button>
     </Card>
   )
 }
