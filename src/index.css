@@ -1,218 +1,166 @@
+/* Import Tailwind and External Styles First */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* CSS Variables */
 :root {
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(220, 90%, 12%);
-  --card: hsl(0, 0%, 98%);
-  --card-foreground: hsl(220, 90%, 15%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(220, 90%, 12%);
-  --primary: hsl(221, 85%, 57%);
-  --primary-foreground: hsl(210, 50%, 95%);
-  --secondary: hsl(160, 90%, 50%);
-  --secondary-foreground: hsl(210, 50%, 95%);
-  --muted: hsl(210, 25%, 90%);
-  --muted-foreground: hsl(215, 20%, 50%);
-  --accent: hsl(210, 60%, 88%);
-  --accent-foreground: hsl(222, 50%, 12%);
-  --destructive: hsl(0, 85%, 60%);
-  --destructive-foreground: hsl(210, 90%, 96%);
-  --border: hsl(215, 40%, 90%);
-  --input: hsl(215, 40%, 95%);
-  --ring: hsl(221, 85%, 57%);
+  --background: 0 0% 100%;
+  --foreground: 0 0% 50%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 50%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 50%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 0 0% 50%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221 83% 53%;
   --radius: 0.75rem;
+
+  --color-azul: hsl(210, 100%, 50%);
+  --color-gris: hsl(0, 0%, 50%);
 }
 
+/* Base Styles */
+html {
+  font-size: 14px;
+
+  @media (min-width: 768px) {
+    font-size: 16px;
+  }
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: var(--color-gris);
+  font-family: sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--color-azul);
+}
+
+/* Responsive Heading Sizes */
+h1 {
+  font-size: 1.5rem;
+
+  @media (min-width: 768px) {
+    font-size: 1.875rem;
+  }
+
+  @media (min-width: 1024px) {
+    font-size: 2.25rem;
+  }
+}
+
+/* Links and Text */
+a {
+  color: var(--color-azul);
+  text-decoration: underline;
+}
+
+p,
+span,
+a {
+  color: var(--color-gris);
+}
+
+/* Dark Mode */
 .dark {
-  --background: hsl(222.2, 84%, 5%);
-  --foreground: hsl(210, 90%, 95%);
-  --card: hsl(222.2, 84%, 15%);
-  --card-foreground: hsl(210, 90%, 96%);
-  --popover: hsl(222.2, 84%, 5%);
-  --popover-foreground: hsl(210, 90%, 95%);
-  --primary: hsl(210, 90%, 95%);
-  --primary-foreground: hsl(222.2, 50%, 10%);
-  --secondary: hsl(217.2, 60%, 25%);
-  --muted: hsl(217.2, 60%, 25%);
-  --muted-foreground: hsl(215, 20%, 80%);
-  --accent: hsl(217.2, 60%, 25%);
-  --accent-foreground: hsl(210, 90%, 95%);
-  --destructive: hsl(0, 65%, 45%);
-  --destructive-foreground: hsl(210, 90%, 95%);
-  --border: hsl(217.2, 60%, 25%);
-  --input: hsl(217.2, 60%, 25%);
-  --ring: hsl(212.7, 26.8%, 85%);
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 0 0% 50%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
 }
 
-@layer base {
-  * {
-    @apply border-gray-300;
-    /* Applying specific gray for borders */
-  }
-
-  body {
-    @apply bg-background text-foreground font-sans;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-heading font-semibold;
-  }
+* {
+  border-color: hsl(var(--border));
 }
 
-/* Component Styles & Additional Functionalities */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&display=swap');
-
-.select-content,
-[role='listbox'],
-[role='combobox'] {
-  @apply z-[1000];
+/* Custom Metallic Effects */
+.metallic-effect {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(45deg, #999 5%, #fff 10%, #ccc 30%, #ddd 50%, #ccc 70%, #fff 80%, #999 95%);
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.glass-card {
-  @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-gray-900/80 dark:border-gray-700/20;
+/* Grid Background Pattern */
+.bg-grid-pattern {
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
-.gradient-border {
-  @apply relative rounded-lg p-[1px] bg-gradient-to-r from-primary via-secondary to-primary overflow-hidden;
+/* Button Styles */
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.gradient-border::before {
-  content: '';
-  @apply absolute inset-0 bg-gradient-to-r from-primary/50 via-secondary/50 to-primary/50 opacity-50 blur-xl transition-all duration-500;
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid white;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.gradient-border:hover::before {
-  @apply opacity-75;
-}
-
-.gradient-text {
-  background-image: linear-gradient(to right,
-      hsl(219, 66%, 30%),
-      hsl(0, 0%, 60%),
-      hsl(219, 66%, 30%));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-/* Animation */
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-
-  100% {
-    transform: translateY(0);
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-/* Section for specific styles continued... */
+/* Shine Animation */
+@keyframes shine-metal {
+  from {
+    transform: translateX(-100%) rotate(30deg);
+  }
 
-/* Custom Scrollbar Styles */
-.scrollbar {
-  @apply flex touch-none select-none transition-colors;
-}
-
-.scrollbar::-webkit-scrollbar {
-  @apply w-2 h-2;
-}
-
-
-.scrollbar::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-gray-300;
-}
-
-.scrollbar-track {
-  @apply bg-transparent;
-}
-
-q {
-  quotes: '“' '”' '‘' '’';
-}
-
-blockquote {
-  @apply my-4 border-l-4 border-gray-300 pl-4;
-}
-
-blockquote p {
-  @apply text-lg italic;
-}
-
-blockquote p:last-child {
-  @apply mb-0;
-}
-
-/* Custom Typography Styles */
-.font-heading {
-  font-family: 'Montserrat', sans-serif;
-}
-
-.font-body {
-  font-family: 'Inter', sans-serif;
-}
-
-/* Custom Button Styles */
-.btn {
-  @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:hover:bg-gray-800 dark:hover:text-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:focus:ring-gray-400;
-}
-
-/* Custom Button Styles Continued... */
-.btn-primary {
-  @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary-dark;
-}
-
-.btn-secondary {
-  @apply bg-secondary text-white hover:bg-secondary-dark focus:ring-secondary-dark;
-}
-
-.btn-accent {
-  @apply bg-accent text-white hover:bg-accent-dark focus:ring-accent-dark;
-}
-
-.btn-destructive {
-  @apply bg-destructive text-white hover:bg-destructive-dark focus:ring-destructive-dark;
-}
-
-.card-shine-effect {
-  --shine-deg: 45deg;
-  @apply relative overflow-hidden rounded-[0.875rem] p-8 shadow-lg;
-  background: linear-gradient(to bottom, #dbdbdb, #f9f9f9, #dbdbdb);
-}
-
-.card-shine-effect:after {
-  @apply absolute top-0 z-[1];
-  content: '';
-  width: 300%;
-  height: 300%;
-  background: linear-gradient(30deg,
-      transparent 20%,
-      transparent 40%,
-      rgb(255, 255, 255, 0.4) 50%,
-      rgb(255, 255, 255, 0.4) 55%,
-      transparent 70%,
-      transparent 100%);
-  transition: transform 2s ease-in;
-  transform: translateX(100%) rotate(var(--shine-deg));
-}
-
-.card-shine-effect:hover:after {
-  animation: shine-card 1s infinite ease-in;
+  to {
+    transform: translateX(100%) rotate(30deg);
+  }
 }
 
 @keyframes shine-card {
@@ -225,79 +173,16 @@ blockquote p:last-child {
   }
 }
 
-.bg-grid-pattern {
-  background-image: linear-gradient(to right,
-      rgba(0, 0, 0, 0.1) 1px,
-      transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-  background-size: 20px 20px;
+/* Scrollbar personalizado */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
 }
 
-.scrollbar {
-  @apply flex touch-none select-none transition-colors;
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
 }
 
-.scrollbar-vertical {
-  @apply h-full w-2.5 border-l border-l-transparent p-[1px];
-}
-
-.scrollbar-horizontal {
-  @apply h-2.5 flex-col border-t border-t-transparent p-[1px];
-}
-
-.scrollbar-thumb {
-  @apply relative flex-1 rounded-full bg-border;
-}
-
-.px-6.py-4.no-drag {
-  overflow-y: auto;
-  /* or scroll */
-  max-height: 300px;
-  /* Adjust as needed */
-}
-
-.gradient-text {
-  background-image: linear-gradient(to right,
-      hsl(219, 66%, 30%),
-      hsl(0, 0%, 60%),
-      hsl(219, 66%, 30%));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  position: relative;
-  /* Enable positioning for shiny border effect */
-  display: inline-block;
-  /* Ensure it works like an inline element */
-}
-
-.gradient-text::before {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: transparent;
-  /* Make sure the text is transparent */
-  background-image: linear-gradient(45deg,
-      rgba(255, 255, 255, 0.5),
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.5));
-  -webkit-background-clip: text;
-  background-clip: text;
-  z-index: -1;
-  /* Place it behind the text */
-  filter: blur(2px);
-  /* Soft glow effect */
-  animation: shine 1.5s infinite;
-  /* Optional shine animation */
-}
-
-@keyframes shine {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  100% {
-    transform: translateX(100%);
-  }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }

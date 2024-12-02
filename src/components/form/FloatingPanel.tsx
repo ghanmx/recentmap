@@ -56,7 +56,7 @@ export const FloatingPanel = ({
           position === 'right' && 'right-4 top-20',
           position === 'left' && 'left-4 top-20',
           position === 'top' && 'top-4 right-4',
-          position === 'bottom' && 'bottom-4 right-4',
+          position === 'bottom' && 'bottom-4 right-4'
         )}
       >
         <Maximize2 className="w-4 h-4 mr-2" />
@@ -76,25 +76,23 @@ export const FloatingPanel = ({
       <div
         className={cn(
           'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
-          isMaximized
-            ? 'inset-4 !transform-none'
-            : cn(
-                position === 'right' && 'right-6 top-24',
-                position === 'left' && 'left-6 top-24',
-                position === 'top' && 'top-6 inset-x-6',
-                position === 'bottom' && 'bottom-6 inset-x-6',
-              ),
+          isMaximized ? 'inset-4 !transform-none' : cn(
+            position === 'right' && 'right-6 top-24',
+            position === 'left' && 'left-6 top-24',
+            position === 'top' && 'top-6 inset-x-6',
+            position === 'bottom' && 'bottom-6 inset-x-6'
+          ),
           'z-[1000]',
           isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
           !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',
-          className,
+          className
         )}
       >
         <div
           className={cn(
             'flex items-center justify-between p-3 border-b',
             'bg-gradient-to-r from-primary/5 to-primary/10',
-            'rounded-t-lg',
+            'rounded-t-lg'
           )}
         >
           <div className="flex items-center gap-2">
@@ -112,11 +110,7 @@ export const FloatingPanel = ({
               onClick={() => setIsCollapsed(!isCollapsed)}
               className="p-1.5 h-8 w-8 hover:bg-primary/10"
             >
-              {isCollapsed ? (
-                <ChevronUp className="h-4 w-4 text-primary/70" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-primary/70" />
-              )}
+              {isCollapsed ? <ChevronUp className="h-4 w-4 text-primary/70" /> : <ChevronDown className="h-4 w-4 text-primary/70" />}
             </Button>
             <Button
               variant="ghost"
@@ -124,11 +118,7 @@ export const FloatingPanel = ({
               onClick={() => setIsMaximized(!isMaximized)}
               className="p-1.5 h-8 w-8 hover:bg-primary/10"
             >
-              {isMaximized ? (
-                <Minimize2 className="h-4 w-4 text-primary/70" />
-              ) : (
-                <Maximize2 className="h-4 w-4 text-primary/70" />
-              )}
+              {isMaximized ? <Minimize2 className="h-4 w-4 text-primary/70" /> : <Maximize2 className="h-4 w-4 text-primary/70" />}
             </Button>
             <Button
               variant="ghost"
@@ -149,9 +139,9 @@ export const FloatingPanel = ({
         </div>
         <div
           className={cn(
-            'transition-all duration-300 overflow-hidden',
+            'transition-all duration-300 overflow-scroll',
             isCollapsed ? 'h-0' : isMaximized ? 'p-6' : 'p-4',
-            !isCollapsed && 'animate-in fade-in-50',
+            !isCollapsed && 'animate-in fade-in-50'
           )}
         >
           {children}
