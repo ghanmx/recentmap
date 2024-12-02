@@ -2,9 +2,9 @@ import { TollLocation } from '@/types/location'
 
 export interface FloatingPanelProps {
   children: React.ReactNode
+  title: string
+  position?: 'left' | 'right'
   className?: string
-  position?: 'right' | 'left' | 'top' | 'bottom'
-  title?: string
 }
 
 export interface FloatingPanelControlsProps {

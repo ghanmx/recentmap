@@ -10,6 +10,7 @@ import { motion } from 'framer-motion'
 import { FloatingQuestionsPanel } from './FloatingQuestionsPanel'
 import { useMapState } from '@/features/map/hooks/useMapState'
 import { Location } from '@/types/location'
+import { getAddressFromCoordinates } from '@/services/geocodingService'
 
 const TowMap = () => {
   const mapRef = useRef<Map | null>(null)
@@ -51,6 +52,12 @@ const TowMap = () => {
     }
   }
 
+  const handleMapLocationSelect = async (location: Location) => {
+    const address = await getAddressFromCoordinates(location.lat, location.lng)
+    const locationWithAddress = { ...location, address }
+    handleLocationSelect(locationWithAddress, selectingPickup ? 'pickup' : 'drop')
+  }
+
   return (
     <motion.div
       className="relative h-screen w-full"
@@ -64,9 +71,19 @@ const TowMap = () => {
           dropLocation={dropLocation}
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
-          onLocationSelect={handleLocationSelect}
-          setPickupLocation={(location: Location | null) => handleLocationSelect(location as Location, 'pickup')}
-          setDropLocation={(location: Location | null) => handleLocationSelect(location as Location, 'drop')}
+          onLocationSelect={handleMapLocationSelect}
+          setPickupLocation={async (location) => {
+            if (location) {
+              const address = await getAddressFromCoordinates(location.lat, location.lng)
+              handleLocationSelect({ ...location, address }, 'pickup')
+            }
+          }}
+          setDropLocation={async (location) => {
+            if (location) {
+              const address = await getAddressFromCoordinates(location.lat, location.lng)
+              handleLocationSelect({ ...location, address }, 'drop')
+            }
+          }}
           isLoading={isLoading}
           mapRef={mapRef}
           onRouteCalculated={handleTollDetection}

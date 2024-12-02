@@ -7,11 +7,12 @@ export interface Location {
 export interface TollLocation {
   id: string
   name: string
-  location: {
-    lat: number
-    lng: number
-  }
+  location: string
   cost: number
+  lat: number
+  lng: number
+  description: string
+  type: string
   operatingHours: string
   acceptedPayments: string[]
   vehicleTypes: string[]

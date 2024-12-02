@@ -5,6 +5,8 @@ export interface MapControlsProps {
   selectingDrop: boolean
   setSelectingPickup: (value: boolean) => void
   setSelectingDrop: (value: boolean) => void
+  onPickupClick?: () => void
+  onDropClick?: () => void
 }
 
 export interface MapControlPanelProps extends MapControlsProps {
