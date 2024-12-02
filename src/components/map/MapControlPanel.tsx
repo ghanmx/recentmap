@@ -1,7 +1,14 @@
 import { RouteStreetInfo } from '@/features/map/components/RouteStreetInfo'
 import { MapControls } from '@/features/map/components/MapControls'
-import { useTowing } from '@/contexts/TowingContext'
 import { useMapState } from '@/features/map/hooks/useMapState'
+import { Location } from '@/types/location'
+
+interface MapControlsProps {
+  selectingPickup: boolean
+  selectingDrop: boolean
+  setSelectingPickup: (value: boolean) => void
+  setSelectingDrop: (value: boolean) => void
+}
 
 const MapControlPanel = () => {
   const {

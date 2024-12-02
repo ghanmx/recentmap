@@ -1,3 +1,5 @@
+import { TollLocation } from '@/types/location'
+
 export interface FloatingPanelProps {
   children: React.ReactNode
   className?: string

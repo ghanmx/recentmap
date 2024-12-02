@@ -11,11 +11,7 @@ import { motion } from 'framer-motion'
 import { FormData, formSchema } from '@/types/form'
 import { useToast } from '@/hooks/use-toast'
 import { useTowing } from '@/contexts/TowingContext'
-
-interface Location {
-  lat: number
-  lng: number
-}
+import { Location } from '@/types/location'
 
 interface VehicleFormProps {
   pickupLocation: Location | null
@@ -26,20 +22,6 @@ interface VehicleFormProps {
   onDropSelect: (location: Location) => void
   onSelectingPickup: () => void
   onSelectingDrop: () => void
-}
-// In VehicleForm.tsx, update the props interface to match the parent
-interface VehicleFormProps {
-  onPickupSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onDropSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  // ... other props
 }
 
 export const VehicleForm = ({

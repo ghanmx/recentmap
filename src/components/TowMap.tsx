@@ -9,11 +9,7 @@ import { useTowing } from '@/contexts/TowingContext'
 import { motion } from 'framer-motion'
 import { FloatingQuestionsPanel } from './FloatingQuestionsPanel'
 import { useMapState } from '@/features/map/hooks/useMapState'
-
-interface Location {
-  lat: number
-  lng: number
-}
+import { Location } from '@/types/location'
 
 const TowMap = () => {
   const mapRef = useRef<Map | null>(null)
@@ -83,17 +79,7 @@ const TowMap = () => {
         />
       </div>
 
-      <MapControlPanel
-        selectingPickup={selectingPickup}
-        selectingDrop={selectingDrop}
-        setSelectingPickup={setSelectingPickup}
-        setSelectingDrop={setSelectingDrop}
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-        pickupAddress={pickupAddress}
-        dropAddress={dropAddress}
-        isLoading={isLoading}
-      />
+      <MapControlPanel />
 
       <FloatingQuestionsPanel
         pickupLocation={pickupLocation}
