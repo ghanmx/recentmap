@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import forms from "@tailwindcss/forms";
 
 export default {
   darkMode: ["class"],
@@ -84,9 +85,9 @@ export default {
     },
   },
   plugins: [
+    forms,
     require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
-    require("@tailwindcss/forms"),
     require("@tailwindcss/aspect-ratio"),
   ],
 } satisfies Config;

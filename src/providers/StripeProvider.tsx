@@ -2,6 +2,7 @@ import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { ReactNode, useEffect, useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import { Loader2 } from 'lucide-react'
 
 // Move Stripe key to a constant
 const STRIPE_PUBLIC_KEY =
@@ -35,7 +36,11 @@ export const StripeProvider = ({ children }: { children: ReactNode }) => {
   }, [toast])
 
   if (!stripePromise) {
-    return null // Or a loading spinner
+    return (
+      <div className="flex items-center justify-center min-h-[200px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return <Elements stripe={stripePromise}>{children}</Elements>
