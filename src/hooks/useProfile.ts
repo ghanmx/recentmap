@@ -1,52 +1,63 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { Profile } from '@/types/user'
+import { useToast } from './use-toast'
 
 export const useProfile = () => {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
 
   useEffect(() => {
-    fetchProfile()
-  }, [])
+    const fetchProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single()
 
-  const fetchProfile = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single()
-
-        setProfile(profile)
+          if (error) throw error
+          setProfile(data)
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error)
+        toast({
+          title: 'Error',
+          description: 'Could not fetch profile',
+          variant: 'destructive',
+        })
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-    } finally {
-      setLoading(false)
     }
-  }
+
+    fetchProfile()
+  }, [toast])
 
   const updateProfile = async (updates: Partial<Profile>) => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      
-      if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .update(updates)
-          .eq('id', user.id)
-          .select()
-          .single()
+      if (!user) throw new Error('No user')
 
-        if (error) throw error
-        return data
-      }
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id)
+
+      if (error) throw error
+
+      setProfile(prev => prev ? { ...prev, ...updates } : null)
+      return profile
     } catch (error) {
       console.error('Error updating profile:', error)
+      toast({
+        title: 'Error',
+        description: 'Could not update profile',
+        variant: 'destructive',
+      })
       return null
     }
   }
