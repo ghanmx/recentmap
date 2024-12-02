@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { Maximize2, Menu, GripVertical, ChevronUp, ChevronDown, Minimize2, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useToast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
-import Draggable from "react-draggable";
-import { useSidebar } from "@/contexts/SidebarContext";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { FloatingPanelContent } from "./FloatingPanelContent";
-import { FloatingPanelControls } from "./FloatingPanelControls";
-import { FloatingPanelProps } from "./types/floating-panel";
+import { useState } from "react"
+import { cn } from "@/lib/utils"
+import { Menu, Maximize2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useToast } from "@/hooks/use-toast"
+import { motion } from "framer-motion"
+import Draggable from "react-draggable"
+import { useSidebar } from "@/contexts/SidebarContext"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { FloatingPanelContent } from "./FloatingPanelContent"
+import { FloatingPanelControls } from "./FloatingPanelControls"
+import { FloatingPanelProps } from "./types/floating-panel"
 
 export const FloatingPanel = ({
   children,
@@ -18,26 +18,26 @@ export const FloatingPanel = ({
   position = "right",
   title = "Panel"
 }: FloatingPanelProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isMaximized, setIsMaximized] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const { isOpen: isDesktopSidebarVisible } = useSidebar();
-  const { toast } = useToast();
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
+  const [isDragging, setIsDragging] = useState(false)
+  const [isMaximized, setIsMaximized] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const { isOpen: isDesktopSidebarVisible } = useSidebar()
+  const { toast } = useToast()
 
   const handleDragStart = () => {
-    setIsDragging(true);
+    setIsDragging(true)
     toast({
       title: "Panel móvil",
       description: "Puedes mover este panel a cualquier parte de la pantalla",
       duration: 2000,
-    });
-  };
+    })
+  }
 
   const handleDragStop = () => {
-    setIsDragging(false);
-  };
+    setIsDragging(false)
+  }
 
   if (!isVisible) {
     return (
@@ -57,7 +57,7 @@ export const FloatingPanel = ({
         <Maximize2 className="w-4 h-4 mr-2" />
         Mostrar {title}
       </Button>
-    );
+    )
   }
 
   return (
@@ -115,12 +115,12 @@ export const FloatingPanel = ({
             onCollapse={() => setIsCollapsed(!isCollapsed)}
             onMaximize={() => setIsMaximized(!isMaximized)}
             onClose={() => {
-              setIsVisible(false);
+              setIsVisible(false)
               toast({
                 title: "Panel oculto",
                 description: "Haz clic en 'Mostrar Panel' para restaurar",
                 duration: 2000,
-              });
+              })
             }}
             title={title}
           />
@@ -136,5 +136,5 @@ export const FloatingPanel = ({
         </motion.div>
       </Draggable>
     </>
-  );
-};
+  )
+}
