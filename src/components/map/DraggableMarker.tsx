@@ -1,6 +1,7 @@
 import L from 'leaflet'
 import { Marker, Popup } from 'react-leaflet'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 
 interface DraggableMarkerProps {
   position: L.LatLngExpression
@@ -8,6 +9,7 @@ interface DraggableMarkerProps {
   icon?: L.Icon
   label: string
   draggable?: boolean
+  isPickup?: boolean
 }
 
 export const DraggableMarker = ({
@@ -16,8 +18,10 @@ export const DraggableMarker = ({
   icon,
   label,
   draggable = true,
+  isPickup = false,
 }: DraggableMarkerProps) => {
   const markerRef = useRef<L.Marker>(null)
+  const [isHovered, setIsHovered] = useState(false)
 
   useEffect(() => {
     if (markerRef.current) {
@@ -30,6 +34,15 @@ export const DraggableMarker = ({
     onDragEnd(marker.getLatLng())
   }
 
+  useEffect(() => {
+    if (markerRef.current) {
+      // Set z-index based on marker type and hover state
+      const zIndex = isPickup ? 1000 : 999
+      const hoverZIndex = zIndex + 1
+      markerRef.current.setZIndexOffset(isHovered ? hoverZIndex : zIndex)
+    }
+  }, [isHovered, isPickup])
+
   return (
     <Marker
       position={position}
@@ -37,11 +50,20 @@ export const DraggableMarker = ({
       icon={icon}
       eventHandlers={{
         dragend: handleDragEnd,
+        mouseover: () => setIsHovered(true),
+        mouseout: () => setIsHovered(false),
+        dragstart: () => setIsHovered(true),
       }}
       ref={markerRef}
     >
-      <Popup>
-        <div className="font-semibold">{label}</div>
+      <Popup className="custom-popup">
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="font-semibold p-1"
+        >
+          {label}
+        </motion.div>
       </Popup>
     </Marker>
   )

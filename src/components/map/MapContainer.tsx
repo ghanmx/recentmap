@@ -171,6 +171,7 @@ export const MapContainerComponent = ({
             }}
             icon={pickupIcon}
             label="Punto de Recogida"
+            isPickup={true}
           />
         )}
 
@@ -184,6 +185,7 @@ export const MapContainerComponent = ({
             }}
             icon={dropIcon}
             label="Punto de Entrega"
+            isPickup={false}
           />
         )}
 
