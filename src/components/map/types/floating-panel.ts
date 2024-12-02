@@ -8,21 +8,18 @@ export interface FloatingPanelProps {
 }
 
 export interface FloatingPanelControlsProps {
+  isCollapsed: boolean
+  isMaximized: boolean
+  isDragging: boolean
+  onCollapse: () => void
+  onMaximize: () => void
   onClose: () => void
-  onSave?: () => void
-  onCancel?: () => void
-  className?: string
-  isCollapsed?: boolean
-  isMaximized?: boolean
-  isDragging?: boolean
-  onCollapse?: () => void
-  onMaximize?: () => void
-  title?: string
+  title: string
 }
 
 export interface FloatingPanelHeaderProps {
   title: string
-  onDetailsToggle?: () => void
+  onDetailsToggle: () => void
 }
 
 export interface CostDetailsContentProps {

@@ -4,12 +4,6 @@ export interface Location {
   address: string
 }
 
-export interface LocationInput {
-  lat: number
-  lng: number
-  address: string
-}
-
 export interface TollLocation {
   id: string
   name: string

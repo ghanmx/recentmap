@@ -51,10 +51,6 @@ const TowMap = () => {
     }
   }
 
-  const wrappedHandleLocationSelect = (location: Location) => {
-    handleLocationSelect(location, selectingPickup ? 'pickup' : 'drop')
-  }
-
   return (
     <motion.div
       className="relative h-screen w-full"
@@ -68,26 +64,34 @@ const TowMap = () => {
           dropLocation={dropLocation}
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
-          onLocationSelect={wrappedHandleLocationSelect}
-          setPickupLocation={(location) =>
-            handleLocationSelect(location, 'pickup')
-          }
-          setDropLocation={(location) => handleLocationSelect(location, 'drop')}
+          onLocationSelect={(location: Location) => handleLocationSelect(location, selectingPickup ? 'pickup' : 'drop')}
+          setPickupLocation={(location: Location | null) => handleLocationSelect(location as Location, 'pickup')}
+          setDropLocation={(location: Location | null) => handleLocationSelect(location as Location, 'drop')}
           isLoading={isLoading}
           mapRef={mapRef}
           onRouteCalculated={handleTollDetection}
         />
       </div>
 
-      <MapControlPanel />
+      <MapControlPanel
+        selectingPickup={selectingPickup}
+        selectingDrop={selectingDrop}
+        setSelectingPickup={setSelectingPickup}
+        setSelectingDrop={setSelectingDrop}
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+        pickupAddress={pickupAddress}
+        dropAddress={dropAddress}
+        isLoading={isLoading}
+      />
 
       <FloatingQuestionsPanel
         pickupLocation={pickupLocation}
         dropLocation={dropLocation}
         pickupAddress={pickupAddress}
         dropAddress={dropAddress}
-        onPickupSelect={(location) => handleLocationSelect(location, 'pickup')}
-        onDropSelect={(location) => handleLocationSelect(location, 'drop')}
+        onPickupSelect={(location: Location) => handleLocationSelect(location, 'pickup')}
+        onDropSelect={(location: Location) => handleLocationSelect(location, 'drop')}
         onSelectingPickup={() => setSelectingPickup(true)}
         onSelectingDrop={() => setSelectingDrop(true)}
       />
