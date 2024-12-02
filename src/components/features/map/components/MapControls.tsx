@@ -24,7 +24,7 @@ export const MapControls = ({
         className={cn(
           'flex items-center gap-2 transition-all duration-300',
           selectingPickup
-            ? 'bg-green-50 border-green-200 text-green-700'
+            ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100'
             : 'hover:bg-green-50',
         )}
       >
@@ -39,7 +39,7 @@ export const MapControls = ({
         className={cn(
           'flex items-center gap-2 transition-all duration-300',
           selectingDrop
-            ? 'bg-blue-50 border-blue-200 text-blue-700'
+            ? 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
             : 'hover:bg-blue-50',
         )}
       >

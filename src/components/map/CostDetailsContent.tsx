@@ -23,8 +23,8 @@ export const CostDetailsContent = ({
   detectedTolls,
 }: CostDetailsContentProps) => {
   return (
-    <ScrollArea className="h-[calc(100vh-300px)] pr-4">
-      <div className="space-y-3">
+    <ScrollArea className="h-[calc(100vh-300px)] pr-4 overflow-y-auto resize-y">
+      <div className="space-y-3 min-h-[200px]">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}

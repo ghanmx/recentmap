@@ -45,6 +45,11 @@ export const DraggableMarker = ({
     mouseover: () => setIsHovered(true),
     mouseout: () => setIsHovered(false),
     dragstart: () => setIsHovered(true),
+    click: () => {
+      if (markerRef.current) {
+        markerRef.current.openPopup()
+      }
+    }
   }
 
   return (
@@ -57,7 +62,7 @@ export const DraggableMarker = ({
     >
       <AnimatePresence>
         {(isHovered || !draggable) && (
-          <Popup className="custom-popup">
+          <Popup className="custom-popup" closeButton={false}>
             <motion.div
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
