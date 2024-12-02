@@ -37,7 +37,7 @@ export const searchAddresses = async (
       `${FALLBACK_GEOCODING_URL}/search?${searchParams}`,
       {
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'User-Agent': 'TowingServiceApplication/1.0',
         },
         mode: 'cors',
@@ -73,7 +73,7 @@ export const getAddressFromCoordinates = async (
       `${FALLBACK_GEOCODING_URL}/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
       {
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'User-Agent': 'TowingServiceApplication/1.0',
         },
         mode: 'cors',

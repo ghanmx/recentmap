@@ -1,10 +1,10 @@
 export interface TowTruckType {
-  name: string;
-  capacity: string;
-  perKm: number;
-  maneuverCharge: number;
-  flagDropFee: number;
-  maxWeight: number;
+  name: string
+  capacity: string
+  perKm: number
+  maneuverCharge: number
+  flagDropFee: number
+  maxWeight: number
 }
 
 export const towTruckTypes: Record<string, TowTruckType> = {
@@ -43,13 +43,15 @@ export const towTruckTypes: Record<string, TowTruckType> = {
 }
 
 // Vehicle type detection logic
-export const getTruckTypeForVehicle = (model: string): 'A' | 'B' | 'C' | 'D' => {
-  const modelLower = model.toLowerCase();
+export const getTruckTypeForVehicle = (
+  model: string,
+): 'A' | 'B' | 'C' | 'D' => {
+  const modelLower = model.toLowerCase()
 
-  if (isTypeDVehicle(modelLower)) return 'D';
-  if (isTypeCVehicle(modelLower)) return 'C';
-  if (isTypeBVehicle(modelLower)) return 'B';
-  return 'A';
+  if (isTypeDVehicle(modelLower)) return 'D'
+  if (isTypeCVehicle(modelLower)) return 'C'
+  if (isTypeBVehicle(modelLower)) return 'B'
+  return 'A'
 }
 
 const isTypeDVehicle = (model: string): boolean => {
@@ -89,7 +91,7 @@ const isTypeDVehicle = (model: string): boolean => {
     'ram 3500',
     'toyota tundra',
     'isuzu n-series',
-  ];
+  ]
 
   const heavyKeywords = [
     'heavy duty',
@@ -100,12 +102,12 @@ const isTypeDVehicle = (model: string): boolean => {
     '3500',
     '4500',
     '5500',
-  ];
+  ]
 
   return (
     typeDVehicles.some((v) => model.includes(v)) ||
     heavyKeywords.some((k) => model.includes(k))
-  );
+  )
 }
 
 const isTypeCVehicle = (model: string): boolean => {
@@ -144,7 +146,7 @@ const isTypeCVehicle = (model: string): boolean => {
     'kia sorento',
     'gmc acadia',
     'nissan pathfinder',
-  ];
+  ]
 
   const largeKeywords = [
     'full-size',
@@ -152,12 +154,12 @@ const isTypeCVehicle = (model: string): boolean => {
     'luxury suv',
     'van',
     'executive',
-  ];
+  ]
 
   return (
     typeCVehicles.some((v) => model.includes(v)) ||
     largeKeywords.some((k) => model.includes(k))
-  );
+  )
 }
 
 const isTypeBVehicle = (model: string): boolean => {
@@ -194,7 +196,7 @@ const isTypeBVehicle = (model: string): boolean => {
     'chevrolet s10',
     'toyota tacoma',
     'nissan nv200',
-  ];
+  ]
 
   const mediumKeywords = [
     'suv',
@@ -202,10 +204,10 @@ const isTypeBVehicle = (model: string): boolean => {
     'pickup',
     'mid-size',
     'compact suv',
-  ];
+  ]
 
   return (
     typeBVehicles.some((v) => model.includes(v)) ||
     mediumKeywords.some((k) => model.includes(k))
-  );
+  )
 }

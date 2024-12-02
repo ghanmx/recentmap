@@ -10,7 +10,11 @@ interface PaymentFormProps {
   onError: (error: string) => void
 }
 
-export const PaymentForm = ({ amount, onSuccess, onError }: PaymentFormProps) => {
+export const PaymentForm = ({
+  amount,
+  onSuccess,
+  onError,
+}: PaymentFormProps) => {
   const stripe = useStripe()
   const elements = useElements()
   const [isProcessing, setIsProcessing] = useState(false)
@@ -25,10 +29,11 @@ export const PaymentForm = ({ amount, onSuccess, onError }: PaymentFormProps) =>
     setIsProcessing(true)
 
     try {
-      const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: elements.getElement(CardElement)!,
-      })
+      const { error: paymentMethodError, paymentMethod } =
+        await stripe.createPaymentMethod({
+          type: 'card',
+          card: elements.getElement(CardElement)!,
+        })
 
       if (paymentMethodError) {
         throw new Error(paymentMethodError.message)
@@ -57,7 +62,8 @@ export const PaymentForm = ({ amount, onSuccess, onError }: PaymentFormProps) =>
         description: 'Your payment has been processed successfully.',
       })
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Payment processing failed'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Payment processing failed'
       onError(errorMessage)
       toast({
         title: 'Payment Failed',

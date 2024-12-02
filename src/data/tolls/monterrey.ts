@@ -15,7 +15,7 @@ export const monterreyTolls: TollLocation[] = [
     lastUpdated: '2024-03-20',
     status: 'active',
     route: 'Monterrey - Nuevo Laredo',
-    distance: 123.1
+    distance: 123.1,
   },
   {
     name: 'Agualeguas',
@@ -33,5 +33,5 @@ export const monterreyTolls: TollLocation[] = [
     kilometer: '79+600',
     route: 'Monterrey - Agualeguas',
     distance: 56.9,
-  }
+  },
 ]

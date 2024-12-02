@@ -36,9 +36,12 @@ export const UserLocationMarker = ({ visible }: UserLocationMarkerProps) => {
 
     const watchId = navigator.geolocation.watchPosition(
       async (pos) => {
-        const newPos: [number, number] = [pos.coords.latitude, pos.coords.longitude]
+        const newPos: [number, number] = [
+          pos.coords.latitude,
+          pos.coords.longitude,
+        ]
         setPosition(newPos)
-        
+
         try {
           const addr = await getAddressFromCoordinates(newPos[0], newPos[1])
           setAddress(addr)
@@ -49,7 +52,8 @@ export const UserLocationMarker = ({ visible }: UserLocationMarkerProps) => {
       (error) => {
         toast({
           title: 'Location Error',
-          description: 'Unable to get your location. Please check your browser permissions.',
+          description:
+            'Unable to get your location. Please check your browser permissions.',
           variant: 'destructive',
         })
         console.error('Geolocation error:', error)
@@ -58,7 +62,7 @@ export const UserLocationMarker = ({ visible }: UserLocationMarkerProps) => {
         enableHighAccuracy: true,
         timeout: 5000,
         maximumAge: 0,
-      }
+      },
     )
 
     return () => {

@@ -62,7 +62,8 @@ const NavContent = ({
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const { isOpen: isDesktopSidebarVisible, toggle: toggleDesktopSidebar } = useSidebar()
+  const { isOpen: isDesktopSidebarVisible, toggle: toggleDesktopSidebar } =
+    useSidebar()
   const [pickupLocation, setPickupLocation] = useState<Location | null>(null)
   const [dropLocation, setDropLocation] = useState<Location | null>(null)
   const [pickupAddress, setPickupAddress] = useState('')

@@ -34,5 +34,5 @@ export const saltilloTolls: TollLocation[] = [
     kilometer: '99+300',
     route: 'Monterrey - Sabinas',
     distance: 77.3,
-  }
+  },
 ]

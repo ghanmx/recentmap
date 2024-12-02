@@ -13,7 +13,7 @@ export const monclovaTolls: TollLocation[] = [
     acceptedPayments: ['cash', 'card', 'tag'],
     vehicleTypes: ['car', 'truck', 'motorcycle'],
     lastUpdated: '2024-03-20',
-    status: 'active'
+    status: 'active',
   },
   {
     name: 'Monclova - Ojo Caliente 2',
@@ -27,6 +27,6 @@ export const monclovaTolls: TollLocation[] = [
     acceptedPayments: ['cash', 'card', 'tag'],
     vehicleTypes: ['car', 'truck', 'motorcycle'],
     lastUpdated: '2024-03-20',
-    status: 'active'
-  }
+    status: 'active',
+  },
 ]

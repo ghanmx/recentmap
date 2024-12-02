@@ -12,7 +12,7 @@ export const useMapNotifications = () => {
   const shouldShowNotification = (type: string): boolean => {
     const now = Date.now()
     const lastShown = notificationTimestamps[type] || 0
-    
+
     if (now - lastShown > NOTIFICATION_COOLDOWN) {
       notificationTimestamps[type] = now
       return true

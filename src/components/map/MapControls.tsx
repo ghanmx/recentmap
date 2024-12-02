@@ -25,7 +25,7 @@ export const MapControls = ({
           'flex items-center gap-2 transition-all duration-300',
           selectingPickup
             ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100'
-            : 'hover:bg-green-50'
+            : 'hover:bg-green-50',
         )}
       >
         <MapPin className="h-4 w-4" />
@@ -40,7 +40,7 @@ export const MapControls = ({
           'flex items-center gap-2 transition-all duration-300',
           selectingDrop
             ? 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
-            : 'hover:bg-blue-50'
+            : 'hover:bg-blue-50',
         )}
       >
         <Navigation className="h-4 w-4" />

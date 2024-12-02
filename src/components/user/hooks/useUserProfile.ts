@@ -11,7 +11,9 @@ export const useUserProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser()
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
         if (user) {
           const { data, error } = await supabase
             .from('profiles')
@@ -39,7 +41,9 @@ export const useUserProfile = () => {
 
   const updateProfile = async (updates: Partial<Profile>) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) throw new Error('No user')
 
       const { error } = await supabase
@@ -49,7 +53,7 @@ export const useUserProfile = () => {
 
       if (error) throw error
 
-      setProfile(prev => prev ? { ...prev, ...updates } : null)
+      setProfile((prev) => (prev ? { ...prev, ...updates } : null))
       return profile
     } catch (error) {
       console.error('Error updating profile:', error)

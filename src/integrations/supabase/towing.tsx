@@ -17,7 +17,7 @@ export const createTowingContext = (): TowingContextType => {
       tax: 0,
       total: 0,
       isPending: false,
-      isProcessing: false
+      isProcessing: false,
     },
     isLoadingLocations: false,
     isProcessingPayment: false,
@@ -90,6 +90,6 @@ export const createTowingContext = (): TowingContextType => {
         totalRequests: requests?.length || 0,
         totalPayments: payments?.length || 0,
       }
-    }
+    },
   }
 }

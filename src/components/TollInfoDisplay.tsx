@@ -74,4 +74,3 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
     </Card>
   )
 }
-

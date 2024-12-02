@@ -45,7 +45,7 @@ export const FloatingPanel = ({
           'fixed z-[1000] bg-white/95 shadow-lg backdrop-blur-sm',
           'transition-all duration-300 ease-in-out hover:scale-105',
           position === 'right' && 'right-4 top-20',
-          position === 'left' && 'left-4 top-20'
+          position === 'left' && 'left-4 top-20',
         )}
       >
         <Maximize2 className="w-4 h-4 mr-2" />
@@ -69,13 +69,13 @@ export const FloatingPanel = ({
           isMaximized
             ? 'inset-4 !transform-none'
             : cn(
-              position === 'right' && 'right-6 top-24',
-              position === 'left' && 'left-6 top-24'
-            ),
+                position === 'right' && 'right-6 top-24',
+                position === 'left' && 'left-6 top-24',
+              ),
           'z-[1000]',
           isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
           !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',
-          className
+          className,
         )}
       >
         <FloatingPanelControls
@@ -102,7 +102,7 @@ export const FloatingPanel = ({
               : isMaximized
                 ? 'h-[calc(100vh-8rem)]'
                 : 'max-h-[calc(80vh-4rem)]',
-            !isCollapsed && 'animate-in fade-in-50'
+            !isCollapsed && 'animate-in fade-in-50',
           )}
         >
           <ScrollArea className="h-full">

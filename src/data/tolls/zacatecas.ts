@@ -13,7 +13,7 @@ export const zacatecasTolls: TollLocation[] = [
     acceptedPayments: ['cash', 'card', 'tag'],
     vehicleTypes: ['car', 'truck', 'motorcycle'],
     lastUpdated: '2024-03-20',
-    status: 'active'
+    status: 'active',
   },
   {
     name: 'Zacatecas - Torreón',
@@ -27,6 +27,6 @@ export const zacatecasTolls: TollLocation[] = [
     acceptedPayments: ['cash', 'card', 'tag'],
     vehicleTypes: ['car', 'truck', 'motorcycle'],
     lastUpdated: '2024-03-20',
-    status: 'active'
-  }
+    status: 'active',
+  },
 ]

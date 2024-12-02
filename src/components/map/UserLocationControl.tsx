@@ -7,7 +7,10 @@ interface UserLocationControlProps {
   onToggle: () => void
 }
 
-export const UserLocationControl = ({ visible, onToggle }: UserLocationControlProps) => {
+export const UserLocationControl = ({
+  visible,
+  onToggle,
+}: UserLocationControlProps) => {
   return (
     <Button
       variant="outline"
@@ -15,7 +18,7 @@ export const UserLocationControl = ({ visible, onToggle }: UserLocationControlPr
       onClick={onToggle}
       className={cn(
         'h-10 w-10 rounded-full',
-        visible && 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
+        visible && 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100',
       )}
       title={visible ? 'Hide your location' : 'Show your location'}
     >

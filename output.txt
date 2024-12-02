@@ -52,6 +52,7 @@
     "@stackbit/cms-git": "^1.0.27",
     "@stripe/react-stripe-js": "^3.0.0",
     "@stripe/stripe-js": "^5.2.0",
+    "@supabase/supabase-js": "^2.46.2",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.9",
     "@tanstack/react-query": "^5.61.5",
@@ -158,6 +159,7 @@
     "tailwindConfig": "./tailwind.config.ts"
   }
 }
+
 
 
 // .\tsconfig.json
@@ -327,6 +329,7 @@ export default tseslint.config(
     "@stackbit/cms-git": "^1.0.27",
     "@stripe/react-stripe-js": "^3.0.0",
     "@stripe/stripe-js": "^5.2.0",
+    "@supabase/supabase-js": "^2.46.2",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.9",
     "@tanstack/react-query": "^5.61.5",
@@ -435,6 +438,7 @@ export default tseslint.config(
 }
 
 
+
 // C:\Users\israe\Documents\GitHub\recentmap\stackbit.config.ts
 import { defineStackbitConfig } from '@stackbit/types'
 import { GitContentSource } from '@stackbit/cms-git'
@@ -498,6 +502,7 @@ export default defineStackbitConfig({
 
 // C:\Users\israe\Documents\GitHub\recentmap\tailwind.config.ts
 import type { Config } from "tailwindcss";
+import forms from "@tailwindcss/forms";
 
 export default {
   darkMode: ["class"],
@@ -583,9 +588,9 @@ export default {
     },
   },
   plugins: [
+    forms,
     require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
-    require("@tailwindcss/forms"),
     require("@tailwindcss/aspect-ratio"),
   ],
 } satisfies Config;
@@ -708,12 +713,59 @@ export default defineConfig(() => ({
     "version": "0.2.0",
     "configurations": [
         {
+            "command": "npm start",
+            "name": "Run npm start",
+            "request": "launch",
+            "type": "node-terminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run autoprefixer",
+            "runtimeExecutable": "autoprefixer",
+            "cwd": "${workspaceFolder}",
+            "args": []
+        },
+        {
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "name": "Launch via NPM",
+            "request": "launch",
+            "runtimeArgs": [
+                "run-script",
+                "debug"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node"
+        },
+        {
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "request": "attach",
+            "type": "chrome",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Iniciar Chrome para localhost",
             "url": "http://localhost:8080",
             "webRoot": "${workspaceFolder}"
-        }
+        },
+        {
+            "name": "Launch with Auto Complete",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "timeout": 30000,
+            "sourceMaps": true,
+            "trace": true
+        },
     ]
 }
 
@@ -861,7 +913,7 @@ import { CostHeader } from './cost/CostHeader'
 import { CostMetrics } from './cost/CostMetrics'
 import { CostBreakdown } from './cost/CostBreakdown'
 import { useToast } from '@/hooks/use-toast'
-import { TollLocation } from '@/data/tollData'
+import { TollLocation } from '@/types/toll'
 import { Button } from './ui/button'
 import {
   Dialog,
@@ -1024,6 +1076,7 @@ import { RouteDisplay } from './map/RouteDisplay'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTowing } from '@/contexts/TowingContext'
 import PaymentWindow from './payment/PaymentWindow'
+import { Location } from '@/types/location'
 
 interface QuestionPage {
   id: number
@@ -1031,26 +1084,13 @@ interface QuestionPage {
   component: React.ReactNode
 }
 
-interface LocationData {
-  lat: number
-  lng: number
-}
-
 interface FloatingQuestionsPanelProps {
-  pickupLocation: LocationData | null
-  dropLocation: LocationData | null
+  pickupLocation: Location | null
+  dropLocation: Location | null
   pickupAddress: string
   dropAddress: string
-  onPickupSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onDropSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
+  onPickupSelect: (location: Location) => void
+  onDropSelect: (location: Location) => void
   onSelectingPickup: () => void
   onSelectingDrop: () => void
 }
@@ -1198,6 +1238,18 @@ import { RouteDisplay } from './map/RouteDisplay'
 import { CostEstimation } from './CostEstimation'
 import { useSidebar } from '@/contexts/SidebarContext'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Location } from '@/types/location'
+
+interface NavContentProps {
+  pickupLocation: Location | null
+  dropLocation: Location | null
+  pickupAddress: string
+  dropAddress: string
+  onPickupSelect: (location: Location) => void
+  onDropSelect: (location: Location) => void
+  onSelectingPickup: () => void
+  onSelectingDrop: () => void
+}
 
 const NavContent = ({
   pickupLocation,
@@ -1208,24 +1260,7 @@ const NavContent = ({
   onDropSelect,
   onSelectingPickup,
   onSelectingDrop,
-}: {
-  pickupLocation?: { lat: number; lng: number } | null
-  dropLocation?: { lat: number; lng: number } | null
-  pickupAddress?: string
-  dropAddress?: string
-  onPickupSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onDropSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onSelectingPickup: (selecting: boolean) => void
-  onSelectingDrop: (selecting: boolean) => void
-}) => (
+}: NavContentProps) => (
   <>
     <div className="sticky top-0 z-10 p-4 border-b bg-gradient-to-r from-primary/10 to-primary/5 backdrop-blur-sm">
       <h1 className="text-xl md:text-2xl lg:text-3xl font-heading font-bold text-primary text-center">
@@ -1240,13 +1275,12 @@ const NavContent = ({
           dropLocation={dropLocation}
           pickupAddress={pickupAddress}
           dropAddress={dropAddress}
-          serviceType="standard"
           onPickupSelect={onPickupSelect}
           onDropSelect={onDropSelect}
           onSelectingPickup={onSelectingPickup}
           onSelectingDrop={onSelectingDrop}
         />
-        <CostEstimation />
+        <CostEstimation onShowPayment={() => {}} />
         <RouteDisplay
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
@@ -1258,39 +1292,34 @@ const NavContent = ({
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const { isOpen: isDesktopSidebarVisible, toggle: toggleDesktopSidebar } =
-    useSidebar()
-  const [pickupLocation, setPickupLocation] = useState<{
-    lat: number
-    lng: number
-  } | null>(null)
-  const [dropLocation, setDropLocation] = useState<{
-    lat: number
-    lng: number
-  } | null>(null)
+  const { isOpen: isDesktopSidebarVisible, toggle: toggleDesktopSidebar } = useSidebar()
+  const [pickupLocation, setPickupLocation] = useState<Location | null>(null)
+  const [dropLocation, setDropLocation] = useState<Location | null>(null)
   const [pickupAddress, setPickupAddress] = useState('')
   const [dropAddress, setDropAddress] = useState('')
   const [selectingPickup, setSelectingPickup] = useState(false)
   const [selectingDrop, setSelectingDrop] = useState(false)
 
-  const handlePickupSelect = (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => {
-    setPickupLocation({ lat: location.lat, lng: location.lng })
-    setPickupAddress(location.address)
+  const handlePickupSelect = (location: Location) => {
+    setPickupLocation(location)
+    setPickupAddress(location.address || '')
     setSelectingPickup(false)
   }
 
-  const handleDropSelect = (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => {
-    setDropLocation({ lat: location.lat, lng: location.lng })
-    setDropAddress(location.address)
+  const handleDropSelect = (location: Location) => {
+    setDropLocation(location)
+    setDropAddress(location.address || '')
     setSelectingDrop(false)
+  }
+
+  const handleSelectingPickup = () => {
+    setSelectingPickup(true)
+    setSelectingDrop(false)
+  }
+
+  const handleSelectingDrop = () => {
+    setSelectingDrop(true)
+    setSelectingPickup(false)
   }
 
   return (
@@ -1314,8 +1343,8 @@ const Sidebar = () => {
               dropAddress={dropAddress}
               onPickupSelect={handlePickupSelect}
               onDropSelect={handleDropSelect}
-              onSelectingPickup={setSelectingPickup}
-              onSelectingDrop={setSelectingDrop}
+              onSelectingPickup={handleSelectingPickup}
+              onSelectingDrop={handleSelectingDrop}
             />
           </SheetContent>
         </Sheet>
@@ -1352,8 +1381,8 @@ const Sidebar = () => {
           dropAddress={dropAddress}
           onPickupSelect={handlePickupSelect}
           onDropSelect={handleDropSelect}
-          onSelectingPickup={setSelectingPickup}
-          onSelectingDrop={setSelectingDrop}
+          onSelectingPickup={handleSelectingPickup}
+          onSelectingDrop={handleSelectingDrop}
         />
       </aside>
 
@@ -1370,11 +1399,10 @@ const Sidebar = () => {
 export default Sidebar
 
 
-
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\TollInfoDisplay.tsx
 import { Card } from '@/components/ui/card'
 import { Ticket, Clock, CreditCard } from 'lucide-react'
-import { TollLocation } from '@/data/tollData'
+import { TollLocation } from '@/types/toll'
 import { Separator } from '@/components/ui/separator'
 import { motion } from 'framer-motion'
 
@@ -1451,6 +1479,7 @@ export const TollInfoDisplay = ({ tolls, totalCost }: TollInfoDisplayProps) => {
 
 
 
+
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\TowingWrapper.tsx
 import { ReactNode } from 'react'
 import { TowingProvider } from '../contexts/TowingContext'
@@ -1477,11 +1506,8 @@ import { useTowing } from '@/contexts/TowingContext'
 import { motion } from 'framer-motion'
 import { FloatingQuestionsPanel } from './FloatingQuestionsPanel'
 import { useMapState } from '@/features/map/hooks/useMapState'
-
-interface Location {
-  lat: number
-  lng: number
-}
+import { Location } from '@/types/location'
+import { getAddressFromCoordinates } from '@/services/geocodingService'
 
 const TowMap = () => {
   const mapRef = useRef<Map | null>(null)
@@ -1497,7 +1523,7 @@ const TowMap = () => {
     isLoading,
     setSelectingPickup,
     setSelectingDrop,
-    handleLocationSelect,
+    handleLocationSelect: handleMapLocationSelect,
   } = useMapState()
 
   const handleTollDetection = async () => {
@@ -1523,8 +1549,19 @@ const TowMap = () => {
     }
   }
 
-  const wrappedHandleLocationSelect = (location: Location) => {
-    handleLocationSelect(location, selectingPickup ? 'pickup' : 'drop')
+  const handleLocationSelect = async (location: Location) => {
+    try {
+      const address = await getAddressFromCoordinates(location.lat, location.lng)
+      const locationWithAddress = { ...location }
+      handleMapLocationSelect(locationWithAddress, selectingPickup ? 'pickup' : 'drop')
+    } catch (error) {
+      console.error('Error getting address:', error)
+      toast({
+        title: 'Error',
+        description: 'No se pudo obtener la dirección',
+        variant: 'destructive',
+      })
+    }
   }
 
   return (
@@ -1540,11 +1577,13 @@ const TowMap = () => {
           dropLocation={dropLocation}
           selectingPickup={selectingPickup}
           selectingDrop={selectingDrop}
-          onLocationSelect={wrappedHandleLocationSelect}
-          setPickupLocation={(location) =>
-            handleLocationSelect(location, 'pickup')
+          onLocationSelect={handleLocationSelect}
+          setPickupLocation={(location: Location | null) => 
+            location && handleLocationSelect(location)
           }
-          setDropLocation={(location) => handleLocationSelect(location, 'drop')}
+          setDropLocation={(location: Location | null) => 
+            location && handleLocationSelect(location)
+          }
           isLoading={isLoading}
           mapRef={mapRef}
           onRouteCalculated={handleTollDetection}
@@ -1568,8 +1607,8 @@ const TowMap = () => {
         dropLocation={dropLocation}
         pickupAddress={pickupAddress}
         dropAddress={dropAddress}
-        onPickupSelect={(location) => handleLocationSelect(location, 'pickup')}
-        onDropSelect={(location) => handleLocationSelect(location, 'drop')}
+        onPickupSelect={(location: Location) => handleLocationSelect(location)}
+        onDropSelect={(location: Location) => handleLocationSelect(location)}
         onSelectingPickup={() => setSelectingPickup(true)}
         onSelectingDrop={() => setSelectingDrop(true)}
       />
@@ -1578,7 +1617,6 @@ const TowMap = () => {
 }
 
 export default TowMap
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\UserPage.tsx
@@ -1606,11 +1644,7 @@ import { motion } from 'framer-motion'
 import { FormData, formSchema } from '@/types/form'
 import { useToast } from '@/hooks/use-toast'
 import { useTowing } from '@/contexts/TowingContext'
-
-interface Location {
-  lat: number
-  lng: number
-}
+import { Location } from '@/types/location'
 
 interface VehicleFormProps {
   pickupLocation: Location | null
@@ -1621,20 +1655,6 @@ interface VehicleFormProps {
   onDropSelect: (location: Location) => void
   onSelectingPickup: () => void
   onSelectingDrop: () => void
-}
-// In VehicleForm.tsx, update the props interface to match the parent
-interface VehicleFormProps {
-  onPickupSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onDropSelect: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  // ... other props
 }
 
 export const VehicleForm = ({
@@ -2812,7 +2832,7 @@ export const ServiceCostSection = ({
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\cost\TollBreakdownSection.tsx
-import { TollLocation } from '@/data/tollData'
+import { TollLocation } from '@/types/toll'
 import { CostItemDisplay } from './CostItemDisplay'
 import { ArrowRight, ArrowLeft, Info, MapPin } from 'lucide-react'
 import { calculateTotalTollCost } from '@/utils/tollUtils'
@@ -3221,7 +3241,7 @@ export const MapControls = ({
         className={cn(
           'flex items-center gap-2 transition-all duration-300',
           selectingPickup
-            ? 'bg-green-50 border-green-200 text-green-700'
+            ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100'
             : 'hover:bg-green-50',
         )}
       >
@@ -3236,7 +3256,7 @@ export const MapControls = ({
         className={cn(
           'flex items-center gap-2 transition-all duration-300',
           selectingDrop
-            ? 'bg-blue-50 border-blue-200 text-blue-700'
+            ? 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
             : 'hover:bg-blue-50',
         )}
       >
@@ -3246,7 +3266,6 @@ export const MapControls = ({
     </div>
   )
 }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\features\map\components\RouteStreetInfo.tsx
@@ -4006,7 +4025,7 @@ export const FloatingPanel = ({
           position === 'right' && 'right-4 top-20',
           position === 'left' && 'left-4 top-20',
           position === 'top' && 'top-4 right-4',
-          position === 'bottom' && 'bottom-4 right-4',
+          position === 'bottom' && 'bottom-4 right-4'
         )}
       >
         <Maximize2 className="w-4 h-4 mr-2" />
@@ -4026,25 +4045,23 @@ export const FloatingPanel = ({
       <div
         className={cn(
           'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
-          isMaximized
-            ? 'inset-4 !transform-none'
-            : cn(
-                position === 'right' && 'right-6 top-24',
-                position === 'left' && 'left-6 top-24',
-                position === 'top' && 'top-6 inset-x-6',
-                position === 'bottom' && 'bottom-6 inset-x-6',
-              ),
+          isMaximized ? 'inset-4 !transform-none' : cn(
+            position === 'right' && 'right-6 top-24',
+            position === 'left' && 'left-6 top-24',
+            position === 'top' && 'top-6 inset-x-6',
+            position === 'bottom' && 'bottom-6 inset-x-6'
+          ),
           'z-[1000]',
           isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
           !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',
-          className,
+          className
         )}
       >
         <div
           className={cn(
             'flex items-center justify-between p-3 border-b',
             'bg-gradient-to-r from-primary/5 to-primary/10',
-            'rounded-t-lg',
+            'rounded-t-lg'
           )}
         >
           <div className="flex items-center gap-2">
@@ -4062,11 +4079,7 @@ export const FloatingPanel = ({
               onClick={() => setIsCollapsed(!isCollapsed)}
               className="p-1.5 h-8 w-8 hover:bg-primary/10"
             >
-              {isCollapsed ? (
-                <ChevronUp className="h-4 w-4 text-primary/70" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-primary/70" />
-              )}
+              {isCollapsed ? <ChevronUp className="h-4 w-4 text-primary/70" /> : <ChevronDown className="h-4 w-4 text-primary/70" />}
             </Button>
             <Button
               variant="ghost"
@@ -4074,11 +4087,7 @@ export const FloatingPanel = ({
               onClick={() => setIsMaximized(!isMaximized)}
               className="p-1.5 h-8 w-8 hover:bg-primary/10"
             >
-              {isMaximized ? (
-                <Minimize2 className="h-4 w-4 text-primary/70" />
-              ) : (
-                <Maximize2 className="h-4 w-4 text-primary/70" />
-              )}
+              {isMaximized ? <Minimize2 className="h-4 w-4 text-primary/70" /> : <Maximize2 className="h-4 w-4 text-primary/70" />}
             </Button>
             <Button
               variant="ghost"
@@ -4099,9 +4108,9 @@ export const FloatingPanel = ({
         </div>
         <div
           className={cn(
-            'transition-all duration-300 overflow-hidden',
+            'transition-all duration-300 overflow-scroll',
             isCollapsed ? 'h-0' : isMaximized ? 'p-6' : 'p-4',
-            !isCollapsed && 'animate-in fade-in-50',
+            !isCollapsed && 'animate-in fade-in-50'
           )}
         >
           {children}
@@ -4413,37 +4422,24 @@ export const LocationSearchInput = ({
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\form\LocationSelector.tsx
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-} from '@/components/ui/form'
-import { UseFormReturn } from 'react-hook-form'
-import { FormData } from '@/types/form'
-import { LocationSearch } from './LocationSearch'
-import { MapPin, Navigation } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
-import { useEffect } from 'react'
+import { FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form';
+import { UseFormReturn } from 'react-hook-form';
+import { FormData } from '@/types/form';
+import { LocationSearch } from './LocationSearch';
+import { MapPin, Navigation } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
 
 export interface LocationSelectorProps {
-  form: UseFormReturn<FormData>
-  pickupLocation?: { lat: number; lng: number } | null
-  dropLocation?: { lat: number; lng: number } | null
-  pickupAddress?: string
-  dropAddress?: string
-  onPickupSelect?: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onDropSelect?: (location: {
-    lat: number
-    lng: number
-    address: string
-  }) => void
-  onSelectingPickup?: (selecting: boolean) => void
-  onSelectingDrop?: (selecting: boolean) => void
+  form: UseFormReturn<FormData>;
+  pickupLocation?: { lat: number; lng: number } | null;
+  dropLocation?: { lat: number; lng: number } | null;
+  pickupAddress?: string;
+  dropAddress?: string;
+  onPickupSelect?: (location: { lat: number; lng: number; address: string }) => void;
+  onDropSelect?: (location: { lat: number; lng: number; address: string }) => void;
+  onSelectingPickup?: (selecting: boolean) => void;
+  onSelectingDrop?: (selecting: boolean) => void;
 }
 
 export const LocationSelector = ({
@@ -4457,62 +4453,60 @@ export const LocationSelector = ({
   onSelectingPickup,
   onSelectingDrop,
 }: LocationSelectorProps) => {
-  const { toast } = useToast()
+  const { toast } = useToast();
 
-  // Sincronizar direcciones con el formulario
+  // Sync pickup address with the form
   useEffect(() => {
     if (pickupAddress) {
       form.setValue('pickupLocation', {
         lat: pickupLocation?.lat || 0,
         lng: pickupLocation?.lng || 0,
         address: pickupAddress,
-      })
+      });
     }
-  }, [pickupAddress, pickupLocation, form])
+  }, [pickupAddress, pickupLocation, form]);
 
+  // Sync drop address with the form
   useEffect(() => {
     if (dropAddress) {
       form.setValue('dropoffLocation', {
         lat: dropLocation?.lat || 0,
         lng: dropLocation?.lng || 0,
         address: dropAddress,
-      })
+      });
     }
-  }, [dropAddress, dropLocation, form])
+  }, [dropAddress, dropLocation, form]);
 
+  // Handle location selection
   const handleLocationSelect = async (
     location: { lat: number; lng: number; address: string },
-    type: 'pickup' | 'drop',
+    type: 'pickup' | 'drop'
   ) => {
     if (type === 'pickup') {
-      form.setValue('pickupLocation', location)
-      onPickupSelect?.(location)
-      onSelectingPickup?.(false)
+      form.setValue('pickupLocation', location);
+      onPickupSelect?.(location);
+      onSelectingPickup?.(false);
     } else {
-      form.setValue('dropoffLocation', location)
-      onDropSelect?.(location)
-      onSelectingDrop?.(false)
+      form.setValue('dropoffLocation', location);
+      onDropSelect?.(location);
+      onSelectingDrop?.(false);
     }
 
     toast({
-      title:
-        type === 'pickup'
-          ? 'Ubicación de recogida actualizada'
-          : 'Ubicación de entrega actualizada',
+      title: type === 'pickup' ? 'Ubicación de recogida actualizada' : 'Ubicación de entrega actualizada',
       description: location.address,
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-6">
+      {/* Pickup Location */}
       <FormField
         control={form.control}
         name="pickupLocation"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-lg font-semibold">
-              Ubicación de Recogida
-            </FormLabel>
+            <FormLabel className="text-lg font-semibold">Ubicación de Recogida</FormLabel>
             <FormControl>
               <LocationSearch
                 label="Ubicación de Recogida"
@@ -4520,9 +4514,7 @@ export const LocationSelector = ({
                 icon={<MapPin className="h-4 w-4 text-primary" />}
                 currentAddress={pickupAddress}
                 currentLocation={pickupLocation}
-                onLocationSelect={(location) =>
-                  handleLocationSelect(location, 'pickup')
-                }
+                onLocationSelect={(location) => handleLocationSelect(location, 'pickup')}
                 type="pickup"
               />
             </FormControl>
@@ -4530,14 +4522,13 @@ export const LocationSelector = ({
         )}
       />
 
+      {/* Dropoff Location */}
       <FormField
         control={form.control}
         name="dropoffLocation"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-lg font-semibold">
-              Ubicación de Entrega
-            </FormLabel>
+            <FormLabel className="text-lg font-semibold">Ubicación de Entrega</FormLabel>
             <FormControl>
               <LocationSearch
                 label="Ubicación de Entrega"
@@ -4545,9 +4536,7 @@ export const LocationSelector = ({
                 icon={<Navigation className="h-4 w-4 text-primary" />}
                 currentAddress={dropAddress}
                 currentLocation={dropLocation}
-                onLocationSelect={(location) =>
-                  handleLocationSelect(location, 'drop')
-                }
+                onLocationSelect={(location) => handleLocationSelect(location, 'drop')}
                 type="drop"
               />
             </FormControl>
@@ -4555,8 +4544,8 @@ export const LocationSelector = ({
         )}
       />
     </div>
-  )
-}
+  );
+};
 
 
 
@@ -6310,8 +6299,8 @@ export const CostDetailsContent = ({
   detectedTolls,
 }: CostDetailsContentProps) => {
   return (
-    <ScrollArea className="h-[calc(100vh-300px)] pr-4">
-      <div className="space-y-3">
+    <ScrollArea className="h-[calc(100vh-300px)] pr-4 overflow-y-auto resize-y">
+      <div className="space-y-3 min-h-[200px]">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -6389,11 +6378,11 @@ export const CostDetailsContent = ({
 }
 
 
-
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\DraggableMarker.tsx
 import L from 'leaflet'
 import { Marker, Popup } from 'react-leaflet'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface DraggableMarkerProps {
   position: L.LatLngExpression
@@ -6401,6 +6390,7 @@ interface DraggableMarkerProps {
   icon?: L.Icon
   label: string
   draggable?: boolean
+  isPickup?: boolean
 }
 
 export const DraggableMarker = ({
@@ -6409,18 +6399,38 @@ export const DraggableMarker = ({
   icon,
   label,
   draggable = true,
+  isPickup = false,
 }: DraggableMarkerProps) => {
   const markerRef = useRef<L.Marker>(null)
+  const [isHovered, setIsHovered] = useState(false)
 
   useEffect(() => {
     if (markerRef.current) {
-      markerRef.current.setLatLng(position as L.LatLng)
+      const marker = markerRef.current
+      marker.setLatLng(position as L.LatLng)
+      
+      // Set z-index based on marker type and hover state
+      const baseZIndex = isPickup ? 1000 : 999
+      const zIndex = isHovered ? baseZIndex + 1 : baseZIndex
+      marker.setZIndexOffset(zIndex)
     }
-  }, [position])
+  }, [position, isHovered, isPickup])
 
-  const handleDragEnd = (e: L.DragEndEvent) => {
-    const marker = e.target
-    onDragEnd(marker.getLatLng())
+  const eventHandlers = {
+    dragend: (e: L.DragEndEvent) => {
+      const marker = e.target
+      if (marker) {
+        onDragEnd(marker.getLatLng())
+      }
+    },
+    mouseover: () => setIsHovered(true),
+    mouseout: () => setIsHovered(false),
+    dragstart: () => setIsHovered(true),
+    click: () => {
+      if (markerRef.current) {
+        markerRef.current.openPopup()
+      }
+    }
   }
 
   return (
@@ -6428,42 +6438,41 @@ export const DraggableMarker = ({
       position={position}
       draggable={draggable}
       icon={icon}
-      eventHandlers={{
-        dragend: handleDragEnd,
-      }}
+      eventHandlers={eventHandlers}
       ref={markerRef}
     >
-      <Popup>
-        <div className="font-semibold">{label}</div>
-      </Popup>
+      <AnimatePresence>
+        {(isHovered || !draggable) && (
+          <Popup className="custom-popup" closeButton={false}>
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.2 }}
+              className="font-semibold p-1"
+            >
+              {label}
+            </motion.div>
+          </Popup>
+        )}
+      </AnimatePresence>
     </Marker>
   )
 }
 
 
-
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\FloatingPanel.tsx
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import {
-  Maximize2,
-  Menu,
-  GripVertical,
-  ChevronUp,
-  ChevronDown,
-  Minimize2,
-  X,
-} from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Maximize2, Menu, X } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { motion } from 'framer-motion'
 import Draggable from 'react-draggable'
-import { useSidebar } from '@/contexts/SidebarContext'
+import { FloatingPanelProps } from './types/floating-panel'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { FloatingPanelContent } from './FloatingPanelContent'
 import { FloatingPanelControls } from './FloatingPanelControls'
-import { FloatingPanelProps } from './types/floating-panel'
 
 export const FloatingPanel = ({
   children,
@@ -6475,8 +6484,6 @@ export const FloatingPanel = ({
   const [isVisible, setIsVisible] = useState(true)
   const [isDragging, setIsDragging] = useState(false)
   const [isMaximized, setIsMaximized] = useState(false)
-  const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const { isOpen: isDesktopSidebarVisible } = useSidebar()
   const { toast } = useToast()
 
   const handleDragStart = () => {
@@ -6502,9 +6509,7 @@ export const FloatingPanel = ({
           'fixed z-[1000] bg-white/95 shadow-lg backdrop-blur-sm',
           'transition-all duration-300 ease-in-out hover:scale-105',
           position === 'right' && 'right-4 top-20',
-          position === 'left' && 'left-4 top-20',
-          position === 'top' && 'top-4 right-4',
-          position === 'bottom' && 'bottom-4 right-4',
+          position === 'left' && 'left-4 top-20'
         )}
       >
         <Maximize2 className="w-4 h-4 mr-2" />
@@ -6514,92 +6519,62 @@ export const FloatingPanel = ({
   }
 
   return (
-    <>
-      <div className="lg:hidden fixed top-4 left-4 z-[1000]">
-        <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
-            >
-              <Menu className="h-4 w-4" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="w-80 p-0 bg-white/95 backdrop-blur-sm"
-          >
-            <ScrollArea className="h-full">
-              <FloatingPanelContent>{children}</FloatingPanelContent>
-            </ScrollArea>
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      <Draggable
-        handle=".drag-handle"
-        onStart={handleDragStart}
-        onStop={handleDragStop}
-        bounds="parent"
-        disabled={isMaximized || isMobileOpen}
-        defaultPosition={{ x: 0, y: 0 }}
-        cancel=".no-drag"
+    <Draggable
+      handle=".drag-handle"
+      onStart={handleDragStart}
+      onStop={handleDragStop}
+      bounds="parent"
+      disabled={isMaximized}
+    >
+      <motion.div
+        className={cn(
+          'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
+          'max-h-[80vh] overflow-hidden',
+          isMaximized
+            ? 'inset-4 !transform-none'
+            : cn(
+              position === 'right' && 'right-6 top-24',
+              position === 'left' && 'left-6 top-24'
+            ),
+          'z-[1000]',
+          isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
+          !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',
+          className
+        )}
       >
-        <motion.div
-          initial={{ x: position === 'right' ? 100 : -100 }}
-          animate={{ x: 0 }}
+        <FloatingPanelControls
+          isCollapsed={isCollapsed}
+          isMaximized={isMaximized}
+          isDragging={isDragging}
+          onCollapse={() => setIsCollapsed(!isCollapsed)}
+          onMaximize={() => setIsMaximized(!isMaximized)}
+          onClose={() => {
+            setIsVisible(false)
+            toast({
+              title: 'Panel oculto',
+              description: "Haz clic en 'Mostrar Panel' para restaurar",
+              duration: 2000,
+            })
+          }}
+          title={title}
+        />
+        <div
           className={cn(
-            'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
-            'max-h-[80vh] overflow-hidden',
-            isMaximized
-              ? 'inset-4 !transform-none'
-              : cn(
-                  position === 'right' && 'right-6 top-24',
-                  position === 'left' && 'left-6 top-24',
-                  position === 'top' && 'top-6 inset-x-6',
-                  position === 'bottom' && 'bottom-6 inset-x-6',
-                ),
-            'z-[1000] hidden lg:block',
-            isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
-            !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',
-            className,
+            'transition-all duration-300',
+            isCollapsed
+              ? 'h-0'
+              : isMaximized
+                ? 'h-[calc(100vh-8rem)]'
+                : 'max-h-[calc(80vh-4rem)]',
+            !isCollapsed && 'animate-in fade-in-50'
           )}
         >
-          <FloatingPanelControls
-            isCollapsed={isCollapsed}
-            isMaximized={isMaximized}
-            isDragging={isDragging}
-            onCollapse={() => setIsCollapsed(!isCollapsed)}
-            onMaximize={() => setIsMaximized(!isMaximized)}
-            onClose={() => {
-              setIsVisible(false)
-              toast({
-                title: 'Panel oculto',
-                description: "Haz clic en 'Mostrar Panel' para restaurar",
-                duration: 2000,
-              })
-            }}
-            title={title}
-          />
-          <div
-            className={cn(
-              'transition-all duration-300',
-              isCollapsed
-                ? 'h-0'
-                : isMaximized
-                  ? 'h-[calc(100vh-8rem)]'
-                  : 'max-h-[calc(80vh-4rem)]',
-              !isCollapsed && 'animate-in fade-in-50',
-            )}
-          >
-            <ScrollArea className="h-full">
-              <FloatingPanelContent>{children}</FloatingPanelContent>
-            </ScrollArea>
-          </div>
-        </motion.div>
-      </Draggable>
-    </>
+          <ScrollArea className="h-full">
+            <FloatingPanelContent>{children}</FloatingPanelContent>
+          </ScrollArea>
+        </div>
+      </motion.div>
+    </Draggable>
   )
 }
 
@@ -6633,112 +6608,80 @@ export const FloatingPanelContent = ({
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\FloatingPanelControls.tsx
-import { useState } from 'react'
-import { DollarSign } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { FloatingPanelControlsProps } from './types/floating-panel'
-import { useTowing } from '@/contexts/TowingContext'
-import { formatCurrency } from '@/utils/priceCalculator'
-import { towTruckTypes } from '@/utils/towTruckPricing'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Card } from '@/components/ui/card'
-import { FloatingPanelHeader } from './FloatingPanelHeader'
-import { CostDetailsContent } from './CostDetailsContent'
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTowing } from '@/contexts/TowingContext';
+import { towTruckTypes } from '@/utils/towTruckPricing';
+import { FloatingPanelHeader } from './FloatingPanelHeader';
+import { CostDetailsContent } from './CostDetailsContent';
 
-export const FloatingPanelControls = ({
-  isCollapsed,
-  isMaximized,
-  onCollapse,
-  onMaximize,
+interface FloatingPanelControlsProps {
+  onClose: () => void;
+  onSave?: () => void;
+  onCancel?: () => void;
+  className?: string;
+}
+
+export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
   onClose,
-  title,
-}: FloatingPanelControlsProps) => {
-  const [showCostDetails, setShowCostDetails] = useState(false)
-  const {
-    totalDistance,
-    truckType,
-    requiresManeuver,
-    totalTollCost,
-    detectedTolls,
-  } = useTowing()
-  const selectedTruck = towTruckTypes[truckType || 'A']
-  const baseCost = totalDistance * selectedTruck.perKm
-  const flagDropFee = selectedTruck.flagDropFee
-  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
-  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
+  onSave,
+  onCancel,
+  className,
+}) => {
+  const [showCostDetails, setShowCostDetails] = useState(false);
+  const { totalDistance, truckType, requiresManeuver, totalTollCost, detectedTolls } = useTowing();
+
+  const selectedTruck = towTruckTypes[truckType || 'A'];
+  const baseCost = totalDistance * selectedTruck.perKm;
+  const flagDropFee = selectedTruck.flagDropFee;
+  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0;
+  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        'flex flex-col gap-3 p-4',
-        'bg-gradient-to-br from-white/95 via-primary/5 to-primary/10',
-        'backdrop-blur-sm rounded-t-xl border-b border-primary/20',
-      )}
+      exit={{ opacity: 0, y: -10 }}
+      className={cn('p-4 border-t bg-white shadow rounded-lg', className)}
     >
       <FloatingPanelHeader
-        title={title}
-        isCollapsed={isCollapsed}
-        isMaximized={isMaximized}
-        onCollapse={onCollapse}
-        onMaximize={onMaximize}
-        onClose={onClose}
+        title="Cost Details"
+        onDetailsToggle={() => setShowCostDetails((prev) => !prev)}
       />
-
-      {!isCollapsed && (
-        <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="space-y-4"
-          >
-            <Card className="p-4 bg-white/50 backdrop-blur-sm border border-primary/10 hover:shadow-lg transition-all duration-300">
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => setShowCostDetails(!showCostDetails)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg hover:from-primary/10 hover:to-primary/20 transition-all duration-300"
-              >
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-primary" />
-                  <span className="text-primary font-medium text-lg">
-                    Costo Estimado:
-                  </span>
-                </div>
-                <span className="font-bold text-xl text-primary">
-                  {formatCurrency(subtotal)}
-                </span>
-              </motion.button>
-
-              <AnimatePresence>
-                {showCostDetails && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="mt-4"
-                  >
-                    <CostDetailsContent
-                      totalDistance={totalDistance}
-                      baseCost={baseCost}
-                      flagDropFee={flagDropFee}
-                      maneuverCost={maneuverCost}
-                      requiresManeuver={requiresManeuver}
-                      totalTollCost={totalTollCost}
-                      detectedTolls={detectedTolls}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Card>
-          </motion.div>
-        </AnimatePresence>
-      )}
+      <AnimatePresence>
+        {showCostDetails && (
+          <CostDetailsContent
+            baseCost={baseCost}
+            flagDropFee={flagDropFee}
+            maneuverCost={maneuverCost}
+            totalTollCost={totalTollCost}
+            subtotal={subtotal}
+            detectedTolls={detectedTolls}
+          />
+        )}
+      </AnimatePresence>
+      <div className="flex justify-end space-x-2 mt-4">
+        {onCancel && (
+          <Button variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+        {onSave && (
+          <Button onClick={onSave}>
+            Save
+          </Button>
+        )}
+        <Button variant="ghost" onClick={onClose}>
+          Close
+        </Button>
+      </div>
     </motion.div>
-  )
-}
+  );
+};
+
+export default FloatingPanelControls;
 
 
 
@@ -7088,6 +7031,7 @@ export const MapContainerComponent = ({
             }}
             icon={pickupIcon}
             label="Punto de Recogida"
+            isPickup={true}
           />
         )}
 
@@ -7101,6 +7045,7 @@ export const MapContainerComponent = ({
             }}
             icon={dropIcon}
             label="Punto de Entrega"
+            isPickup={false}
           />
         )}
 
@@ -7117,26 +7062,27 @@ export const MapContainerComponent = ({
 }
 
 
-
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\MapControlPanel.tsx
+import { RouteStreetInfo } from '@/features/map/components/RouteStreetInfo'
 import { MapControls } from './MapControls'
-import { RouteStreetInfo } from './RouteStreetInfo'
-import { showLocationNotification } from '@/utils/notificationUtils'
+import { useToast } from '@/hooks/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from '@/components/ui/card'
-import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
+import { useMapNotifications } from '@/features/map/hooks/useMapNotifications'
+import { Location } from '@/types/location'
 
 interface MapControlPanelProps {
   selectingPickup: boolean
   selectingDrop: boolean
   setSelectingPickup: (value: boolean) => void
   setSelectingDrop: (value: boolean) => void
-  pickupLocation: { lat: number; lng: number } | null
-  dropLocation: { lat: number; lng: number } | null
+  pickupLocation: Location | null
+  dropLocation: Location | null
   pickupAddress?: string
   dropAddress?: string
   isLoading?: boolean
+  className?: string
 }
 
 export const MapControlPanel = ({
@@ -7151,27 +7097,18 @@ export const MapControlPanel = ({
   isLoading = false,
 }: MapControlPanelProps) => {
   const { toast } = useToast()
+  const { showLocationSelectionNotification } = useMapNotifications()
 
   const handlePickupClick = () => {
     setSelectingPickup(true)
     setSelectingDrop(false)
-    showLocationNotification('pickup', { lat: 0, lng: 0 })
-    toast({
-      title: 'Seleccionando punto de recogida',
-      description: 'Haz clic en el mapa para seleccionar el punto de recogida',
-      className: 'bg-green-50 border-green-200',
-    })
+    showLocationSelectionNotification('pickup')
   }
 
   const handleDropClick = () => {
     setSelectingDrop(true)
     setSelectingPickup(false)
-    showLocationNotification('drop', { lat: 0, lng: 0 })
-    toast({
-      title: 'Seleccionando punto de entrega',
-      description: 'Haz clic en el mapa para seleccionar el punto de entrega',
-      className: 'bg-blue-50 border-blue-200',
-    })
+    showLocationSelectionNotification('drop')
   }
 
   return (
@@ -7226,10 +7163,10 @@ export const MapControlPanel = ({
 }
 
 
-
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\MapControls.tsx
 import { MapPin, Navigation } from 'lucide-react'
-import { MapButton } from '@/components/ui/map-button'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 interface MapControlsProps {
   selectingPickup: boolean
@@ -7246,22 +7183,38 @@ export const MapControls = ({
 }: MapControlsProps) => {
   return (
     <div className="flex flex-col sm:flex-row gap-3">
-      <MapButton
-        icon={<MapPin className="h-4 w-4" />}
-        label="Punto de Recogida"
-        isActive={selectingPickup}
+      <Button
+        variant="outline"
+        size="lg"
         onClick={onPickupClick}
-      />
-      <MapButton
-        icon={<Navigation className="h-4 w-4" />}
-        label="Punto de Entrega"
-        isActive={selectingDrop}
+        className={cn(
+          'flex items-center gap-2 transition-all duration-300',
+          selectingPickup
+            ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100'
+            : 'hover:bg-green-50'
+        )}
+      >
+        <MapPin className="h-4 w-4" />
+        <span className="hidden sm:inline">Punto de Recogida</span>
+      </Button>
+
+      <Button
+        variant="outline"
+        size="lg"
         onClick={onDropClick}
-      />
+        className={cn(
+          'flex items-center gap-2 transition-all duration-300',
+          selectingDrop
+            ? 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
+            : 'hover:bg-blue-50'
+        )}
+      >
+        <Navigation className="h-4 w-4" />
+        <span className="hidden sm:inline">Punto de Entrega</span>
+      </Button>
     </div>
   )
 }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\MapHeader.tsx
@@ -7703,14 +7656,52 @@ export const RouteStreetInfo = ({
 
 
 
+// C:\Users\israe\Documents\GitHub\recentmap\src\components\map\hooks\useMapNotifications.tsx
+import { useToast } from '@/hooks/use-toast'
+
+export const useMapNotifications = () => {
+  const { toast } = useToast()
+
+  const showLocationSelectionNotification = (type: 'pickup' | 'drop') => {
+    toast({
+      title: type === 'pickup' ? 'Seleccionando punto de recogida' : 'Seleccionando punto de entrega',
+      description: `Haz clic en el mapa para seleccionar el punto de ${type === 'pickup' ? 'recogida' : 'entrega'}`,
+      className: type === 'pickup' ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200',
+    })
+  }
+
+  const showRouteCalculationError = (error: string) => {
+    toast({
+      title: 'Error al calcular la ruta',
+      description: error,
+      variant: 'destructive',
+    })
+  }
+
+  const showLocationUpdateSuccess = (type: 'pickup' | 'drop', address: string) => {
+    toast({
+      title: `${type === 'pickup' ? 'Punto de recogida' : 'Punto de entrega'} actualizado`,
+      description: address,
+      className: type === 'pickup' ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200',
+    })
+  }
+
+  return {
+    showLocationSelectionNotification,
+    showRouteCalculationError,
+    showLocationUpdateSuccess,
+  }
+}
+
+
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\types\floating-panel.ts
-import { ReactNode } from 'react'
+import { TollLocation } from '@/types/toll'
 
 export interface FloatingPanelProps {
-  children: ReactNode
+  children: React.ReactNode
+  title: string
+  position?: 'left' | 'right'
   className?: string
-  position?: 'left' | 'right' | 'top' | 'bottom'
-  title?: string
 }
 
 export interface FloatingPanelControlsProps {
@@ -7721,8 +7712,48 @@ export interface FloatingPanelControlsProps {
   onMaximize: () => void
   onClose: () => void
   title: string
+  onDetailsToggle?: () => void
 }
 
+export interface FloatingPanelHeaderProps {
+  title: string
+  onCollapse: () => void
+  onMaximize: () => void
+  onClose: () => void
+  onDetailsToggle?: () => void
+}
+
+export interface CostDetailsContentProps {
+  baseCost: number
+  flagDropFee: number
+  maneuverCost: number
+  totalTollCost: number
+  subtotal: number
+  detectedTolls: TollLocation[]
+  totalDistance?: number
+  requiresManeuver?: boolean
+}
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\components\map\types\map-control.ts
+import { Location } from '@/types/location'
+
+export interface MapControlsProps {
+  selectingPickup: boolean
+  selectingDrop: boolean
+  setSelectingPickup: (value: boolean) => void
+  setSelectingDrop: (value: boolean) => void
+  onPickupClick?: () => void
+  onDropClick?: () => void
+}
+
+export interface MapControlPanelProps extends MapControlsProps {
+  pickupLocation: Location | null
+  dropLocation: Location | null
+  pickupAddress: string
+  dropAddress: string
+  isLoading: boolean
+}
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\payment\PaymentWindow.tsx
@@ -8647,12 +8678,13 @@ export { Button, buttonVariants }
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\ui\calendar.tsx
-import * as React from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { DayPicker } from 'react-day-picker'
+"use client"
 
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
+import * as React from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { DayPicker } from "react-day-picker"
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -8665,53 +8697,52 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn('p-3', className)}
+      className={cn("p-3", className)}
       classNames={{
-        months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
-        month: 'space-y-4',
-        caption: 'flex justify-center pt-1 relative items-center',
-        caption_label: 'text-sm font-medium',
-        nav: 'space-x-1 flex items-center',
+        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+        month: "space-y-4",
+        caption: "flex justify-center pt-1 relative items-center",
+        caption_label: "text-sm font-medium",
+        nav: "space-x-1 flex items-center",
         nav_button: cn(
-          buttonVariants({ variant: 'outline' }),
-          'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
         ),
-        nav_button_previous: 'absolute left-1',
-        nav_button_next: 'absolute right-1',
-        table: 'w-full border-collapse space-y-1',
-        head_row: 'flex',
+        nav_button_previous: "absolute left-1",
+        nav_button_next: "absolute right-1",
+        table: "w-full border-collapse space-y-1",
+        head_row: "flex",
         head_cell:
-          'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
-        row: 'flex w-full mt-2',
-        cell: 'h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
+          "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+        row: "flex w-full mt-2",
+        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day: cn(
-          buttonVariants({ variant: 'ghost' }),
-          'h-9 w-9 p-0 font-normal aria-selected:opacity-100',
+          buttonVariants({ variant: "ghost" }),
+          "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
         ),
-        day_range_end: 'day-range-end',
+        day_range_end: "day-range-end",
         day_selected:
-          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
-        day_today: 'bg-accent text-accent-foreground',
+          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+        day_today: "bg-accent text-accent-foreground",
         day_outside:
-          'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
-        day_disabled: 'text-muted-foreground opacity-50',
+          "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+        day_disabled: "text-muted-foreground opacity-50",
         day_range_middle:
-          'aria-selected:bg-accent aria-selected:text-accent-foreground',
-        day_hidden: 'invisible',
+          "aria-selected:bg-accent aria-selected:text-accent-foreground",
+        day_hidden: "invisible",
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
+        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />
   )
 }
-Calendar.displayName = 'Calendar'
+Calendar.displayName = "Calendar"
 
 export { Calendar }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\ui\card.tsx
@@ -12487,26 +12518,13 @@ import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { UserReservations } from './UserReservations'
 import { UserNotifications } from './UserNotifications'
-import { UserSettings } from './UserSettings'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useToast } from '@/hooks/use-toast'
-import { useState, useEffect } from 'react'
+import { UserProfile } from './UserProfile'
+import { motion } from 'framer-motion'
+import { useUserProfile } from './hooks/useUserProfile'
 import { Loader2 } from 'lucide-react'
 
 export const UserDashboard = () => {
-  const { toast } = useToast()
-  const [userName, setUserName] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    // Simulate API call to fetch user name
-    const timer = setTimeout(() => {
-      setUserName('John Doe')
-      setIsLoading(false)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [])
+  const { profile, isLoading } = useUserProfile()
 
   return (
     <motion.div
@@ -12522,16 +12540,20 @@ export const UserDashboard = () => {
           </div>
         ) : (
           <h1 className="text-3xl font-bold gradient-text mb-4">
-            Bienvenido, {userName}
+            Bienvenido, {profile?.full_name || 'Usuario'}
           </h1>
         )}
 
-        <Tabs defaultValue="reservations" className="w-full">
+        <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-3 glass-card">
+            <TabsTrigger value="profile">Mi Perfil</TabsTrigger>
             <TabsTrigger value="reservations">Mis Reservas</TabsTrigger>
             <TabsTrigger value="notifications">Notificaciones</TabsTrigger>
-            <TabsTrigger value="settings">Configuración</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="profile" className="mt-6">
+            <UserProfile />
+          </TabsContent>
 
           <TabsContent value="reservations" className="mt-6">
             <Card className="glass-card p-6">
@@ -12544,18 +12566,11 @@ export const UserDashboard = () => {
               <UserNotifications />
             </Card>
           </TabsContent>
-
-          <TabsContent value="settings" className="mt-6">
-            <Card className="glass-card p-6">
-              <UserSettings />
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
     </motion.div>
   )
 }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\user\UserNavigationMenu.tsx
@@ -12692,6 +12707,128 @@ export const UserNotifications = () => {
 
 
 
+// C:\Users\israe\Documents\GitHub\recentmap\src\components\user\UserProfile.tsx
+import { useState } from 'react'
+import { useProfile } from '@/hooks/useProfile'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card } from '@/components/ui/card'
+import { useToast } from '@/hooks/use-toast'
+
+export const UserProfile = () => {
+  const { profile, loading: isLoading, updateProfile } = useProfile()
+  const [isEditing, setIsEditing] = useState(false)
+  const [formData, setFormData] = useState({
+    username: profile?.username || '',
+    full_name: profile?.full_name || '',
+    phone_number: profile?.phone_number || '',
+  })
+  const { toast } = useToast()
+  const [isPending, setIsPending] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsPending(true)
+    try {
+      const updatedProfile = await updateProfile(formData)
+      if (updatedProfile) {
+        toast({
+          title: 'Profile updated',
+          description: 'Your profile has been successfully updated.',
+        })
+        setIsEditing(false)
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update profile. Please try again.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsPending(false)
+    }
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  return (
+    <Card className="p-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Username
+          </label>
+          <Input
+            type="text"
+            value={formData.username}
+            onChange={(e) =>
+              setFormData({ ...formData, username: e.target.value })
+            }
+            disabled={!isEditing || isPending}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Full Name
+          </label>
+          <Input
+            type="text"
+            value={formData.full_name}
+            onChange={(e) =>
+              setFormData({ ...formData, full_name: e.target.value })
+            }
+            disabled={!isEditing || isPending}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Phone Number
+          </label>
+          <Input
+            type="tel"
+            value={formData.phone_number}
+            onChange={(e) =>
+              setFormData({ ...formData, phone_number: e.target.value })
+            }
+            disabled={!isEditing || isPending}
+          />
+        </div>
+
+        <div className="flex justify-end space-x-2">
+          {isEditing ? (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditing(false)}
+                disabled={isPending}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Saving...' : 'Save'}
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              disabled={isPending}
+            >
+              Edit Profile
+            </Button>
+          )}
+        </div>
+      </form>
+    </Card>
+  )
+}
+
+
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\user\UserReservations.tsx
 import { Card } from '@/components/ui/card'
 import { motion } from 'framer-motion'
@@ -12757,6 +12894,79 @@ export const UserSettings = () => {
   )
 }
 
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\components\user\hooks\useUserProfile.ts
+import { useState, useEffect } from 'react'
+import { supabase } from '@/integrations/supabase/client'
+import { Profile } from '@/types/user'
+import { useToast } from '@/hooks/use-toast'
+
+export const useUserProfile = () => {
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single()
+
+          if (error) throw error
+          setProfile(data as Profile)
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error)
+        toast({
+          title: 'Error',
+          description: 'Could not fetch profile',
+          variant: 'destructive',
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProfile()
+  }, [toast])
+
+  const updateProfile = async (updates: Partial<Profile>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('No user')
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id)
+
+      if (error) throw error
+
+      setProfile(prev => prev ? { ...prev, ...updates } : null)
+      return profile
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      toast({
+        title: 'Error',
+        description: 'Could not update profile',
+        variant: 'destructive',
+      })
+      return null
+    }
+  }
+
+  return {
+    profile,
+    loading,
+    updateProfile,
+  }
+}
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\contexts\Sidebar1Context.tsx
@@ -12826,7 +13036,7 @@ export const useSidebar = () => {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\contexts\towing.ts
-import { TollLocation } from '@/data/tollData'
+import { TollLocation } from '@/types/toll'
 
 export interface LocationInfo {
   pickup?: { lat: number; lng: number; address: string }
@@ -12865,9 +13075,7 @@ export interface TowingContextType {
   updateSelectedVehicleModel: (model: string) => void
   updateLocationInfo: (info: LocationInfo) => void
   processPayment: (amount: number) => Promise<boolean>
-  setLoadingLocations: (loading: boolean) => void
 }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\contexts\TowingContext.tsx
@@ -13020,278 +13228,20 @@ const calculateTotalCost = (
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\data\tollData.ts
-export interface TollLocation {
-  name: string
-  lat: number
-  lng: number
-  cost: number
-  description: string
-  type: 'highway' | 'urban'
-  operatingHours: string
-  acceptedPayments: ('cash' | 'card' | 'tag')[]
-  vehicleTypes: ('car' | 'truck' | 'motorcycle')[]
-  lastUpdated: string
-  status: 'active' | 'maintenance' | 'closed'
-  direction?: 'outbound' | 'return'
-  kilometer?: string
-  route?: string
-  distance?: number
-}
+import { TollLocation } from '@/types/toll'
+import { monterreyTolls } from './tolls/monterrey'
+import { saltilloTolls } from './tolls/saltillo'
+import { zacatecasTolls } from './tolls/zacatecas'
+import { monclovaTolls } from './tolls/monclova'
 
 export const TOLL_LOCATIONS: TollLocation[] = [
-  {
-    name: 'Monterrey - Nuevo Laredo',
-    lat: 25.8941,
-    lng: -100.1824,
-    cost: 418.0,
-    description: 'Cuota principal hacia Nuevo Laredo',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-    route: 'Monterrey - Nuevo Laredo',
-    distance: 123.1,
-  },
-  {
-    name: 'Agualeguas',
-    lat: 26.3167,
-    lng: -99.5333,
-    cost: 171.0,
-    description: 'Caseta Agualeguas',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-    kilometer: '79+600',
-    route: 'Monterrey - Agualeguas',
-    distance: 56.9,
-  },
-  {
-    name: 'Monterrey - La Gloria',
-    lat: 25.7833,
-    lng: -100.5667,
-    cost: 418.0,
-    description: 'Peaje entre Monterrey y La Gloria',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-    kilometer: '100+000',
-    route: 'Monterrey - La Gloria',
-    distance: 45.8,
-  },
-  {
-    name: 'Monterrey - Sabinas',
-    lat: 25.4506,
-    lng: -100.9447,
-    cost: 231.0,
-    description: 'Peaje entre Monterrey y Sabinas',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-    kilometer: '99+300',
-    route: 'Monterrey - Sabinas',
-    distance: 77.3,
-  },
-  {
-    name: 'Sabinas - La Gloria',
-    lat: 25.7833,
-    lng: -100.5667,
-    cost: 188.0,
-    description: 'Peaje entre Sabinas y La Gloria',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-    kilometer: '100+000',
-    route: 'Sabinas - La Gloria',
-    distance: 45.8,
-  },
-  {
-    name: 'Agualeguas - Sabinas',
-    lat: 26.3167,
-    lng: -99.5333,
-    cost: 60.0,
-    description: 'Peaje entre Agualeguas y Sabinas',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-    kilometer: '79+600',
-    route: 'Agualeguas - Sabinas',
-    distance: 60.0,
-  },
-  {
-    name: 'Detalle por ruta: Monterrey - Saltillo y Libramiento Norponiente de Saltillo',
-    lat: 25.4506,
-    lng: -100.9447,
-    cost: 492.0,
-    description: 'Coste total del peaje por la ruta mencionada',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'Zacatecas - Monclova',
-    lat: 23.9999,
-    lng: -102.0,
-    cost: 133.0,
-    description: 'Peaje entre Zacatecas y Monclova',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'Monclova - Ojo Caliente 1',
-    lat: 25.8667,
-    lng: -100.7833,
-    cost: 57.0,
-    description: 'Peaje entre Monclova y Ojo Caliente 1',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'Monclova - Ojo Caliente 2',
-    lat: 25.8667,
-    lng: -100.7833,
-    cost: 102.0,
-    description: 'Peaje entre Monclova y Ojo Caliente 2',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'Ojo Caliente 2 - Morones Prieto',
-    lat: 25.8667,
-    lng: -100.7833,
-    cost: 257.0,
-    description: 'Peaje entre Ojo Caliente 2 y Morones Prieto',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'El Jónuco - Periférico',
-    lat: 25.8667,
-    lng: -100.7833,
-    cost: 32.0,
-    description: 'Peaje entre El Jónuco y Periférico',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'El Jónuco - Morones Prieto',
-    lat: 25.8667,
-    lng: -100.7833,
-    cost: 88.0,
-    description: 'Peaje entre El Jónuco y Morones Prieto',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'Zacatecas - Torreón',
-    lat: 25.8667,
-    lng: -100.7833,
-    cost: 91.0,
-    description: 'Peaje entre Zacatecas y Torreón',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'Torreón - Monclova',
-    lat: 25.8667,
-    lng: -100.7833,
-    cost: 42.0,
-    description: 'Peaje entre Torreón y Monclova',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'Ojo Caliente 1 - Ojo Caliente 2',
-    lat: 25.8667,
-    lng: -100.7833,
-    cost: 45.0,
-    description: 'Peaje entre Ojo Caliente 1 y Ojo Caliente 2',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'Ojo Caliente 2 - Periférico',
-    lat: 25.8667,
-    lng: -100.7833,
-    cost: 155.0,
-    description: 'Peaje entre Ojo Caliente 2 y Periférico',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
-  {
-    name: 'Periférico - Morones Prieto',
-    lat: 25.8667,
-    lng: -100.7833,
-    cost: 102.0,
-    description: 'Peaje entre Periférico y Morones Prieto',
-    type: 'highway',
-    operatingHours: '24/7',
-    acceptedPayments: ['cash', 'card', 'tag'],
-    vehicleTypes: ['car', 'truck', 'motorcycle'],
-    lastUpdated: '2024-03-20',
-    status: 'active',
-  },
+  ...monterreyTolls,
+  ...saltilloTolls,
+  ...zacatecasTolls,
+  ...monclovaTolls,
 ]
 
+export type { TollLocation }
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\data\vehicleData.ts
@@ -13548,25 +13498,172 @@ export const vehicleModels: Record<string, string[]> = {
 
 
 
+// C:\Users\israe\Documents\GitHub\recentmap\src\data\tolls\monclova.ts
+import { TollLocation } from '@/types/toll'
+
+export const monclovaTolls: TollLocation[] = [
+  {
+    name: 'Monclova - Ojo Caliente 1',
+    location: 'Monclova - Ojo Caliente 1',
+    lat: 25.8667,
+    lng: -100.7833,
+    cost: 57.0,
+    description: 'Peaje entre Monclova y Ojo Caliente 1',
+    type: 'highway',
+    operatingHours: '24/7',
+    acceptedPayments: ['cash', 'card', 'tag'],
+    vehicleTypes: ['car', 'truck', 'motorcycle'],
+    lastUpdated: '2024-03-20',
+    status: 'active'
+  },
+  {
+    name: 'Monclova - Ojo Caliente 2',
+    location: 'Monclova - Ojo Caliente 2',
+    lat: 25.8667,
+    lng: -100.7833,
+    cost: 102.0,
+    description: 'Peaje entre Monclova y Ojo Caliente 2',
+    type: 'highway',
+    operatingHours: '24/7',
+    acceptedPayments: ['cash', 'card', 'tag'],
+    vehicleTypes: ['car', 'truck', 'motorcycle'],
+    lastUpdated: '2024-03-20',
+    status: 'active'
+  }
+]
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\data\tolls\monterrey.ts
+import { TollLocation } from '@/types/toll'
+
+export const monterreyTolls: TollLocation[] = [
+  {
+    name: 'Monterrey - Nuevo Laredo',
+    location: 'Monterrey - Nuevo Laredo',
+    lat: 25.8941,
+    lng: -100.1824,
+    cost: 418.0,
+    description: 'Cuota principal hacia Nuevo Laredo',
+    type: 'highway',
+    operatingHours: '24/7',
+    acceptedPayments: ['cash', 'card', 'tag'],
+    vehicleTypes: ['car', 'truck', 'motorcycle'],
+    lastUpdated: '2024-03-20',
+    status: 'active',
+    route: 'Monterrey - Nuevo Laredo',
+    distance: 123.1
+  },
+  {
+    name: 'Agualeguas',
+    location: 'Agualeguas',
+    lat: 26.3167,
+    lng: -99.5333,
+    cost: 171.0,
+    description: 'Caseta Agualeguas',
+    type: 'highway',
+    operatingHours: '24/7',
+    acceptedPayments: ['cash', 'card', 'tag'],
+    vehicleTypes: ['car', 'truck', 'motorcycle'],
+    lastUpdated: '2024-03-20',
+    status: 'active',
+    kilometer: '79+600',
+    route: 'Monterrey - Agualeguas',
+    distance: 56.9,
+  }
+]
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\data\tolls\saltillo.ts
+import { TollLocation } from '@/types/toll'
+
+export const saltilloTolls: TollLocation[] = [
+  {
+    name: 'Monterrey - La Gloria',
+    location: 'Monterrey - La Gloria',
+    lat: 25.7833,
+    lng: -100.5667,
+    cost: 418.0,
+    description: 'Peaje entre Monterrey y La Gloria',
+    type: 'highway',
+    operatingHours: '24/7',
+    acceptedPayments: ['cash', 'card', 'tag'],
+    vehicleTypes: ['car', 'truck', 'motorcycle'],
+    lastUpdated: '2024-03-20',
+    status: 'active',
+    kilometer: '100+000',
+    route: 'Monterrey - La Gloria',
+    distance: 45.8,
+  },
+  {
+    name: 'Monterrey - Sabinas',
+    location: 'Monterrey - Sabinas',
+    lat: 25.4506,
+    lng: -100.9447,
+    cost: 231.0,
+    description: 'Peaje entre Monterrey y Sabinas',
+    type: 'highway',
+    operatingHours: '24/7',
+    acceptedPayments: ['cash', 'card', 'tag'],
+    vehicleTypes: ['car', 'truck', 'motorcycle'],
+    lastUpdated: '2024-03-20',
+    status: 'active',
+    kilometer: '99+300',
+    route: 'Monterrey - Sabinas',
+    distance: 77.3,
+  }
+]
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\data\tolls\zacatecas.ts
+import { TollLocation } from '@/types/toll'
+
+export const zacatecasTolls: TollLocation[] = [
+  {
+    name: 'Zacatecas - Monclova',
+    location: 'Zacatecas - Monclova',
+    lat: 23.9999,
+    lng: -102.0,
+    cost: 133.0,
+    description: 'Peaje entre Zacatecas y Monclova',
+    type: 'highway',
+    operatingHours: '24/7',
+    acceptedPayments: ['cash', 'card', 'tag'],
+    vehicleTypes: ['car', 'truck', 'motorcycle'],
+    lastUpdated: '2024-03-20',
+    status: 'active'
+  },
+  {
+    name: 'Zacatecas - Torreón',
+    location: 'Zacatecas - Torreón',
+    lat: 25.8667,
+    lng: -100.7833,
+    cost: 91.0,
+    description: 'Peaje entre Zacatecas y Torreón',
+    type: 'highway',
+    operatingHours: '24/7',
+    acceptedPayments: ['cash', 'card', 'tag'],
+    vehicleTypes: ['car', 'truck', 'motorcycle'],
+    lastUpdated: '2024-03-20',
+    status: 'active'
+  }
+]
+
+
 // C:\Users\israe\Documents\GitHub\recentmap\src\features\map\components\MapControlPanel.tsx
-import { MapControls } from './MapControls'
 import { RouteStreetInfo } from './RouteStreetInfo'
-import { useToast } from '@/hooks/use-toast'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Card } from '@/components/ui/card'
-import { Loader2 } from 'lucide-react'
-import { useMapNotifications } from '../hooks/useMapNotifications'
+import { MapControls } from '@/components/map/MapControls'
+import { Location } from '@/types/location'
 
 interface MapControlPanelProps {
   selectingPickup: boolean
   selectingDrop: boolean
   setSelectingPickup: (value: boolean) => void
   setSelectingDrop: (value: boolean) => void
-  pickupLocation: { lat: number; lng: number } | null
-  dropLocation: { lat: number; lng: number } | null
-  pickupAddress?: string
-  dropAddress?: string
-  isLoading?: boolean
+  pickupLocation: Location | null
+  dropLocation: Location | null
+  pickupAddress: string
+  dropAddress: string
+  isLoading: boolean
 }
 
 export const MapControlPanel = ({
@@ -13578,74 +13675,38 @@ export const MapControlPanel = ({
   dropLocation,
   pickupAddress,
   dropAddress,
-  isLoading = false,
+  isLoading,
 }: MapControlPanelProps) => {
-  const { toast } = useToast()
-  const { showLocationSelectionNotification } = useMapNotifications()
-
   const handlePickupClick = () => {
     setSelectingPickup(true)
     setSelectingDrop(false)
-    showLocationSelectionNotification('pickup')
   }
 
   const handleDropClick = () => {
     setSelectingDrop(true)
     setSelectingPickup(false)
-    showLocationSelectionNotification('drop')
   }
 
   return (
-    <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-3 sm:px-4">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="w-full"
-      >
-        <Card className="relative w-full bg-white/95 backdrop-blur-md shadow-md rounded-lg p-4 border border-primary/10 hover:border-primary/20 transition-all duration-300">
-          {isLoading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg"
-            >
-              <Loader2 className="w-6 h-6 animate-spin text-primary" />
-            </motion.div>
-          )}
-          <MapControls
-            selectingPickup={selectingPickup}
-            selectingDrop={selectingDrop}
-            onPickupClick={handlePickupClick}
-            onDropClick={handleDropClick}
-          />
-        </Card>
-      </motion.div>
-
-      <AnimatePresence>
-        {(pickupLocation || dropLocation) && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="mt-3 w-full"
-          >
-            <RouteStreetInfo
-              pickupLocation={pickupLocation}
-              dropLocation={dropLocation}
-              pickupAddress={pickupAddress}
-              dropAddress={dropAddress}
-              isLoading={isLoading}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="absolute top-4 left-4 z-[1000] p-4 bg-white rounded-lg shadow-lg">
+      <MapControls
+        selectingPickup={selectingPickup}
+        selectingDrop={selectingDrop}
+        onPickupClick={handlePickupClick}
+        onDropClick={handleDropClick}
+      />
+      <RouteStreetInfo
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+        pickupAddress={pickupAddress}
+        dropAddress={dropAddress}
+        isLoading={isLoading}
+      />
     </div>
   )
 }
 
+export default MapControlPanel
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\features\map\components\MapControls.tsx
@@ -13784,28 +13845,36 @@ export const RouteStreetInfo = ({
 import { useToast } from '@/hooks/use-toast'
 import { MapPin } from 'lucide-react'
 import { ReactNode } from 'react'
-import { ToastActionElement, ToastProps } from '@/components/ui/toast'
+import { ToastActionElement } from '@/components/ui/toast'
 
-type ToasterToast = {
-  id: string
-  title?: React.ReactNode
-  description?: React.ReactNode
-  action?: ToastActionElement
-  icon?: ReactNode
-  className?: string
-  variant?: 'default' | 'destructive'
-}
+const NOTIFICATION_COOLDOWN = 3000 // 3 seconds cooldown
+const notificationTimestamps: { [key: string]: number } = {}
 
 export const useMapNotifications = () => {
   const { toast } = useToast()
 
+  const shouldShowNotification = (type: string): boolean => {
+    const now = Date.now()
+    const lastShown = notificationTimestamps[type] || 0
+    
+    if (now - lastShown > NOTIFICATION_COOLDOWN) {
+      notificationTimestamps[type] = now
+      return true
+    }
+    return false
+  }
+
   const showLocationSelectionNotification = (type: 'pickup' | 'drop'): void => {
+    if (!shouldShowNotification(`location_${type}`)) return
+
     toast({
       title:
         type === 'pickup'
           ? 'Seleccionando punto de recogida'
           : 'Seleccionando punto de entrega',
-      description: `Haz clic en el mapa para seleccionar el punto de ${type === 'pickup' ? 'recogida' : 'entrega'}`,
+      description: `Haz clic en el mapa para seleccionar el punto de ${
+        type === 'pickup' ? 'recogida' : 'entrega'
+      }`,
       className:
         type === 'pickup'
           ? 'bg-green-50 border-green-200'
@@ -13814,6 +13883,8 @@ export const useMapNotifications = () => {
   }
 
   const showRouteCalculationError = (error: string): void => {
+    if (!shouldShowNotification('route_error')) return
+
     toast({
       title: 'Error al calcular la ruta',
       description: error,
@@ -13825,8 +13896,12 @@ export const useMapNotifications = () => {
     type: 'pickup' | 'drop',
     address: string,
   ): void => {
+    if (!shouldShowNotification(`location_update_${type}`)) return
+
     toast({
-      title: `${type === 'pickup' ? 'Punto de recogida' : 'Punto de entrega'} actualizado`,
+      title: `${
+        type === 'pickup' ? 'Punto de recogida' : 'Punto de entrega'
+      } actualizado`,
       description: address,
       className:
         type === 'pickup'
@@ -13841,7 +13916,6 @@ export const useMapNotifications = () => {
     showLocationUpdateSuccess,
   }
 }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\features\map\hooks\useMapState.ts
@@ -14171,256 +14245,203 @@ export const MapControls = ({
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\hooks\TowingContext.tsx
-import { createContext, useContext, useState, ReactNode } from 'react'
-import { TollLocation } from '@/data/tollData'
-import { useToast } from '@/hooks/use-toast'
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { TollLocation } from '../data/tollData';
+import { useToast } from './use-toast';
 
 interface LocationInfo {
-  pickup?: { lat: number; lng: number; address: string }
-  drop?: { lat: number; lng: number; address: string }
+  pickup?: { lat: number; lng: number; address: string };
+  drop?: { lat: number; lng: number; address: string };
 }
 
 interface TollInfo {
-  tolls: TollLocation[]
-  totalTollCost: number
+  tolls: TollLocation[];
+  totalTollCost: number;
 }
 
 interface PaymentInfo {
-  subtotal: number
-  tax: number
-  total: number
-  isPending: boolean
-  isProcessing: boolean
+  subtotal: number;
+  tax: number;
+  total: number;
+  isPending: boolean;
+  isProcessing: boolean;
 }
 
 interface TowingContextType {
-  totalDistance: number
-  totalCost: number
-  detectedTolls: TollLocation[]
-  totalTollCost: number
-  truckType: 'A' | 'B' | 'C' | 'D'
-  requiresManeuver: boolean
-  selectedVehicleModel: string
-  tollInfo: TollInfo | null
-  paymentInfo: PaymentInfo
-  isLoadingLocations: boolean
-  isProcessingPayment: boolean
-  updateTowingInfo: (distance: number) => void
-  updateTollInfo: (tolls: TollLocation[], tollCost: number) => void
-  updateTruckType: (type: 'A' | 'B' | 'C' | 'D') => void
-  updateManeuverRequired: (required: boolean) => void
-  updateSelectedVehicleModel: (model: string) => void
-  updateLocationInfo: (info: LocationInfo) => void
-  processPayment: (amount: number) => Promise<boolean>
-  setLoadingLocations: (loading: boolean) => void
+  totalDistance: number;
+  totalCost: number;
+  detectedTolls: TollLocation[];
+  totalTollCost: number;
+  truckType: "A" | "B" | "C" | "D";
+  requiresManeuver: boolean;
+  selectedVehicleModel: string;
+  tollInfo: TollInfo | null;
+  paymentInfo: PaymentInfo;
+  isLoadingLocations: boolean;
+  isProcessingPayment: boolean;
+  updateTowingInfo: (distance: number) => void;
+  updateTollInfo: (tolls: TollLocation[], tollCost: number) => void;
+  updateTruckType: (type: "A" | "B" | "C" | "D") => void;
+  updateManeuverRequired: (required: boolean) => void;
+  updateSelectedVehicleModel: (model: string) => void;
+  updateLocationInfo: (info: LocationInfo) => void;
+  processPayment: (amount: number) => Promise<boolean>;
+  setLoadingLocations: (loading: boolean) => void;
 }
 
-const TowingContext = createContext<TowingContextType | undefined>(undefined)
+const TowingContext = createContext<TowingContextType | null>(null);
 
-export const TowingProvider = ({ children }: { children: ReactNode }) => {
-  const [totalDistance, setTotalDistance] = useState(0)
-  const [totalCost, setTotalCost] = useState(0)
-  const [detectedTolls, setDetectedTolls] = useState<TollLocation[]>([])
-  const [totalTollCost, setTotalTollCost] = useState(0)
-  const [truckType, setTruckType] = useState<'A' | 'B' | 'C' | 'D'>('A')
-  const [requiresManeuver, setRequiresManeuver] = useState(false)
-  const [selectedVehicleModel, setSelectedVehicleModel] = useState('')
-  const [tollInfo, setTollInfo] = useState<TollInfo | null>(null)
-  const [isLoadingLocations, setIsLoadingLocations] = useState(false)
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
-  const { toast } = useToast()
-
+export const TowingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [totalDistance, setTotalDistance] = useState(0);
+  const [totalCost, setTotalCost] = useState(0);
+  const [detectedTolls, setDetectedTolls] = useState<TollLocation[]>([]);
+  const [totalTollCost, setTotalTollCost] = useState(0);
+  const [truckType, setTruckType] = useState<"A" | "B" | "C" | "D">("A");
+  const [requiresManeuver, setRequiresManeuver] = useState(false);
+  const [selectedVehicleModel, setSelectedVehicleModel] = useState("");
+  const [tollInfo, setTollInfo] = useState<TollInfo | null>(null);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const { toast } = useToast();
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
     subtotal: 0,
     tax: 0,
     total: 0,
     isPending: false,
-    isProcessing: false,
-  })
+    isProcessing: false
+  });
 
   const updateTowingInfo = (distance: number) => {
-    setTotalDistance(distance)
-    const newCost = calculateTotalCost(
-      distance,
-      truckType,
-      requiresManeuver,
-      totalTollCost,
-    )
-    setTotalCost(newCost)
-
-    setPaymentInfo((prev) => ({
-      ...prev,
-      subtotal: newCost,
-      total: newCost * 1.16, // Including IVA
-    }))
-  }
+    setTotalDistance(distance);
+    const newCost = calculateTotalCost(distance, truckType, requiresManeuver, totalTollCost);
+    setTotalCost(newCost);
+    setPaymentInfo(prev => ({ ...prev, subtotal: newCost, total: newCost * 1.16 }));
+  };
 
   const updateTollInfo = (tolls: TollLocation[], tollCost: number) => {
-    setDetectedTolls(tolls)
-    setTotalTollCost(tollCost)
-    setTollInfo({ tolls, totalTollCost: tollCost })
+    setDetectedTolls(tolls);
+    setTotalTollCost(tollCost);
+    setTollInfo({ tolls, totalTollCost: tollCost });
+    const newCost = calculateTotalCost(totalDistance, truckType, requiresManeuver, tollCost);
+    setTotalCost(newCost);
+  };
 
-    const newCost = calculateTotalCost(
-      totalDistance,
-      truckType,
-      requiresManeuver,
-      tollCost,
-    )
-    setTotalCost(newCost)
-  }
-
-  const updateTruckType = (type: 'A' | 'B' | 'C' | 'D') => {
-    setTruckType(type)
-    const newCost = calculateTotalCost(
-      totalDistance,
-      type,
-      requiresManeuver,
-      totalTollCost,
-    )
-    setTotalCost(newCost)
-  }
+  const updateTruckType = (type: "A" | "B" | "C" | "D") => {
+    setTruckType(type);
+    const newCost = calculateTotalCost(totalDistance, type, requiresManeuver, totalTollCost);
+    setTotalCost(newCost);
+  };
 
   const updateManeuverRequired = (required: boolean) => {
-    setRequiresManeuver(required)
-    const newCost = calculateTotalCost(
-      totalDistance,
-      truckType,
-      required,
-      totalTollCost,
-    )
-    setTotalCost(newCost)
-  }
+    setRequiresManeuver(required);
+    const newCost = calculateTotalCost(totalDistance, truckType, required, totalTollCost);
+    setTotalCost(newCost);
+  };
 
   const updateSelectedVehicleModel = (model: string) => {
-    setSelectedVehicleModel(model)
-  }
+    setSelectedVehicleModel(model);
+  };
 
   const updateLocationInfo = async (info: LocationInfo) => {
-    setIsLoadingLocations(true)
+    setIsLoadingLocations(true);
     try {
       if (info.pickup) {
-        toast({
-          title: 'Ubicación de Recogida Actualizada',
-          description: info.pickup.address,
-        })
+        toast({ title: "Ubicación de Recogida Actualizada", description: info.pickup.address });
       }
       if (info.drop) {
-        toast({
-          title: 'Ubicación de Entrega Actualizada',
-          description: info.drop.address,
-        })
+        toast({ title: "Ubicación de Entrega Actualizada", description: info.drop.address });
       }
     } catch (error) {
-      console.error('Error updating location:', error)
-      toast({
-        title: 'Error',
-        description: 'No se pudo actualizar la ubicación',
-        variant: 'destructive',
-      })
+      toast({ title: "Error", description: "No se pudo actualizar la ubicación", variant: "destructive" });
     } finally {
-      setIsLoadingLocations(false)
+      setIsLoadingLocations(false);
     }
-  }
+  };
 
   const processPayment = async (amount: number): Promise<boolean> => {
-    setIsProcessingPayment(true)
+    setIsProcessingPayment(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      toast({
-        title: 'Pago Procesado',
-        description: `Se ha procesado el pago por ${amount.toFixed(2)} MXN`,
-      })
-
-      return true
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      toast({ title: "Pago Procesado", description: `Se ha procesado el pago por $${amount.toFixed(2)} MXN` });
+      return true;
     } catch (error) {
-      console.error('Error processing payment:', error)
-      toast({
-        title: 'Error en el Pago',
-        description: 'No se pudo procesar el pago',
-        variant: 'destructive',
-      })
-      return false
+      toast({ title: "Error en el Pago", description: "No se pudo procesar el pago", variant: "destructive" });
+      return false;
     } finally {
-      setIsProcessingPayment(false)
+      setIsProcessingPayment(false);
     }
-  }
+  };
 
-  const setLoadingLocations = (loading) => {
-    setIsLoadingLocations(loading)
-  }
+  const setLoadingLocations = (loading: boolean) => {
+    setIsLoadingLocations(loading);
+  };
+
+  const contextValue: TowingContextType = {
+    totalDistance,
+    totalCost,
+    detectedTolls,
+    totalTollCost,
+    truckType,
+    requiresManeuver,
+    selectedVehicleModel,
+    tollInfo,
+    paymentInfo,
+    isLoadingLocations,
+    isProcessingPayment,
+    updateTowingInfo,
+    updateTollInfo,
+    updateTruckType,
+    updateManeuverRequired,
+    updateSelectedVehicleModel,
+    updateLocationInfo,
+    processPayment,
+    setLoadingLocations
+  };
 
   return (
-    <TowingContext.Provider
-      value={{
-        totalDistance,
-        totalCost,
-        detectedTolls,
-        totalTollCost,
-        truckType,
-        requiresManeuver,
-        selectedVehicleModel,
-        tollInfo,
-        paymentInfo,
-        isLoadingLocations,
-        isProcessingPayment,
-        updateTowingInfo,
-        updateTollInfo,
-        updateTruckType,
-        updateManeuverRequired,
-        updateSelectedVehicleModel,
-        updateLocationInfo,
-        processPayment,
-        setLoadingLocations,
-      }}
-    >
+    <TowingContext.Provider value={contextValue}>
       {children}
     </TowingContext.Provider>
-  )
-}
+  );
+};
 
 export const useTowing = () => {
-  const context = useContext(TowingContext)
-  if (context === undefined) {
-    throw new Error('useTowing must be used within a TowingProvider')
+  const context = useContext(TowingContext);
+  if (context === null) {
+    throw new Error('useTowing must be used within a TowingProvider');
   }
-  return context
-}
+  return context;
+};
 
-// Helper function to calculate total cost
 const calculateTotalCost = (
   distance: number,
-  truckType: 'A' | 'B' | 'C' | 'D',
+  truckType: "A" | "B" | "C" | "D",
   requiresManeuver: boolean,
-  tollCost: number,
+  tollCost: number
 ): number => {
-  const baseRate =
-    {
-      A: 18.82,
-      B: 20.62,
-      C: 23.47,
-      D: 32.35,
-    }[truckType] || 18.82
+  const baseRate = {
+    A: 18.82,
+    B: 20.62,
+    C: 23.47,
+    D: 32.35
+  }[truckType] || 18.82;
 
-  const maneuverCost = requiresManeuver
-    ? {
-        A: 1219.55,
-        B: 1336.73,
-        C: 1524.21,
-        D: 2101.65,
-      }[truckType]
-    : 0
+  const maneuverCost = requiresManeuver ? {
+    A: 1219.55,
+    B: 1336.73,
+    C: 1524.21,
+    D: 2101.65
+  }[truckType] || 0 : 0;
 
   const flagDropFee = {
     A: 528.69,
     B: 607.43,
     C: 721.79,
-    D: 885.84,
-  }[truckType]
+    D: 885.84
+  }[truckType] || 0;
 
-  return distance * baseRate + maneuverCost + flagDropFee + tollCost
-}
-
+  return (distance * baseRate) + maneuverCost + flagDropFee + tollCost;
+};
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\hooks\use-toast.ts
@@ -14646,67 +14667,50 @@ export const useLoadingState = (options: UseLoadingStateOptions = {}) => {
 // C:\Users\israe\Documents\GitHub\recentmap\src\hooks\useProfile.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
-import { useToast } from './use-toast'
+import { Profile } from '@/types/user'
 
 export const useProfile = () => {
-  const { toast } = useToast()
   const queryClient = useQueryClient()
+
+  const fetchUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    return user?.id
+  }
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser()
-      if (userError) throw userError
+      const userId = await fetchUser()
+      if (!userId) return null
 
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', userId)
         .single()
 
       if (error) throw error
-      return data
+      return data as Profile
     },
   })
 
-  const updateProfile = useMutation({
-    mutationFn: async (profileData: {
-      username?: string
-      full_name?: string
-      phone_number?: string
-    }) => {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser()
-      if (userError) throw userError
+  const { mutateAsync: updateProfile, isPending } = useMutation({
+    mutationFn: async (updates: Partial<Profile>) => {
+      const userId = await fetchUser()
+      if (!userId) return null
 
       const { data, error } = await supabase
         .from('profiles')
-        .update(profileData)
-        .eq('id', user.id)
+        .update(updates)
+        .eq('id', userId)
         .select()
         .single()
 
       if (error) throw error
-      return data
+      return data as Profile
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] })
-      toast({
-        title: 'Profile Updated',
-        description: 'Your profile has been updated successfully.',
-      })
-    },
-    onError: (error: Error) => {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      })
     },
   })
 
@@ -14714,9 +14718,9 @@ export const useProfile = () => {
     profile,
     isLoading,
     updateProfile,
+    isPending,
   }
 }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\hooks\useServiceRequest.ts
@@ -15126,154 +15130,159 @@ export const useWebhooks = () => {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\integrations\supabase\client.ts
-// This file is automatically generated. Do not edit it directly.
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from './types'
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
+// For development, use these fallback values if env vars are not set
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://fhisqbevtkjdcokqeoqa.supabase.co'
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZoaXNxYmV2dGtqZGNva3Flb3FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDc5MjA0MDAsImV4cCI6MjAyMzQ5NjQwMH0.dPTGt8OLhxq-KfqYKwVRkKkqE8fXHQa_PKhF5LqQyYE'
 
+// Create and export the Supabase client
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey)
 
 
+// C:\Users\israe\Documents\GitHub\recentmap\src\integrations\supabase\towing.tsx
+import { createClient } from '@supabase/supabase-js'
+import { Database } from './types'
+import { TollLocation } from '@/types/toll'
 
-// C:\Users\israe\Documents\GitHub\recentmap\src\integrations\supabase\towing.ts
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { TollLocation } from '@/data/tollData'; 
-import { useToast } from '@/hooks/use-toast';
-import { calculateTotalCost } from '@/utils/costCalculator';
-import { LocationInfo, TollInfo, PaymentInfo, TowingContextType } from '../../types/towing';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Crear el contexto
-const TowingContext = createContext<TowingContextType | undefined>(undefined);
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey)
 
-export const TowingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Estados
-  const [totalDistance, setTotalDistance] = useState(0);
-  const [totalCost, setTotalCost] = useState(0);
-  const [detectedTolls, setDetectedTolls] = useState<TollLocation[]>([]);
-  const [totalTollCost, setTotalTollCost] = useState(0);
-  const [truckType, setTruckType] = useState<"A" | "B" | "C" | "D">("A");
-  const [requiresManeuver, setRequiresManeuver] = useState(false);
-  const [selectedVehicleModel, setSelectedVehicleModel] = useState('');
-  const [tollInfo, setTollInfo] = useState<TollInfo | null>(null);
-  const [isLoadingLocations, setIsLoadingLocations] = useState(false);
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const { toast } = useToast();
+export const getTowingRequests = async () => {
+  const { data, error } = await supabase
+    .from('towing_requests')
+    .select('*')
+    .order('created_at', { ascending: false })
 
-  const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
-    subtotal: 0,
-    tax: 0,
-    total: 0,
-    isPending: false,
-    isProcessing: false,
-  });
-
-  // Funciones para actualizar el estado
-  const updateTowingInfo = (distance: number) => {
-    setTotalDistance(distance);
-    const newCost = calculateTotalCost(distance, truckType, requiresManeuver, totalTollCost);
-    setTotalCost(newCost);
-    setPaymentInfo(prev => ({
-      ...prev,
-      subtotal: newCost,
-      total: newCost * 1.16,
-    }));
-  };
-
-  const updateTollInfo = (tolls: TollLocation[], tollCost: number) => {
-    setDetectedTolls(tolls);
-    setTotalTollCost(tollCost);
-    setTollInfo({ tolls, totalTollCost: tollCost });
-    const newCost = calculateTotalCost(totalDistance, truckType, requiresManeuver, tollCost);
-    setTotalCost(newCost);
-  };
-
-  const updateTruckType = (type: "A" | "B" | "C" | "D") => {
-    setTruckType(type);
-    const newCost = calculateTotalCost(totalDistance, type, requiresManeuver, totalTollCost);
-    setTotalCost(newCost);
-  };
-
-  const updateManeuverRequired = (required: boolean) => {
-    setRequiresManeuver(required);
-    const newCost = calculateTotalCost(totalDistance, truckType, required, totalTollCost);
-    setTotalCost(newCost);
-  };
-
-  const updateSelectedVehicleModel = (model: string) => {
-    setSelectedVehicleModel(model);
-  };
-
-  const updateLocationInfo = async (info: LocationInfo) => {
-    setIsLoadingLocations(true);
-    try {
-      if (info.pickup) {
-        toast({ title: "Pickup Location Updated", description: info.pickup.address });
-      }
-      if (info.drop) {
-        toast({ title: "Drop-off Location Updated", description: info.drop.address });
-      }
-    } catch (error) {
-      toast({ title: "Error", description: "Could not update the location", variant: "destructive" });
-    } finally {
-      setIsLoadingLocations(false);
-    }
-  };
-
-  const processPayment = async (amount: number): Promise<boolean> => {
-    setIsProcessingPayment(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      toast({ title: "Payment Processed", description: `Processed payment of ${amount.toFixed(2)} MXN` });
-      return true;
-    } catch (error) {
-      toast({ title: "Payment Error", description: "Could not process the payment", variant: "destructive" });
-      return false;
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  };
-
-  return (
-    <TowingContext.Provider
-      value={{
-        totalDistance,
-        totalCost,
-        detectedTolls,
-        totalTollCost,
-        truckType,
-        requiresManeuver,
-        selectedVehicleModel,
-        tollInfo,
-        paymentInfo,
-        isLoadingLocations,
-        isProcessingPayment,
-        updateTowingInfo,
-        updateTollInfo,
-        updateTruckType,
-        updateManeuverRequired,
-        updateSelectedVehicleModel,
-        updateLocationInfo,
-        processPayment,
-      }}
-    >
-      {children}
-    </TowingContext.Provider>
-  );
-};
-
-// Hook personalizado para usar el contexto
-export const useTowing = () => {
-  const context = useContext(TowingContext);
-  if (context === undefined) {
-    throw new Error('useTowing must be used within a TowingProvider');
+  if (error) {
+    throw error
   }
-  return context;
-};
 
+  return data
+}
+
+export const createTowingRequest = async (request: any) => {
+  const { data, error } = await supabase
+    .from('towing_requests')
+    .insert([request])
+    .select()
+
+  if (error) {
+    throw error
+  }
+
+  return data[0]
+}
+
+export const updateTowingRequest = async (id: string, updates: any) => {
+  const { data, error } = await supabase
+    .from('towing_requests')
+    .update(updates)
+    .eq('id', id)
+    .select()
+
+  if (error) {
+    throw error
+  }
+
+  return data[0]
+}
+
+export const deleteTowingRequest = async (id: string) => {
+  const { error } = await supabase
+    .from('towing_requests')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    throw error
+  }
+}
+
+export const getTowingRequestById = async (id: string) => {
+  const { data, error } = await supabase
+    .from('towing_requests')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const getTowingRequestsByUser = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('towing_requests')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const updateTolls = (tolls: TollLocation[], tollCost: number) => {
+  const updatedTolls = tolls.map(toll => ({
+    ...toll,
+    cost: toll.cost + (tollCost / tolls.length)
+  }))
+
+  return {
+    tolls: updatedTolls,
+    totalTollCost: updatedTolls.reduce((sum, toll) => sum + toll.cost, 0)
+  }
+}
+
+export const calculateTowingCost = (distance: number, vehicleType: string) => {
+  const baseRate = vehicleType === 'heavy' ? 2.5 : 1.8
+  return distance * baseRate
+}
+
+export const validateTowingRequest = (request: any) => {
+  const requiredFields = ['pickup_location', 'drop_location', 'vehicle_type']
+  const missingFields = requiredFields.filter(field => !request[field])
+
+  if (missingFields.length > 0) {
+    throw new Error(`Missing required fields: ${missingFields.join(', ')}`)
+  }
+
+  return true
+}
+
+export const processTowingPayment = async (paymentDetails: any) => {
+  const { data, error } = await supabase
+    .from('payments')
+    .insert([paymentDetails])
+    .select()
+
+  if (error) {
+    throw error
+  }
+
+  return data[0]
+}
+
+export const getTowingMetrics = async () => {
+  const { data, error } = await supabase
+    .from('towing_metrics')
+    .select('*')
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\integrations\supabase\types.ts
@@ -15315,36 +15324,45 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'payment_transactions_request_id_fkey'
-            columns: ['request_id']
+            foreignKeyName: "payment_transactions_request_id_fkey"
+            columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: 'vehicle_requests'
-            referencedColumns: ['id']
+            referencedRelation: "vehicle_requests"
+            referencedColumns: ["id"]
           },
         ]
       }
       profiles: {
         Row: {
+          avatar_url: string | null
+          bio: string | null
           created_at: string
           full_name: string | null
           id: string
           phone_number: string | null
+          preferences: Json | null
           updated_at: string
           username: string | null
         }
         Insert: {
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           full_name?: string | null
           id: string
           phone_number?: string | null
+          preferences?: Json | null
           updated_at?: string
           username?: string | null
         }
         Update: {
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
           phone_number?: string | null
+          preferences?: Json | null
           updated_at?: string
           username?: string | null
         }
@@ -15410,11 +15428,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'vehicle_requests_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "vehicle_requests_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -15451,11 +15469,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'webhooks_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "webhooks_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -15475,27 +15493,27 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, 'public'>]
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-        Database[PublicTableNameOrOptions['schema']]['Views'])
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] &
-        PublicSchema['Views'])
-    ? (PublicSchema['Tables'] &
-        PublicSchema['Views'])[PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -15504,19 +15522,19 @@ export type Tables<
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema['Tables']
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -15525,19 +15543,19 @@ export type TablesInsert<
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema['Tables']
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -15546,30 +15564,30 @@ export type TablesUpdate<
 
 export type Enums<
   PublicEnumNameOrOptions extends
-    | keyof PublicSchema['Enums']
+    | keyof PublicSchema["Enums"]
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
-    ? PublicSchema['Enums'][PublicEnumNameOrOptions]
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema['CompositeTypes']
+    | keyof PublicSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema['CompositeTypes']
-    ? PublicSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 
@@ -16087,6 +16105,7 @@ import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { ReactNode, useEffect, useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import { Loader2 } from 'lucide-react'
 
 // Move Stripe key to a constant
 const STRIPE_PUBLIC_KEY =
@@ -16120,12 +16139,15 @@ export const StripeProvider = ({ children }: { children: ReactNode }) => {
   }, [toast])
 
   if (!stripePromise) {
-    return null // Or a loading spinner
+    return (
+      <div className="flex items-center justify-center min-h-[200px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return <Elements stripe={stripePromise}>{children}</Elements>
 }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\providers\ThemeProvider.tsx
@@ -16773,74 +16795,31 @@ export const vehicleFormSchema = formSchema
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\types\location.ts
-// Interface representing a Location entity
 export interface Location {
-  id: string
-  name: string
+  lat: number
+  lng: number
   address?: string
-  city?: string
-  state?: string
-  country?: string
-  postalCode?: string
-  latitude?: number
-  longitude?: number
-  createdAt?: Date
-  updatedAt?: Date
 }
 
-// Input structure for creating or updating a location
-export interface LocationInput {
-  name: string
-  address?: string
-  city?: string
-  state?: string
-  country?: string
-  postalCode?: string
-  latitude?: number
-  longitude?: number
-}
-
-// Filter criteria for querying locations
-export interface LocationFilter {
+export interface TollLocation {
   id?: string
-  name?: string
-  city?: string
-  state?: string
-  country?: string
-}
-
-// Interface for representing a location search result with distance and formatted address
-export interface LocationResult {
-  id: string
   name: string
-  address: string
-  city: string
-  state: string
-  zip: string
+  location: string
+  cost: number
   lat: number
-  lon: number
-  distance: number
-  formattedAddress: string
-  onSelectingPickup?: (selecting: boolean) => void
+  lng: number
+  description: string
+  type: 'highway' | 'urban'
+  operatingHours: string
+  acceptedPayments: ('cash' | 'card' | 'tag')[]
+  vehicleTypes: ('car' | 'truck' | 'motorcycle')[]
+  lastUpdated: string
+  status: 'active' | 'inactive'
+  direction?: 'outbound' | 'return'
+  kilometer?: string
+  route?: string
+  distance?: number
 }
-
-// Interface representing the minimal search result for a location search
-export interface LocationSearchResult {
-  address: string
-  lat: number
-  lon: number
-  distance: number
-}
-
-// Structure for API response regarding locations
-export interface LocationResponse {
-  success: boolean
-  message?: string
-  data?: Location
-  error?: string
-  results?: LocationResult[]
-}
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\types\service.ts
@@ -16875,57 +16854,105 @@ export interface ServiceRequest {
 
 
 
+// C:\Users\israe\Documents\GitHub\recentmap\src\types\toll.ts
+export interface TollLocation {
+  id?: string
+  name: string
+  location: string
+  cost: number
+  lat: number
+  lng: number
+  description: string
+  type: 'highway' | 'urban'
+  operatingHours: string
+  acceptedPayments: ('cash' | 'card' | 'tag')[]
+  vehicleTypes: ('car' | 'truck' | 'motorcycle')[]
+  lastUpdated: string
+  status: 'active' | 'inactive'
+  direction?: 'outbound' | 'return'
+  kilometer?: string
+  route?: string
+  distance?: number
+}
+
+
 // C:\Users\israe\Documents\GitHub\recentmap\src\types\towing.ts
-import { Dispatch, SetStateAction } from 'react';
+export interface TollLocation {
+  name: string
+  location: string
+  cost: number
+  lat: number
+  lng: number
+  description: string
+  type: string
+  operatingHours: string
+  acceptedPayments: string[]
+  vehicleTypes: string[]
+  lastUpdated: string
+  status: 'active' | 'inactive'
+  direction?: 'outbound' | 'return'
+  kilometer?: string
+  route?: string
+  distance?: number
+}
 
 export interface LocationInfo {
-  pickup?: {
-    address: string;
-  };
-  drop?: {
-    address: string;
-  };
+  pickup?: { lat: number; lng: number; address: string }
+  drop?: { lat: number; lng: number; address: string }
 }
 
 export interface TollInfo {
-  tolls: TollLocation[];
-  totalTollCost: number;
-}
-
-export interface TollLocation {
-  name: string;               // Name of the toll
-  location: string;           // Ensure this is defined in all instances
-  cost: number;               // Cost of the toll
+  tolls: TollLocation[]
+  totalTollCost: number
 }
 
 export interface PaymentInfo {
-  subtotal: number;           // Subtotal payment
-  tax: number;                // Tax amount
-  total: number;              // Total payment including tax
-  isPending: boolean;         // Payment pending status
-  isProcessing: boolean;      // Currently processing payment status
+  subtotal: number
+  tax: number
+  total: number
+  isPending: boolean
+  isProcessing: boolean
 }
 
 export interface TowingContextType {
-  totalDistance: number;      // Total distance being towed
-  totalCost: number;          // Total cost of towing
-  detectedTolls: TollLocation[]; // List of detected toll locations
-  totalTollCost: number;      // Total cost associated with tolls
-  truckType: 'A' | 'B' | 'C' | 'D'; // Type of truck
-  requiresManeuver: boolean;   // Indicates if maneuver is required
-  selectedVehicleModel: string; // Model of selected vehicle
-  tollInfo: TollInfo | null;    // Information about tolls
-  paymentInfo: PaymentInfo;      // Information about payments
-  isLoadingLocations: boolean;   // Loading status for locations
-  isProcessingPayment: boolean;   // Processing payment status
-  updateTowingInfo: (distance: number) => void; // Update towing info
-  updateTollInfo: (tolls: TollLocation[], tollCost: number) => void; // Update toll info
-  updateTruckType: (type: 'A' | 'B' | 'C' | 'D') => void; // Update truck type
-  updateManeuverRequired: (required: boolean) => void; // Update if maneuver is needed
-  updateSelectedVehicleModel: (model: string) => void; // Update selected vehicle model
-  updateLocationInfo: (info: LocationInfo) => Promise<void>; // Update location info
-  processPayment: (amount: number) => Promise<boolean>; // Process payment
-  setIsLoadingLocations: Dispatch<SetStateAction<boolean>>; // Update loading state
+  totalDistance: number
+  totalCost: number
+  detectedTolls: TollLocation[]
+  totalTollCost: number
+  truckType: 'A' | 'B' | 'C' | 'D'
+  requiresManeuver: boolean
+  selectedVehicleModel: string
+  tollInfo: TollInfo | null
+  paymentInfo: PaymentInfo
+  isLoadingLocations: boolean
+  isProcessingPayment: boolean
+  updateTowingInfo: (distance: number) => void
+  updateTollInfo: (tolls: TollLocation[], tollCost: number) => void
+  updateTruckType: (type: 'A' | 'B' | 'C' | 'D') => void
+  updateManeuverRequired: (required: boolean) => void
+  updateSelectedVehicleModel: (model: string) => void
+  updateLocationInfo: (info: LocationInfo) => void
+  processPayment: (amount: number) => Promise<boolean>
+}
+
+
+// C:\Users\israe\Documents\GitHub\recentmap\src\types\user.ts
+import { Json } from '@/integrations/supabase/types'
+
+export interface Profile {
+  id: string
+  created_at: string
+  updated_at: string
+  username: string | null
+  full_name: string | null
+  phone_number: string | null
+  avatar_url: string | null
+  bio: string | null
+  preferences: Json
+}
+
+export interface UserProfile extends Profile {
+  email?: string
 }
 
 
@@ -17414,216 +17441,107 @@ export const showPaymentNotification = (success: boolean, error?: string) => {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\utils\PaymentForm.tsx
-import React from 'react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { useState } from 'react'
+import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js'
 import { Button } from '@/components/ui/button'
-import { useToast } from '@/hooks/use-toast'
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
-import { CreditCard, Calendar, CheckCircle, Shield } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import {
-  processPayment,
-  validatePaymentDetails,
-} from '@/utils/paymentProcessor'
+import { toast } from '@/components/ui/use-toast'
+import type { Stripe, StripeElements } from '@stripe/stripe-js'
 
-interface PaymentWindowProps {
-  isOpen: boolean
-  onClose: () => void
-  onPaymentSubmit?: (result: { success: boolean; error?: string }) => void
+interface PaymentFormProps {
   amount: number
+  onSuccess: () => void
+  onError: (error: string) => void
 }
 
-const PaymentWindow = ({
-  isOpen,
-  onClose,
-  onPaymentSubmit,
-  amount = 0,
-}: PaymentWindowProps) => {
+export const PaymentForm = ({ amount, onSuccess, onError }: PaymentFormProps) => {
   const stripe = useStripe()
   const elements = useElements()
-  const { toast } = useToast()
-  const [isProcessing, setIsProcessing] = React.useState(false)
-  const [cardComplete, setCardComplete] = React.useState(false)
-
-  React.useEffect(() => {
-    if (isOpen) {
-      setCardComplete(false)
-    }
-  }, [isOpen])
-
-  const handleClose = () => {
-    if (isProcessing) {
-      toast({
-        title: 'Pago en Proceso',
-        description: 'Por favor, espere mientras procesamos su pago',
-        variant: 'destructive',
-      })
-      return
-    }
-    onClose()
-  }
+  const [isProcessing, setIsProcessing] = useState(false)
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
 
-    if (!cardComplete) {
-      toast({
-        title: 'Datos Incompletos',
-        description: 'Por favor, complete todos los datos de la tarjeta',
-        variant: 'destructive',
-      })
+    if (!stripe || !elements) {
       return
     }
 
     setIsProcessing(true)
 
-    if (!stripe || !elements) {
-      toast({
-        title: 'Error',
-        description: 'Sistema de pago no disponible. Intente más tarde.',
-        variant: 'destructive',
-      })
-      setIsProcessing(false)
-      return
-    }
-
-    const cardElement = elements.getElement(CardElement)
-    if (!validatePaymentDetails(cardElement)) {
-      setIsProcessing(false)
-      return
-    }
-
     try {
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
+      const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
         type: 'card',
-        card: cardElement,
+        card: elements.getElement(CardElement)!,
       })
 
-      if (error) {
-        throw error
+      if (paymentMethodError) {
+        throw new Error(paymentMethodError.message)
       }
 
-      const result = await processPayment(amount)
+      // Process payment with your backend
+      // This is a placeholder for the actual payment processing
+      const response = await fetch('/api/process-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          paymentMethodId: paymentMethod.id,
+          amount,
+        }),
+      })
 
-      if (result.success) {
-        toast({
-          title: 'Pago Exitoso',
-          description: `Transacción completada. ID: ${result.transactionId}`,
-        })
-        onPaymentSubmit?.({ success: true })
-        onClose()
-      } else {
-        throw new Error(result.error)
+      if (!response.ok) {
+        throw new Error('Payment processing failed')
       }
-    } catch (err: any) {
+
+      onSuccess()
       toast({
-        title: 'Error en el Pago',
-        description: err.message || 'Ocurrió un error al procesar el pago',
+        title: 'Payment Successful',
+        description: 'Your payment has been processed successfully.',
+      })
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Payment processing failed'
+      onError(errorMessage)
+      toast({
+        title: 'Payment Failed',
+        description: errorMessage,
         variant: 'destructive',
       })
-      onPaymentSubmit?.({ success: false, error: err.message })
     } finally {
       setIsProcessing(false)
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-white to-gray-50 border-gray-200">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
-            <CreditCard className="w-5 h-5 text-primary" />
-            Pago Seguro
-          </DialogTitle>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-              <CardElement
-                onChange={(e) => setCardComplete(e.complete)}
-                options={{
-                  style: {
-                    base: {
-                      fontSize: '16px',
-                      color: '#424770',
-                      '::placeholder': {
-                        color: '#aab7c4',
-                      },
-                    },
-                    invalid: {
-                      color: '#9e2146',
-                    },
-                  },
-                  hidePostalCode: true,
-                }}
-              />
-            </div>
-
-            <div className="flex items-center justify-between text-sm text-gray-600">
-              <span className="flex items-center gap-1.5">
-                <Shield className="w-4 h-4" />
-                Encriptación SSL Segura
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4" />
-                {new Date().toLocaleDateString()}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between px-2">
-              <span className="text-sm text-gray-600">Cargo por Servicio</span>
-              <span className="text-lg font-semibold text-primary">
-                ${amount.toFixed(2)}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex gap-3 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isProcessing}
-              className="border-gray-300 hover:bg-gray-100"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={!stripe || isProcessing || !cardComplete}
-              className={cn(
-                'bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white min-w-[120px]',
-                isProcessing && 'opacity-80',
-              )}
-            >
-              {isProcessing ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Procesando...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4" />
-                  Pagar ${amount.toFixed(2)}
-                </span>
-              )}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="p-4 border rounded-lg">
+        <CardElement
+          options={{
+            style: {
+              base: {
+                fontSize: '16px',
+                color: '#424770',
+                '::placeholder': {
+                  color: '#aab7c4',
+                },
+              },
+              invalid: {
+                color: '#9e2146',
+              },
+            },
+          }}
+        />
+      </div>
+      <Button
+        type="submit"
+        disabled={!stripe || isProcessing}
+        className="w-full"
+      >
+        {isProcessing ? 'Processing...' : `Pay $${amount.toFixed(2)}`}
+      </Button>
+    </form>
   )
 }
-
-export default PaymentWindow
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\utils\paymentProcessor.ts
@@ -17931,7 +17849,7 @@ const decodePolyline = (str: string, precision = 5) => {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\utils\tollUtils.ts
-import { TollLocation } from '@/data/tollData'
+import { TollLocation } from '@/types/toll'
 
 /**
  * Separates tolls by direction (outbound/return)
@@ -17959,7 +17877,6 @@ export const formatTollInfo = (toll: TollLocation) => ({
 export const calculateTotalTollCost = (tolls: TollLocation[]): number => {
   return tolls.reduce((sum, toll) => sum + toll.cost, 0)
 }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\utils\TowingContext.tsx

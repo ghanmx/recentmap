@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTowing } from '@/contexts/TowingContext';
-import { towTruckTypes } from '@/utils/towTruckPricing';
-import { FloatingPanelHeader } from './FloatingPanelHeader';
-import { CostDetailsContent } from './CostDetailsContent';
+import React, { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTowing } from '@/contexts/TowingContext'
+import { towTruckTypes } from '@/utils/towTruckPricing'
+import { FloatingPanelHeader } from './FloatingPanelHeader'
+import { CostDetailsContent } from './CostDetailsContent'
 
 interface FloatingPanelControlsProps {
-  onClose: () => void;
-  onSave?: () => void;
-  onCancel?: () => void;
-  className?: string;
+  onClose: () => void
+  onSave?: () => void
+  onCancel?: () => void
+  className?: string
 }
 
 export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
@@ -20,14 +20,20 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
   onCancel,
   className,
 }) => {
-  const [showCostDetails, setShowCostDetails] = useState(false);
-  const { totalDistance, truckType, requiresManeuver, totalTollCost, detectedTolls } = useTowing();
+  const [showCostDetails, setShowCostDetails] = useState(false)
+  const {
+    totalDistance,
+    truckType,
+    requiresManeuver,
+    totalTollCost,
+    detectedTolls,
+  } = useTowing()
 
-  const selectedTruck = towTruckTypes[truckType || 'A'];
-  const baseCost = totalDistance * selectedTruck.perKm;
-  const flagDropFee = selectedTruck.flagDropFee;
-  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0;
-  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost;
+  const selectedTruck = towTruckTypes[truckType || 'A']
+  const baseCost = totalDistance * selectedTruck.perKm
+  const flagDropFee = selectedTruck.flagDropFee
+  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
+  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
 
   return (
     <motion.div
@@ -58,17 +64,13 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
             Cancel
           </Button>
         )}
-        {onSave && (
-          <Button onClick={onSave}>
-            Save
-          </Button>
-        )}
+        {onSave && <Button onClick={onSave}>Save</Button>}
         <Button variant="ghost" onClick={onClose}>
           Close
         </Button>
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default FloatingPanelControls;
+export default FloatingPanelControls

@@ -10,7 +10,9 @@ export const useProfile = () => {
   } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) return null
 
       const { data, error } = await supabase
@@ -26,7 +28,9 @@ export const useProfile = () => {
 
   const { mutateAsync: updateProfile, isPending } = useMutation({
     mutationFn: async (updates: Partial<Profile>) => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) return null
 
       const { data, error } = await supabase

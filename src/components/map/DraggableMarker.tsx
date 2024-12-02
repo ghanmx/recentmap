@@ -27,7 +27,7 @@ export const DraggableMarker = ({
     if (markerRef.current) {
       const marker = markerRef.current
       marker.setLatLng(position as L.LatLng)
-      
+
       // Set z-index based on marker type and hover state
       const baseZIndex = isPickup ? 1000 : 999
       const zIndex = isHovered ? baseZIndex + 1 : baseZIndex
@@ -49,7 +49,7 @@ export const DraggableMarker = ({
       if (markerRef.current) {
         markerRef.current.openPopup()
       }
-    }
+    },
   }
 
   return (
