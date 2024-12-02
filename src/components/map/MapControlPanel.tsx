@@ -68,8 +68,6 @@ export const MapControlPanel = ({
           <MapControls
             selectingPickup={selectingPickup}
             selectingDrop={selectingDrop}
-            setSelectingPickup={setSelectingPickup}
-            setSelectingDrop={setSelectingDrop}
             onPickupClick={handlePickupClick}
             onDropClick={handleDropClick}
           />
