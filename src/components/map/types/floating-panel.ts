@@ -28,5 +28,15 @@ export interface CostDetailsContentProps {
   flagDropFee: number
   maneuverCost: number
   totalTollCost: number
+  subtotal: number
   detectedTolls: TollLocation[]
+}
+
+export interface MapControlsProps {
+  selectingPickup: boolean
+  selectingDrop: boolean
+  setSelectingPickup: (value: boolean) => void
+  setSelectingDrop: (value: boolean) => void
+  onPickupClick?: () => void
+  onDropClick?: () => void
 }
