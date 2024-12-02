@@ -1,3 +1,5 @@
+import { TollLocation } from '@/types/location'
+
 export interface FloatingPanelProps {
   children: React.ReactNode
   title: string
@@ -29,6 +31,8 @@ export interface CostDetailsContentProps {
   totalTollCost: number
   subtotal: number
   detectedTolls: TollLocation[]
+  totalDistance?: number
+  requiresManeuver?: boolean
 }
 
 export interface MapControlsProps {
