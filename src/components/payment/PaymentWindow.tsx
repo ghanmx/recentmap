@@ -2,16 +2,13 @@ import React from 'react'
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
-import { CreditCard, Calendar, CheckCircle, Shield } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { formatCurrency } from '@/utils/priceCalculator'
+import { useStripe, useElements } from '@stripe/react-stripe-js'
+import { PaymentHeader } from './PaymentHeader'
+import { PaymentForm } from './PaymentForm'
+import { PaymentFooter } from './PaymentFooter'
+import { PaymentActions } from './PaymentActions'
 
 interface PaymentWindowProps {
   isOpen: boolean
@@ -121,88 +118,21 @@ const PaymentWindow = ({
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md bg-gradient-to-br from-white to-gray-50 border-gray-200">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
-            <CreditCard className="w-5 h-5 text-primary" />
-            Pago Seguro
-          </DialogTitle>
-        </DialogHeader>
-
+        <PaymentHeader />
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-              <CardElement
-                onChange={(e) => setCardComplete(e.complete)}
-                options={{
-                  style: {
-                    base: {
-                      fontSize: '16px',
-                      color: '#424770',
-                      '::placeholder': {
-                        color: '#aab7c4',
-                      },
-                    },
-                    invalid: {
-                      color: '#9e2146',
-                    },
-                  },
-                  hidePostalCode: true,
-                }}
-              />
-            </div>
-
-            <div className="flex items-center justify-between text-sm text-gray-600">
-              <span className="flex items-center gap-1.5">
-                <Shield className="w-4 h-4" />
-                Encriptación SSL Segura
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4" />
-                {new Date().toLocaleDateString()}
-              </span>
-            </div>
-
-            <div className="flex flex-col space-y-2 px-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Cargo por Servicio</span>
-                <span className="text-lg font-semibold text-primary">
-                  {formatCurrency(finalCost)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-3 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isProcessing}
-              className="border-gray-300 hover:bg-gray-100"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={!stripe || isProcessing || !cardComplete}
-              className={cn(
-                'bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white min-w-[120px]',
-                isProcessing && 'opacity-80',
-              )}
-            >
-              {isProcessing ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Procesando...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4" />
-                  Pagar {formatCurrency(finalCost)}
-                </span>
-              )}
-            </Button>
-          </div>
+          <PaymentForm
+            cardComplete={cardComplete}
+            setCardComplete={setCardComplete}
+            finalCost={finalCost}
+          />
+          <PaymentFooter />
+          <PaymentActions
+            onClose={handleClose}
+            isProcessing={isProcessing}
+            handleSubmit={handleSubmit}
+            cardComplete={cardComplete}
+            finalCost={finalCost}
+          />
         </form>
       </DialogContent>
     </Dialog>
