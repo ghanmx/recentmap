@@ -2,7 +2,7 @@ import { ChevronDown, ChevronUp, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/utils/priceCalculator'
 import { motion } from 'framer-motion'
-import { TowTruckType } from '@/utils/towTruckPricing'
+import { TowTruckType } from '@/utils/pricing'
 import {
   Tooltip,
   TooltipContent,

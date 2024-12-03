@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTowing } from '@/contexts/TowingContext'
-import { towTruckTypes } from '@/utils/towTruckPricing'
+import { towTruckTypes } from '@/utils/pricing'
 import { CostHeader } from './cost/CostHeader'
 import { CostMetrics } from './cost/CostMetrics'
 import { CostBreakdown } from './cost/CostBreakdown'

@@ -1,4 +1,4 @@
-import { TowTruckType } from '@/utils/towTruckPricing'
+import { TowTruckType } from '@/utils/pricing'
 import { CostItemDisplay } from './CostItemDisplay'
 import { Flag, TrendingUp, Truck } from 'lucide-react'
 import { formatCurrency } from '@/utils/priceCalculator'

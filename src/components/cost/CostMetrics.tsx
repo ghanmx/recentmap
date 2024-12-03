@@ -1,6 +1,6 @@
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { TowTruckType } from '@/utils/towTruckPricing'
+import { TowTruckType } from '@/utils/pricing'
 import { motion } from 'framer-motion'
 
 export interface CostMetricsProps {

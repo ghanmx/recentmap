@@ -6,7 +6,7 @@ import {
   FormControl,
 } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { towTruckTypes, getTruckTypeForVehicle } from '@/utils/towTruckPricing'
+import { towTruckTypes, getTruckTypeForVehicle } from '@/utils/pricing'
 import { Truck } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 import { FormData } from '@/types/form'

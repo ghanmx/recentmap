@@ -3,7 +3,7 @@ import { PaymentAmount } from './PaymentAmount'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { formatCurrency } from '@/utils/priceCalculator'
 import { useTowing } from '@/contexts/TowingContext'
-import { towTruckTypes } from '@/utils/towTruckPricing'
+import { towTruckTypes } from '@/utils/pricing'
 import { motion } from 'framer-motion'
 import { Receipt, Flag, Truck, TrendingUp } from 'lucide-react'
 
