@@ -1,4 +1,9 @@
-import { COMPANY_LOCATION } from './routeService'
+const FALLBACK_GEOCODING_URL = 'https://nominatim.openstreetmap.org'
+const CORS_PROXIES = [
+  'https://api.allorigins.win/raw',
+  'https://corsproxy.io/',
+  'https://cors-anywhere.herokuapp.com/',
+]
 
 interface GeocodingOptions {
   fuzzyMatch?: boolean
@@ -7,7 +12,66 @@ interface GeocodingOptions {
   proximity?: { lat: number; lng: number }
 }
 
-const FALLBACK_GEOCODING_URL = 'https://nominatim.openstreetmap.org'
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 8000) => {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => {
+    controller.abort()
+  }, timeout)
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const data = await response.json()
+    return data
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        console.warn('Request timed out:', url)
+        throw new Error('Request timed out')
+      }
+      console.warn('Fetch error:', error.message)
+    }
+    throw error
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
+const tryFetchWithProxies = async (url: string) => {
+  let lastError
+
+  for (const proxyUrl of CORS_PROXIES) {
+    try {
+      console.log('Attempting request with proxy:', proxyUrl)
+      const finalUrl = `${proxyUrl}?url=${encodeURIComponent(url)}`
+      const data = await fetchWithTimeout(finalUrl, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'TowingServiceApplication/1.0',
+        },
+      })
+      console.log('Successfully fetched data with proxy:', proxyUrl)
+      return data
+    } catch (error) {
+      lastError = error
+      console.warn(`Failed to fetch with proxy ${proxyUrl}:`, error)
+      continue // Try next proxy
+    }
+  }
+
+  // If all proxies fail, return a default response
+  console.warn('All proxies failed, returning fallback response')
+  return {
+    display_name: 'Dirección no disponible (error de conexión)',
+    lat: 0,
+    lon: 0,
+  }
+}
 
 export const searchAddresses = async (
   query: string,
@@ -33,34 +97,21 @@ export const searchAddresses = async (
   }
 
   try {
-    const response = await fetch(
-      `${FALLBACK_GEOCODING_URL}/search?${searchParams}`,
-      {
-        headers: {
-          Accept: 'application/json',
-          'User-Agent': 'TowingServiceApplication/1.0',
-        },
-        mode: 'cors',
-      },
-    )
+    const url = `${FALLBACK_GEOCODING_URL}/search?${searchParams}`
+    const data = await tryFetchWithProxies(url)
 
-    if (!response.ok) {
-      throw new Error(`Error en la búsqueda de direcciones: ${response.status}`)
+    if (Array.isArray(data)) {
+      return data.map((item: any) => ({
+        address: item.display_name,
+        lat: parseFloat(item.lat),
+        lon: parseFloat(item.lon),
+        importance: item.importance || 0,
+      }))
     }
-
-    const data = await response.json()
-
-    return data.map((item: any) => ({
-      address: item.display_name,
-      lat: parseFloat(item.lat),
-      lon: parseFloat(item.lon),
-      importance: item.importance || 0,
-    }))
+    return []
   } catch (error) {
     console.error('Error searching addresses:', error)
-    throw new Error(
-      'No se pudieron obtener las direcciones. Por favor, intente nuevamente.',
-    )
+    return []
   }
 }
 
@@ -69,27 +120,11 @@ export const getAddressFromCoordinates = async (
   lng: number,
 ): Promise<string> => {
   try {
-    const response = await fetch(
-      `${FALLBACK_GEOCODING_URL}/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
-      {
-        headers: {
-          Accept: 'application/json',
-          'User-Agent': 'TowingServiceApplication/1.0',
-        },
-        mode: 'cors',
-      },
-    )
-
-    if (!response.ok) {
-      throw new Error(`Error al obtener la dirección: ${response.status}`)
-    }
-
-    const data = await response.json()
-    return data.display_name
+    const url = `${FALLBACK_GEOCODING_URL}/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
+    const data = await tryFetchWithProxies(url)
+    return data.display_name || 'Dirección no encontrada'
   } catch (error) {
     console.error('Error getting address:', error)
-    throw new Error(
-      'No se pudo obtener la dirección. Por favor, intente nuevamente.',
-    )
+    return 'Dirección no disponible'
   }
 }

@@ -39,16 +39,16 @@ export const FloatingQuestionsPanel = ({
 }: FloatingQuestionsPanelProps) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [showPaymentWindow, setShowPaymentWindow] = useState(false)
-  const { totalDistance, truckType, requiresManeuver, totalTollCost } =
-    useTowing()
+  const { totalDistance, truckType, requiresManeuver, totalTollCost } = useTowing()
 
-  const handlePaymentSubmit = async (result: {
-    success: boolean
-    error?: string
-  }) => {
-    if (result.success) {
-      setShowPaymentWindow(false)
-    }
+  const baseCost = totalDistance * (truckType === 'D' ? 32.35 : 18.82)
+  const maneuverCost = requiresManeuver ? (truckType === 'D' ? 2101.65 : 1219.55) : 0
+  const flagDropFee = truckType === 'D' ? 885.84 : 528.69
+  const subtotal = baseCost + maneuverCost + flagDropFee + totalTollCost
+  const tax = 0.16 * subtotal // 16% IVA
+
+  const handlePaymentSubmit = async () => {
+    setShowPaymentWindow(false)
   }
 
   const pages: QuestionPage[] = [
@@ -90,9 +90,6 @@ export const FloatingQuestionsPanel = ({
         : Math.max(0, prev - 1),
     )
   }
-
-  const finalCost =
-    totalDistance * (truckType === 'D' ? 32.35 : 18.82) + totalTollCost
 
   return (
     <>
@@ -141,7 +138,9 @@ export const FloatingQuestionsPanel = ({
       <PaymentWindow
         isOpen={showPaymentWindow}
         onClose={() => setShowPaymentWindow(false)}
-        finalCost={finalCost}
+        subtotal={subtotal}
+        tax={tax}
+        requiresInvoice={true}
         onPaymentSubmit={handlePaymentSubmit}
       />
     </>

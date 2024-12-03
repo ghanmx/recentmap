@@ -1,7 +1,7 @@
 import { Calculator } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { formatCurrency } from '@/utils/priceCalculator'
-import { TowTruckType } from '@/utils/towTruckPricing'
+import { TowTruckType } from '@/utils/pricing'
 
 interface CostFormulaDisplayProps {
   selectedTruck: TowTruckType

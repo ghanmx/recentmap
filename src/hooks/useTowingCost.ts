@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { towTruckTypes } from '@/utils/towTruckPricing'
+import { towTruckTypes } from '@/utils/pricing'
 
 export const useTowingCost = () => {
   const [selectedTruck, setSelectedTruck] = useState<'A' | 'B' | 'C' | 'D'>('A')

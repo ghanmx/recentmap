@@ -3,6 +3,7 @@ import { Header } from '@/components/landing/Header'
 import { MetaTags } from '@/components/landing/MetaTags'
 import { Services } from '@/components/landing/Services'
 import { Hero } from '@/components/landing/Hero'
+import { TowingTypes } from '@/components/landing/TowingTypes'
 import { Mail, MapPin, Phone } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { Card } from '@/components/ui/card'
@@ -16,6 +17,7 @@ const Landing = (): JSX.Element => {
         <Header />
         <Hero />
         <main>
+          <TowingTypes />
           <Services />
 
           <section id="contact" className="py-20 px-4">

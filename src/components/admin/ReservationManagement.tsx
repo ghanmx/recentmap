@@ -81,6 +81,14 @@ export const ReservationManagement = ({
     })
   }
 
+  const handleDateSelect = (date: Date | Date[] | undefined) => {
+    if (Array.isArray(date)) {
+      setSelectedDate(date[0])
+    } else {
+      setSelectedDate(date)
+    }
+  }
+
   const filteredReservations = mockReservations
     .filter(
       (res) =>
@@ -114,7 +122,7 @@ export const ReservationManagement = ({
           searchQuery={localSearchQuery}
           onSearchChange={setLocalSearchQuery}
           selectedDate={selectedDate}
-          onDateSelect={setSelectedDate}
+          onDateSelect={handleDateSelect}
           sortDirection={sortDirection}
           onSortChange={handleSort}
         />

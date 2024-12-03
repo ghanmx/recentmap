@@ -2,15 +2,17 @@ import { motion } from 'framer-motion'
 import { formatCurrency } from '@/utils/priceCalculator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { TollInfoDisplay } from '@/components/TollInfoDisplay'
+import { TollLocation } from '@/types/toll'
 
-interface CostDetailsContentProps {
+export interface CostDetailsContentProps {
   totalDistance: number
   baseCost: number
   flagDropFee: number
   maneuverCost: number
   requiresManeuver: boolean
   totalTollCost: number
-  detectedTolls: any[]
+  detectedTolls: TollLocation[]
+  subtotal: number
 }
 
 export const CostDetailsContent = ({
@@ -21,6 +23,7 @@ export const CostDetailsContent = ({
   requiresManeuver,
   totalTollCost,
   detectedTolls,
+  subtotal,
 }: CostDetailsContentProps) => {
   return (
     <ScrollArea className="h-[calc(100vh-300px)] pr-4 overflow-y-auto resize-y">

@@ -1,6 +1,6 @@
 import { Truck } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { TowTruckType } from '@/utils/towTruckPricing'
+import { TowTruckType } from '@/utils/pricing'
 
 interface TruckInfoHeaderProps {
   selectedTruck: TowTruckType

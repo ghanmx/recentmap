@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTowing } from '@/contexts/TowingContext'
-import { towTruckTypes } from '@/utils/towTruckPricing'
+import { towTruckTypes } from '@/utils/pricing' // Updated import path
 import { FloatingPanelHeader } from './FloatingPanelHeader'
 import { CostDetailsContent } from './CostDetailsContent'
 import { FloatingPanelControlsProps } from './types/floating-panel'
@@ -19,6 +19,7 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
   className,
   onSave,
   onCancel,
+  onDetailsToggle,
 }) => {
   const [showCostDetails, setShowCostDetails] = useState(false)
   const {
@@ -35,6 +36,11 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
   const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
   const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
 
+  const handleDetailsToggle = () => {
+    setShowCostDetails((prev) => !prev)
+    onDetailsToggle?.()
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -49,7 +55,7 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
         onCollapse={onCollapse}
         onMaximize={onMaximize}
         onClose={onClose}
-        onDetailsToggle={() => setShowCostDetails((prev) => !prev)}
+        onDetailsToggle={handleDetailsToggle}
       />
       <AnimatePresence>
         {showCostDetails && (

@@ -44,6 +44,7 @@ export const FloatingPanel = ({
         className={cn(
           'fixed z-[1000] bg-white/95 shadow-lg backdrop-blur-sm',
           'transition-all duration-300 ease-in-out hover:scale-105',
+          'border-2 border-primary/20 hover:border-primary/40',
           position === 'right' && 'right-4 top-20',
           position === 'left' && 'left-4 top-20',
         )}
@@ -67,14 +68,14 @@ export const FloatingPanel = ({
           'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
           'max-h-[85vh] w-[90] md:w-[300px] overflow-hidden',
           isMaximized
-            ? 'inset-4 !transform-none !w-auto'
+            ? 'inset-4 !transform-none'
             : cn(
               position === 'right' && 'right-6 top-24',
               position === 'left' && 'left-6 top-24',
             ),
           'z-[1000]',
-          isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
-          !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',
+          isDragging && 'cursor-grabbing scale-[1.02] shadow-2xl ring-4 ring-primary/20',
+          !isMaximized && 'hover:shadow-xl hover:shadow-primary/5',
           className,
         )}
       >
@@ -94,25 +95,23 @@ export const FloatingPanel = ({
           }}
           title={title}
         />
+
         <div
           className={cn(
-            'transition-all duration-300',
-            isCollapsed
-              ? 'h-0'
-              : isMaximized
-                ? 'h-[calc(100vh-8rem)]'
-                : 'max-h-[calc(80vh-4rem)]',
+            'transition-all duration-300 flex-1 min-h-0',
+            isCollapsed ? 'h-0' : 'h-full',
             !isCollapsed && 'animate-in fade-in-50',
           )}
         >
           <ScrollArea
             className={cn(
-              'h-full rounded-b-lg',
-              'scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent',
-              'hover:scrollbar-thumb-primary/20',
+              'h-full rounded-b-lg pb-24',
+              'custom-scrollbar overflow-y-auto',
             )}
           >
-            <FloatingPanelContent>{children}</FloatingPanelContent>
+            <div className="p-8 space-y-8">
+              <FloatingPanelContent>{children}</FloatingPanelContent>
+            </div>
           </ScrollArea>
         </div>
       </motion.div>

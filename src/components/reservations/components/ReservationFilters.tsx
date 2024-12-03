@@ -8,7 +8,7 @@ interface ReservationFiltersProps {
   searchQuery: string
   onSearchChange: (value: string) => void
   selectedDate: Date | undefined
-  onDateSelect: (date: Date | undefined) => void
+  onDateSelect: (date: Date | Date[] | undefined) => void
   sortDirection: 'asc' | 'desc'
   onSortChange: () => void
 }
@@ -21,6 +21,14 @@ export const ReservationFilters = ({
   sortDirection,
   onSortChange,
 }: ReservationFiltersProps) => {
+  const handleDateSelect = (date: Date | Date[] | undefined) => {
+    if (Array.isArray(date)) {
+      onDateSelect(date[0])
+    } else {
+      onDateSelect(date)
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div className="space-y-2">
@@ -48,7 +56,7 @@ export const ReservationFilters = ({
           <Calendar
             mode="single"
             selected={selectedDate}
-            onSelect={onDateSelect}
+            onSelect={handleDateSelect}
             className="rounded-md border"
           />
           <Button

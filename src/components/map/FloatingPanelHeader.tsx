@@ -9,13 +9,14 @@ import {
   X,
 } from 'lucide-react'
 
-interface FloatingPanelHeaderProps {
+export interface FloatingPanelHeaderProps {
   title: string
   isCollapsed: boolean
   isMaximized: boolean
   onCollapse: () => void
   onMaximize: () => void
   onClose: () => void
+  onDetailsToggle?: () => void
 }
 
 export const FloatingPanelHeader = ({
@@ -25,6 +26,7 @@ export const FloatingPanelHeader = ({
   onCollapse,
   onMaximize,
   onClose,
+  onDetailsToggle,
 }: FloatingPanelHeaderProps) => {
   return (
     <div className="flex items-center justify-between">
