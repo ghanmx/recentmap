@@ -16,6 +16,9 @@ export interface FloatingPanelControlsProps {
   onClose: () => void
   title: string
   onDetailsToggle?: () => void
+  className?: string
+  onSave?: () => void
+  onCancel?: () => void
 }
 
 export interface FloatingPanelHeaderProps {
