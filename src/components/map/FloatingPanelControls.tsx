@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTowing } from '@/contexts/TowingContext'
-import { towTruckTypes } from '@/utils/towTruckPricing'
+import { towTruckTypes } from '@/utils/pricing' // Updated import path
 import { FloatingPanelHeader } from './FloatingPanelHeader'
 import { CostDetailsContent } from './CostDetailsContent'
 import { FloatingPanelControlsProps } from './types/floating-panel'

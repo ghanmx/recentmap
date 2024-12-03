@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { formatCurrency } from '@/utils/priceCalculator'
-import { TowTruckType } from '@/utils/towTruckPricing'
+import { TowTruckType } from '@/utils/pricing' // Updated import path
 import { CostFormulaDisplay } from './CostFormulaDisplay'
 import { CostItemDisplay } from './CostItemDisplay'
 import { TruckInfoHeader } from './TruckInfoHeader'
