@@ -6,19 +6,19 @@ import { useTowing } from '@/contexts/TowingContext'
 import { towTruckTypes } from '@/utils/towTruckPricing'
 import { FloatingPanelHeader } from './FloatingPanelHeader'
 import { CostDetailsContent } from './CostDetailsContent'
-
-interface FloatingPanelControlsProps {
-  onClose: () => void
-  onSave?: () => void
-  onCancel?: () => void
-  className?: string
-}
+import { FloatingPanelControlsProps } from './types/floating-panel'
 
 export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
+  isCollapsed,
+  isMaximized,
+  isDragging,
+  onCollapse,
+  onMaximize,
   onClose,
+  title,
+  className,
   onSave,
   onCancel,
-  className,
 }) => {
   const [showCostDetails, setShowCostDetails] = useState(false)
   const {
@@ -43,7 +43,12 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
       className={cn('p-4 border-t bg-white shadow rounded-lg', className)}
     >
       <FloatingPanelHeader
-        title="Cost Details"
+        title={title}
+        isCollapsed={isCollapsed}
+        isMaximized={isMaximized}
+        onCollapse={onCollapse}
+        onMaximize={onMaximize}
+        onClose={onClose}
         onDetailsToggle={() => setShowCostDetails((prev) => !prev)}
       />
       <AnimatePresence>
@@ -55,6 +60,8 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
             totalTollCost={totalTollCost}
             subtotal={subtotal}
             detectedTolls={detectedTolls}
+            totalDistance={totalDistance}
+            requiresManeuver={requiresManeuver}
           />
         )}
       </AnimatePresence>
