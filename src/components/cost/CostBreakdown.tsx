@@ -10,6 +10,7 @@ import { TruckInfoHeader } from './TruckInfoHeader'
 import { TollBreakdownSection } from './TollBreakdownSection'
 import { ServiceCostSection } from './ServiceCostSection'
 import { Separator } from '@/components/ui/separator'
+import { TollLocation } from '@/types/toll'
 
 interface CostBreakdownProps {
   baseCost: number
@@ -18,11 +19,7 @@ interface CostBreakdownProps {
   totalDistance: number
   totalTollCost: number
   finalCost: number
-  detectedTolls: Array<{
-    name: string
-    cost: number
-    direction: 'outbound' | 'return'
-  }>
+  detectedTolls: TollLocation[]
   requiresInvoice: boolean
   setShowPaymentWindow: (show: boolean) => void
   maneuverCost: number
@@ -50,10 +47,10 @@ export const CostBreakdown = ({
 }: CostBreakdownProps) => {
   const outboundTolls = detectedTolls.filter(
     (toll) => toll.direction === 'outbound',
-  )
+  ) as TollLocation[]
   const returnTolls = detectedTolls.filter(
     (toll) => toll.direction === 'return',
-  )
+  ) as TollLocation[]
 
   console.log('Cost Breakdown Props:', {
     finalCost,
