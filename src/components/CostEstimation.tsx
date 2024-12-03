@@ -63,14 +63,14 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
 
   const handlePaymentSubmit = async () => {
     try {
-      // Handle payment submission
       toast({
         title: 'Procesando pago',
         description: 'Tu pago está siendo procesado...',
       })
-      // Add your payment processing logic here
       
-      // Close payment window after successful payment
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
       setShowPayment(false)
       
       toast({
