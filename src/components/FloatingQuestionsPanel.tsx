@@ -39,7 +39,7 @@ export const FloatingQuestionsPanel = ({
 }: FloatingQuestionsPanelProps) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [showPaymentWindow, setShowPaymentWindow] = useState(false)
-  const { totalDistance, truckType, requiresManeuver, totalTollCost } =
+  const { totalDistance, truckType, requiresManeuver, totalTollCost, detectedTolls } =
     useTowing()
 
   const handlePaymentSubmit = async (result: {
@@ -50,6 +50,12 @@ export const FloatingQuestionsPanel = ({
       setShowPaymentWindow(false)
     }
   }
+
+  const finalCost =
+    totalDistance * (truckType === 'D' ? 32.35 : 18.82) + 
+    totalTollCost + 
+    (requiresManeuver ? (truckType === 'D' ? 2101.65 : 1219.55) : 0) +
+    (truckType === 'D' ? 885.84 : 528.69)
 
   const pages: QuestionPage[] = [
     {
@@ -90,9 +96,6 @@ export const FloatingQuestionsPanel = ({
         : Math.max(0, prev - 1),
     )
   }
-
-  const finalCost =
-    totalDistance * (truckType === 'D' ? 32.35 : 18.82) + totalTollCost
 
   return (
     <>

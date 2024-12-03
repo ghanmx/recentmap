@@ -1,16 +1,9 @@
-import { TowTruckType } from '@/utils/towTruckPricing'
-import { formatCurrency } from '@/utils/priceCalculator'
-import { Card } from '@/components/ui/card'
-import {
-  Receipt,
-  Truck,
-  TrendingUp,
-  Flag,
-  ArrowRight,
-  ArrowLeft,
-} from 'lucide-react'
+import { ChevronDown, ChevronUp, Info, Receipt, Truck, TrendingUp, Flag, ArrowRight, ArrowLeft } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { formatCurrency } from '@/utils/priceCalculator'
+import { TowTruckType } from '@/utils/towTruckPricing'
 import { CostFormulaDisplay } from './CostFormulaDisplay'
 import { CostItemDisplay } from './CostItemDisplay'
 import { TruckInfoHeader } from './TruckInfoHeader'
@@ -61,6 +54,13 @@ export const CostBreakdown = ({
   const returnTolls = detectedTolls.filter(
     (toll) => toll.direction === 'return',
   )
+
+  console.log('Cost Breakdown Props:', {
+    finalCost,
+    subtotal,
+    totalTollCost,
+    detectedTolls,
+  })
 
   return (
     <Card className="p-4 space-y-4 bg-white/50">
