@@ -4,7 +4,7 @@ import {
   DialogContent,
 } from '@/components/ui/dialog'
 import { useToast } from '@/hooks/use-toast'
-import { useStripe, useElements } from '@stripe/react-stripe-js'
+import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js'
 import { PaymentHeader } from './PaymentHeader'
 import { PaymentForm } from './PaymentForm'
 import { PaymentFooter } from './PaymentFooter'

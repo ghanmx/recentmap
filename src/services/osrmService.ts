@@ -1,8 +1,7 @@
 const OSRM_API_URLS = [
-  'https://routing.openstreetmap.de/routed-car/route/v1',
   'https://router.project-osrm.org/route/v1',
   'http://router.project-osrm.org/route/v1',
-].map((url) => url.replace(/\/+$/, '')) // Remove trailing slashes
+].map((url) => url.replace(/\/+$/, ''))
 
 const MIN_REQUEST_INTERVAL = 1100
 const MAX_RETRIES = 3
@@ -46,7 +45,7 @@ const calculateStraightLineDistance = (
   start: Coordinates,
   end: Coordinates,
 ): number => {
-  const R = 6371 // Earth's radius in km
+  const R = 6371
   const dLat = ((end.lat - start.lat) * Math.PI) / 180
   const dLon = ((end.lng - start.lng) * Math.PI) / 180
   const a =
@@ -87,8 +86,6 @@ async function tryFetchWithUrls(
       if (response.ok) {
         return response
       }
-
-      console.log(`Request failed for ${url} with status:`, response.status)
 
       if (response.status === 429) {
         const backoffDelay = calculateBackoffDelay(attempt)
@@ -149,7 +146,7 @@ export async function getRouteFromOSRM(
     }
 
     return {
-      distance: data.routes[0].distance / 1000, // Convert to kilometers
+      distance: data.routes[0].distance / 1000,
       duration: data.routes[0].duration,
       geometry: data.routes[0].geometry,
     }
@@ -158,14 +155,13 @@ export async function getRouteFromOSRM(
       'OSRM routing failed, falling back to straight-line calculation:',
       error,
     )
-    // Fallback to straight-line calculation
     const straightLineDistance = calculateStraightLineDistance(start, end)
-    const estimatedDuration = straightLineDistance * 60 // Rough estimate: 1 km/minute
+    const estimatedDuration = straightLineDistance * 60
 
     return {
       distance: straightLineDistance,
       duration: estimatedDuration,
-      geometry: '_p~iF~ps|U_ulLnnqC_mqNvxq`@', // Simple straight line encoding
+      geometry: '_p~iF~ps|U_ulLnnqC_mqNvxq`@',
     }
   }
 }
