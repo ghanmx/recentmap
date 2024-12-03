@@ -23,10 +23,18 @@ const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout 
       ...options,
       signal: controller.signal,
     })
-    return response
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const data = await response.json()
+    return data
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('Request timed out')
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        console.warn('Request timed out:', url)
+        throw new Error('Request timed out')
+      }
+      console.warn('Fetch error:', error.message)
     }
     throw error
   } finally {
@@ -39,19 +47,16 @@ const tryFetchWithProxies = async (url: string) => {
 
   for (const proxyUrl of CORS_PROXIES) {
     try {
-      console.log('Attempting request to:', url)
+      console.log('Attempting request with proxy:', proxyUrl)
       const finalUrl = `${proxyUrl}?url=${encodeURIComponent(url)}`
-      const response = await fetchWithTimeout(finalUrl, {
+      const data = await fetchWithTimeout(finalUrl, {
         headers: {
           'Accept': 'application/json',
           'User-Agent': 'TowingServiceApplication/1.0',
         },
       })
-
-      if (response.ok) {
-        const data = await response.json()
-        return data
-      }
+      console.log('Successfully fetched data with proxy:', proxyUrl)
+      return data
     } catch (error) {
       lastError = error
       console.warn(`Failed to fetch with proxy ${proxyUrl}:`, error)
@@ -59,7 +64,8 @@ const tryFetchWithProxies = async (url: string) => {
     }
   }
 
-  // If all proxies fail, return a default response instead of throwing
+  // If all proxies fail, return a default response
+  console.warn('All proxies failed, returning fallback response')
   return {
     display_name: 'Dirección no disponible (error de conexión)',
     lat: 0,
@@ -94,12 +100,15 @@ export const searchAddresses = async (
     const url = `${FALLBACK_GEOCODING_URL}/search?${searchParams}`
     const data = await tryFetchWithProxies(url)
 
-    return data.map((item: any) => ({
-      address: item.display_name,
-      lat: parseFloat(item.lat),
-      lon: parseFloat(item.lon),
-      importance: item.importance || 0,
-    }))
+    if (Array.isArray(data)) {
+      return data.map((item: any) => ({
+        address: item.display_name,
+        lat: parseFloat(item.lat),
+        lon: parseFloat(item.lon),
+        importance: item.importance || 0,
+      }))
+    }
+    return []
   } catch (error) {
     console.error('Error searching addresses:', error)
     return []
