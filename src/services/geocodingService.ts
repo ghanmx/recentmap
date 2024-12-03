@@ -31,16 +31,16 @@ export const searchAddresses = async (
   }
 
   try {
-    const response = await fetch(
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(
       `${FALLBACK_GEOCODING_URL}/search?${searchParams}`,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'TowingServiceApplication/1.0',
-        },
-        mode: 'cors',
+    )}`
+
+    const response = await fetch(proxyUrl, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'TowingServiceApplication/1.0',
       },
-    )
+    })
 
     if (!response.ok) {
       throw new Error(`Error en la búsqueda de direcciones: ${response.status}`)
@@ -64,7 +64,6 @@ export const getAddressFromCoordinates = async (
   lng: number,
 ): Promise<string> => {
   try {
-    // First try with a proxy service (you'll need to set this up)
     const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(
       `${FALLBACK_GEOCODING_URL}/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
     )}`
