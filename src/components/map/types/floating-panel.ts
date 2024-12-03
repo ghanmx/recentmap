@@ -38,6 +38,6 @@ export interface CostDetailsContentProps {
   totalTollCost: number
   subtotal: number
   detectedTolls: TollLocation[]
-  totalDistance?: number
-  requiresManeuver?: boolean
+  totalDistance: number
+  requiresManeuver: boolean
 }
