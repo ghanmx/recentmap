@@ -44,6 +44,7 @@ export const FloatingPanel = ({
         className={cn(
           'fixed z-[1000] bg-white/95 shadow-lg backdrop-blur-sm',
           'transition-all duration-300 ease-in-out hover:scale-105',
+          'border-2 border-primary/20 hover:border-primary/40',
           position === 'right' && 'right-4 top-20',
           position === 'left' && 'left-4 top-20',
         )}
@@ -64,8 +65,8 @@ export const FloatingPanel = ({
     >
       <motion.div
         className={cn(
-          'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
-          'flex flex-col relative',
+          'fixed bg-white/98 rounded-lg shadow-2xl backdrop-blur-md transition-all duration-300',
+          'flex flex-col relative border border-gray-200/50',
           isMaximized
             ? 'inset-4 !transform-none'
             : cn(
@@ -75,8 +76,8 @@ export const FloatingPanel = ({
                 position === 'left' && 'left-6 top-24',
               ),
           'z-[1000]',
-          isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
-          !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',
+          isDragging && 'cursor-grabbing scale-[1.02] shadow-2xl ring-4 ring-primary/20',
+          !isMaximized && 'hover:shadow-xl hover:shadow-primary/5',
           className,
         )}
       >
@@ -106,11 +107,11 @@ export const FloatingPanel = ({
         >
           <ScrollArea
             className={cn(
-              'h-full rounded-b-lg pb-16',
+              'h-full rounded-b-lg pb-24',
               'custom-scrollbar overflow-y-auto',
             )}
           >
-            <div className="p-4 space-y-4">
+            <div className="p-6 space-y-6">
               <FloatingPanelContent>{children}</FloatingPanelContent>
             </div>
           </ScrollArea>
@@ -119,16 +120,26 @@ export const FloatingPanel = ({
         {/* Fixed bottom actions area - always visible */}
         <div 
           className={cn(
-            "absolute bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t rounded-b-lg shadow-lg",
-            "transition-opacity duration-300",
+            "absolute bottom-0 left-0 right-0 p-4 bg-white/98 backdrop-blur-lg border-t",
+            "transition-all duration-300 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]",
+            "rounded-b-lg z-10",
             isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'
           )}
         >
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" size="sm" onClick={() => setIsVisible(false)}>
+          <div className="flex justify-end space-x-3">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setIsVisible(false)}
+              className="hover:bg-gray-50/80"
+            >
               Cerrar
             </Button>
-            <Button variant="default" size="sm">
+            <Button 
+              variant="default" 
+              size="sm"
+              className="bg-primary hover:bg-primary/90 text-white shadow-sm"
+            >
               Continuar
             </Button>
           </div>
