@@ -55,11 +55,12 @@ export const FloatingPanel = ({
           'fixed z-[1000] bg-white/95 shadow-lg backdrop-blur-sm',
           'transition-all duration-300 ease-in-out hover:scale-105',
           'border-2 border-primary/20 hover:border-primary/40',
+          'py-4 px-6 text-lg font-medium min-w-[200px]',
           position === 'right' && 'right-6 top-24',
           position === 'left' && 'left-6 top-24',
         )}
       >
-        <Maximize2 className="w-5 h-5 mr-2" />
+        <Maximize2 className="w-6 h-6 mr-3" />
         Mostrar {title}
       </Button>
     )
@@ -74,11 +75,17 @@ export const FloatingPanel = ({
       disabled={isMaximized}
     >
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ 
+          opacity: 1, 
+          scale: 1,
+          width: isMaximized ? '100%' : 'auto',
+          height: isMaximized ? '100%' : 'auto'
+        }}
+        transition={{ duration: 0.2 }}
         className={cn(
-          'fixed bg-white/95 rounded-xl shadow-2xl backdrop-blur-sm transition-all duration-300',
-          'min-w-[380px] max-w-2xl w-full mx-4',
+          'fixed bg-white/95 rounded-xl shadow-2xl backdrop-blur-lg transition-all duration-300',
+          'min-w-[480px] max-w-3xl w-full mx-4',
           'max-h-[90vh]',
           isMaximized
             ? 'inset-4 !transform-none'
@@ -86,45 +93,53 @@ export const FloatingPanel = ({
                 position === 'right' && 'right-6 top-24',
                 position === 'left' && 'left-6 top-24',
               ),
-          'z-[1000] border border-primary/10',
+          'z-[1000] border border-primary/20',
           isDragging && 'cursor-grabbing scale-[1.02] shadow-2xl ring-4 ring-primary/20',
           !isMaximized && 'hover:shadow-xl hover:shadow-primary/5',
+          'flex flex-col',
           className,
         )}
       >
         <div
           className={cn(
-            'flex items-center justify-between p-4 border-b',
-            'bg-gradient-to-r from-primary/5 to-primary/10',
-            'rounded-t-xl',
+            'flex items-center justify-between p-6 border-b',
+            'bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5',
+            'rounded-t-xl'
           )}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {!isMaximized && (
-              <div className="drag-handle cursor-grab active:cursor-grabbing p-2 hover:bg-primary/10 rounded-lg">
+              <div className="drag-handle cursor-grab active:cursor-grabbing p-2 hover:bg-primary/10 rounded-lg transition-colors">
                 <GripVertical className="h-5 w-5 text-primary/70" />
               </div>
             )}
-            <h3 className="font-semibold text-base text-primary/90">{title}</h3>
+            <h3 className="font-heading font-semibold text-lg text-primary/90">
+              {title}
+            </h3>
           </div>
           <div className="flex gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-2 h-9 w-9 hover:bg-primary/10"
+              className="p-3 h-10 w-10 hover:bg-primary/10 rounded-lg transition-colors"
             >
-              {isCollapsed ? (
-                <ChevronUp className="h-5 w-5 text-primary/70" />
-              ) : (
-                <ChevronDown className="h-5 w-5 text-primary/70" />
-              )}
+              <motion.div
+                animate={{ rotate: isCollapsed ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {isCollapsed ? (
+                  <ChevronUp className="h-5 w-5 text-primary/70" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-primary/70" />
+                )}
+              </motion.div>
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsMaximized(!isMaximized)}
-              className="p-2 h-9 w-9 hover:bg-primary/10"
+              className="p-3 h-10 w-10 hover:bg-primary/10 rounded-lg transition-colors"
             >
               {isMaximized ? (
                 <Minimize2 className="h-5 w-5 text-primary/70" />
@@ -143,12 +158,13 @@ export const FloatingPanel = ({
                   duration: 2000,
                 })
               }}
-              className="p-2 h-9 w-9 hover:bg-primary/10"
+              className="p-3 h-10 w-10 hover:bg-primary/10 rounded-lg transition-colors"
             >
               <X className="h-5 w-5 text-primary/70" />
             </Button>
           </div>
         </div>
+
         <AnimatePresence>
           {!isCollapsed && (
             <motion.div
@@ -156,14 +172,22 @@ export const FloatingPanel = ({
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className={cn(
-                'overflow-y-auto',
-                isMaximized ? 'p-8' : 'p-6',
-                'custom-scrollbar'
-              )}
-              style={{ maxHeight: 'calc(90vh - 4rem)' }}
+              className="flex-1 min-h-0"
             >
-              {children}
+              <div
+                className={cn(
+                  'overflow-y-auto custom-scrollbar h-full',
+                  'rounded-b-xl pb-20'
+                )}
+                style={{ maxHeight: 'calc(90vh - 4rem)' }}
+              >
+                <div className={cn(
+                  'p-8 space-y-8',
+                  isMaximized ? 'max-w-4xl mx-auto' : ''
+                )}>
+                  {children}
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
