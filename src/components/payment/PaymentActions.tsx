@@ -8,7 +8,7 @@ interface PaymentActionsProps {
   isProcessing: boolean
   handleSubmit: (e: React.FormEvent) => Promise<void>
   cardComplete: boolean
-  finalCost: number
+  finalAmount: number
 }
 
 export const PaymentActions = ({
@@ -16,7 +16,7 @@ export const PaymentActions = ({
   isProcessing,
   handleSubmit,
   cardComplete,
-  finalCost,
+  finalAmount,
 }: PaymentActionsProps) => {
   return (
     <div className="flex gap-3 justify-end">
@@ -46,7 +46,7 @@ export const PaymentActions = ({
         ) : (
           <span className="flex items-center gap-2">
             <CheckCircle className="w-4 h-4" />
-            Pagar {formatCurrency(finalCost)}
+            Pagar {formatCurrency(finalAmount)}
           </span>
         )}
       </Button>

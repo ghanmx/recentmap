@@ -18,6 +18,7 @@ import {
 import { TermsAndConditions } from './legal/TermsAndConditions'
 import { ScrollArea } from './ui/scroll-area'
 import { Info } from 'lucide-react'
+import PaymentWindow from './payment/PaymentWindow' // Importing PaymentWindow
 
 interface CostEstimationProps {
   onShowPayment: () => void
@@ -36,6 +37,7 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
 
   const [showBreakdown, setShowBreakdown] = useState(false)
   const [requiresInvoice, setRequiresInvoice] = useState(false)
+  const [showPayment, setShowPayment] = useState(false) // State for payment window
   const { toast } = useToast()
 
   const selectedTruck = towTruckTypes[truckType || 'A']
@@ -141,7 +143,7 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
                 finalCost={finalCost}
                 detectedTolls={processedTolls}
                 requiresInvoice={requiresInvoice}
-                setShowPaymentWindow={onShowPayment}
+                setShowPaymentWindow={setShowPayment} // Update to show payment window
                 maneuverCost={maneuverCost}
                 requiresManeuver={requiresManeuver}
                 selectedTruck={selectedTruck}
@@ -151,6 +153,15 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <PaymentWindow
+          isOpen={showPayment} // Pass the state to handle payment window visibility
+          onClose={() => setShowPayment(false)} // Close handler
+          subtotal={subtotal} // Pass subtotal
+          tax={tax} // Pass tax calculated
+          requiresInvoice={requiresInvoice} // Pass invoice requirement
+          onPaymentSubmit={handlePaymentSubmit} // Assume handlePaymentSubmit is a defined function
+        />
       </div>
     </motion.div>
   )

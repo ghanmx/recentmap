@@ -1,27 +1,24 @@
 import { CardElement } from '@stripe/react-stripe-js'
-import { motion } from 'framer-motion'
-import { formatCurrency } from '@/utils/priceCalculator'
+import { PaymentAmount } from './PaymentAmount'
 
 interface PaymentFormProps {
-  cardComplete: boolean
-  setCardComplete: (complete: boolean) => void
-  finalCost: number
+  subtotal: number
+  tax: number
+  requiresInvoice: boolean
+  onCardChange: (complete: boolean) => void
 }
 
 export const PaymentForm = ({
-  cardComplete,
-  setCardComplete,
-  finalCost,
+  subtotal,
+  tax,
+  requiresInvoice,
+  onCardChange,
 }: PaymentFormProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-4"
-    >
+    <div className="space-y-6">
       <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
         <CardElement
-          onChange={(e) => setCardComplete(e.complete)}
+          onChange={(e) => onCardChange(e.complete)}
           options={{
             style: {
               base: {
@@ -39,15 +36,11 @@ export const PaymentForm = ({
           }}
         />
       </div>
-
-      <div className="flex flex-col space-y-2 px-2">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">Cargo por Servicio</span>
-          <span className="text-lg font-semibold text-primary">
-            {formatCurrency(finalCost)}
-          </span>
-        </div>
-      </div>
-    </motion.div>
+      <PaymentAmount
+        subtotal={subtotal}
+        tax={tax}
+        requiresInvoice={requiresInvoice}
+      />
+    </div>
   )
 }

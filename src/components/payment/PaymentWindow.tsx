@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -14,26 +14,24 @@ interface PaymentWindowProps {
   isOpen: boolean
   onClose: () => void
   onPaymentSubmit?: (result: { success: boolean; error?: string }) => void
-  finalCost: number
+  subtotal: number
+  tax: number
+  requiresInvoice: boolean
 }
 
 const PaymentWindow = ({
   isOpen,
   onClose,
   onPaymentSubmit,
-  finalCost = 0,
+  subtotal,
+  tax,
+  requiresInvoice,
 }: PaymentWindowProps) => {
   const stripe = useStripe()
   const elements = useElements()
   const { toast } = useToast()
-  const [isProcessing, setIsProcessing] = React.useState(false)
-  const [cardComplete, setCardComplete] = React.useState(false)
-
-  React.useEffect(() => {
-    if (isOpen) {
-      setCardComplete(false)
-    }
-  }, [isOpen])
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [cardComplete, setCardComplete] = useState(false)
 
   const handleClose = () => {
     if (isProcessing) {
@@ -121,9 +119,10 @@ const PaymentWindow = ({
         <PaymentHeader />
         <form onSubmit={handleSubmit} className="space-y-6">
           <PaymentForm
-            cardComplete={cardComplete}
-            setCardComplete={setCardComplete}
-            finalCost={finalCost}
+            subtotal={subtotal}
+            tax={tax}
+            requiresInvoice={requiresInvoice}
+            onCardChange={setCardComplete}
           />
           <PaymentFooter />
           <PaymentActions
@@ -131,7 +130,7 @@ const PaymentWindow = ({
             isProcessing={isProcessing}
             handleSubmit={handleSubmit}
             cardComplete={cardComplete}
-            finalCost={finalCost}
+            finalAmount={requiresInvoice ? subtotal + tax : subtotal}
           />
         </form>
       </DialogContent>
