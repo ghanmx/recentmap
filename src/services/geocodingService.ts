@@ -20,6 +20,11 @@ const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout 
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
+      headers: {
+        ...options.headers,
+        'Accept': 'application/json',
+        'User-Agent': 'TowingServiceApplication/1.0',
+      },
     })
     clearTimeout(id)
 
@@ -41,25 +46,27 @@ const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout 
   }
 }
 
-const tryFetchWithProxies = async (url: string) => {
+const tryFetchWithProxies = async (url: string, retryCount = 3) => {
   let lastError
 
   for (const proxyUrl of CORS_PROXIES) {
-    try {
-      console.log('Attempting request with proxy:', proxyUrl)
-      const finalUrl = `${proxyUrl}?url=${encodeURIComponent(url)}`
-      const data = await fetchWithTimeout(finalUrl, {
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'TowingServiceApplication/1.0',
-        },
-      })
-      console.log('Successfully fetched data with proxy:', proxyUrl)
-      return data
-    } catch (error) {
-      lastError = error
-      console.warn(`Failed to fetch with proxy ${proxyUrl}:`, error)
-      continue // Try next proxy
+    for (let attempt = 0; attempt < retryCount; attempt++) {
+      try {
+        console.log(`Attempting request with proxy ${proxyUrl} (attempt ${attempt + 1}/${retryCount})`)
+        const finalUrl = `${proxyUrl}?url=${encodeURIComponent(url)}`
+        const data = await fetchWithTimeout(finalUrl)
+        console.log('Successfully fetched data with proxy:', proxyUrl)
+        return data
+      } catch (error) {
+        lastError = error
+        console.warn(`Failed attempt ${attempt + 1} with proxy ${proxyUrl}:`, error)
+        
+        // If it's not the last attempt, wait before retrying
+        if (attempt < retryCount - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)))
+        }
+        continue
+      }
     }
   }
 
