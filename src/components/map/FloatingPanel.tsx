@@ -65,7 +65,7 @@ export const FloatingPanel = ({
       <motion.div
         className={cn(
           'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
-          'flex flex-col',
+          'flex flex-col relative',
           isMaximized
             ? 'inset-4 !transform-none'
             : cn(
@@ -106,7 +106,7 @@ export const FloatingPanel = ({
         >
           <ScrollArea
             className={cn(
-              'h-full rounded-b-lg pb-16', // Added padding at bottom for better button access
+              'h-full rounded-b-lg pb-16',
               'custom-scrollbar overflow-y-auto',
             )}
           >
@@ -116,8 +116,14 @@ export const FloatingPanel = ({
           </ScrollArea>
         </div>
 
-        {/* Fixed bottom actions area */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t rounded-b-lg shadow-lg">
+        {/* Fixed bottom actions area - always visible */}
+        <div 
+          className={cn(
+            "absolute bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t rounded-b-lg shadow-lg",
+            "transition-opacity duration-300",
+            isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          )}
+        >
           <div className="flex justify-end space-x-2">
             <Button variant="outline" size="sm" onClick={() => setIsVisible(false)}>
               Cerrar
