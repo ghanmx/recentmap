@@ -2,13 +2,14 @@ import { cn } from '@/lib/utils'
 import { FloatingPanelDragHandle } from './FloatingPanelDragHandle'
 import { FloatingPanelHeaderControls } from './FloatingPanelHeaderControls'
 
-interface FloatingPanelHeaderProps {
+export interface FloatingPanelHeaderProps {
   title: string
   isCollapsed: boolean
   isMaximized: boolean
   onCollapse: () => void
   onMaximize: () => void
   onClose: () => void
+  onDetailsToggle?: () => void  // Added this optional prop
 }
 
 export const FloatingPanelHeader = ({
@@ -18,6 +19,7 @@ export const FloatingPanelHeader = ({
   onCollapse,
   onMaximize,
   onClose,
+  onDetailsToggle,
 }: FloatingPanelHeaderProps) => {
   return (
     <div
