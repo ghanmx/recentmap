@@ -47,9 +47,11 @@ export const FloatingQuestionsPanel = ({
   const subtotal = baseCost + maneuverCost + flagDropFee + totalTollCost
   const tax = 0.16 * subtotal // 16% IVA
 
-  const handlePaymentSubmit = async (result: { success: boolean; error?: string }) => {
-    if (result.success) {
+  const handlePaymentSubmit = async () => {
+    try {
       setShowPaymentWindow(false)
+    } catch (error) {
+      console.error('Payment error:', error)
     }
   }
 
