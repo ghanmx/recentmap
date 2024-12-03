@@ -12,33 +12,32 @@ interface GeocodingOptions {
   proximity?: { lat: number; lng: number }
 }
 
-const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 8000) => {
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 15000) => {
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => {
-    controller.abort()
-  }, timeout)
+  const id = setTimeout(() => controller.abort(), timeout)
 
   try {
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
     })
+    clearTimeout(id)
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const data = await response.json()
     return data
   } catch (error) {
+    clearTimeout(id)
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        console.warn('Request timed out:', url)
-        throw new Error('Request timed out')
+        console.warn('Request timed out or was aborted:', url)
+        throw new Error('Request timed out or was aborted')
       }
       console.warn('Fetch error:', error.message)
     }
     throw error
-  } finally {
-    clearTimeout(timeoutId)
   }
 }
 
