@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { formatCurrency } from '@/utils/priceCalculator'
-import { TowTruckType } from '@/utils/pricing' // Updated import path
+import { TowTruckType } from '@/utils/pricing'
 import { CostFormulaDisplay } from './CostFormulaDisplay'
 import { CostItemDisplay } from './CostItemDisplay'
 import { TruckInfoHeader } from './TruckInfoHeader'
@@ -11,6 +11,8 @@ import { TollBreakdownSection } from './TollBreakdownSection'
 import { ServiceCostSection } from './ServiceCostSection'
 import { Separator } from '@/components/ui/separator'
 import { TollLocation } from '@/types/toll'
+import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface CostBreakdownProps {
   baseCost: number
@@ -45,19 +47,8 @@ export const CostBreakdown = ({
   subtotal,
   selectedVehicleModel,
 }: CostBreakdownProps) => {
-  const outboundTolls = detectedTolls.filter(
-    (toll) => toll.direction === 'outbound',
-  ) as TollLocation[]
-  const returnTolls = detectedTolls.filter(
-    (toll) => toll.direction === 'return',
-  ) as TollLocation[]
-
-  console.log('Cost Breakdown Props:', {
-    finalCost,
-    subtotal,
-    totalTollCost,
-    detectedTolls,
-  })
+  const outboundTolls = detectedTolls.filter(toll => toll.direction === 'outbound')
+  const returnTolls = detectedTolls.filter(toll => toll.direction === 'return')
 
   return (
     <Card className="p-4 space-y-4 bg-white/50">
@@ -72,6 +63,24 @@ export const CostBreakdown = ({
             selectedTruck={selectedTruck}
             selectedVehicleModel={selectedVehicleModel}
           />
+          
+          {totalTollCost > 0 && (
+            <div className="flex items-center gap-2 mb-2">
+              <Badge variant="secondary" className="bg-blue-100">
+                <Receipt className="w-4 h-4 mr-1" />
+                Peajes Detectados
+              </Badge>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Info className="w-4 h-4 text-blue-500" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Los peajes son calculados automáticamente basados en tu ruta</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+
           <CostFormulaDisplay
             selectedTruck={selectedTruck}
             requiresManeuver={requiresManeuver}
@@ -99,7 +108,7 @@ export const CostBreakdown = ({
               >
                 <div className="text-sm text-gray-600 font-medium flex items-center gap-2">
                   <Receipt className="w-4 h-4 text-primary" />
-                  Peajes detectados en la ruta:
+                  Desglose de peajes:
                 </div>
 
                 {outboundTolls.length > 0 && (
@@ -118,9 +127,11 @@ export const CostBreakdown = ({
 
                 <div className="pt-2">
                   <CostItemDisplay
-                    label="Total peajes (ida y vuelta)"
+                    label="Total peajes"
                     amount={totalTollCost}
-                    className="font-medium"
+                    className="font-medium text-blue-600"
+                    icon={<Receipt className="w-4 h-4 text-blue-500" />}
+                    description="Suma total de peajes (ida y vuelta)"
                   />
                 </div>
               </motion.div>
@@ -135,7 +146,7 @@ export const CostBreakdown = ({
               <CostItemDisplay
                 label="Subtotal"
                 amount={subtotal}
-                description={`Suma de todos los cargos para grúa ${selectedTruck.name}`}
+                description={`Suma de todos los cargos para ${selectedTruck.name}`}
               />
 
               {requiresInvoice && (
@@ -155,9 +166,9 @@ export const CostBreakdown = ({
               className="border-t pt-3 text-lg font-bold flex justify-between items-center"
             >
               <span>Total Final</span>
-              <span
-                className={`${selectedTruck.name === 'Tipo D' ? 'text-orange-500' : 'text-primary'}`}
-              >
+              <span className={`${
+                selectedTruck.name === 'Tipo D' ? 'text-orange-500' : 'text-primary'
+              }`}>
                 {formatCurrency(finalCost)}
               </span>
             </motion.div>
