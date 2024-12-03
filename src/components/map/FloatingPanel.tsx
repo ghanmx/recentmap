@@ -70,8 +70,8 @@ export const FloatingPanel = ({
           isMaximized
             ? 'inset-4 !transform-none'
             : cn(
-                'max-h-[90vh]',
-                'w-[95vw] md:w-[450px]',
+                'max-h-[92vh]',
+                'w-[95vw] md:w-[520px]',
                 position === 'right' && 'right-6 top-24',
                 position === 'left' && 'left-6 top-24',
               ),
@@ -111,7 +111,7 @@ export const FloatingPanel = ({
               'custom-scrollbar overflow-y-auto',
             )}
           >
-            <div className="p-6 space-y-6">
+            <div className="p-8 space-y-8">
               <FloatingPanelContent>{children}</FloatingPanelContent>
             </div>
           </ScrollArea>
@@ -120,7 +120,7 @@ export const FloatingPanel = ({
         {/* Fixed bottom actions area - always visible */}
         <div 
           className={cn(
-            "absolute bottom-0 left-0 right-0 p-4 bg-white/98 backdrop-blur-lg border-t",
+            "absolute bottom-0 left-0 right-0 p-6 bg-white/98 backdrop-blur-lg border-t",
             "transition-all duration-300 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]",
             "rounded-b-lg z-10",
             isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'
@@ -129,7 +129,7 @@ export const FloatingPanel = ({
           <div className="flex justify-end space-x-3">
             <Button 
               variant="outline" 
-              size="sm" 
+              size="default" 
               onClick={() => setIsVisible(false)}
               className="hover:bg-gray-50/80"
             >
@@ -137,7 +137,7 @@ export const FloatingPanel = ({
             </Button>
             <Button 
               variant="default" 
-              size="sm"
+              size="default"
               className="bg-primary hover:bg-primary/90 text-white shadow-sm"
             >
               Continuar
