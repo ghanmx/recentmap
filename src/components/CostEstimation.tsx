@@ -18,7 +18,7 @@ import {
 import { TermsAndConditions } from './legal/TermsAndConditions'
 import { ScrollArea } from './ui/scroll-area'
 import { Info } from 'lucide-react'
-import PaymentWindow from './payment/PaymentWindow' // Importing PaymentWindow
+import PaymentWindow from './payment/PaymentWindow'
 
 interface CostEstimationProps {
   onShowPayment: () => void
@@ -37,7 +37,7 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
 
   const [showBreakdown, setShowBreakdown] = useState(false)
   const [requiresInvoice, setRequiresInvoice] = useState(false)
-  const [showPayment, setShowPayment] = useState(false) // State for payment window
+  const [showPayment, setShowPayment] = useState(false)
   const { toast } = useToast()
 
   const selectedTruck = towTruckTypes[truckType || 'A']
@@ -48,16 +48,6 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
   const tax = requiresInvoice ? subtotal * 0.16 : 0
   const finalCost = subtotal + tax
 
-  console.log('Cost Calculation:', {
-    baseCost,
-    flagDropFee,
-    maneuverCost,
-    totalTollCost,
-    subtotal,
-    tax,
-    finalCost,
-    detectedTolls,
-  })
   const handleBreakdownToggle = useCallback(
     (value: boolean) => {
       setShowBreakdown(value)
@@ -71,10 +61,34 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
     [toast],
   )
 
-  // Ensure we maintain all TollLocation properties when processing tolls
+  const handlePaymentSubmit = async () => {
+    try {
+      // Handle payment submission
+      toast({
+        title: 'Procesando pago',
+        description: 'Tu pago está siendo procesado...',
+      })
+      // Add your payment processing logic here
+      
+      // Close payment window after successful payment
+      setShowPayment(false)
+      
+      toast({
+        title: 'Pago exitoso',
+        description: 'Tu pago ha sido procesado correctamente',
+      })
+    } catch (error) {
+      toast({
+        title: 'Error en el pago',
+        description: 'Hubo un error al procesar tu pago. Por favor intenta nuevamente.',
+        variant: 'destructive',
+      })
+    }
+  }
+
   const processedTolls = detectedTolls.map((toll: TollLocation) => ({
-    ...toll, // Spread all existing properties
-    direction: toll.direction || 'outbound', // Set default direction if not present
+    ...toll,
+    direction: toll.direction || 'outbound',
   })) as TollLocation[]
 
   return (
@@ -143,7 +157,7 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
                 finalCost={finalCost}
                 detectedTolls={processedTolls}
                 requiresInvoice={requiresInvoice}
-                setShowPaymentWindow={setShowPayment} // Update to show payment window
+                setShowPaymentWindow={setShowPayment}
                 maneuverCost={maneuverCost}
                 requiresManeuver={requiresManeuver}
                 selectedTruck={selectedTruck}
@@ -155,12 +169,12 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
         </AnimatePresence>
 
         <PaymentWindow
-          isOpen={showPayment} // Pass the state to handle payment window visibility
-          onClose={() => setShowPayment(false)} // Close handler
-          subtotal={subtotal} // Pass subtotal
-          tax={tax} // Pass tax calculated
-          requiresInvoice={requiresInvoice} // Pass invoice requirement
-          onPaymentSubmit={handlePaymentSubmit} // Assume handlePaymentSubmit is a defined function
+          isOpen={showPayment}
+          onClose={() => setShowPayment(false)}
+          subtotal={subtotal}
+          tax={tax}
+          requiresInvoice={requiresInvoice}
+          onPaymentSubmit={handlePaymentSubmit}
         />
       </div>
     </motion.div>
