@@ -12,20 +12,25 @@ interface GeocodingOptions {
   proximity?: { lat: number; lng: number }
 }
 
-const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 5000) => {
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 8000) => {
   const controller = new AbortController()
-  const id = setTimeout(() => controller.abort(), timeout)
+  const timeoutId = setTimeout(() => {
+    controller.abort()
+  }, timeout)
 
   try {
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
     })
-    clearTimeout(id)
     return response
   } catch (error) {
-    clearTimeout(id)
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('Request timed out')
+    }
     throw error
+  } finally {
+    clearTimeout(timeoutId)
   }
 }
 
@@ -34,6 +39,7 @@ const tryFetchWithProxies = async (url: string) => {
 
   for (const proxyUrl of CORS_PROXIES) {
     try {
+      console.log('Attempting request to:', url)
       const finalUrl = `${proxyUrl}?url=${encodeURIComponent(url)}`
       const response = await fetchWithTimeout(finalUrl, {
         headers: {
@@ -43,7 +49,8 @@ const tryFetchWithProxies = async (url: string) => {
       })
 
       if (response.ok) {
-        return await response.json()
+        const data = await response.json()
+        return data
       }
     } catch (error) {
       lastError = error
@@ -52,7 +59,12 @@ const tryFetchWithProxies = async (url: string) => {
     }
   }
 
-  throw lastError || new Error('All proxies failed')
+  // If all proxies fail, return a default response instead of throwing
+  return {
+    display_name: 'Dirección no disponible (error de conexión)',
+    lat: 0,
+    lon: 0,
+  }
 }
 
 export const searchAddresses = async (
