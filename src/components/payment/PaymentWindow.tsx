@@ -162,11 +162,13 @@ const PaymentWindow = ({
               </span>
             </div>
 
-            <div className="flex items-center justify-between px-2">
-              <span className="text-sm text-gray-600">Cargo por Servicio</span>
-              <span className="text-lg font-semibold text-primary">
-                {formatCurrency(finalCost)}
-              </span>
+            <div className="flex flex-col space-y-2 px-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Cargo por Servicio</span>
+                <span className="text-lg font-semibold text-primary">
+                  {formatCurrency(finalCost)}
+                </span>
+              </div>
             </div>
           </div>
 
