@@ -2,6 +2,8 @@
   command = "npm run build"
   publish = "dist"
   functions = "netlify/functions"
+  # Increase build timeout to 60 minutes (in minutes)
+  timeout = 60
 
 [dev]
   command = "npm run dev"
@@ -18,6 +20,8 @@
 [build.environment]
   NODE_VERSION = "20.11.1"
   NPM_VERSION = "10.2.4"
+  # Add CI environment variable to optimize build
+  CI = "true"
 
 [functions]
   node_bundler = "esbuild"
@@ -43,4 +47,10 @@
 [build.processing.html]
   pretty_urls = true
 [build.processing.images]
+  compress = true
+
+# Add build optimization settings
+[build.optimization]
+  bundle = true
+  minify = true
   compress = true
