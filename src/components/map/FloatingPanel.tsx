@@ -65,13 +65,13 @@ export const FloatingPanel = ({
       <motion.div
         className={cn(
           'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
-          'max-h-[90vh] w-[95vw] md:w-[450px] overflow-hidden',
+          'max-h-[85vh] w-[90] md:w-[300px] overflow-hidden',
           isMaximized
             ? 'inset-4 !transform-none !w-auto'
             : cn(
-                position === 'right' && 'right-6 top-24',
-                position === 'left' && 'left-6 top-24',
-              ),
+              position === 'right' && 'right-6 top-24',
+              position === 'left' && 'left-6 top-24',
+            ),
           'z-[1000]',
           isDragging && 'cursor-grabbing shadow-2xl scale-[1.02]',
           !isMaximized && 'hover:shadow-lg hover:shadow-primary/5',
