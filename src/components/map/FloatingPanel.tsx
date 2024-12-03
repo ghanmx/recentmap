@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { ReactNode, useRef } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Maximize2 } from 'lucide-react'
@@ -21,6 +21,7 @@ export const FloatingPanel = ({
   const [isDragging, setIsDragging] = useState(false)
   const [isMaximized, setIsMaximized] = useState(false)
   const { toast } = useToast()
+  const nodeRef = useRef(null)
 
   const handleDragStart = () => {
     setIsDragging(true)
@@ -33,6 +34,15 @@ export const FloatingPanel = ({
 
   const handleDragStop = () => {
     setIsDragging(false)
+  }
+
+  const handleError = (error: Error) => {
+    console.error('FloatingPanel error:', error)
+    toast({
+      title: 'Error',
+      description: 'Hubo un problema con el panel. Por favor, intenta de nuevo.',
+      variant: 'destructive',
+    })
   }
 
   if (!isVisible) {
@@ -58,6 +68,7 @@ export const FloatingPanel = ({
 
   return (
     <Draggable
+      nodeRef={nodeRef}
       handle=".drag-handle"
       onStart={handleDragStart}
       onStop={handleDragStop}
@@ -65,6 +76,7 @@ export const FloatingPanel = ({
       disabled={isMaximized}
     >
       <motion.div
+        ref={nodeRef}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{
           opacity: 1,
@@ -90,6 +102,7 @@ export const FloatingPanel = ({
           'flex flex-col',
           className,
         )}
+        onError={handleError}
       >
         <FloatingPanelHeader
           title={title}

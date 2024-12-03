@@ -1,24 +1,10 @@
-import { TollLocation } from '@/types/toll'
+import { ReactNode } from 'react'
 
 export interface FloatingPanelProps {
-  children: React.ReactNode
+  children: ReactNode
   className?: string
   position?: 'left' | 'right'
   title?: string
-}
-
-export interface FloatingPanelControlsProps {
-  isCollapsed: boolean
-  isMaximized: boolean
-  isDragging: boolean
-  onCollapse: () => void
-  onMaximize: () => void
-  onClose: () => void
-  title: string
-  onDetailsToggle?: () => void
-  className?: string
-  onSave?: () => void
-  onCancel?: () => void
 }
 
 export interface FloatingPanelHeaderProps {
@@ -31,13 +17,6 @@ export interface FloatingPanelHeaderProps {
   onDetailsToggle?: () => void
 }
 
-export interface CostDetailsContentProps {
-  baseCost: number
-  flagDropFee: number
-  maneuverCost: number
-  totalTollCost: number
-  subtotal: number
-  detectedTolls: TollLocation[]
-  totalDistance: number
-  requiresManeuver: boolean
+export interface FloatingPanelContentProps {
+  children: ReactNode
 }
