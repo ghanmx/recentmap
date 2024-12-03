@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { Calendar as CalendarBase, CalendarProps } from 'react-calendar'
+import { Calendar as CalendarBase, CalendarProps, Value } from 'react-calendar'
 import { cn } from '@/lib/utils'
 
-interface CustomCalendarProps extends CalendarProps {
+interface CustomCalendarProps extends Omit<CalendarProps, 'value' | 'onChange'> {
   mode?: 'single' | 'range'
   selected?: Date | Date[] | undefined
-  onSelect?: (date: Date | undefined) => void
+  onSelect?: (date: Date | Date[] | undefined) => void
   className?: string
 }
 
@@ -21,8 +21,8 @@ const Calendar = React.forwardRef<HTMLDivElement, CustomCalendarProps>(
         prevLabel={<ChevronLeft className="h-4 w-4" />}
         prev2Label={null}
         view="month"
-        value={selected}
-        onChange={onSelect as any}
+        value={selected as Value}
+        onChange={onSelect as (value: Value) => void}
         {...props}
       />
     )
