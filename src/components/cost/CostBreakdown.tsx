@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator'
 import { TollLocation } from '@/types/toll'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useToast } from '@/hooks/use-toast'
 
 interface CostBreakdownProps {
   baseCost: number
@@ -47,8 +48,18 @@ export const CostBreakdown = ({
   subtotal,
   selectedVehicleModel,
 }: CostBreakdownProps) => {
+  const { toast } = useToast()
   const outboundTolls = detectedTolls.filter(toll => toll.direction === 'outbound')
   const returnTolls = detectedTolls.filter(toll => toll.direction === 'return')
+
+  const handleTollInfo = () => {
+    if (detectedTolls.length === 0) {
+      toast({
+        title: "No se detectaron peajes",
+        description: "No hay peajes en la ruta seleccionada",
+      })
+    }
+  }
 
   return (
     <Card className="p-4 space-y-4 bg-white/50">
@@ -64,22 +75,23 @@ export const CostBreakdown = ({
             selectedVehicleModel={selectedVehicleModel}
           />
           
-          {totalTollCost > 0 && (
-            <div className="flex items-center gap-2 mb-2">
-              <Badge variant="secondary" className="bg-blue-100">
-                <Receipt className="w-4 h-4 mr-1" />
-                Peajes Detectados
-              </Badge>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info className="w-4 h-4 text-blue-500" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Los peajes son calculados automáticamente basados en tu ruta</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          )}
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="secondary" className="bg-blue-100">
+              <Receipt className="w-4 h-4 mr-1" />
+              {detectedTolls.length > 0 ? `${detectedTolls.length} Peajes Detectados` : 'Sin Peajes'}
+            </Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info 
+                  className="w-4 h-4 text-blue-500 cursor-pointer" 
+                  onClick={handleTollInfo}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Los peajes son calculados automáticamente basados en tu ruta</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
 
           <CostFormulaDisplay
             selectedTruck={selectedTruck}

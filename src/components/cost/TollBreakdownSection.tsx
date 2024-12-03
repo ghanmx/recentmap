@@ -15,13 +15,11 @@ import { Card } from '@/components/ui/card'
 interface TollBreakdownSectionProps {
   tolls: TollLocation[]
   direction: 'outbound' | 'return'
-  showDetails?: boolean
 }
 
 export const TollBreakdownSection = ({
   tolls,
   direction,
-  showDetails = false,
 }: TollBreakdownSectionProps) => {
   if (tolls.length === 0) return null
 
@@ -59,7 +57,7 @@ export const TollBreakdownSection = ({
                     <MapPin className="w-4 h-4 mt-1 text-primary/60" />
                     <div>
                       <div className="font-medium text-sm">{toll.name}</div>
-                      {showDetails && toll.description && (
+                      {toll.description && (
                         <div className="text-xs text-gray-500">
                           {toll.description}
                         </div>
@@ -71,26 +69,24 @@ export const TollBreakdownSection = ({
                   </span>
                 </div>
 
-                {showDetails && (
-                  <div className="pl-6 space-y-1">
-                    {toll.kilometer && (
-                      <div className="text-xs text-gray-500">
-                        Kilómetro: {toll.kilometer}
-                      </div>
-                    )}
-                    {toll.route && (
-                      <div className="text-xs text-gray-500">
-                        Ruta: {toll.route}
-                      </div>
-                    )}
+                <div className="pl-6 space-y-1">
+                  {toll.kilometer && (
                     <div className="text-xs text-gray-500">
-                      Horario: {toll.operatingHours}
+                      Kilómetro: {toll.kilometer}
                     </div>
+                  )}
+                  {toll.route && (
                     <div className="text-xs text-gray-500">
-                      Pagos aceptados: {toll.acceptedPayments.join(', ')}
+                      Ruta: {toll.route}
                     </div>
+                  )}
+                  <div className="text-xs text-gray-500">
+                    Horario: {toll.operatingHours}
                   </div>
-                )}
+                  <div className="text-xs text-gray-500">
+                    Pagos aceptados: {toll.acceptedPayments.join(', ')}
+                  </div>
+                </div>
               </div>
 
               <Tooltip>
