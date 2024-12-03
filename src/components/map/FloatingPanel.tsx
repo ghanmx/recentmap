@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Maximize2, Menu, X } from 'lucide-react'
+import { Maximize2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import Draggable from 'react-draggable'
-import { FloatingPanelProps } from './types/floating-panel'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { FloatingPanelContent } from './FloatingPanelContent'
-import { FloatingPanelControls } from './FloatingPanelControls'
+import { FloatingPanelHeader } from './FloatingPanelHeader'
+import { FloatingPanelProps } from './types/floating-panel'
 
 export const FloatingPanel = ({
   children,
@@ -66,11 +66,11 @@ export const FloatingPanel = ({
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ 
-          opacity: 1, 
+        animate={{
+          opacity: 1,
           scale: 1,
           width: isMaximized ? '100%' : 'auto',
-          height: isMaximized ? '100%' : 'auto'
+          height: isMaximized ? '100%' : 'auto',
         }}
         transition={{ duration: 0.2 }}
         className={cn(
@@ -80,70 +80,32 @@ export const FloatingPanel = ({
           isMaximized
             ? 'inset-4 !transform-none'
             : cn(
-              position === 'right' && 'right-6 top-24',
-              position === 'left' && 'left-6 top-24',
-            ),
+                position === 'right' && 'right-6 top-24',
+                position === 'left' && 'left-6 top-24',
+              ),
           'z-[1000] border border-primary/20',
-          isDragging && 'cursor-grabbing scale-[1.02] shadow-2xl ring-4 ring-primary/20',
+          isDragging &&
+            'cursor-grabbing scale-[1.02] shadow-2xl ring-4 ring-primary/20',
           !isMaximized && 'hover:shadow-xl hover:shadow-primary/5',
           'flex flex-col',
           className,
         )}
       >
-        <div
-          className={cn(
-            'flex items-center justify-between p-6 border-b',
-            'bg-gradient-to-r from-primary/5 to-primary/10',
-            'rounded-t-xl',
-          )}
-        >
-          <div className="flex items-center gap-4">
-            {!isMaximized && (
-              <div className="drag-handle cursor-grab active:cursor-grabbing p-2 hover:bg-primary/10 rounded-lg">
-                <Menu className="h-5 w-5 text-primary/70" />
-              </div>
-            )}
-            <h3 className="font-heading font-semibold text-lg text-primary/90">{title}</h3>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-3 h-10 w-10 hover:bg-primary/10 rounded-lg"
-            >
-              <motion.div
-                animate={{ rotate: isCollapsed ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Menu className="h-5 w-5 text-primary/70" />
-              </motion.div>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMaximized(!isMaximized)}
-              className="p-3 h-10 w-10 hover:bg-primary/10 rounded-lg"
-            >
-              <Maximize2 className="h-5 w-5 text-primary/70" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setIsVisible(false)
-                toast({
-                  title: 'Panel oculto',
-                  description: "Haz clic en 'Mostrar Panel' para restaurar",
-                  duration: 2000,
-                })
-              }}
-              className="p-3 h-10 w-10 hover:bg-primary/10 rounded-lg"
-            >
-              <X className="h-5 w-5 text-primary/70" />
-            </Button>
-          </div>
-        </div>
+        <FloatingPanelHeader
+          title={title}
+          isCollapsed={isCollapsed}
+          isMaximized={isMaximized}
+          onCollapse={() => setIsCollapsed(!isCollapsed)}
+          onMaximize={() => setIsMaximized(!isMaximized)}
+          onClose={() => {
+            setIsVisible(false)
+            toast({
+              title: 'Panel oculto',
+              description: "Haz clic en 'Mostrar Panel' para restaurar",
+              duration: 2000,
+            })
+          }}
+        />
 
         <AnimatePresence>
           {!isCollapsed && (
@@ -160,10 +122,12 @@ export const FloatingPanel = ({
                   'custom-scrollbar overflow-y-auto',
                 )}
               >
-                <div className={cn(
-                  'p-8 space-y-8',
-                  isMaximized ? 'max-w-4xl mx-auto' : ''
-                )}>
+                <div
+                  className={cn(
+                    'p-8 space-y-8',
+                    isMaximized ? 'max-w-4xl mx-auto' : '',
+                  )}
+                >
                   <FloatingPanelContent>{children}</FloatingPanelContent>
                 </div>
               </ScrollArea>
