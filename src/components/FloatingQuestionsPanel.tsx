@@ -48,11 +48,7 @@ export const FloatingQuestionsPanel = ({
   const tax = 0.16 * subtotal // 16% IVA
 
   const handlePaymentSubmit = async () => {
-    try {
-      setShowPaymentWindow(false)
-    } catch (error) {
-      console.error('Payment error:', error)
-    }
+    setShowPaymentWindow(false)
   }
 
   const pages: QuestionPage[] = [
