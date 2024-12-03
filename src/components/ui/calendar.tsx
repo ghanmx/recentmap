@@ -1,7 +1,10 @@
 import * as React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { Calendar as CalendarBase, CalendarProps, Value } from 'react-calendar'
+import { Calendar as CalendarBase, CalendarProps } from 'react-calendar'
 import { cn } from '@/lib/utils'
+
+type ValuePiece = Date | null
+type Value = ValuePiece | [ValuePiece, ValuePiece]
 
 interface CustomCalendarProps extends Omit<CalendarProps, 'value' | 'onChange'> {
   mode?: 'single' | 'range'
