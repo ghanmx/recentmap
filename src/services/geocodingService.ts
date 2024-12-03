@@ -1,4 +1,4 @@
-import { COMPANY_LOCATION } from './routeService'
+const FALLBACK_GEOCODING_URL = 'https://nominatim.openstreetmap.org'
 
 interface GeocodingOptions {
   fuzzyMatch?: boolean
@@ -6,8 +6,6 @@ interface GeocodingOptions {
   countryCode?: string
   proximity?: { lat: number; lng: number }
 }
-
-const FALLBACK_GEOCODING_URL = 'https://nominatim.openstreetmap.org'
 
 export const searchAddresses = async (
   query: string,
@@ -37,7 +35,7 @@ export const searchAddresses = async (
       `${FALLBACK_GEOCODING_URL}/search?${searchParams}`,
       {
         headers: {
-          Accept: 'application/json',
+          'Accept': 'application/json',
           'User-Agent': 'TowingServiceApplication/1.0',
         },
         mode: 'cors',
@@ -49,7 +47,6 @@ export const searchAddresses = async (
     }
 
     const data = await response.json()
-
     return data.map((item: any) => ({
       address: item.display_name,
       lat: parseFloat(item.lat),
@@ -58,9 +55,7 @@ export const searchAddresses = async (
     }))
   } catch (error) {
     console.error('Error searching addresses:', error)
-    throw new Error(
-      'No se pudieron obtener las direcciones. Por favor, intente nuevamente.',
-    )
+    return []
   }
 }
 
@@ -69,27 +64,26 @@ export const getAddressFromCoordinates = async (
   lng: number,
 ): Promise<string> => {
   try {
-    const response = await fetch(
+    // First try with a proxy service (you'll need to set this up)
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(
       `${FALLBACK_GEOCODING_URL}/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
-      {
-        headers: {
-          Accept: 'application/json',
-          'User-Agent': 'TowingServiceApplication/1.0',
-        },
-        mode: 'cors',
+    )}`
+
+    const response = await fetch(proxyUrl, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'TowingServiceApplication/1.0',
       },
-    )
+    })
 
     if (!response.ok) {
       throw new Error(`Error al obtener la dirección: ${response.status}`)
     }
 
     const data = await response.json()
-    return data.display_name
+    return data.display_name || 'Dirección no encontrada'
   } catch (error) {
     console.error('Error getting address:', error)
-    throw new Error(
-      'No se pudo obtener la dirección. Por favor, intente nuevamente.',
-    )
+    return 'Dirección no disponible'
   }
 }

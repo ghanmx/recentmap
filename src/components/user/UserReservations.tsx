@@ -58,9 +58,9 @@ export const UserReservations = () => {
                   <Badge
                     variant={
                       request.status === 'completed'
-                        ? 'success'
+                        ? 'default'
                         : request.status === 'pending'
-                        ? 'warning'
+                        ? 'secondary'
                         : 'destructive'
                     }
                   >
@@ -77,8 +77,8 @@ export const UserReservations = () => {
                   <Badge
                     variant={
                       request.payment_status === 'completed'
-                        ? 'success'
-                        : 'warning'
+                        ? 'default'
+                        : 'secondary'
                     }
                   >
                     {request.payment_status}
