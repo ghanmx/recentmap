@@ -65,10 +65,12 @@ export const FloatingPanel = ({
       <motion.div
         className={cn(
           'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
-          'max-h-[90vh] w-[95vw] md:w-[450px] overflow-hidden',
+          'flex flex-col',
           isMaximized
-            ? 'inset-4 !transform-none !w-auto'
+            ? 'inset-4 !transform-none'
             : cn(
+                'max-h-[90vh]',
+                'w-[95vw] md:w-[450px]',
                 position === 'right' && 'right-6 top-24',
                 position === 'left' && 'left-6 top-24',
               ),
@@ -94,26 +96,36 @@ export const FloatingPanel = ({
           }}
           title={title}
         />
+
         <div
           className={cn(
-            'transition-all duration-300',
-            isCollapsed
-              ? 'h-0'
-              : isMaximized
-                ? 'h-[calc(100vh-8rem)]'
-                : 'max-h-[calc(80vh-4rem)]',
+            'transition-all duration-300 flex-1 min-h-0',
+            isCollapsed ? 'h-0' : 'h-full',
             !isCollapsed && 'animate-in fade-in-50',
           )}
         >
           <ScrollArea
             className={cn(
-              'h-full rounded-b-lg',
-              'scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent',
-              'hover:scrollbar-thumb-primary/20',
+              'h-full rounded-b-lg pb-16', // Added padding at bottom for better button access
+              'custom-scrollbar overflow-y-auto',
             )}
           >
-            <FloatingPanelContent>{children}</FloatingPanelContent>
+            <div className="p-4 space-y-4">
+              <FloatingPanelContent>{children}</FloatingPanelContent>
+            </div>
           </ScrollArea>
+        </div>
+
+        {/* Fixed bottom actions area */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t rounded-b-lg shadow-lg">
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" size="sm" onClick={() => setIsVisible(false)}>
+              Cerrar
+            </Button>
+            <Button variant="default" size="sm">
+              Continuar
+            </Button>
+          </div>
         </div>
       </motion.div>
     </Draggable>
