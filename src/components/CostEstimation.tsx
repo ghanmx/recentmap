@@ -69,11 +69,11 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
     [toast],
   )
 
+  // Ensure we maintain all TollLocation properties when processing tolls
   const processedTolls = detectedTolls.map((toll: TollLocation) => ({
-    name: toll.name,
-    cost: toll.cost,
-    direction: toll.direction || 'outbound',
-  }))
+    ...toll, // Spread all existing properties
+    direction: toll.direction || 'outbound', // Set default direction if not present
+  })) as TollLocation[]
 
   return (
     <motion.div
