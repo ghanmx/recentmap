@@ -6,103 +6,153 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
-import { History, Plus, Bell, Settings } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
+import {
+  User,
+  Calendar,
+  Bell,
+  Settings,
+  LogOut,
+  Truck,
+} from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '@/integrations/supabase/client'
+import { useToast } from '@/hooks/use-toast'
 
 export const UserNavigationMenu = () => {
   const navigate = useNavigate()
+  const { toast } = useToast()
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut()
+      toast({
+        title: 'Sesión cerrada',
+        description: 'Has cerrado sesión exitosamente',
+      })
+      navigate('/')
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'No se pudo cerrar la sesión',
+        variant: 'destructive',
+      })
+    }
+  }
 
   return (
-    <NavigationMenu>
+    <NavigationMenu className="max-w-full w-full justify-start">
       <NavigationMenuList className="space-x-2">
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="bg-white/80 hover:bg-white/95">
-            <History className="w-4 h-4 mr-2" />
-            Mis Reservas
+          <NavigationMenuTrigger>
+            <User className="w-4 h-4 mr-2" />
+            Mi Cuenta
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                onClick={() => navigate('/user/reservations')}
+            <ul className="grid gap-3 p-6 w-[400px]">
+              <ListItem
+                href="/user/profile"
+                title="Perfil"
+                icon={<User className="w-4 h-4" />}
               >
-                <div className="text-sm font-medium leading-none">
-                  Historial de Reservas
-                </div>
-                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                  Ver y gestionar tus reservas anteriores
-                </p>
-              </NavigationMenuLink>
-            </div>
+                Gestiona tu información personal y preferencias
+              </ListItem>
+              <ListItem
+                href="/user/services"
+                title="Servicios"
+                icon={<Truck className="w-4 h-4" />}
+              >
+                Revisa tus servicios activos y el historial
+              </ListItem>
+              <ListItem
+                href="/user/notifications"
+                title="Notificaciones"
+                icon={<Bell className="w-4 h-4" />}
+              >
+                Configura tus preferencias de notificación
+              </ListItem>
+              <ListItem
+                href="/user/settings"
+                title="Configuración"
+                icon={<Settings className="w-4 h-4" />}
+              >
+                Ajusta la configuración de tu cuenta
+              </ListItem>
+              <button
+                onClick={handleSignOut}
+                className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors w-full text-left text-red-600"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Cerrar Sesión</span>
+              </button>
+            </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="bg-white/80 hover:bg-white/95">
-            <Plus className="w-4 h-4 mr-2" />
-            Nueva Reserva
+          <NavigationMenuTrigger>
+            <Calendar className="w-4 h-4 mr-2" />
+            Reservaciones
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                onClick={() => navigate('/new-reservation')}
+            <ul className="grid gap-3 p-6 w-[400px]">
+              <ListItem
+                href="/user/new-service"
+                title="Nuevo Servicio"
+                icon={<Truck className="w-4 h-4" />}
               >
-                <div className="text-sm font-medium leading-none">
-                  Crear Reserva
-                </div>
-                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                  Solicita un nuevo servicio de grúa
-                </p>
-              </NavigationMenuLink>
-            </div>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-
-        <NavigationMenuItem>
-          <NavigationMenuTrigger className="bg-white/80 hover:bg-white/95">
-            <Bell className="w-4 h-4 mr-2" />
-            Notificaciones
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                onClick={() => navigate('/user/notifications')}
+                Solicita un nuevo servicio de grúa
+              </ListItem>
+              <ListItem
+                href="/user/history"
+                title="Historial"
+                icon={<Calendar className="w-4 h-4" />}
               >
-                <div className="text-sm font-medium leading-none">
-                  Centro de Notificaciones
-                </div>
-                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                  Revisa tus alertas y actualizaciones
-                </p>
-              </NavigationMenuLink>
-            </div>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-
-        <NavigationMenuItem>
-          <NavigationMenuTrigger className="bg-white/80 hover:bg-white/95">
-            <Settings className="w-4 h-4 mr-2" />
-            Configuración
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <div className="grid gap-3 p-4 w-[400px]">
-              <NavigationMenuLink
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                onClick={() => navigate('/user/settings')}
-              >
-                <div className="text-sm font-medium leading-none">
-                  Ajustes de Cuenta
-                </div>
-                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                  Gestiona tu perfil y métodos de pago
-                </p>
-              </NavigationMenuLink>
-            </div>
+                Revisa tu historial de servicios
+              </ListItem>
+            </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
+  )
+}
+
+const ListItem = ({
+  className,
+  title,
+  children,
+  icon,
+  href,
+  ...props
+}: {
+  className?: string
+  title: string
+  children: React.ReactNode
+  icon?: React.ReactNode
+  href: string
+}) => {
+  return (
+    <motion.li whileHover={{ scale: 1.02 }}>
+      <NavigationMenuLink asChild>
+        <a
+          href={href}
+          className={cn(
+            'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
+            className,
+          )}
+          {...props}
+        >
+          <div className="flex items-center gap-2 text-sm font-medium leading-none">
+            {icon}
+            {title}
+          </div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </motion.li>
   )
 }
