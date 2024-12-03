@@ -16,19 +16,19 @@ const TowMap = lazy(() => import('@/components/TowMap'))
 
 const FEATURED_IMAGES = [
   {
-    src: 'https://jmp.sh/s/8HF36yHh1B896xjduKLl',
-    alt: 'Servicio de Plataforma',
+    src: '/lovable-uploads/5bd1e0d3-a4e1-4275-9763-92ebb0a5b36c.png',
+    alt: 'Mr Gruas Logo with Truck',
     title: 'Servicio Profesional de Grúas',
   },
   {
-    src: 'https://jmp.sh/Voiqn6s3',
-    alt: 'Grúa de Arrastre',
-    title: 'Servicio en Carretera 24/7',
+    src: '/lovable-uploads/241d8ca8-32ad-4b10-a3dd-d10b6ac33567.png',
+    alt: 'Mr Gruas Mountain Logo',
+    title: 'Cobertura Regional',
   },
   {
-    src: 'https://jmp.sh/uKkz3BPs',
-    alt: 'Servicio de Rescate',
-    title: 'Asistencia Especializada',
+    src: '/lovable-uploads/3455912e-e855-4b8b-ade4-bed07e1c437b.png',
+    alt: 'Mr Gruas Highway',
+    title: 'Servicio en Carretera 24/7',
   },
 ]
 
@@ -54,11 +54,7 @@ const LoadingSpinner = () => (
                   <img
                     src={image.src}
                     alt={image.alt}
-                    className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.src = '/lovable-uploads/5bd1e0d3-a4e1-4275-9763-92ebb0a5b36c.png'
-                    }}
+                    className="object-contain w-full h-full hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
                     <p className="absolute bottom-4 left-4 text-white font-semibold">
