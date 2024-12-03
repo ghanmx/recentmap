@@ -65,9 +65,9 @@ export const FloatingPanel = ({
       <motion.div
         className={cn(
           'fixed bg-white/95 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300',
-          'max-h-[80vh] overflow-hidden',
+          'max-h-[90vh] w-[95vw] md:w-[450px] overflow-hidden',
           isMaximized
-            ? 'inset-4 !transform-none'
+            ? 'inset-4 !transform-none !w-auto'
             : cn(
                 position === 'right' && 'right-6 top-24',
                 position === 'left' && 'left-6 top-24',
@@ -105,7 +105,13 @@ export const FloatingPanel = ({
             !isCollapsed && 'animate-in fade-in-50',
           )}
         >
-          <ScrollArea className="h-full">
+          <ScrollArea
+            className={cn(
+              'h-full rounded-b-lg',
+              'scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent',
+              'hover:scrollbar-thumb-primary/20',
+            )}
+          >
             <FloatingPanelContent>{children}</FloatingPanelContent>
           </ScrollArea>
         </div>
