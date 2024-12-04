@@ -7,20 +7,22 @@ interface FloatingPanelHeaderProps {
   title: string
   isCollapsed: boolean
   isMaximized: boolean
-  isDragging: boolean
+  isDragging?: boolean
   onCollapse: () => void
   onMaximize: () => void
   onClose: () => void
+  onDetailsToggle?: () => void
 }
 
 export const FloatingPanelHeader = ({
   title,
   isCollapsed,
   isMaximized,
-  isDragging,
+  isDragging = false,
   onCollapse,
   onMaximize,
   onClose,
+  onDetailsToggle,
 }: FloatingPanelHeaderProps) => {
   return (
     <motion.div
@@ -44,23 +46,25 @@ export const FloatingPanelHeader = ({
         </h3>
       </div>
       <div className="flex gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onCollapse}
-          className="p-3 h-10 w-10 hover:bg-primary/10 rounded-lg transition-colors"
-        >
-          <motion.div
-            animate={{ rotate: isCollapsed ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
+        {onDetailsToggle && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDetailsToggle}
+            className="p-3 h-10 w-10 hover:bg-primary/10 rounded-lg transition-colors"
           >
-            {isCollapsed ? (
-              <ChevronUp className="h-5 w-5 text-primary/70" />
-            ) : (
-              <ChevronDown className="h-5 w-5 text-primary/70" />
-            )}
-          </motion.div>
-        </Button>
+            <motion.div
+              animate={{ rotate: isCollapsed ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {isCollapsed ? (
+                <ChevronUp className="h-5 w-5 text-primary/70" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-primary/70" />
+              )}
+            </motion.div>
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="sm"
