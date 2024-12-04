@@ -33,14 +33,12 @@ export const LocationSearch = ({
   type = 'pickup',
 }: LocationSearchProps) => {
   const [searchQuery, setSearchQuery] = useState(currentAddress || '')
-  const [suggestions, setSuggestions] = useState<
-    Array<{
-      address: string
-      lat: number
-      lon: number
-      distance: number
-    }>
-  >([])
+  const [suggestions, setSuggestions] = useState<Array<{
+    address: string
+    lat: number
+    lon: number
+    distance: number
+  }>>([])
   const [isSearching, setIsSearching] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isMarking, setIsMarking] = useState(false)
@@ -73,7 +71,9 @@ export const LocationSearch = ({
 
         const resultsWithDistance = results
           .map((result) => ({
-            ...result,
+            address: result.address,
+            lat: result.lat,
+            lon: result.lon,
             distance: calculateDistance(
               { lat: COMPANY_LOCATION.lat, lng: COMPANY_LOCATION.lng },
               { lat: result.lat, lng: result.lon },

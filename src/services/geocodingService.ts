@@ -6,10 +6,17 @@ import {
 } from './geocoding/proxyConfig'
 import { tryFetchWithProxies } from './geocoding/proxyFetch'
 
+interface GeocodingResult {
+  address: string
+  lat: number
+  lon: number
+  display_name: string
+}
+
 export const searchAddresses = async (
   query: string,
   options: GeocodingOptions = {}
-) => {
+): Promise<GeocodingResult[]> => {
   const {
     fuzzyMatch = true,
     limit = DEFAULT_SEARCH_LIMIT,
@@ -32,12 +39,15 @@ export const searchAddresses = async (
   const url = `${FALLBACK_GEOCODING_URL}/search?${params}`
   const results = await tryFetchWithProxies(url)
 
-  return fuzzyMatch ? results : results.filter((r: any) => 
-    r.display_name.toLowerCase().includes(query.toLowerCase())
-  )
+  return results.map((result: any) => ({
+    address: result.display_name,
+    lat: parseFloat(result.lat),
+    lon: parseFloat(result.lon),
+    display_name: result.display_name
+  }))
 }
 
-export const getAddressFromCoords = async (lat: number, lon: number) => {
+export const getAddressFromCoords = async (lat: number, lon: number): Promise<string> => {
   const params = new URLSearchParams({
     format: 'json',
     lat: lat.toString(),
@@ -47,5 +57,6 @@ export const getAddressFromCoords = async (lat: number, lon: number) => {
   })
 
   const url = `${FALLBACK_GEOCODING_URL}/reverse?${params}`
-  return tryFetchWithProxies(url)
+  const result = await tryFetchWithProxies(url)
+  return result.display_name || 'Address not found'
 }
