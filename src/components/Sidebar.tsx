@@ -49,8 +49,8 @@ const NavContent = ({
   // Calculate subtotal without tax
   const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
   
-  // Only apply tax if invoice is required
-  const tax = requiresInvoice ? subtotal * 0.16 : 0
+  // Calculate tax and final total
+  const tax = subtotal * 0.16
   const finalTotal = subtotal + tax
 
   return (
@@ -86,6 +86,7 @@ const NavContent = ({
         </div>
       </ScrollArea>
     </>
+  )
 }
 
 const Sidebar = () => {
