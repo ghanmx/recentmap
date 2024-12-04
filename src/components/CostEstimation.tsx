@@ -22,9 +22,17 @@ import PaymentWindow from './payment/PaymentWindow'
 
 interface CostEstimationProps {
   onShowPayment: () => void
+  subtotal: number
+  tax: number
+  finalTotal: number
 }
 
-export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
+export const CostEstimation = ({ 
+  onShowPayment,
+  subtotal: providedSubtotal,
+  tax: providedTax,
+  finalTotal: providedFinalTotal,
+}: CostEstimationProps) => {
   const {
     totalDistance,
     detectedTolls,
@@ -44,13 +52,6 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
   const baseCost = totalDistance * selectedTruck.perKm
   const flagDropFee = selectedTruck.flagDropFee
   const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
-  
-  // Calculate subtotal without tax
-  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
-  
-  // Only apply tax if invoice is required
-  const tax = requiresInvoice ? subtotal * 0.16 : 0
-  const finalCost = subtotal + tax
 
   const handleBreakdownToggle = useCallback(
     (value: boolean) => {
@@ -130,7 +131,7 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
         <CostHeader
           showBreakdown={showBreakdown}
           setShowBreakdown={handleBreakdownToggle}
-          finalCost={finalCost}
+          finalCost={providedFinalTotal}
           truckType={truckType}
           selectedTruck={selectedTruck}
         />
@@ -155,17 +156,17 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
               <CostBreakdown
                 baseCost={baseCost}
                 flagDropFee={flagDropFee}
-                tax={tax}
+                tax={providedTax}
                 totalDistance={totalDistance}
                 totalTollCost={totalTollCost}
-                finalCost={finalCost}
+                finalCost={providedFinalTotal}
                 detectedTolls={processedTolls}
                 requiresInvoice={requiresInvoice}
                 setShowPaymentWindow={setShowPayment}
                 maneuverCost={maneuverCost}
                 requiresManeuver={requiresManeuver}
                 selectedTruck={selectedTruck}
-                subtotal={subtotal}
+                subtotal={providedSubtotal}
                 selectedVehicleModel={selectedVehicleModel}
               />
             </motion.div>
@@ -175,10 +176,11 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
         <PaymentWindow
           isOpen={showPayment}
           onClose={() => setShowPayment(false)}
-          subtotal={subtotal}
-          tax={tax}
+          subtotal={providedSubtotal}
+          tax={providedTax}
           requiresInvoice={requiresInvoice}
           onPaymentSubmit={handlePaymentSubmit}
+          finalTotal={providedFinalTotal}
         />
       </div>
     </motion.div>
