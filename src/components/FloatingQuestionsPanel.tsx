@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FloatingPanel } from './map/FloatingPanel'
 import { Button } from './ui/button'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Receipt } from 'lucide-react'
 import { VehicleForm } from './VehicleForm'
 import { CostEstimation } from './CostEstimation'
 import { RouteDisplay } from './map/RouteDisplay'
@@ -9,6 +9,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useTowing } from '@/contexts/TowingContext'
 import PaymentWindow from './payment/PaymentWindow'
 import { Location } from '@/types/location'
+import { TollInfoDisplay } from './TollInfoDisplay'
+import { Separator } from './ui/separator'
+import { CostItemDisplay } from './cost/CostItemDisplay'
 
 interface QuestionPage {
   id: number
@@ -39,7 +42,7 @@ export const FloatingQuestionsPanel = ({
 }: FloatingQuestionsPanelProps) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [showPaymentWindow, setShowPaymentWindow] = useState(false)
-  const { totalDistance, truckType, requiresManeuver, totalTollCost } = useTowing()
+  const { totalDistance, truckType, requiresManeuver, totalTollCost, detectedTolls } = useTowing()
 
   const baseCost = totalDistance * (truckType === 'D' ? 32.35 : 18.82)
   const maneuverCost = requiresManeuver ? (truckType === 'D' ? 2101.65 : 1219.55) : 0
@@ -73,7 +76,46 @@ export const FloatingQuestionsPanel = ({
       title: 'Costos y Ruta',
       component: (
         <div className="space-y-6">
-          <CostEstimation onShowPayment={() => setShowPaymentWindow(true)} />
+          <div className="space-y-4">
+            <CostEstimation onShowPayment={() => setShowPaymentWindow(true)} />
+            
+            {detectedTolls.length > 0 && (
+              <>
+                <Separator className="my-4" />
+                <div className="space-y-2">
+                  <h3 className="font-medium text-gray-900 flex items-center gap-2">
+                    <Receipt className="w-4 h-4 text-blue-500" />
+                    Costos de Peaje
+                  </h3>
+                  <TollInfoDisplay
+                    tolls={detectedTolls}
+                    totalCost={totalTollCost}
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="mt-6 space-y-2 border-t pt-4">
+              <CostItemDisplay
+                label="Subtotal (incluyendo peajes)"
+                amount={subtotal}
+                description="Suma de todos los cargos incluyendo peajes"
+              />
+              <CostItemDisplay
+                label="IVA (16%)"
+                amount={tax}
+                description="Impuesto al Valor Agregado"
+              />
+              <div className="pt-2 border-t">
+                <CostItemDisplay
+                  label="Total Final"
+                  amount={subtotal + tax}
+                  className="font-bold text-lg"
+                />
+              </div>
+            </div>
+          </div>
+          
           <RouteDisplay
             pickupLocation={pickupLocation}
             dropLocation={dropLocation}
