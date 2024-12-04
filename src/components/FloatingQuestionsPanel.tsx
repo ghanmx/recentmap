@@ -49,6 +49,7 @@ export const FloatingQuestionsPanel = ({
   const flagDropFee = truckType === 'D' ? 885.84 : 528.69
   const subtotal = baseCost + maneuverCost + flagDropFee + totalTollCost
   const tax = 0.16 * subtotal // 16% IVA
+  const finalTotal = subtotal + tax
 
   const handlePaymentSubmit = async () => {
     setShowPaymentWindow(false)
@@ -77,7 +78,12 @@ export const FloatingQuestionsPanel = ({
       component: (
         <div className="space-y-6">
           <div className="space-y-4">
-            <CostEstimation onShowPayment={() => setShowPaymentWindow(true)} />
+            <CostEstimation 
+              onShowPayment={() => setShowPaymentWindow(true)} 
+              subtotal={subtotal}
+              tax={tax}
+              finalTotal={finalTotal}
+            />
             
             {detectedTolls.length > 0 && (
               <>
@@ -109,7 +115,7 @@ export const FloatingQuestionsPanel = ({
               <div className="pt-2 border-t">
                 <CostItemDisplay
                   label="Total Final"
-                  amount={subtotal + tax}
+                  amount={finalTotal}
                   className="font-bold text-lg"
                 />
               </div>
@@ -184,6 +190,7 @@ export const FloatingQuestionsPanel = ({
         tax={tax}
         requiresInvoice={true}
         onPaymentSubmit={handlePaymentSubmit}
+        finalTotal={finalTotal}
       />
     </>
   )

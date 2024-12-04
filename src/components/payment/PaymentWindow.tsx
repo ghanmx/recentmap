@@ -13,6 +13,7 @@ interface PaymentWindowProps {
   tax: number
   requiresInvoice: boolean
   onPaymentSubmit: () => Promise<void>
+  finalTotal: number
 }
 
 const PaymentWindow = ({
@@ -22,6 +23,7 @@ const PaymentWindow = ({
   tax,
   requiresInvoice,
   onPaymentSubmit,
+  finalTotal,
 }: PaymentWindowProps) => {
   const [cardComplete, setCardComplete] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -73,6 +75,7 @@ const PaymentWindow = ({
               tax={tax}
               requiresInvoice={requiresInvoice}
               onCardChange={(complete: boolean) => setCardComplete(complete)}
+              finalTotal={finalTotal}
             />
 
             <div className="flex justify-end gap-3 mt-6">
@@ -104,7 +107,7 @@ const PaymentWindow = ({
                     Procesando...
                   </span>
                 ) : (
-                  `Pagar ${formatCurrency(requiresInvoice ? subtotal + tax : subtotal)}`
+                  `Pagar ${formatCurrency(finalTotal)}`
                 )}
               </button>
             </div>

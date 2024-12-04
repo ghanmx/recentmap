@@ -4,11 +4,10 @@ interface PaymentAmountProps {
   subtotal: number
   tax: number
   requiresInvoice: boolean
+  finalTotal: number
 }
 
-export const PaymentAmount = ({ subtotal, tax, requiresInvoice }: PaymentAmountProps) => {
-  const finalAmount = requiresInvoice ? subtotal + tax : subtotal
-
+export const PaymentAmount = ({ subtotal, tax, requiresInvoice, finalTotal }: PaymentAmountProps) => {
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center text-sm">
@@ -23,7 +22,7 @@ export const PaymentAmount = ({ subtotal, tax, requiresInvoice }: PaymentAmountP
       )}
       <div className="flex justify-between items-center text-lg font-bold pt-2 border-t">
         <span>Total a Pagar:</span>
-        <span className="text-primary">{formatCurrency(finalAmount)}</span>
+        <span className="text-primary">{formatCurrency(finalTotal)}</span>
       </div>
     </div>
   )

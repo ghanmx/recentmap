@@ -12,6 +12,7 @@ interface PaymentFormProps {
   tax: number
   requiresInvoice: boolean
   onCardChange: (complete: boolean) => void
+  finalTotal: number
 }
 
 export const PaymentForm = ({
@@ -19,6 +20,7 @@ export const PaymentForm = ({
   tax,
   requiresInvoice,
   onCardChange,
+  finalTotal,
 }: PaymentFormProps) => {
   const { totalDistance, truckType, requiresManeuver, totalTollCost } = useTowing()
   const selectedTruck = towTruckTypes[truckType || 'A']
@@ -80,6 +82,7 @@ export const PaymentForm = ({
                 subtotal={subtotal}
                 tax={tax}
                 requiresInvoice={requiresInvoice}
+                finalTotal={finalTotal}
               />
             </div>
           </motion.div>
