@@ -8,8 +8,8 @@ interface Location {
   lng: number
 }
 
-const TOLL_DETECTION_RADIUS = 1.0
-const TOLL_BUFFER_DISTANCE = 0.2
+const TOLL_DETECTION_RADIUS = 2.0 // Increased radius for better detection
+const TOLL_BUFFER_DISTANCE = 0.5 // Increased buffer for more accurate toll detection
 
 export const detectTollsOnRoute = async (
   pickupLocation: Location,
@@ -33,12 +33,24 @@ export const detectTollsOnRoute = async (
     )
 
     const allTolls = [...outboundTolls, ...returnTolls]
-    const totalTollCost = allTolls.reduce((sum, toll) => sum + toll.cost, 0)
+    const totalTollCost = calculateTotalTollCost(allTolls)
 
-    return { tolls: allTolls, totalTollCost, routeDetails: routes }
+    return { 
+      tolls: allTolls, 
+      totalTollCost, 
+      routeDetails: routes,
+      outboundTollCost: calculateTotalTollCost(outboundTolls),
+      returnTollCost: calculateTotalTollCost(returnTolls)
+    }
   } catch (error) {
     console.warn('Error detecting tolls:', error)
-    return { tolls: [], totalTollCost: 0, routeDetails: null }
+    return { 
+      tolls: [], 
+      totalTollCost: 0, 
+      routeDetails: null,
+      outboundTollCost: 0,
+      returnTollCost: 0
+    }
   }
 }
 
@@ -84,6 +96,10 @@ const detectTollsForSegment = (
     ...toll,
     direction,
   }))
+}
+
+const calculateTotalTollCost = (tolls: TollLocation[]): number => {
+  return tolls.reduce((sum, toll) => sum + toll.cost, 0)
 }
 
 const decodePolyline = (str: string, precision = 5) => {
