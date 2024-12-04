@@ -6,11 +6,17 @@ import { Location } from '@/types/location'
 interface MapLocationHandlerProps {
   location: Location | null
   onAddressFound: (address: string) => void
+  selectingPickup: boolean
+  selectingDrop: boolean
+  handleLocationSelect: (location: Location) => void
 }
 
 export const MapLocationHandler = ({
   location,
   onAddressFound,
+  selectingPickup,
+  selectingDrop,
+  handleLocationSelect,
 }: MapLocationHandlerProps) => {
   const { toast } = useToast()
 
