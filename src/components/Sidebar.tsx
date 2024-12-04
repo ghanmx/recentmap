@@ -9,6 +9,8 @@ import { CostEstimation } from './CostEstimation'
 import { useSidebar } from '@/contexts/SidebarContext'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Location } from '@/types/location'
+import { useTowing } from '@/contexts/TowingContext'
+import { towTruckTypes } from '@/utils/pricing'
 
 interface NavContentProps {
   pickupLocation: Location | null
@@ -30,35 +32,61 @@ const NavContent = ({
   onDropSelect,
   onSelectingPickup,
   onSelectingDrop,
-}: NavContentProps) => (
-  <>
-    <div className="sticky top-0 z-10 p-4 border-b bg-gradient-to-r from-primary/10 to-primary/5 backdrop-blur-sm">
-      <h1 className="text-xl md:text-2xl lg:text-3xl font-heading font-bold text-primary text-center">
-        MRGruas
-      </h1>
-    </div>
+}: NavContentProps) => {
+  const {
+    totalDistance,
+    requiresManeuver,
+    truckType,
+    totalTollCost,
+  } = useTowing()
 
-    <ScrollArea className="h-[calc(100vh-4rem)] p-4 md:p-6">
-      <div className="space-y-4 md:space-y-6 flex flex-col items-center pb-20">
-        <VehicleForm
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          pickupAddress={pickupAddress}
-          dropAddress={dropAddress}
-          onPickupSelect={onPickupSelect}
-          onDropSelect={onDropSelect}
-          onSelectingPickup={onSelectingPickup}
-          onSelectingDrop={onSelectingDrop}
-        />
-        <CostEstimation onShowPayment={() => {}} />
-        <RouteDisplay
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-        />
+  // Calculate costs
+  const selectedTruck = towTruckTypes[truckType || 'A']
+  const baseCost = totalDistance * selectedTruck.perKm
+  const flagDropFee = selectedTruck.flagDropFee
+  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
+  
+  // Calculate subtotal without tax
+  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
+  
+  // Only apply tax if invoice is required
+  const tax = requiresInvoice ? subtotal * 0.16 : 0
+  const finalTotal = subtotal + tax
+
+  return (
+    <>
+      <div className="sticky top-0 z-10 p-4 border-b bg-gradient-to-r from-primary/10 to-primary/5 backdrop-blur-sm">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-heading font-bold text-primary text-center">
+          MRGruas
+        </h1>
       </div>
-    </ScrollArea>
-  </>
-)
+
+      <ScrollArea className="h-[calc(100vh-4rem)] p-4 md:p-6">
+        <div className="space-y-4 md:space-y-6 flex flex-col items-center pb-20">
+          <VehicleForm
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
+            onPickupSelect={onPickupSelect}
+            onDropSelect={onDropSelect}
+            onSelectingPickup={onSelectingPickup}
+            onSelectingDrop={onSelectingDrop}
+          />
+          <CostEstimation 
+            onShowPayment={() => {}} 
+            subtotal={subtotal}
+            tax={tax}
+            finalTotal={finalTotal}
+          />
+          <RouteDisplay
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+          />
+        </div>
+      </ScrollArea>
+    </>
+}
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false)

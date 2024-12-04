@@ -1,8 +1,8 @@
 const FALLBACK_GEOCODING_URL = 'https://nominatim.openstreetmap.org'
 const CORS_PROXIES = [
-  'https://api.allorigins.win/raw',
   'https://corsproxy.io/',
   'https://cors-anywhere.herokuapp.com/',
+  'https://api.allorigins.win/raw',
 ]
 
 interface GeocodingOptions {
@@ -12,7 +12,7 @@ interface GeocodingOptions {
   proximity?: { lat: number; lng: number }
 }
 
-const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 15000) => {
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 5000) => {
   const controller = new AbortController()
   const id = setTimeout(() => controller.abort(), timeout)
 
@@ -46,14 +46,14 @@ const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout 
   }
 }
 
-const tryFetchWithProxies = async (url: string, retryCount = 3) => {
+const tryFetchWithProxies = async (url: string, retryCount = 2) => {
   let lastError
 
   for (const proxyUrl of CORS_PROXIES) {
     for (let attempt = 0; attempt < retryCount; attempt++) {
       try {
         console.log(`Attempting request with proxy ${proxyUrl} (attempt ${attempt + 1}/${retryCount})`)
-        const finalUrl = `${proxyUrl}?url=${encodeURIComponent(url)}`
+        const finalUrl = `${proxyUrl}${encodeURIComponent(url)}`
         const data = await fetchWithTimeout(finalUrl)
         console.log('Successfully fetched data with proxy:', proxyUrl)
         return data
@@ -61,11 +61,9 @@ const tryFetchWithProxies = async (url: string, retryCount = 3) => {
         lastError = error
         console.warn(`Failed attempt ${attempt + 1} with proxy ${proxyUrl}:`, error)
         
-        // If it's not the last attempt, wait before retrying
         if (attempt < retryCount - 1) {
           await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)))
         }
-        continue
       }
     }
   }
