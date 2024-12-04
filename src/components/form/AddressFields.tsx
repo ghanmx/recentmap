@@ -111,7 +111,6 @@ export const AddressFields = ({
             </Button>
           </div>
           <LocationSearch
-            label=""
             placeholder="Ingrese dirección de recogida"
             currentAddress={pickupAddress}
             currentLocation={pickupLocation}
@@ -143,7 +142,6 @@ export const AddressFields = ({
             </Button>
           </div>
           <LocationSearch
-            label=""
             placeholder="Ingrese dirección de entrega"
             currentAddress={dropAddress}
             currentLocation={dropLocation}
