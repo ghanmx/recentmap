@@ -1,8 +1,10 @@
 const FALLBACK_GEOCODING_URL = 'https://nominatim.openstreetmap.org'
+
+// Updated list of CORS proxies with more reliable options
 const CORS_PROXIES = [
-  'https://corsproxy.io/',
-  'https://cors-anywhere.herokuapp.com/',
-  'https://api.allorigins.win/raw',
+  'https://proxy.cors.sh/',
+  'https://api.allorigins.win/raw?url=',
+  'https://api.codetabs.com/v1/proxy?quest='
 ]
 
 interface GeocodingOptions {
@@ -12,7 +14,7 @@ interface GeocodingOptions {
   proximity?: { lat: number; lng: number }
 }
 
-const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 5000) => {
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 8000) => {
   const controller = new AbortController()
   const id = setTimeout(() => controller.abort(), timeout)
 
@@ -24,6 +26,8 @@ const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout 
         ...options.headers,
         'Accept': 'application/json',
         'User-Agent': 'TowingServiceApplication/1.0',
+        'origin': window.location.origin,
+        'x-requested-with': 'XMLHttpRequest'
       },
     })
     clearTimeout(id)
@@ -31,22 +35,14 @@ const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-    const data = await response.json()
-    return data
+    return await response.json()
   } catch (error) {
     clearTimeout(id)
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        console.warn('Request timed out or was aborted:', url)
-        throw new Error('Request timed out or was aborted')
-      }
-      console.warn('Fetch error:', error.message)
-    }
     throw error
   }
 }
 
-const tryFetchWithProxies = async (url: string, retryCount = 2) => {
+const tryFetchWithProxies = async (url: string, retryCount = 3) => {
   let lastError
 
   for (const proxyUrl of CORS_PROXIES) {
@@ -62,7 +58,7 @@ const tryFetchWithProxies = async (url: string, retryCount = 2) => {
         console.warn(`Failed attempt ${attempt + 1} with proxy ${proxyUrl}:`, error)
         
         if (attempt < retryCount - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)))
+          await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt)))
         }
       }
     }
@@ -83,7 +79,7 @@ export const searchAddresses = async (
 ) => {
   const {
     fuzzyMatch = true,
-    limit = 10,
+    limit = 5,
     countryCode = 'MX',
     proximity,
   } = options
