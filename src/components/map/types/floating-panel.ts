@@ -11,6 +11,7 @@ export interface FloatingPanelHeaderProps {
   title: string
   isCollapsed: boolean
   isMaximized: boolean
+  isDragging?: boolean
   onCollapse: () => void
   onMaximize: () => void
   onClose: () => void

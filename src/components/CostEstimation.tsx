@@ -44,7 +44,11 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
   const baseCost = totalDistance * selectedTruck.perKm
   const flagDropFee = selectedTruck.flagDropFee
   const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
+  
+  // Calculate subtotal without tax
   const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
+  
+  // Only apply tax if invoice is required
   const tax = requiresInvoice ? subtotal * 0.16 : 0
   const finalCost = subtotal + tax
 
@@ -68,7 +72,6 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
         description: 'Tu pago está siendo procesado...',
       })
       
-      // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 1500))
       
       setShowPayment(false)
@@ -86,6 +89,7 @@ export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
     }
   }
 
+  // Process tolls with direction
   const processedTolls = detectedTolls.map((toll: TollLocation) => ({
     ...toll,
     direction: toll.direction || 'outbound',

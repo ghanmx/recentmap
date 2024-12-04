@@ -59,6 +59,9 @@ export const CostBreakdown = ({
     }
   }
 
+  // Calculate actual final cost based on requiresInvoice
+  const actualFinalCost = requiresInvoice ? subtotal + tax : subtotal
+
   return (
     <Card className="p-4 space-y-4 bg-white/50">
       <div className="space-y-2">
@@ -161,7 +164,7 @@ export const CostBreakdown = ({
               <span className={`${
                 selectedTruck.name === 'Tipo D' ? 'text-orange-500' : 'text-primary'
               }`}>
-                {formatCurrency(finalCost)}
+                {formatCurrency(actualFinalCost)}
               </span>
             </motion.div>
           </div>
