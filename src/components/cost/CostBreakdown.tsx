@@ -11,6 +11,7 @@ import { ServiceCostSection } from './ServiceCostSection'
 import { TollLocation } from '@/types/toll'
 import { TollBadgeInfo } from './TollBadgeInfo'
 import { useToast } from '@/hooks/use-toast'
+import { Receipt } from 'lucide-react'
 
 interface CostBreakdownProps {
   baseCost: number
