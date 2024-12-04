@@ -10,7 +10,7 @@ import { motion } from 'framer-motion'
 import { FloatingQuestionsPanel } from './FloatingQuestionsPanel'
 import { useMapState } from '@/features/map/hooks/useMapState'
 import { Location } from '@/types/location'
-import { getAddressFromCoordinates } from '@/services/geocodingService'
+import { getAddressFromCoords } from '@/services/geocodingService'
 
 const TowMap = () => {
   const mapRef = useRef<Map | null>(null)
@@ -54,7 +54,7 @@ const TowMap = () => {
 
   const handleLocationSelect = async (location: Location) => {
     try {
-      const address = await getAddressFromCoordinates(location.lat, location.lng)
+      const address = await getAddressFromCoords(location.lat, location.lng)
       
       if (selectingPickup) {
         handleMapLocationSelect({ ...location, address }, 'pickup')

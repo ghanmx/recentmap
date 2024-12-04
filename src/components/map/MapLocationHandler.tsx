@@ -1,5 +1,5 @@
 import { useMapEvents } from 'react-leaflet'
-import { getAddressFromCoordinates } from '@/services/geocodingService'
+import { getAddressFromCoords } from '@/services/geocodingService'
 import { useToast } from '@/hooks/use-toast'
 
 interface MapLocationHandlerProps {
@@ -27,7 +27,7 @@ export const MapLocationHandler = ({
         const location = {
           lat: e.latlng.lat,
           lng: e.latlng.lng,
-          address: await getAddressFromCoordinates(e.latlng.lat, e.latlng.lng),
+          address: await getAddressFromCoords(e.latlng.lat, e.latlng.lng),
         }
 
         handleLocationSelect(location)

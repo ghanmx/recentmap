@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { useToast } from '@/hooks/use-toast'
-import { getAddressFromCoordinates } from '@/services/geocodingService'
+import { getAddressFromCoords } from '@/services/geocodingService'
 import { MapPin } from 'lucide-react'
 
 interface UserLocationMarkerProps {
@@ -43,7 +43,7 @@ export const UserLocationMarker = ({ visible }: UserLocationMarkerProps) => {
         setPosition(newPos)
 
         try {
-          const addr = await getAddressFromCoordinates(newPos[0], newPos[1])
+          const addr = await getAddressFromCoords(newPos[0], newPos[1])
           setAddress(addr)
         } catch (error) {
           console.error('Error fetching address:', error)

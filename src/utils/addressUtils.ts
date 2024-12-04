@@ -1,4 +1,4 @@
-import { getAddressFromCoordinates } from '@/services/geocodingService'
+import { getAddressFromCoords } from '@/services/geocodingService'
 
 interface Location {
   lat: number
@@ -15,13 +15,13 @@ export const updateLocationAddresses = async (
   }
 
   if (pickupLocation) {
-    addresses.pickup = await getAddressFromCoordinates(
+    addresses.pickup = await getAddressFromCoords(
       pickupLocation.lat,
       pickupLocation.lng,
     )
   }
   if (dropLocation) {
-    addresses.drop = await getAddressFromCoordinates(
+    addresses.drop = await getAddressFromCoords(
       dropLocation.lat,
       dropLocation.lng,
     )

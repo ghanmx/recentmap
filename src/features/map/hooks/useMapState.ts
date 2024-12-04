@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { useMapNotifications } from './useMapNotifications'
-import { getAddressFromCoordinates } from '@/services/geocodingService'
+import { getAddressFromCoords } from '@/services/geocodingService'
 import { Location } from '@/types/location'
 
 export const useMapState = () => {
@@ -21,7 +21,7 @@ export const useMapState = () => {
   ) => {
     setIsLoading(true)
     try {
-      const address = location.address || await getAddressFromCoordinates(
+      const address = location.address || await getAddressFromCoords(
         location.lat,
         location.lng,
       )
