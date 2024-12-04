@@ -1,16 +1,18 @@
 import {
   FALLBACK_GEOCODING_URL,
-  GeocodingOptions,
+  DEFAULT_SEARCH_LIMIT,
   DEFAULT_COUNTRY_CODE,
-  DEFAULT_SEARCH_LIMIT
+  GeocodingOptions,
 } from './geocoding/proxyConfig'
 import { tryFetchWithProxies } from './geocoding/proxyFetch'
 
-interface GeocodingResult {
+export interface GeocodingResult {
   address: string
   lat: number
   lon: number
   display_name: string
+  importance?: number
+  place_id?: string
 }
 
 export const searchAddresses = async (
@@ -37,14 +39,33 @@ export const searchAddresses = async (
   }
 
   const url = `${FALLBACK_GEOCODING_URL}/search?${params}`
-  const results = await tryFetchWithProxies(url)
+  
+  try {
+    const results = await tryFetchWithProxies(url)
+    
+    if (!Array.isArray(results)) {
+      console.error('Invalid response format:', results)
+      return []
+    }
 
-  return results.map((result: any) => ({
-    address: result.display_name,
-    lat: parseFloat(result.lat),
-    lon: parseFloat(result.lon),
-    display_name: result.display_name
-  }))
+    const mappedResults = results.map((result: any) => ({
+      address: result.display_name,
+      lat: parseFloat(result.lat),
+      lon: parseFloat(result.lon),
+      display_name: result.display_name,
+      importance: result.importance,
+      place_id: result.place_id
+    }))
+
+    return fuzzyMatch 
+      ? mappedResults 
+      : mappedResults.filter(r => 
+          r.display_name.toLowerCase().includes(query.toLowerCase())
+        )
+  } catch (error) {
+    console.error('Error searching addresses:', error)
+    return []
+  }
 }
 
 export const getAddressFromCoords = async (lat: number, lon: number): Promise<string> => {
@@ -52,11 +73,14 @@ export const getAddressFromCoords = async (lat: number, lon: number): Promise<st
     format: 'json',
     lat: lat.toString(),
     lon: lon.toString(),
-    zoom: '18',
-    addressdetails: '1',
   })
 
-  const url = `${FALLBACK_GEOCODING_URL}/reverse?${params}`
-  const result = await tryFetchWithProxies(url)
-  return result.display_name || 'Address not found'
+  try {
+    const url = `${FALLBACK_GEOCODING_URL}/reverse?${params}`
+    const result = await tryFetchWithProxies(url)
+    return result?.display_name || 'Address not found'
+  } catch (error) {
+    console.error('Error getting address from coordinates:', error)
+    return 'Error retrieving address'
+  }
 }
