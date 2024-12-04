@@ -1,4 +1,3 @@
-import { ChevronDown, ChevronUp, Info, Receipt, Truck, TrendingUp, Flag, ArrowRight, ArrowLeft } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -9,10 +8,8 @@ import { CostItemDisplay } from './CostItemDisplay'
 import { TruckInfoHeader } from './TruckInfoHeader'
 import { TollBreakdownSection } from './TollBreakdownSection'
 import { ServiceCostSection } from './ServiceCostSection'
-import { Separator } from '@/components/ui/separator'
 import { TollLocation } from '@/types/toll'
-import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { TollBadgeInfo } from './TollBadgeInfo'
 import { useToast } from '@/hooks/use-toast'
 
 interface CostBreakdownProps {
@@ -75,23 +72,10 @@ export const CostBreakdown = ({
             selectedVehicleModel={selectedVehicleModel}
           />
           
-          <div className="flex items-center gap-2 mb-2">
-            <Badge variant="secondary" className="bg-blue-100">
-              <Receipt className="w-4 h-4 mr-1" />
-              {detectedTolls.length > 0 ? `${detectedTolls.length} Peajes Detectados` : 'Sin Peajes'}
-            </Badge>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info 
-                  className="w-4 h-4 text-blue-500 cursor-pointer" 
-                  onClick={handleTollInfo}
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Los peajes son calculados automáticamente basados en tu ruta</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
+          <TollBadgeInfo 
+            tollCount={detectedTolls.length}
+            onInfoClick={handleTollInfo}
+          />
 
           <CostFormulaDisplay
             selectedTruck={selectedTruck}
@@ -118,11 +102,6 @@ export const CostBreakdown = ({
                 animate={{ opacity: 1 }}
                 className="space-y-3"
               >
-                <div className="text-sm text-gray-600 font-medium flex items-center gap-2">
-                  <Receipt className="w-4 h-4 text-primary" />
-                  Desglose de peajes:
-                </div>
-
                 {outboundTolls.length > 0 && (
                   <TollBreakdownSection
                     tolls={outboundTolls}
