@@ -1,17 +1,24 @@
+import { MapControls } from './MapControls'
 import { RouteStreetInfo } from './RouteStreetInfo'
-import { MapControls } from '@/components/map/MapControls'
-import { Location } from '@/types/location'
+import { useToast } from '@/hooks/use-toast'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Card } from '@/components/ui/card'
+import { Loader2 } from 'lucide-react'
+import { useMapNotifications } from '../hooks/useMapNotifications'
+import { UserLocationControl } from './UserLocationControl'
+import { useState } from 'react'
 
 interface MapControlPanelProps {
   selectingPickup: boolean
   selectingDrop: boolean
   setSelectingPickup: (value: boolean) => void
   setSelectingDrop: (value: boolean) => void
-  pickupLocation: Location | null
-  dropLocation: Location | null
-  pickupAddress: string
-  dropAddress: string
-  isLoading: boolean
+  pickupLocation: { lat: number; lng: number } | null
+  dropLocation: { lat: number; lng: number } | null
+  pickupAddress?: string
+  dropAddress?: string
+  isLoading?: boolean
+  className?: string
 }
 
 export const MapControlPanel = ({
@@ -23,35 +30,83 @@ export const MapControlPanel = ({
   dropLocation,
   pickupAddress,
   dropAddress,
-  isLoading,
+  isLoading = false,
 }: MapControlPanelProps) => {
+  const { toast } = useToast()
+  const { showLocationSelectionNotification } = useMapNotifications()
+  const [showUserLocation, setShowUserLocation] = useState(false)
+
   const handlePickupClick = () => {
     setSelectingPickup(true)
     setSelectingDrop(false)
+    showLocationSelectionNotification('pickup')
   }
 
   const handleDropClick = () => {
     setSelectingDrop(true)
     setSelectingPickup(false)
+    showLocationSelectionNotification('drop')
+  }
+
+  const handleUserLocationToggle = () => {
+    setShowUserLocation(!showUserLocation)
   }
 
   return (
-    <div className="absolute top-4 left-4 z-[1000] p-4 bg-white rounded-lg shadow-lg">
-      <MapControls
-        selectingPickup={selectingPickup}
-        selectingDrop={selectingDrop}
-        onPickupClick={handlePickupClick}
-        onDropClick={handleDropClick}
-      />
-      <RouteStreetInfo
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-        pickupAddress={pickupAddress}
-        dropAddress={dropAddress}
-        isLoading={isLoading}
-      />
+    <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-3 sm:px-4">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="w-full"
+      >
+        <Card className="relative w-full bg-white/95 backdrop-blur-md shadow-md rounded-lg p-4 border border-primary/10 hover:border-primary/20 transition-all duration-300">
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg"
+            >
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </motion.div>
+          )}
+          <div className="flex items-center justify-between gap-4">
+            <MapControls
+              selectingPickup={selectingPickup}
+              selectingDrop={selectingDrop}
+              onPickupClick={handlePickupClick}
+              onDropClick={handleDropClick}
+            />
+            <div data-component-path="src/components/map/UserLocationControl.tsx">
+              <UserLocationControl
+                visible={showUserLocation}
+                onToggle={handleUserLocationToggle}
+              />
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+
+      <AnimatePresence>
+        {(pickupLocation || dropLocation) && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="mt-3 w-full"
+          >
+            <RouteStreetInfo
+              pickupLocation={pickupLocation}
+              dropLocation={dropLocation}
+              pickupAddress={pickupAddress}
+              dropAddress={dropAddress}
+              isLoading={isLoading}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
-
-export default MapControlPanel
