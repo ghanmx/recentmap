@@ -5,6 +5,7 @@ import { enterpriseIcon, pickupIcon, dropIcon } from '@/utils/mapUtils'
 import { COMPANY_LOCATION } from '@/services/routeService'
 import { Marker, Popup } from 'react-leaflet'
 import { Location } from '@/types/location'
+import { useToast } from '@/hooks/use-toast'
 
 interface MapMarkersProps {
   pickupLocation: Location | null
@@ -27,6 +28,28 @@ export const MapMarkers = ({
   setDropLocation,
   onRouteCalculated,
 }: MapMarkersProps) => {
+  const { toast } = useToast()
+
+  const handlePickupDragEnd = (latlng: L.LatLng) => {
+    const location = { lat: latlng.lat, lng: latlng.lng }
+    setPickupLocation(location)
+    onLocationSelect(location)
+    toast({
+      title: 'Punto de recogida actualizado',
+      description: 'La ubicación de recogida ha sido actualizada',
+    })
+  }
+
+  const handleDropDragEnd = (latlng: L.LatLng) => {
+    const location = { lat: latlng.lat, lng: latlng.lng }
+    setDropLocation(location)
+    onLocationSelect(location)
+    toast({
+      title: 'Punto de entrega actualizado',
+      description: 'La ubicación de entrega ha sido actualizada',
+    })
+  }
+
   return (
     <>
       <MapLocationHandler
@@ -48,11 +71,7 @@ export const MapMarkers = ({
       {pickupLocation && (
         <DraggableMarker
           position={[pickupLocation.lat, pickupLocation.lng]}
-          onDragEnd={(latlng) => {
-            const location = { lat: latlng.lat, lng: latlng.lng }
-            setPickupLocation(location)
-            onLocationSelect(location)
-          }}
+          onDragEnd={handlePickupDragEnd}
           icon={pickupIcon}
           label="Punto de Recogida"
           isPickup={true}
@@ -62,11 +81,7 @@ export const MapMarkers = ({
       {dropLocation && (
         <DraggableMarker
           position={[dropLocation.lat, dropLocation.lng]}
-          onDragEnd={(latlng) => {
-            const location = { lat: latlng.lat, lng: latlng.lng }
-            setDropLocation(location)
-            onLocationSelect(location)
-          }}
+          onDragEnd={handleDropDragEnd}
           icon={dropIcon}
           label="Punto de Entrega"
           isPickup={false}
