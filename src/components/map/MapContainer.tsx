@@ -4,7 +4,7 @@ import { MutableRefObject, useState } from 'react'
 import { MapMarkers } from './MapMarkers'
 import { MapUpdater } from './MapUpdater'
 import { UserLocationMarker } from './UserLocationMarker'
-import { UserLocationControl } from './UserLocationControl'
+import { UserLocationControl } from '@/features/map/components/UserLocationControl'
 import { motion } from 'framer-motion'
 import { Location } from '@/types/location'
 
