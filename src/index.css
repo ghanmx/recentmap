@@ -102,6 +102,30 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.text-gradient-shine {
+  background: linear-gradient(
+    to right,
+    theme(colors.primary.DEFAULT) 20%,
+    theme(colors.secondary.DEFAULT) 30%,
+    theme(colors.primary.DEFAULT) 70%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
+  background-size: 500% auto;
+  animation: shine 5s ease-in-out infinite alternate;
+}
+
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);
