@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Card } from '../ui/card'
-import { Truck, TruckIcon, CarFront } from 'lucide-react'
+import { CarFront, Truck } from 'lucide-react'
 
 const towingTypes = [
   {
@@ -8,18 +8,13 @@ const towingTypes = [
     title: 'Grúa Plataforma',
     description:
       'Ideal para vehículos ligeros y medianos. Transporte seguro sin arrastre.',
+    gif: '/lovable-uploads/TipoC.gif',
   },
   {
     icon: <Truck className="w-12 h-12 text-primary" />,
     title: 'Grúa de Arrastre',
     description:
       'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
-  },
-  {
-    icon: <TruckIcon className="w-12 h-12 text-primary" />,
-    title: 'Grúa Industrial',
-    description:
-      'Capacidad para vehículos pesados y maquinaria. Equipo especializado.',
   },
 ]
 
@@ -42,7 +37,7 @@ export const TowingTypes = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {towingTypes.map((type, index) => (
             <motion.div
               key={index}
@@ -54,9 +49,19 @@ export const TowingTypes = () => {
               className="flex flex-col items-center"
             >
               <Card className="w-full p-8 text-center hover:shadow-xl transition-all duration-300">
-                <div className="rounded-full bg-primary/10 p-6 mx-auto mb-6">
-                  {type.icon}
-                </div>
+                {type.gif ? (
+                  <div className="w-full h-48 mb-6 overflow-hidden rounded-lg">
+                    <img
+                      src={type.gif}
+                      alt={type.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="rounded-full bg-primary/10 p-6 mx-auto mb-6">
+                    {type.icon}
+                  </div>
+                )}
                 <h3 className="text-2xl font-semibold mb-4">{type.title}</h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   {type.description}

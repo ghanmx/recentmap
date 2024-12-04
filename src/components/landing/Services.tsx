@@ -1,13 +1,12 @@
 import { motion } from 'framer-motion'
 import { Card } from '../ui/card'
 import {
-  Car,
   Clock,
   MapPin,
   Shield,
   ThumbsUp,
+  Car,
   Truck,
-  Wrench,
 } from 'lucide-react'
 
 const services = [
@@ -31,16 +30,6 @@ const services = [
     title: 'Servicio Profesional',
     description: 'Personal capacitado y equipo especializado',
   },
-  {
-    icon: <Car className="w-8 h-8 text-primary" />,
-    title: 'Todo Tipo de Vehículos',
-    description: 'Desde motocicletas hasta camiones pesados',
-  },
-  {
-    icon: <Wrench className="w-8 h-8 text-primary" />,
-    title: 'Asistencia Mecánica',
-    description: 'Diagnóstico y reparaciones menores en sitio',
-  },
 ]
 
 export const Services = () => {
@@ -62,7 +51,7 @@ export const Services = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {services.map((service, index) => (
             <motion.div
               key={index}
