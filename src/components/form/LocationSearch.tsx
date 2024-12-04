@@ -55,18 +55,11 @@ export const LocationSearch = ({
       setError(null)
 
       try {
-        const params = new URLSearchParams({
-          lat: COMPANY_LOCATION.lat.toString(),
-          lon: COMPANY_LOCATION.lng.toString(),
-        })
-
-        if (currentLocation) {
-          params.set('lat', currentLocation.lat.toString())
-          params.set('lon', currentLocation.lng.toString())
-        }
-
         const results = await searchAddresses(query, {
-          proximity: COMPANY_LOCATION,
+          proximity: {
+            lat: currentLocation?.lat || COMPANY_LOCATION.lat,
+            lng: currentLocation?.lng || COMPANY_LOCATION.lng,
+          }
         })
 
         const resultsWithDistance = results
