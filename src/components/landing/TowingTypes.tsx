@@ -15,6 +15,7 @@ const towingTypes = [
     title: 'Grúa de Arrastre',
     description:
       'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
+    gif: '/lovable-uploads/TipoD2.gif',
   },
 ]
 
