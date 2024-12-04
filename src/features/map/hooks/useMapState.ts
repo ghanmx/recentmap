@@ -2,11 +2,7 @@ import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { useMapNotifications } from './useMapNotifications'
 import { getAddressFromCoordinates } from '@/services/geocodingService'
-
-interface Location {
-  lat: number
-  lng: number
-}
+import { Location } from '@/types/location'
 
 export const useMapState = () => {
   const [pickupLocation, setPickupLocation] = useState<Location | null>(null)
@@ -20,12 +16,12 @@ export const useMapState = () => {
   const { showLocationUpdateSuccess } = useMapNotifications()
 
   const handleLocationSelect = async (
-    location: Location,
+    location: Location & { address?: string },
     type: 'pickup' | 'drop',
   ) => {
     setIsLoading(true)
     try {
-      const address = await getAddressFromCoordinates(
+      const address = location.address || await getAddressFromCoordinates(
         location.lat,
         location.lng,
       )
@@ -34,7 +30,7 @@ export const useMapState = () => {
         setPickupLocation(location)
         setPickupAddress(address)
         setSelectingPickup(false)
-      } else {
+      } else if (type === 'drop') {
         setDropLocation(location)
         setDropAddress(address)
         setSelectingDrop(false)
