@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { formatCurrency } from '@/utils/priceCalculator'
+import { formatCurrency } from '@/utils/costCalculator'
 import { TowTruckType } from '@/utils/pricing'
 import { CostFormulaDisplay } from './CostFormulaDisplay'
 import { CostItemDisplay } from './CostItemDisplay'
@@ -58,9 +58,6 @@ export const CostBreakdown = ({
       })
     }
   }
-
-  // Calculate actual final cost based on requiresInvoice
-  const actualFinalCost = requiresInvoice ? subtotal + tax : subtotal
 
   return (
     <Card className="p-4 space-y-4 bg-white/50">
@@ -164,7 +161,7 @@ export const CostBreakdown = ({
               <span className={`${
                 selectedTruck.name === 'Tipo D' ? 'text-orange-500' : 'text-primary'
               }`}>
-                {formatCurrency(actualFinalCost)}
+                {formatCurrency(finalCost)}
               </span>
             </motion.div>
           </div>

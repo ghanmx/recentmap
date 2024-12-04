@@ -8,6 +8,7 @@ import { CostBreakdown } from './cost/CostBreakdown'
 import { useToast } from '@/hooks/use-toast'
 import { TollLocation } from '@/types/toll'
 import { Button } from './ui/button'
+import { TollInfoDisplay } from './TollInfoDisplay'
 import {
   Dialog,
   DialogContent,
@@ -19,20 +20,13 @@ import { TermsAndConditions } from './legal/TermsAndConditions'
 import { ScrollArea } from './ui/scroll-area'
 import { Info } from 'lucide-react'
 import PaymentWindow from './payment/PaymentWindow'
+import { calculateTotalCost } from '@/utils/costCalculator'
 
 interface CostEstimationProps {
   onShowPayment: () => void
-  subtotal: number
-  tax: number
-  finalTotal: number
 }
 
-export const CostEstimation = ({ 
-  onShowPayment,
-  subtotal: providedSubtotal,
-  tax: providedTax,
-  finalTotal: providedFinalTotal,
-}: CostEstimationProps) => {
+export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
   const {
     totalDistance,
     detectedTolls,
@@ -49,9 +43,13 @@ export const CostEstimation = ({
   const { toast } = useToast()
 
   const selectedTruck = towTruckTypes[truckType || 'A']
-  const baseCost = totalDistance * selectedTruck.perKm
-  const flagDropFee = selectedTruck.flagDropFee
-  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
+  const { subtotal, tax, finalTotal } = calculateTotalCost(
+    totalDistance,
+    truckType,
+    requiresManeuver,
+    totalTollCost,
+    requiresInvoice,
+  )
 
   const handleBreakdownToggle = useCallback(
     (value: boolean) => {
@@ -131,7 +129,7 @@ export const CostEstimation = ({
         <CostHeader
           showBreakdown={showBreakdown}
           setShowBreakdown={handleBreakdownToggle}
-          finalCost={providedFinalTotal}
+          finalCost={finalTotal}
           truckType={truckType}
           selectedTruck={selectedTruck}
         />
@@ -153,20 +151,27 @@ export const CostEstimation = ({
                 selectedTruck={selectedTruck}
               />
 
+              {detectedTolls.length > 0 && (
+                <TollInfoDisplay
+                  tolls={processedTolls}
+                  totalCost={totalTollCost}
+                />
+              )}
+
               <CostBreakdown
-                baseCost={baseCost}
-                flagDropFee={flagDropFee}
-                tax={providedTax}
+                baseCost={totalDistance * selectedTruck.perKm}
+                flagDropFee={selectedTruck.flagDropFee}
+                tax={tax}
                 totalDistance={totalDistance}
                 totalTollCost={totalTollCost}
-                finalCost={providedFinalTotal}
+                finalCost={finalTotal}
                 detectedTolls={processedTolls}
                 requiresInvoice={requiresInvoice}
                 setShowPaymentWindow={setShowPayment}
-                maneuverCost={maneuverCost}
+                maneuverCost={requiresManeuver ? selectedTruck.maneuverCharge : 0}
                 requiresManeuver={requiresManeuver}
                 selectedTruck={selectedTruck}
-                subtotal={providedSubtotal}
+                subtotal={subtotal}
                 selectedVehicleModel={selectedVehicleModel}
               />
             </motion.div>
@@ -176,11 +181,11 @@ export const CostEstimation = ({
         <PaymentWindow
           isOpen={showPayment}
           onClose={() => setShowPayment(false)}
-          subtotal={providedSubtotal}
-          tax={providedTax}
+          subtotal={subtotal}
+          tax={tax}
           requiresInvoice={requiresInvoice}
           onPaymentSubmit={handlePaymentSubmit}
-          finalTotal={providedFinalTotal}
+          finalTotal={finalTotal}
         />
       </div>
     </motion.div>

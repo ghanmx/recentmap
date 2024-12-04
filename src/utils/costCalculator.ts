@@ -1,16 +1,18 @@
+import { TowTruckType } from '@/utils/pricing'
+
 export const calculateTotalCost = (
   distance: number,
   truckType: 'A' | 'B' | 'C' | 'D',
   requiresManeuver: boolean,
-  tollCost: number,
-): number => {
-  const baseRate =
-    {
-      A: 18.82,
-      B: 20.62,
-      C: 23.47,
-      D: 32.35,
-    }[truckType] || 18.82
+  tollCost: number = 0,
+  requiresInvoice: boolean = false,
+): { subtotal: number; tax: number; finalTotal: number } => {
+  const baseRate = {
+    A: 18.82,
+    B: 20.62,
+    C: 23.47,
+    D: 32.35,
+  }[truckType] || 18.82
 
   const maneuverCost = requiresManeuver
     ? {
@@ -28,5 +30,23 @@ export const calculateTotalCost = (
     D: 885.84,
   }[truckType]
 
-  return distance * baseRate + maneuverCost + flagDropFee + tollCost
+  const baseCost = distance * baseRate
+  const subtotal = baseCost + maneuverCost + flagDropFee + tollCost
+  const tax = requiresInvoice ? subtotal * 0.16 : 0
+  const finalTotal = subtotal + tax
+
+  return {
+    subtotal,
+    tax,
+    finalTotal,
+  }
+}
+
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: 'MXN',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount)
 }
