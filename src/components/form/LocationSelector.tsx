@@ -44,7 +44,6 @@ export const LocationSelector = ({
 }: LocationSelectorProps) => {
   const { toast } = useToast()
 
-  // Sync pickup address with the form
   useEffect(() => {
     if (pickupAddress) {
       form.setValue('pickupLocation', {
@@ -55,7 +54,6 @@ export const LocationSelector = ({
     }
   }, [pickupAddress, pickupLocation, form])
 
-  // Sync drop address with the form
   useEffect(() => {
     if (dropAddress) {
       form.setValue('dropoffLocation', {
@@ -66,7 +64,6 @@ export const LocationSelector = ({
     }
   }, [dropAddress, dropLocation, form])
 
-  // Handle location selection
   const handleLocationSelect = async (
     location: { lat: number; lng: number; address: string },
     type: 'pickup' | 'drop',
@@ -92,7 +89,6 @@ export const LocationSelector = ({
 
   return (
     <div className="space-y-6">
-      {/* Pickup Location */}
       <FormField
         control={form.control}
         name="pickupLocation"
@@ -103,7 +99,6 @@ export const LocationSelector = ({
             </FormLabel>
             <FormControl>
               <LocationSearch
-                label="Ubicación de Recogida"
                 placeholder="Ingrese dirección de recogida..."
                 icon={<MapPin className="h-4 w-4 text-primary" />}
                 currentAddress={pickupAddress}
@@ -111,6 +106,7 @@ export const LocationSelector = ({
                 onLocationSelect={(location) =>
                   handleLocationSelect(location, 'pickup')
                 }
+                onSelectingLocation={() => onSelectingPickup?.(true)}
                 type="pickup"
               />
             </FormControl>
@@ -118,7 +114,6 @@ export const LocationSelector = ({
         )}
       />
 
-      {/* Dropoff Location */}
       <FormField
         control={form.control}
         name="dropoffLocation"
@@ -129,7 +124,6 @@ export const LocationSelector = ({
             </FormLabel>
             <FormControl>
               <LocationSearch
-                label="Ubicación de Entrega"
                 placeholder="Ingrese dirección de entrega..."
                 icon={<Navigation className="h-4 w-4 text-primary" />}
                 currentAddress={dropAddress}
@@ -137,6 +131,7 @@ export const LocationSelector = ({
                 onLocationSelect={(location) =>
                   handleLocationSelect(location, 'drop')
                 }
+                onSelectingLocation={() => onSelectingDrop?.(true)}
                 type="drop"
               />
             </FormControl>

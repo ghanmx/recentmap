@@ -10,7 +10,7 @@ interface Suggestion {
   distance: number
 }
 
-interface LocationSuggestionsProps {
+export interface LocationSuggestionsProps {
   suggestions: Suggestion[]
   error: string | null
   isMarking: boolean

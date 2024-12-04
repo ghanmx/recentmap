@@ -9,13 +9,15 @@ import { calculateDistance } from '@/utils/distanceUtils'
 import { COMPANY_LOCATION } from '@/utils/priceCalculator'
 import { LocationSuggestions } from './LocationSuggestions'
 
-interface LocationSearchProps {
+export interface LocationSearchProps {
   onLocationSelect: (location: { lat: number; lng: number; address: string }) => void
   onSelectingLocation?: () => void
   currentAddress?: string
+  currentLocation?: { lat: number; lng: number } | null
   placeholder?: string
   type?: 'pickup' | 'drop'
   className?: string
+  icon?: React.ReactNode
 }
 
 interface Suggestion {
@@ -29,9 +31,11 @@ export const LocationSearch = ({
   onLocationSelect,
   onSelectingLocation,
   currentAddress,
+  currentLocation,
   placeholder = 'Buscar ubicación...',
   type = 'pickup',
   className = '',
+  icon,
 }: LocationSearchProps) => {
   const [searchQuery, setSearchQuery] = useState(currentAddress || '')
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
@@ -58,11 +62,11 @@ export const LocationSearch = ({
         const resultsWithDistance = results
           .map((result: GeocodingResult) => ({
             address: result.display_name,
-            lat: result.lat,
-            lon: result.lon,
+            lat: parseFloat(result.lat),
+            lon: parseFloat(result.lon),
             distance: calculateDistance(
               { lat: COMPANY_LOCATION.lat, lng: COMPANY_LOCATION.lng },
-              { lat: result.lat, lng: result.lon },
+              { lat: parseFloat(result.lat), lng: parseFloat(result.lon) },
             ),
           }))
           .sort((a, b) => a.distance - b.distance)
@@ -131,18 +135,16 @@ export const LocationSearch = ({
           disabled={isMarking}
           className="shrink-0"
         >
-          <MapPin className="h-4 w-4" />
+          {icon || <MapPin className="h-4 w-4" />}
         </Button>
       </div>
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
-
-      {suggestions.length > 0 && (
-        <LocationSuggestions
-          suggestions={suggestions}
-          onSelect={handleSuggestionSelect}
-        />
-      )}
+      <LocationSuggestions
+        suggestions={suggestions}
+        error={error}
+        isMarking={isMarking}
+        onSuggestionSelect={handleSuggestionSelect}
+      />
     </div>
   )
 }
