@@ -2,6 +2,7 @@ import { TOLL_LOCATIONS } from '@/data/tollData'
 import { calculateDistance } from './distanceUtils'
 import { getRouteDetails } from '@/services/routeService'
 import { COMPANY_LOCATION } from './priceCalculator'
+import { TollLocation } from '@/types/toll'
 
 interface Location {
   lat: number

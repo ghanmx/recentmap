@@ -1,9 +1,9 @@
 export const FALLBACK_GEOCODING_URL = 'https://nominatim.openstreetmap.org'
 
 export const CORS_PROXIES = [
-  'https://proxy.cors.sh/',
   'https://api.allorigins.win/raw?url=',
-  'https://api.codetabs.com/v1/proxy?quest='
+  'https://api.codetabs.com/v1/proxy?quest=',
+  'https://corsproxy.io/?'
 ]
 
 export interface GeocodingOptions {

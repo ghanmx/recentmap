@@ -1,193 +1,47 @@
-import { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useTowing } from '@/contexts/TowingContext'
-import { towTruckTypes } from '@/utils/pricing'
-import { CostHeader } from './cost/CostHeader'
-import { CostMetrics } from './cost/CostMetrics'
-import { CostBreakdown } from './cost/CostBreakdown'
-import { useToast } from '@/hooks/use-toast'
-import { TollLocation } from '@/types/toll'
 import { Button } from './ui/button'
-import { TollInfoDisplay } from './TollInfoDisplay'
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog'
-import { TermsAndConditions } from './legal/TermsAndConditions'
-import { ScrollArea } from './ui/scroll-area'
-import { Info } from 'lucide-react'
-import PaymentWindow from './payment/PaymentWindow'
-import { calculateTotalCost } from '@/utils/costCalculator'
+import { formatCurrency } from '@/utils/costCalculator'
+import { motion } from 'framer-motion'
 
-interface CostEstimationProps {
+export interface CostEstimationProps {
   onShowPayment: () => void
+  subtotal: number
+  tax: number
+  finalTotal: number
 }
 
-export const CostEstimation = ({ onShowPayment }: CostEstimationProps) => {
-  const {
-    totalDistance,
-    detectedTolls,
-    totalTollCost,
-    truckType,
-    requiresManeuver,
-    updateManeuverRequired,
-    selectedVehicleModel,
-  } = useTowing()
-
-  const [showBreakdown, setShowBreakdown] = useState(false)
-  const [requiresInvoice, setRequiresInvoice] = useState(false)
-  const [showPayment, setShowPayment] = useState(false)
-  const { toast } = useToast()
-
-  const selectedTruck = towTruckTypes[truckType || 'A']
-  const { subtotal, tax, finalTotal } = calculateTotalCost(
-    totalDistance,
-    truckType,
-    requiresManeuver,
-    totalTollCost,
-    requiresInvoice,
-  )
-
-  const handleBreakdownToggle = useCallback(
-    (value: boolean) => {
-      setShowBreakdown(value)
-      if (value) {
-        toast({
-          title: 'Desglose de costos',
-          description: 'Ahora puedes ver el detalle de los costos del servicio',
-        })
-      }
-    },
-    [toast],
-  )
-
-  const handlePaymentSubmit = async () => {
-    try {
-      toast({
-        title: 'Procesando pago',
-        description: 'Tu pago está siendo procesado...',
-      })
-      
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      setShowPayment(false)
-      
-      toast({
-        title: 'Pago exitoso',
-        description: 'Tu pago ha sido procesado correctamente',
-      })
-    } catch (error) {
-      toast({
-        title: 'Error en el pago',
-        description: 'Hubo un error al procesar tu pago. Por favor intenta nuevamente.',
-        variant: 'destructive',
-      })
-    }
-  }
-
-  // Process tolls with direction
-  const processedTolls = detectedTolls.map((toll: TollLocation) => ({
-    ...toll,
-    direction: toll.direction || 'outbound',
-  })) as TollLocation[]
-
+export const CostEstimation = ({
+  onShowPayment,
+  subtotal,
+  tax,
+  finalTotal,
+}: CostEstimationProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 w-full max-w-2xl mx-auto"
+      className="space-y-4"
     >
-      <div className="bg-gradient-to-br from-white/95 via-blue-50/30 to-white backdrop-blur-sm rounded-lg shadow-lg p-4 space-y-4 border border-blue-100/50 hover:shadow-xl transition-all duration-300">
-        <div className="flex justify-between items-center">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 text-primary hover:text-primary/80"
-              >
-                <Info className="w-4 h-4" />
-                Términos y Condiciones
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl h-[80vh]">
-              <DialogTitle>Términos y Condiciones del Servicio</DialogTitle>
-              <DialogDescription>
-                Por favor, lea cuidadosamente los términos y condiciones antes
-                de proceder.
-              </DialogDescription>
-              <ScrollArea className="h-full pr-4">
-                <TermsAndConditions />
-              </ScrollArea>
-            </DialogContent>
-          </Dialog>
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span>Subtotal:</span>
+          <span>{formatCurrency(subtotal)}</span>
         </div>
-
-        <CostHeader
-          showBreakdown={showBreakdown}
-          setShowBreakdown={handleBreakdownToggle}
-          finalCost={finalTotal}
-          truckType={truckType}
-          selectedTruck={selectedTruck}
-        />
-
-        <AnimatePresence>
-          {showBreakdown && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-4"
-            >
-              <CostMetrics
-                totalDistance={totalDistance}
-                requiresInvoice={requiresInvoice}
-                setRequiresInvoice={setRequiresInvoice}
-                requiresManeuver={requiresManeuver}
-                onManeuverChange={updateManeuverRequired}
-                selectedTruck={selectedTruck}
-              />
-
-              {detectedTolls.length > 0 && (
-                <TollInfoDisplay
-                  tolls={processedTolls}
-                  totalCost={totalTollCost}
-                />
-              )}
-
-              <CostBreakdown
-                baseCost={totalDistance * selectedTruck.perKm}
-                flagDropFee={selectedTruck.flagDropFee}
-                tax={tax}
-                totalDistance={totalDistance}
-                totalTollCost={totalTollCost}
-                finalCost={finalTotal}
-                detectedTolls={processedTolls}
-                requiresInvoice={requiresInvoice}
-                setShowPaymentWindow={setShowPayment}
-                maneuverCost={requiresManeuver ? selectedTruck.maneuverCharge : 0}
-                requiresManeuver={requiresManeuver}
-                selectedTruck={selectedTruck}
-                subtotal={subtotal}
-                selectedVehicleModel={selectedVehicleModel}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <PaymentWindow
-          isOpen={showPayment}
-          onClose={() => setShowPayment(false)}
-          subtotal={subtotal}
-          tax={tax}
-          requiresInvoice={requiresInvoice}
-          onPaymentSubmit={handlePaymentSubmit}
-          finalTotal={finalTotal}
-        />
+        <div className="flex justify-between text-sm text-gray-600">
+          <span>IVA (16%):</span>
+          <span>{formatCurrency(tax)}</span>
+        </div>
+        <div className="flex justify-between text-lg font-bold pt-2 border-t">
+          <span>Total:</span>
+          <span className="text-primary">{formatCurrency(finalTotal)}</span>
+        </div>
       </div>
+
+      <Button
+        onClick={onShowPayment}
+        className="w-full bg-primary hover:bg-primary/90"
+      >
+        Proceder al pago
+      </Button>
     </motion.div>
   )
 }
