@@ -1,102 +1,76 @@
 import { motion } from 'framer-motion'
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel'
-import { Card } from '@/components/ui/card'
+import { Card } from '../ui/card'
+import { CarFront, Truck } from 'lucide-react'
 
-const TOWING_TYPES = [
+const towingTypes = [
   {
-    title: 'Servicio de Plataforma',
-    description: 'Transporte seguro para todo tipo de vehículos',
-    gif: 'https://jmp.sh/s/8HF36yHh1B896xjduKLl',
+    icon: <CarFront className="w-12 h-12 text-primary" />,
+    title: 'Grúa Plataforma',
+    description:
+      'Ideal para vehículos ligeros y medianos. Transporte seguro sin arrastre.',
+    gif: '/lovable-uploads/TipoC.gif',
   },
   {
+    icon: <Truck className="w-12 h-12 text-primary" />,
     title: 'Grúa de Arrastre',
-    description: 'Remolque profesional para emergencias',
-    gif: 'https://jmp.sh/Voiqn6s3',
-  },
-  {
-    title: 'Servicio de Rescate',
-    description: 'Recuperación de vehículos en situaciones complejas',
-    gif: 'https://jmp.sh/uKkz3BPs',
-  },
-  {
-    title: 'Asistencia Especializada',
-    description: 'Soluciones para todo tipo de situaciones',
-    gif: 'https://jmp.sh/i2Qpczhr',
+    description:
+      'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
   },
 ]
 
 export const TowingTypes = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl font-bold font-heading bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-4">
-            Nuestros Servicios de Grúa
+    <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="container mx-auto max-w-6xl"
+      >
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold font-heading text-gradient-shine mb-4">
+            Tipos de Servicio
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Ofrecemos una amplia gama de servicios de grúa para satisfacer todas
-            sus necesidades de asistencia vehicular
+          <p className="text-lg text-gradient-shine max-w-2xl mx-auto">
+            Contamos con diferentes tipos de grúas para adaptarnos a sus
+            necesidades específicas
           </p>
-        </motion.div>
+        </div>
 
-        <Carousel
-          opts={{
-            align: 'start',
-            loop: true,
-          }}
-          className="w-full max-w-5xl mx-auto"
-        >
-          <CarouselContent className="-ml-2 md:-ml-4">
-            {TOWING_TYPES.map((type, index) => (
-              <CarouselItem
-                key={index}
-                className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
-              >
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className="overflow-hidden">
-                    <div className="aspect-video relative">
-                      <img
-                        src={type.gif}
-                        alt={type.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                        <h3 className="text-lg font-semibold mb-1">
-                          {type.title}
-                        </h3>
-                        <p className="text-sm text-gray-200">
-                          {type.description}
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <div className="hidden md:flex">
-            <CarouselPrevious className="absolute -left-12 top-1/2" />
-            <CarouselNext className="absolute -right-12 top-1/2" />
-          </div>
-        </Carousel>
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {towingTypes.map((type, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.2 }}
+              whileHover={{ scale: 1.05 }}
+              className="flex flex-col items-center"
+            >
+              <Card className="w-full p-8 text-center hover:shadow-xl transition-all duration-300">
+                {type.gif ? (
+                  <div className="w-full h-48 mb-6 overflow-hidden rounded-lg">
+                    <img
+                      src={type.gif}
+                      alt={type.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="rounded-full bg-primary/10 p-6 mx-auto mb-6">
+                    {type.icon}
+                  </div>
+                )}
+                <h3 className="text-2xl font-semibold mb-4">{type.title}</h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {type.description}
+                </p>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </section>
   )
 }
