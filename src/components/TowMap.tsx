@@ -58,11 +58,26 @@ const TowMap = () => {
         location.lat,
         location.lng,
       )
-      const locationWithAddress = { ...location }
-      handleMapLocationSelect(
-        locationWithAddress,
-        selectingPickup ? 'pickup' : 'drop',
-      )
+      
+      // Aquí está la corrección principal: solo actualizamos la ubicación que corresponde
+      if (selectingPickup) {
+        handleMapLocationSelect(
+          { ...location, address },
+          'pickup',
+        )
+        setSelectingPickup(false)
+      } else if (selectingDrop) {
+        handleMapLocationSelect(
+          { ...location, address },
+          'drop',
+        )
+        setSelectingDrop(false)
+      }
+
+      toast({
+        title: selectingPickup ? 'Punto de Recogida Actualizado' : 'Punto de Entrega Actualizado',
+        description: address,
+      })
     } catch (error) {
       console.error('Error getting address:', error)
       toast({
