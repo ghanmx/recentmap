@@ -1,46 +1,23 @@
 import { useState } from 'react'
-import { useToast } from '@/hooks/use-toast'
-import { useMapNotifications } from './useMapNotifications'
-import { getAddressFromCoords } from '@/services/geocodingService'
 import { Location } from '@/types/location'
+import { getAddressFromCoords } from '@/services/geocodingService'
 
 export const useMapState = () => {
   const [pickupLocation, setPickupLocation] = useState<Location | null>(null)
   const [dropLocation, setDropLocation] = useState<Location | null>(null)
-  const [pickupAddress, setPickupAddress] = useState('')
-  const [dropAddress, setDropAddress] = useState('')
-  const [selectingPickup, setSelectingPickup] = useState(false)
-  const [selectingDrop, setSelectingDrop] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [pickupAddress, setPickupAddress] = useState<string>('')
+  const [dropAddress, setDropAddress] = useState<string>('')
+  const [selectingPickup, setSelectingPickup] = useState<boolean>(false)
+  const [selectingDrop, setSelectingDrop] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const { showLocationUpdateSuccess } = useMapNotifications()
-
-  const handleLocationSelect = async (
-    location: Location & { address?: string },
-    type: 'pickup' | 'drop',
-  ) => {
-    setIsLoading(true)
-    try {
-      const address = location.address || await getAddressFromCoords(
-        location.lat,
-        location.lng,
-      )
-
-      if (type === 'pickup') {
-        setPickupLocation(location)
-        setPickupAddress(address)
-        setSelectingPickup(false)
-      } else if (type === 'drop') {
-        setDropLocation(location)
-        setDropAddress(address)
-        setSelectingDrop(false)
-      }
-
-      showLocationUpdateSuccess(type, address)
-    } catch (error) {
-      console.error('Error getting address:', error)
-    } finally {
-      setIsLoading(false)
+  const handleLocationSelect = (location: Location, type: 'pickup' | 'drop') => {
+    if (type === 'pickup') {
+      setPickupLocation(location)
+      setPickupAddress(location.address || '')
+    } else {
+      setDropLocation(location)
+      setDropAddress(location.address || '')
     }
   }
 

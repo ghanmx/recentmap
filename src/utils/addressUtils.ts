@@ -1,31 +1,22 @@
 import { getAddressFromCoords } from '@/services/geocodingService'
+import { Location } from '@/types/location'
 
-interface Location {
-  lat: number
-  lng: number
-}
+// Dummy function to simulate location fetching
+export const fetchLocation = (lat: number, lng: number): Promise<Location> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ lat, lng, address: `(${lat}, ${lng})` });
+    }, 1000);
+  });
+};
 
-export const updateLocationAddresses = async (
-  pickupLocation: Location | null,
-  dropLocation: Location | null,
-) => {
-  const addresses = {
-    pickup: '',
-    drop: '',
-  }
+export const getLocationAndAddress = async (lat: number, lng: number) => {
+  const address = await getAddressFromCoords(lat, lng);
+  return { lat, lng, address };
+};
 
-  if (pickupLocation) {
-    addresses.pickup = await getAddressFromCoords(
-      pickupLocation.lat,
-      pickupLocation.lng,
-    )
-  }
-  if (dropLocation) {
-    addresses.drop = await getAddressFromCoords(
-      dropLocation.lat,
-      dropLocation.lng,
-    )
-  }
-
-  return addresses
-}
+export const getCoordinatesFromAddress = async (address: string): Promise<Location | null> => {
+  // Dummy implementation
+  const simulatedLocation = await fetchLocation(25.7617, -80.1918);
+  return { ...simulatedLocation, address };
+};
