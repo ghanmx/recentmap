@@ -38,10 +38,10 @@ export const MapContainerComponent = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="w-full h-full rounded-lg overflow-hidden shadow-lg relative"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="w-full h-full rounded-xl overflow-hidden shadow-2xl relative border-2 border-primary/10"
     >
       <MapContainer
         center={defaultPosition}
@@ -53,7 +53,7 @@ export const MapContainerComponent = ({
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          className="brightness-95"
+          className="brightness-[0.97] contrast-[1.02]"
         />
 
         <MapMarkers
@@ -81,6 +81,24 @@ export const MapContainerComponent = ({
           />
         </div>
       </MapContainer>
+
+      {/* Interactive Hint Overlay */}
+      {(selectingPickup || selectingDrop) && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 pointer-events-none bg-gradient-to-b from-primary/5 via-transparent to-transparent"
+        >
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-primary/10">
+            <p className="text-sm text-primary/80 font-medium">
+              {selectingPickup
+                ? 'Haz clic en el mapa para seleccionar el punto de recogida'
+                : 'Haz clic en el mapa para seleccionar el punto de entrega'}
+            </p>
+          </div>
+        </motion.div>
+      )}
     </motion.div>
   )
 }

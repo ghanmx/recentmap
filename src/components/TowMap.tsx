@@ -6,7 +6,7 @@ import { MapControlPanel } from '@/features/map/components/MapControlPanel'
 import { useToast } from '@/hooks/use-toast'
 import { detectTollsOnRoute } from '@/utils/tollCalculator'
 import { useTowing } from '@/contexts/TowingContext'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { FloatingQuestionsPanel } from './FloatingQuestionsPanel'
 import { useMapState } from '@/features/map/hooks/useMapState'
 import { Location } from '@/types/location'
@@ -39,6 +39,7 @@ const TowMap = () => {
           toast({
             title: 'Peajes Detectados',
             description: `Se detectaron ${tollInfo.tolls.length} peajes en la ruta con un costo total de $${tollInfo.totalTollCost}`,
+            className: 'bg-blue-50 border-blue-200 text-blue-800',
           })
         }
       } catch (error) {
@@ -62,6 +63,7 @@ const TowMap = () => {
         toast({
           title: 'Punto de Recogida Actualizado',
           description: address,
+          className: 'bg-green-50 border-green-200 text-green-800',
         })
       } else if (selectingDrop) {
         handleMapLocationSelect({ ...location, address }, 'drop')
@@ -69,6 +71,7 @@ const TowMap = () => {
         toast({
           title: 'Punto de Entrega Actualizado',
           description: address,
+          className: 'bg-blue-50 border-blue-200 text-blue-800',
         })
       }
     } catch (error) {
@@ -83,11 +86,27 @@ const TowMap = () => {
 
   return (
     <motion.div
-      className="relative h-screen w-full"
+      className="relative h-screen w-full bg-gradient-to-br from-blue-50/50 via-white to-blue-50/50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center"
+          >
+            <div className="bg-white/90 p-6 rounded-lg shadow-lg">
+              <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+              <p className="mt-4 text-primary/80 font-medium">Cargando...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="absolute inset-0 z-0">
         <MapContainerComponent
           pickupLocation={pickupLocation}
