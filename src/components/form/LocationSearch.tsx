@@ -8,26 +8,7 @@ import { searchAddresses, GeocodingResult } from '@/services/geocodingService'
 import { calculateDistance } from '@/utils/distanceUtils'
 import { COMPANY_LOCATION } from '@/utils/priceCalculator'
 import { LocationSuggestions } from './LocationSuggestions'
-
-export interface LocationSearchProps {
-  onLocationSelect: (location: { lat: number; lng: number; address: string }) => void
-  onSelectingLocation?: () => void
-  currentAddress?: string
-  currentLocation?: { lat: number; lng: number } | null
-  placeholder?: string
-  type?: 'pickup' | 'drop'
-  className?: string
-  icon?: React.ReactNode
-  requiresInvoice?: boolean
-  onInvoiceChange?: (requires: boolean) => void
-}
-
-interface Suggestion {
-  address: string
-  lat: number
-  lon: number
-  distance: number
-}
+import { LocationSearchProps, Suggestion } from '@/types/location-search'
 
 export const LocationSearch = ({
   onLocationSelect,

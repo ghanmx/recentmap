@@ -2,14 +2,21 @@ import {
   FALLBACK_GEOCODING_URL,
   DEFAULT_SEARCH_LIMIT,
   DEFAULT_COUNTRY_CODE,
-  GeocodingOptions,
 } from './geocoding/proxyConfig'
 import { tryFetchWithProxies } from './geocoding/proxyFetch'
+import { ProximityOptions } from '@/types/location-search'
+
+export interface GeocodingOptions {
+  fuzzyMatch?: boolean
+  limit?: number
+  countryCode?: string
+  proximity?: ProximityOptions
+}
 
 export interface GeocodingResult {
   address: string
-  lat: number
-  lon: number
+  lat: string
+  lon: string
   display_name: string
   importance?: number
   place_id?: string
@@ -34,8 +41,8 @@ export const searchAddresses = async (
   })
 
   if (proximity) {
-    params.append('lat', proximity.lat.toString())
-    params.append('lon', proximity.lng.toString())
+    params.append('lat', proximity.lat)
+    params.append('lon', proximity.lng)
   }
 
   const url = `${FALLBACK_GEOCODING_URL}/search?${params}`
@@ -50,8 +57,8 @@ export const searchAddresses = async (
 
     const mappedResults = results.map((result: any) => ({
       address: result.display_name,
-      lat: parseFloat(result.lat),
-      lon: parseFloat(result.lon),
+      lat: result.lat,
+      lon: result.lon,
       display_name: result.display_name,
       importance: result.importance,
       place_id: result.place_id
