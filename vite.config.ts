@@ -26,5 +26,13 @@ export default defineConfig({
         },
       },
     },
+    // Add optimizeDeps configuration
+    commonjsOptions: {
+      include: [/node_modules/],
+      extensions: ['.js', '.cjs'],
+    },
+  },
+  optimizeDeps: {
+    exclude: ['lmdb'], // Exclude lmdb from optimization to prevent build issues
   },
 })

@@ -20,6 +20,8 @@
 [build.environment]
   NODE_VERSION = "20.11.1"
   NPM_VERSION = "10.2.4"
+  # Add Python version for node-gyp
+  PYTHON_VERSION = "3.11"
   # Add CI environment variable to optimize build
   CI = "true"
 
