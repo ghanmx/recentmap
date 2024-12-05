@@ -12,6 +12,8 @@ import { Location } from '@/types/location'
 import { TollInfoDisplay } from './TollInfoDisplay'
 import { Separator } from './ui/separator'
 import { CostItemDisplay } from './cost/CostItemDisplay'
+import { Switch } from './ui/switch'
+import { Label } from './ui/label'
 
 interface QuestionPage {
   id: number
@@ -42,13 +44,14 @@ export const FloatingQuestionsPanel = ({
 }: FloatingQuestionsPanelProps) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [showPaymentWindow, setShowPaymentWindow] = useState(false)
+  const [requiresInvoice, setRequiresInvoice] = useState(false)
   const { totalDistance, truckType, requiresManeuver, totalTollCost, detectedTolls } = useTowing()
 
   const baseCost = totalDistance * (truckType === 'D' ? 32.35 : 18.82)
   const maneuverCost = requiresManeuver ? (truckType === 'D' ? 2101.65 : 1219.55) : 0
   const flagDropFee = truckType === 'D' ? 885.84 : 528.69
   const subtotal = baseCost + maneuverCost + flagDropFee + totalTollCost
-  const tax = 0.16 * subtotal // 16% IVA
+  const tax = requiresInvoice ? 0.16 * subtotal : 0 // Only apply IVA if invoice is required
   const finalTotal = subtotal + tax
 
   const handlePaymentSubmit = async () => {
@@ -78,6 +81,17 @@ export const FloatingQuestionsPanel = ({
       component: (
         <div className="space-y-6">
           <div className="space-y-4">
+            <div className="flex items-center space-x-2 p-4 bg-white/50 rounded-lg">
+              <Label htmlFor="invoice" className="text-sm">
+                Requiere factura (IVA 16%)
+              </Label>
+              <Switch
+                id="invoice"
+                checked={requiresInvoice}
+                onCheckedChange={setRequiresInvoice}
+              />
+            </div>
+
             <CostEstimation 
               onShowPayment={() => setShowPaymentWindow(true)} 
               subtotal={subtotal}
@@ -107,11 +121,13 @@ export const FloatingQuestionsPanel = ({
                 amount={subtotal}
                 description="Suma de todos los cargos incluyendo peajes"
               />
-              <CostItemDisplay
-                label="IVA (16%)"
-                amount={tax}
-                description="Impuesto al Valor Agregado"
-              />
+              {requiresInvoice && (
+                <CostItemDisplay
+                  label="IVA (16%)"
+                  amount={tax}
+                  description="Impuesto al Valor Agregado"
+                />
+              )}
               <div className="pt-2 border-t">
                 <CostItemDisplay
                   label="Total Final"
@@ -188,7 +204,7 @@ export const FloatingQuestionsPanel = ({
         onClose={() => setShowPaymentWindow(false)}
         subtotal={subtotal}
         tax={tax}
-        requiresInvoice={true}
+        requiresInvoice={requiresInvoice}
         onPaymentSubmit={handlePaymentSubmit}
         finalTotal={finalTotal}
       />
