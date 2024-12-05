@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import Landing from '@/pages/Landing'
-import Index from '@/pages/Index'
+import Index from '@/pages/index'
 import { AdminPanel } from '@/components/admin/AdminPanel'
 import { UserDashboard } from '@/components/user/UserDashboard'
 import { AuthGuard } from '@/components/auth/AuthGuard'
