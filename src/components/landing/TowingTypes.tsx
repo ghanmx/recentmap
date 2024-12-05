@@ -4,17 +4,15 @@ import { CarFront, Truck } from 'lucide-react'
 
 const towingTypes = [
   {
-    icon: <CarFront className="w-12 h-12 text-primary" />,
+    icon: <CarFront className="w-12 h-12 text-primary" aria-label="Car Front Icon" />,
     title: 'Grúa Plataforma',
-    description:
-      'Ideal para vehículos ligeros y medianos. Transporte seguro sin arrastre.',
+    description: 'Ideal para vehículos ligeros y medianos. Transporte seguro sin arrastre.',
     gif: '/lovable-uploads/TipoC.gif',
   },
   {
-    icon: <Truck className="w-12 h-12 text-primary" />,
+    icon: <Truck className="w-12 h-12 text-primary" aria-label="Truck Icon" />,
     title: 'Grúa de Arrastre',
-    description:
-      'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
+    description: 'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
     gif: '/lovable-uploads/TipoD2.gif',
   },
 ]
@@ -33,8 +31,7 @@ export const TowingTypes = () => {
             Tipos de Servicio
           </h2>
           <p className="text-lg text-gradient-shine max-w-2xl mx-auto">
-            Contamos con diferentes tipos de grúas para adaptarnos a sus
-            necesidades específicas
+            Contamos con diferentes tipos de grúas para adaptarnos a sus necesidades específicas
           </p>
         </div>
 
@@ -54,7 +51,7 @@ export const TowingTypes = () => {
                   <div className="w-full h-48 mb-6 overflow-hidden rounded-lg">
                     <img
                       src={type.gif}
-                      alt={type.title}
+                      alt={`GIF for ${type.title}`}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -64,9 +61,7 @@ export const TowingTypes = () => {
                   </div>
                 )}
                 <h3 className="text-2xl font-semibold mb-4">{type.title}</h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  {type.description}
-                </p>
+                <p className="text-gray-600 dark:text-gray-300">{type.description}</p>
               </Card>
             </motion.div>
           ))}
