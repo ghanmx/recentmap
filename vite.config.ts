@@ -6,16 +6,25 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// https://vitejs.dev/config/
-export default defineConfig(() => ({
-  server: {
-    host: '::',
-    port: 8080,
-  },
+export default defineConfig({
   plugins: [react(), componentTagger()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-}))
+  server: {
+    host: true,
+    port: 5173,
+  },
+  build: {
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+        },
+      },
+    },
+  },
+})
