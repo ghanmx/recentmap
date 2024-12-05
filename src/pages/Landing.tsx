@@ -4,7 +4,7 @@ import { MetaTags } from '@/components/landing/MetaTags'
 import { Services } from '@/components/landing/Services'
 import { Hero } from '@/components/landing/Hero'
 import { TowingTypes } from '@/components/landing/TowingTypes'
-import { AboutSection } from '@/components/landing/AboutSection'
+import { ContactSection } from '@/components/landing/ContactSection'
 import { FooterSection } from '@/components/landing/FooterSection'
 
 const Landing = (): JSX.Element => {
@@ -18,7 +18,7 @@ const Landing = (): JSX.Element => {
         <main>
           <TowingTypes />
           <Services />
-          <AboutSection />
+          <ContactSection />
         </main>
         <FooterSection />
       </div>
