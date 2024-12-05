@@ -1,7 +1,8 @@
 import L from 'leaflet'
-import { Marker, Popup } from 'react-leaflet'
+import { Marker, Popup, useMapEvents } from 'react-leaflet'
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useToast } from '@/hooks/use-toast'
 
 interface DraggableMarkerProps {
   position: L.LatLngExpression
@@ -22,6 +23,7 @@ export const DraggableMarker = ({
 }: DraggableMarkerProps) => {
   const markerRef = useRef<L.Marker>(null)
   const [isHovered, setIsHovered] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     if (markerRef.current) {
@@ -40,6 +42,10 @@ export const DraggableMarker = ({
       const marker = e.target
       if (marker) {
         onDragEnd(marker.getLatLng())
+        toast({
+          title: 'Ubicación actualizada',
+          description: 'La ubicación ha sido actualizada correctamente',
+        })
       }
     },
     mouseover: () => setIsHovered(true),
@@ -71,6 +77,11 @@ export const DraggableMarker = ({
               className="font-semibold p-1"
             >
               {label}
+              {draggable && (
+                <div className="text-xs text-gray-500 mt-1">
+                  Arrastra para ajustar la ubicación
+                </div>
+              )}
             </motion.div>
           </Popup>
         )}

@@ -1,44 +1,30 @@
-import { useEffect } from 'react'
-import { getAddressFromCoords } from '@/services/geocodingService'
+import { useMapEvents } from 'react-leaflet'
 import { useToast } from '@/hooks/use-toast'
-import { Location } from '@/types/location'
 
 interface MapLocationHandlerProps {
-  location: Location | null
-  onAddressFound: (address: string) => void
+  onLocationSelect: (location: { lat: number; lng: number }) => void
   selectingPickup: boolean
   selectingDrop: boolean
-  handleLocationSelect: (location: Location) => void
 }
 
 export const MapLocationHandler = ({
-  location,
-  onAddressFound,
+  onLocationSelect,
   selectingPickup,
   selectingDrop,
-  handleLocationSelect,
 }: MapLocationHandlerProps) => {
   const { toast } = useToast()
 
-  useEffect(() => {
-    const fetchAddress = async () => {
-      if (!location) return
-
-      try {
-        const address = await getAddressFromCoords(location.lat, location.lng)
-        onAddressFound(address)
-      } catch (error) {
-        console.error('Error fetching address:', error)
+  useMapEvents({
+    click(e) {
+      if (selectingPickup || selectingDrop) {
+        onLocationSelect(e.latlng)
         toast({
-          title: 'Error',
-          description: 'No se pudo obtener la dirección',
-          variant: 'destructive',
+          title: `${selectingPickup ? 'Punto de Recogida' : 'Punto de Entrega'} Seleccionado`,
+          description: 'Puedes arrastrar el marcador para ajustar la ubicación',
         })
       }
-    }
-
-    fetchAddress()
-  }, [location, onAddressFound, toast])
+    },
+  })
 
   return null
 }
