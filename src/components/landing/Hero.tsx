@@ -28,18 +28,18 @@ export const Hero = () => {
           className="max-w-4xl mx-auto text-center space-y-8"
         >
           <motion.h1
-            className="text-5xl md:text-7xl font-bold font-heading"
+            className="text-5xl md:text-7xl font-bold font-heading text-shadow-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <span className="text-gradient-shine">
+            <span className="text-gradient-shine drop-shadow-xl">
               Servicio de Grúas Profesional
             </span>
           </motion.h1>
 
           <motion.p
-            className="text-xl md:text-2xl text-gradient-shine max-w-2xl mx-auto"
+            className="text-xl md:text-2xl text-gradient-shine drop-shadow-lg font-semibold"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}

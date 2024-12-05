@@ -102,6 +102,12 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.text-shadow-lg {
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.3),
+    -2px -2px 4px rgba(255, 255, 255, 0.3);
+}
+
 .text-gradient-shine {
   background: linear-gradient(
     to right,

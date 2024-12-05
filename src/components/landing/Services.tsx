@@ -1,13 +1,6 @@
 import { motion } from 'framer-motion'
 import { Card } from '../ui/card'
-import {
-  Clock,
-  MapPin,
-  Shield,
-  ThumbsUp,
-  Car,
-  Truck,
-} from 'lucide-react'
+import { Clock, MapPin, Shield, ThumbsUp } from 'lucide-react'
 
 const services = [
   {
@@ -42,10 +35,10 @@ export const Services = () => {
         className="container mx-auto max-w-6xl"
       >
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold font-heading text-gradient-shine mb-4">
+          <h2 className="text-4xl font-bold font-heading text-gradient-shine drop-shadow-xl mb-4">
             Nuestros Servicios
           </h2>
-          <p className="text-lg text-gradient-shine max-w-2xl mx-auto">
+          <p className="text-lg text-gradient-shine drop-shadow-lg font-semibold max-w-2xl mx-auto">
             Ofrecemos una amplia gama de servicios de asistencia vial para
             mantener su vehículo en movimiento
           </p>
@@ -66,7 +59,9 @@ export const Services = () => {
                 <div className="rounded-full bg-primary/10 p-4 mx-auto mb-4">
                   {service.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
+                <h3 className="text-xl font-semibold mb-2 drop-shadow-md">
+                  {service.title}
+                </h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   {service.description}
                 </p>
