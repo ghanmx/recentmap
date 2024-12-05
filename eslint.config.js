@@ -38,17 +38,26 @@ export default tseslint.config(
       ],
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_' },
+        { 
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
       ],
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': 'off',
       '@typescript-eslint/strict-boolean-expressions': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/explicit-function-return-type': 'warn',
+      '@typescript-eslint/explicit-function-return-type': ['warn', {
+        allowExpressions: true,
+        allowTypedFunctionExpressions: true,
+      }],
       'react-hooks/exhaustive-deps': 'warn',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'prefer-const': 'error',
       eqeqeq: ['error', 'always'],
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
     },
     settings: {
       react: {

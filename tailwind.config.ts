@@ -77,10 +77,25 @@ export default {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+        shine: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '100%': { backgroundPosition: '100% 50%' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'shimmer': 'shimmer 2s infinite',
+        'shine': 'shine 5s ease-in-out infinite alternate',
+      },
+      textShadow: {
+        sm: '0 1px 2px var(--tw-shadow-color)',
+        DEFAULT: '0 2px 4px var(--tw-shadow-color)',
+        lg: '0 8px 16px var(--tw-shadow-color)',
       },
     },
   },
@@ -89,5 +104,19 @@ export default {
     require('tailwindcss-animate'),
     require('@tailwindcss/typography'),
     require('@tailwindcss/aspect-ratio'),
+    function({ addUtilities }) {
+      const newUtilities = {
+        '.text-shadow': {
+          'text-shadow': '0 2px 4px rgba(0, 0, 0, 0.3)',
+        },
+        '.text-shadow-lg': {
+          'text-shadow': `
+            2px 2px 4px rgba(0, 0, 0, 0.3),
+            -2px -2px 4px rgba(255, 255, 255, 0.3)
+          `,
+        },
+      }
+      addUtilities(newUtilities)
+    },
   ],
 } satisfies Config
