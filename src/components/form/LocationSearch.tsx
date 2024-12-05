@@ -67,19 +67,15 @@ export const LocationSearch = ({
         })
 
         const resultsWithDistance = results
-          .map((result: GeocodingResult) => {
-            const lat = Number(result.lat)
-            const lon = Number(result.lon)
-            return {
-              address: result.display_name,
-              lat,
-              lon,
-              distance: calculateDistance(
-                { lat: COMPANY_LOCATION.lat, lng: COMPANY_LOCATION.lng },
-                { lat, lng: lon }
-              ),
-            }
-          })
+          .map((result: GeocodingResult) => ({
+            address: result.display_name,
+            lat: Number(result.lat),
+            lon: Number(result.lon),
+            distance: calculateDistance(
+              { lat: COMPANY_LOCATION.lat, lng: COMPANY_LOCATION.lng },
+              { lat: Number(result.lat), lng: Number(result.lon) }
+            ),
+          }))
           .sort((a, b) => a.distance - b.distance)
 
         setSuggestions(resultsWithDistance)
