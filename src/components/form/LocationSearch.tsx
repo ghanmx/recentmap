@@ -69,11 +69,11 @@ export const LocationSearch = ({
         const resultsWithDistance = results
           .map((result: GeocodingResult) => ({
             address: result.display_name,
-            lat: Number(result.lat),
-            lon: Number(result.lon),
+            lat: parseFloat(result.lat),
+            lon: parseFloat(result.lon),
             distance: calculateDistance(
               { lat: COMPANY_LOCATION.lat, lng: COMPANY_LOCATION.lng },
-              { lat: Number(result.lat), lng: Number(result.lon) }
+              { lat: parseFloat(result.lat), lng: parseFloat(result.lon) }
             ),
           }))
           .sort((a, b) => a.distance - b.distance)
