@@ -13,11 +13,11 @@ export const Hero = () => {
           initial={{ scale: 1.1, opacity: 0 }}
           animate={{ scale: 1, opacity: 0.3 }}
           transition={{ duration: 0.7 }}
-          src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7"
-          alt="Hero background"
-          className="w-full h-full object-cover"
+          src="/lovable-uploads/bceb9702-dedb-4578-a695-1a2e4089f56f.png"
+          alt="Mr Gruas Logo"
+          className="w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/50 to-white/80 dark:from-gray-900/80 dark:via-gray-900/50 dark:to-gray-900/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/70 to-white/90 dark:from-gray-900/90 dark:via-gray-900/70 dark:to-gray-900/90" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4">
