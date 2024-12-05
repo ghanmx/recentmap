@@ -17,6 +17,7 @@ export type Database = {
           request_id: string | null
           status: string
           stripe_payment_intent_id: string | null
+          user_id: string
         }
         Insert: {
           amount: number
@@ -25,6 +26,7 @@ export type Database = {
           request_id?: string | null
           status: string
           stripe_payment_intent_id?: string | null
+          user_id?: string
         }
         Update: {
           amount?: number
@@ -33,6 +35,7 @@ export type Database = {
           request_id?: string | null
           status?: string
           stripe_payment_intent_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
