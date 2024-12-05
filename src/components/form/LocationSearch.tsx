@@ -18,6 +18,8 @@ export interface LocationSearchProps {
   type?: 'pickup' | 'drop'
   className?: string
   icon?: React.ReactNode
+  requiresInvoice?: boolean
+  onInvoiceChange?: (requires: boolean) => void
 }
 
 interface Suggestion {
@@ -36,6 +38,8 @@ export const LocationSearch = ({
   type = 'pickup',
   className = '',
   icon,
+  requiresInvoice = false,
+  onInvoiceChange,
 }: LocationSearchProps) => {
   const [searchQuery, setSearchQuery] = useState(currentAddress || '')
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
@@ -57,8 +61,8 @@ export const LocationSearch = ({
       try {
         const results = await searchAddresses(query, {
           proximity: {
-            lat: currentLocation?.lat || COMPANY_LOCATION.lat,
-            lng: currentLocation?.lng || COMPANY_LOCATION.lng,
+            lat: currentLocation?.lat?.toString() || COMPANY_LOCATION.lat.toString(),
+            lng: currentLocation?.lng?.toString() || COMPANY_LOCATION.lng.toString(),
           }
         })
 
@@ -148,6 +152,21 @@ export const LocationSearch = ({
         isMarking={isMarking}
         onSuggestionSelect={handleSuggestionSelect}
       />
+
+      {onInvoiceChange && (
+        <div className="flex items-center gap-2 mt-2">
+          <input
+            type="checkbox"
+            id={`requires-invoice-${type}`}
+            checked={requiresInvoice}
+            onChange={(e) => onInvoiceChange(e.target.checked)}
+            className="rounded border-gray-300 text-primary focus:ring-primary"
+          />
+          <label htmlFor={`requires-invoice-${type}`} className="text-sm text-gray-600">
+            Requiere factura (IVA)
+          </label>
+        </div>
+      )}
     </div>
   )
 }

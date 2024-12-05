@@ -50,19 +50,16 @@ export const MapMarkers = ({
     })
   }
 
-  const handleAddressFound = (address: string) => {
-    // Handle the address found event if needed
-    console.log('Address found:', address)
+  const handleMapLocationSelect = (location: { lat: number; lng: number }) => {
+    onLocationSelect(location)
   }
 
   return (
     <>
       <MapLocationHandler
-        location={pickupLocation}
-        onAddressFound={handleAddressFound}
+        onLocationSelect={handleMapLocationSelect}
         selectingPickup={selectingPickup}
         selectingDrop={selectingDrop}
-        handleLocationSelect={onLocationSelect}
       />
 
       <Marker
