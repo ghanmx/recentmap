@@ -8,6 +8,7 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-20 lg:py-32">
+      {/* Enhanced background with parallax effect */}
       <div className="absolute inset-0 z-0">
         <motion.img
           initial={{ scale: 1.1, opacity: 0 }}
@@ -65,7 +66,7 @@ export const Hero = () => {
               size="lg"
               variant="outline"
               className="border-primary text-primary hover:bg-primary hover:text-white shadow-lg hover:shadow-xl transition-all duration-300 group min-w-[200px]"
-              onClick={() => (window.location.href = 'tel:+5218180107110')}
+              onClick={() => window.location.href = 'tel:+5218180107110'}
             >
               <Phone className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform" />
               Llamar Ahora
