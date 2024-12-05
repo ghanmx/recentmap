@@ -11,6 +11,8 @@ import { FloatingQuestionsPanel } from './FloatingQuestionsPanel'
 import { useMapState } from '@/features/map/hooks/useMapState'
 import { Location } from '@/types/location'
 import { getAddressFromCoords } from '@/services/geocodingService'
+import { MapLoadingOverlay } from './map/MapLoadingOverlay'
+import { LocationSelectionHint } from './map/LocationSelectionHint'
 
 const TowMap = () => {
   const mapRef = useRef<Map | null>(null)
@@ -92,19 +94,7 @@ const TowMap = () => {
       transition={{ duration: 0.5 }}
     >
       <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center"
-          >
-            <div className="bg-white/90 p-6 rounded-lg shadow-lg">
-              <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-              <p className="mt-4 text-primary/80 font-medium">Cargando...</p>
-            </div>
-          </motion.div>
-        )}
+        <MapLoadingOverlay isVisible={isLoading} />
       </AnimatePresence>
 
       <div className="absolute inset-0 z-0">
@@ -147,6 +137,11 @@ const TowMap = () => {
         onDropSelect={(location: Location) => handleLocationSelect(location)}
         onSelectingPickup={() => setSelectingPickup(true)}
         onSelectingDrop={() => setSelectingDrop(true)}
+      />
+
+      <LocationSelectionHint
+        isSelectingPickup={selectingPickup}
+        isSelectingDrop={selectingDrop}
       />
     </motion.div>
   )
