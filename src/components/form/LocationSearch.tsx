@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Loader2, MapPin, Search } from 'lucide-react'
@@ -57,8 +57,8 @@ export const LocationSearch = ({
       try {
         const results = await searchAddresses(query, {
           proximity: {
-            lat: currentLocation?.lat?.toString() || COMPANY_LOCATION.lat.toString(),
-            lng: currentLocation?.lng?.toString() || COMPANY_LOCATION.lng.toString(),
+            lat: currentLocation?.lat || COMPANY_LOCATION.lat,
+            lng: currentLocation?.lng || COMPANY_LOCATION.lng,
           }
         })
 
