@@ -61,21 +61,25 @@ export const LocationSearch = ({
       try {
         const results = await searchAddresses(query, {
           proximity: {
-            lat: currentLocation?.lat?.toString() || COMPANY_LOCATION.lat.toString(),
-            lng: currentLocation?.lng?.toString() || COMPANY_LOCATION.lng.toString(),
+            lat: (currentLocation?.lat || COMPANY_LOCATION.lat).toString(),
+            lng: (currentLocation?.lng || COMPANY_LOCATION.lng).toString(),
           }
         })
 
         const resultsWithDistance = results
-          .map((result: GeocodingResult) => ({
-            address: result.display_name,
-            lat: Number(result.lat),
-            lon: Number(result.lon),
-            distance: calculateDistance(
-              { lat: COMPANY_LOCATION.lat, lng: COMPANY_LOCATION.lng },
-              { lat: Number(result.lat), lng: Number(result.lon) },
-            ),
-          }))
+          .map((result: GeocodingResult) => {
+            const lat = Number(result.lat)
+            const lon = Number(result.lon)
+            return {
+              address: result.display_name,
+              lat,
+              lon,
+              distance: calculateDistance(
+                { lat: COMPANY_LOCATION.lat, lng: COMPANY_LOCATION.lng },
+                { lat, lng: lon }
+              ),
+            }
+          })
           .sort((a, b) => a.distance - b.distance)
 
         setSuggestions(resultsWithDistance)
