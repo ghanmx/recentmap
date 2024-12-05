@@ -6,42 +6,57 @@ const services = [
   {
     icon: <Clock className="w-8 h-8 text-primary" />,
     title: 'Servicio 24/7',
-    description: 'Disponibles todo el día, todos los días del año',
+    description:
+      'Disponibles todo el día, todos los días del año para asistirte cuando más lo necesites',
   },
   {
     icon: <MapPin className="w-8 h-8 text-primary" />,
     title: 'Cobertura Amplia',
-    description: 'Servicio en toda la región y carreteras principales',
+    description:
+      'Servicio en toda la región y carreteras principales, llegamos donde nos necesites',
   },
   {
     icon: <Shield className="w-8 h-8 text-primary" />,
     title: 'Seguridad Garantizada',
-    description: 'Su vehículo está asegurado durante todo el proceso',
+    description:
+      'Tu vehículo está asegurado durante todo el proceso de transporte',
   },
   {
     icon: <ThumbsUp className="w-8 h-8 text-primary" />,
     title: 'Servicio Profesional',
-    description: 'Personal capacitado y equipo especializado',
+    description:
+      'Personal altamente capacitado y equipo especializado para cada situación',
   },
 ]
 
 export const Services = () => {
   return (
-    <section id="services" className="py-20 px-4">
+    <section id="services" className="py-20 px-4 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         className="container mx-auto max-w-6xl"
       >
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold font-heading text-gradient-shine drop-shadow-xl mb-4">
+        <div className="text-center mb-16">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl font-bold font-heading text-gradient-shine drop-shadow-xl mb-4"
+          >
             Nuestros Servicios
-          </h2>
-          <p className="text-lg text-gradient-shine drop-shadow-lg font-semibold max-w-2xl mx-auto">
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-lg text-gradient-shine drop-shadow-lg font-semibold max-w-2xl mx-auto"
+          >
             Ofrecemos una amplia gama de servicios de asistencia vial para
             mantener su vehículo en movimiento
-          </p>
+          </motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -55,13 +70,11 @@ export const Services = () => {
               whileHover={{ scale: 1.02 }}
               className="flex flex-col items-center"
             >
-              <Card className="w-full p-6 text-center hover:shadow-lg transition-all duration-300">
-                <div className="rounded-full bg-primary/10 p-4 mx-auto mb-4">
+              <Card className="w-full p-8 text-center hover:shadow-xl transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                <div className="rounded-full bg-primary/10 p-6 mx-auto mb-6 w-20 h-20 flex items-center justify-center">
                   {service.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-2 drop-shadow-md">
-                  {service.title}
-                </h3>
+                <h3 className="text-2xl font-semibold mb-4">{service.title}</h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   {service.description}
                 </p>
