@@ -1,4 +1,4 @@
-import { LocationSearch } from './LocationSearch'
+import { LocationSearch } from './location-search'
 import { Card } from '@/components/ui/card'
 import { MapPin, Navigation } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
