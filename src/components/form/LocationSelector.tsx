@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/form'
 import { UseFormReturn } from 'react-hook-form'
 import { FormData } from '@/types/form'
-import { LocationSearch } from './LocationSearch'
+import { LocationSearch } from './location-search'
 import { MapPin, Navigation } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useEffect } from 'react'

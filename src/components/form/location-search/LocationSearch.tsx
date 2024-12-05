@@ -1,4 +1,4 @@
-import { LocationSearchContainer } from './location-search/LocationSearchContainer'
+import { LocationSearchContainer } from './LocationSearchContainer'
 import { LocationSearchProps } from '@/types/location-search'
 
 export const LocationSearch = (props: LocationSearchProps) => {

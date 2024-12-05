@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { LocationSearchInput } from './LocationSearchInput'
-import { LocationSuggestions } from '../LocationSuggestions'
+import { LocationSuggestions } from './LocationSuggestions'
 import { InvoiceCheckbox } from './InvoiceCheckbox'
 import { LocationSearchProps, Suggestion } from '@/types/location-search'
 import { searchAddresses } from '@/services/geocodingService'
@@ -81,17 +81,6 @@ export const LocationSearchContainer = ({
       lat: suggestion.lat,
       lng: suggestion.lon,
       address: suggestion.address,
-    })
-  }
-
-  const handleMarkOnMap = () => {
-    setIsMarking(true)
-    onSelectingLocation?.()
-    toast({
-      title: `Seleccionar ${
-        type === 'pickup' ? 'punto de recogida' : 'punto de entrega'
-      }`,
-      description: 'Haz clic en el mapa para seleccionar la ubicación',
     })
   }
 
