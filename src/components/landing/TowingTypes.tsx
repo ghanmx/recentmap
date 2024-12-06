@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion'
-import { Card } from '../ui/card'
-import { CarFront, Truck } from 'lucide-react'
+import { motion } from 'framer-motion'; // Correct import for Framer Motion
+import { Card } from '../ui/card'; // Ensure the Card component is exported correctly from the specified path
+import { CarFront, Truck } from 'lucide-react'; // Ensure lucide-react is properly installed
 
 const towingTypes = [
   {
@@ -15,7 +15,7 @@ const towingTypes = [
     description: 'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
     gif: '/lovable-uploads/TipoD2.gif',
   },
-]
+];
 
 export const TowingTypes = () => {
   return (
@@ -68,5 +68,5 @@ export const TowingTypes = () => {
         </div>
       </motion.div>
     </section>
-  )
-}
+  );
+};

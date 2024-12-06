@@ -45,7 +45,7 @@ export const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            Asistencia vehicular 24/7 en toda la región
+            Asistencia vehicular / Rescate de vehículos / Transporte de vehículos / Grúa
           </motion.p>
 
           <motion.div

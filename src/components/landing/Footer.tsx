@@ -15,8 +15,7 @@ export const Footer = () => {
           >
             <h3 className="text-2xl font-bold text-[#0EA5E9]">M.R. Grúas</h3>
             <p className="text-gray-300 leading-relaxed">
-              Servicio profesional de grúas y asistencia vial disponible las 24
-              horas del día, los 7 días de la semana. Su seguridad y
+              Servicio profesional de grúas y asistencia vial disponible, Su seguridad y
               satisfacción son nuestra prioridad.
             </p>
           </motion.div>
@@ -98,7 +97,7 @@ export const Footer = () => {
           className="mt-12 pt-8 border-t border-gray-700 text-center"
         >
           <p className="text-gray-400">
-            © {new Date().getFullYear()} M.R. Grúas. Todos los derechos
+            © {new Date().getFullYear()} I.M.R. Grúas. Todos los derechos
             reservados.
           </p>
         </motion.div>

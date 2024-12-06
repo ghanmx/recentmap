@@ -25,8 +25,7 @@ const CompanyInfo = () => (
   >
     <h3 className="text-2xl font-bold text-gradient-shine">M.R. Grúas</h3>
     <p className="text-gray-300 leading-relaxed">
-      Servicio profesional de grúas y asistencia vial disponible las 24 horas del
-      día, los 7 días de la semana. Su seguridad y satisfacción son nuestra
+      Servicio profesional de grúas y asistencia vial. Su seguridad y satisfacción son nuestra
       prioridad.
     </p>
   </motion.div>

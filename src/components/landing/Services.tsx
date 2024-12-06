@@ -5,9 +5,9 @@ import { Clock, MapPin, Shield, ThumbsUp } from 'lucide-react'
 const services = [
   {
     icon: <Clock className="w-8 h-8 text-primary" />,
-    title: 'Servicio 24/7',
+    title: 'Servicio de Grúas',
     description:
-      'Disponibles todo el día, todos los días del año para asistirte cuando más lo necesites',
+      'Disponibles en carreteras MTY-NVO. LAREDO',
   },
   {
     icon: <MapPin className="w-8 h-8 text-primary" />,
