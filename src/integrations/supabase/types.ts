@@ -17,6 +17,7 @@ export type Database = {
           request_id: string | null
           status: string
           stripe_payment_intent_id: string | null
+          user_id: string
         }
         Insert: {
           amount: number
@@ -25,6 +26,7 @@ export type Database = {
           request_id?: string | null
           status: string
           stripe_payment_intent_id?: string | null
+          user_id?: string
         }
         Update: {
           amount?: number
@@ -33,6 +35,7 @@ export type Database = {
           request_id?: string | null
           status?: string
           stripe_payment_intent_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -94,6 +97,9 @@ export type Database = {
           payment_status: string | null
           pickup_location: Json | null
           requires_maneuver: boolean | null
+          service_completed_at: string | null
+          service_completed_by_client: boolean | null
+          service_completion_notes: string | null
           service_notes: string | null
           status: string
           truck_type: string
@@ -113,6 +119,9 @@ export type Database = {
           payment_status?: string | null
           pickup_location?: Json | null
           requires_maneuver?: boolean | null
+          service_completed_at?: string | null
+          service_completed_by_client?: boolean | null
+          service_completion_notes?: string | null
           service_notes?: string | null
           status?: string
           truck_type: string
@@ -132,6 +141,9 @@ export type Database = {
           payment_status?: string | null
           pickup_location?: Json | null
           requires_maneuver?: boolean | null
+          service_completed_at?: string | null
+          service_completed_by_client?: boolean | null
+          service_completion_notes?: string | null
           service_notes?: string | null
           status?: string
           truck_type?: string
