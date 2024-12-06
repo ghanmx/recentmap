@@ -37,14 +37,20 @@ const LoadingSpinner = () => (
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.3 }}
-    className="flex flex-col items-center justify-center min-h-[100dvh] bg-gradient-to-br from-blue-100/80 via-blue-50/80 to-white/80 dark:from-blue-950/80 dark:via-blue-900/80 dark:to-gray-900/80 px-4 sm:px-6"
+    className="flex flex-col items-center justify-center min-h-[100dvh] bg-gradient-to-br from-blue-100/80 via-blue-50/80 to-white/80 dark:from-blue-950/80 dark:via-blue-900/80 dark:to-gray-900/80 px-4 sm:px-6 py-safe"
   >
     <div className="relative w-full max-w-lg mx-auto">
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 blur-3xl" />
       <div className="glass-card p-4 sm:p-8 rounded-xl shadow-lg border border-blue-200/30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-500/5 to-blue-400/10 animate-shimmer" />
         <div className="relative mb-6 sm:mb-8">
-          <Carousel className="w-full max-w-xs mx-auto touch-pan-y">
+          <Carousel 
+            className="w-full max-w-xs mx-auto touch-pan-y"
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+          >
             <CarouselContent>
               {FEATURED_IMAGES.map((image, index) => (
                 <CarouselItem key={index}>
@@ -82,7 +88,7 @@ const LoadingSpinner = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 bg-clip-text text-transparent font-heading"
+          className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 bg-clip-text text-transparent font-heading"
         >
           Cargando las rutas
         </motion.h2>
@@ -90,7 +96,7 @@ const LoadingSpinner = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-2 sm:mt-4 text-base sm:text-lg font-medium bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 bg-clip-text text-transparent animate-pulse"
+          className="mt-2 sm:mt-4 text-sm sm:text-base md:text-lg font-medium bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 bg-clip-text text-transparent animate-pulse"
         >
           Preparando el mapa...
         </motion.p>
@@ -101,9 +107,9 @@ const LoadingSpinner = () => (
           transition={{ delay: 0.4 }}
           className="mt-2 text-xs sm:text-sm text-blue-600/70 dark:text-blue-400/70 text-center leading-relaxed"
         >
-          Porfavor espera en lo que preparamos tu mapa interactivo
+          Por favor espera mientras preparamos tu mapa interactivo
           <span className="block mt-1 text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-            Esto tomara un momento...
+            Esto tomará un momento...
           </span>
         </motion.div>
       </div>
@@ -117,7 +123,7 @@ const Index = (): JSX.Element => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="relative min-h-[100dvh] overflow-hidden bg-gradient-to-br from-blue-50/90 via-white/90 to-blue-100/90 dark:from-blue-950/90 dark:via-gray-900/90 dark:to-blue-900/90"
+      className="relative min-h-[100dvh] overflow-hidden bg-gradient-to-br from-blue-50/90 via-white/90 to-blue-100/90 dark:from-blue-950/90 dark:via-gray-900/90 dark:to-blue-900/90 safe-area-view"
     >
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-blue-600/5" />

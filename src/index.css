@@ -33,6 +33,12 @@
     --ring: 221.2 83.2% 53.3%;
  
     --radius: 0.5rem;
+
+    /* Safe area insets */
+    --sat: env(safe-area-inset-top);
+    --sar: env(safe-area-inset-right);
+    --sab: env(safe-area-inset-bottom);
+    --sal: env(safe-area-inset-left);
   }
  
   .dark {
@@ -71,10 +77,46 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
+/* Safe area utilities */
+.safe-area-view {
+  padding-top: var(--sat);
+  padding-right: var(--sar);
+  padding-bottom: var(--sab);
+  padding-left: var(--sal);
+}
+
+.py-safe {
+  padding-top: var(--sat);
+  padding-bottom: var(--sab);
+}
+
+.px-safe {
+  padding-right: var(--sar);
+  padding-left: var(--sal);
+}
+
+.pt-safe {
+  padding-top: var(--sat);
+}
+
+.pr-safe {
+  padding-right: var(--sar);
+}
+
+.pb-safe {
+  padding-bottom: var(--sab);
+}
+
+.pl-safe {
+  padding-left: var(--sal);
+}
+
+/* Custom scrollbar styles */
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--primary)) transparent;
@@ -82,6 +124,7 @@
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -93,11 +136,21 @@
   @apply bg-primary/20 rounded-full hover:bg-primary/30 transition-colors;
 }
 
+/* Touch handling improvements */
+@media (hover: none) {
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+  }
+}
+
+/* Window drag handle */
 .drag-handle {
   -webkit-app-region: drag;
   app-region: drag;
 }
 
+/* Text effects */
 .text-shadow {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
@@ -123,6 +176,7 @@
   animation: shine 5s ease-in-out infinite alternate;
 }
 
+/* Animations */
 @keyframes shine {
   0% {
     background-position: 0% 50%;
@@ -143,4 +197,17 @@
 
 .animate-shimmer {
   animation: shimmer 2s infinite;
+}
+
+/* Glass card effect */
+.glass-card {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Mobile optimizations */
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
 }
