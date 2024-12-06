@@ -1,15 +1,16 @@
 import { motion } from 'framer-motion'
-import { AlertCircle } from 'lucide-react'
+
+interface Step {
+  title: string
+  description: string
+}
 
 interface PaymentStepsProps {
   currentStep: number
-  steps: Array<{
-    title: string
-    description: string
-  }>
+  steps: Step[]
 }
 
-export const PaymentSteps = ({ currentStep, steps }: PaymentStepsProps) => {
+export const PaymentSteps = ({ currentStep, steps }: PaymentStepsProps): JSX.Element => {
   return (
     <div className="space-y-4 mb-6">
       {steps.map((step, index) => (
