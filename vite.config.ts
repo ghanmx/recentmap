@@ -26,7 +26,6 @@ export default defineConfig({
         },
       },
     },
-    // Add optimizeDeps configuration
     commonjsOptions: {
       include: [/node_modules/],
       extensions: ['.js', '.cjs'],
