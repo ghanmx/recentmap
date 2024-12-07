@@ -8,6 +8,7 @@ import { calculateDistance } from '@/utils/distanceUtils'
 import { COMPANY_LOCATION } from '@/utils/priceCalculator'
 import { useToast } from '@/hooks/use-toast'
 import debounce from 'lodash/debounce'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export const LocationSearchContainer = ({
   onLocationSelect,
@@ -39,12 +40,15 @@ export const LocationSearchContainer = ({
       setError(null)
 
       try {
+        console.log('Searching for:', query)
         const results = await searchAddresses(query, {
           proximity: {
             lat: (currentLocation?.lat || COMPANY_LOCATION.lat).toString(),
             lng: (currentLocation?.lng || COMPANY_LOCATION.lng).toString(),
           },
         })
+
+        console.log('Search results:', results)
 
         const resultsWithDistance = results
           .map((result) => ({
@@ -74,18 +78,39 @@ export const LocationSearchContainer = ({
     [currentLocation, toast]
   )
 
-  const handleSuggestionSelect = (suggestion: Suggestion) => {
-    setSearchQuery(suggestion.address)
-    setSuggestions([])
-    onLocationSelect({
-      lat: suggestion.lat,
-      lng: suggestion.lon,
-      address: suggestion.address,
-    })
+  const handleSuggestionSelect = async (suggestion: Suggestion) => {
+    setIsMarking(true)
+    try {
+      setSearchQuery(suggestion.address)
+      setSuggestions([])
+      onLocationSelect({
+        lat: suggestion.lat,
+        lng: suggestion.lon,
+        address: suggestion.address,
+      })
+      toast({
+        title: `Ubicación ${type === 'pickup' ? 'de recogida' : 'de entrega'} seleccionada`,
+        description: suggestion.address,
+        className: type === 'pickup' ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200',
+      })
+    } catch (error) {
+      console.error('Error selecting location:', error)
+      toast({
+        title: 'Error',
+        description: 'No se pudo seleccionar la ubicación',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsMarking(false)
+    }
   }
 
   return (
-    <div className={`space-y-2 ${className}`}>
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`space-y-2 ${className}`}
+    >
       <div className="flex gap-2">
         <div className="relative flex-1">
           <LocationSearchInput
@@ -100,12 +125,14 @@ export const LocationSearchContainer = ({
         </div>
       </div>
 
-      <LocationSuggestions
-        suggestions={suggestions}
-        error={error}
-        isMarking={isMarking}
-        onSuggestionSelect={handleSuggestionSelect}
-      />
+      <AnimatePresence>
+        <LocationSuggestions
+          suggestions={suggestions}
+          error={error}
+          isMarking={isMarking}
+          onSuggestionSelect={handleSuggestionSelect}
+        />
+      </AnimatePresence>
 
       {onInvoiceChange && (
         <InvoiceCheckbox
@@ -114,6 +141,6 @@ export const LocationSearchContainer = ({
           onInvoiceChange={onInvoiceChange}
         />
       )}
-    </div>
+    </motion.div>
   )
 }

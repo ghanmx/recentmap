@@ -30,8 +30,9 @@ export const LocationSuggestions = ({
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
+          className="mt-2"
         >
-          <Alert variant="destructive" className="mt-2">
+          <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
