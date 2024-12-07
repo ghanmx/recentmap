@@ -1,10 +1,9 @@
-export const DEFAULT_TIMEOUT = 15000 // Increased from 8000ms to 15000ms
-
-export const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = DEFAULT_TIMEOUT) => {
+export const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 20000) => {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeout)
 
   try {
+    console.log('Fetching URL:', url)
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
@@ -22,7 +21,11 @@ export const fetchWithTimeout = async (url: string, options: RequestInit = {}, t
     }
 
     const data = await response.json()
+    console.log('Fetch successful:', { url, status: response.status })
     return data
+  } catch (error) {
+    console.error('Fetch failed:', { url, error })
+    throw error
   } finally {
     clearTimeout(timeoutId)
   }
