@@ -8,12 +8,14 @@ const towingTypes = [
     title: 'Grúa Plataforma',
     description: 'Ideal para vehículos ligeros y medianos. Transporte seguro sin arrastre.',
     gif: '/lovable-uploads/TipoC.gif',
+    gif: '/lovable-uploads/TipoA.gif',
   },
   {
     icon: <Truck className="w-12 h-12 text-primary" aria-label="Truck Icon" />,
     title: 'Grúa de Arrastre',
     description: 'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
     gif: '/lovable-uploads/TipoD2.gif',
+    gif: '/lovable-uploads/TipoB.gif',
   },
 ];
 
