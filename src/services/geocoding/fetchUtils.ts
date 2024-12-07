@@ -1,33 +1,34 @@
-import { DEFAULT_TIMEOUT } from './proxyConfig'
+export const DEFAULT_TIMEOUT = 15000 // Increased from 8000ms to 15000ms
 
 export const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = DEFAULT_TIMEOUT) => {
   const controller = new AbortController()
-  const id = setTimeout(() => controller.abort(), timeout)
+  const timeoutId = setTimeout(() => controller.abort(), timeout)
 
   try {
     const response = await fetch(url, {
-      signal: controller.signal,
       ...options,
+      signal: controller.signal,
       headers: {
-        ...options.headers,
         'Accept': 'application/json',
         'User-Agent': 'TowingServiceApplication/1.0',
         'origin': window.location.origin,
-        'x-requested-with': 'XMLHttpRequest'
+        'x-requested-with': 'XMLHttpRequest',
+        ...options.headers,
       },
     })
-    clearTimeout(id)
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-    return await response.json()
-  } catch (error) {
-    clearTimeout(id)
-    throw error
+
+    const data = await response.json()
+    return data
+  } finally {
+    clearTimeout(timeoutId)
   }
 }
 
 export const exponentialBackoff = (attempt: number) => {
-  return new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt)))
+  const delay = Math.min(1000 * Math.pow(2, attempt), 10000) // Cap at 10 seconds
+  return new Promise(resolve => setTimeout(resolve, delay))
 }
