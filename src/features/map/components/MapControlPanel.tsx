@@ -5,8 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { Loader2 } from 'lucide-react'
 import { useMapNotifications } from '../hooks/useMapNotifications'
-import { UserLocationControl } from './UserLocationControl'
-import { useState } from 'react'
 
 interface MapControlPanelProps {
   selectingPickup: boolean
@@ -18,7 +16,7 @@ interface MapControlPanelProps {
   pickupAddress?: string
   dropAddress?: string
   isLoading?: boolean
-  className?: string
+  className?: string // Added className prop
 }
 
 export const MapControlPanel = ({
@@ -34,7 +32,6 @@ export const MapControlPanel = ({
 }: MapControlPanelProps) => {
   const { toast } = useToast()
   const { showLocationSelectionNotification } = useMapNotifications()
-  const [showUserLocation, setShowUserLocation] = useState(false)
 
   const handlePickupClick = () => {
     setSelectingPickup(true)
@@ -48,10 +45,6 @@ export const MapControlPanel = ({
     showLocationSelectionNotification('drop')
   }
 
-  const handleUserLocationToggle = () => {
-    setShowUserLocation(!showUserLocation)
-  }
-
   return (
     <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-3 sm:px-4">
       <motion.div
@@ -60,7 +53,7 @@ export const MapControlPanel = ({
         transition={{ duration: 0.3 }}
         className="w-full"
       >
-        <Card className="relative w-full bg-white/95 backdrop-blur-md shadow-md rounded-lg p-4 border border-primary/10 hover:border-primary/20 transition-all duration-300">
+        <Card className="relative w-full bg-white/90 backdrop-blur-xl shadow-lg rounded-lg p-4 border-2 border-primary/20 hover:border-primary/30 transition-all duration-300 ring-4 ring-primary/5">
           {isLoading && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -71,20 +64,12 @@ export const MapControlPanel = ({
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
             </motion.div>
           )}
-          <div className="flex items-center justify-between gap-4">
-            <MapControls
-              selectingPickup={selectingPickup}
-              selectingDrop={selectingDrop}
-              onPickupClick={handlePickupClick}
-              onDropClick={handleDropClick}
-            />
-            <div data-component-path="src/components/map/UserLocationControl.tsx">
-              <UserLocationControl
-                visible={showUserLocation}
-                onToggle={handleUserLocationToggle}
-              />
-            </div>
-          </div>
+          <MapControls
+            selectingPickup={selectingPickup}
+            selectingDrop={selectingDrop}
+            onPickupClick={handlePickupClick}
+            onDropClick={handleDropClick}
+          />
         </Card>
       </motion.div>
 
