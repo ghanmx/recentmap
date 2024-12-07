@@ -43,8 +43,8 @@ export const LocationSearchContainer = ({
         console.log('Searching for:', query)
         const results = await searchAddresses(query, {
           proximity: {
-            lat: (currentLocation?.lat || COMPANY_LOCATION.lat).toString(),
-            lng: (currentLocation?.lng || COMPANY_LOCATION.lng).toString(),
+            lat: currentLocation?.lat?.toString() || COMPANY_LOCATION.lat.toString(),
+            lng: currentLocation?.lng?.toString() || COMPANY_LOCATION.lng.toString(),
           },
         })
 
