@@ -1,28 +1,21 @@
 import { useState } from 'react'
 import { FloatingPanel } from './map/FloatingPanel'
 import { Button } from './ui/button'
-import { ChevronLeft, ChevronRight, Receipt, AlertCircle } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { VehicleForm } from './VehicleForm'
 import { CostEstimation } from './CostEstimation'
-import { RouteDisplay } from './map/RouteDisplay'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTowing } from '@/contexts/TowingContext'
 import PaymentWindow from './payment/PaymentWindow'
 import { Location } from '@/types/location'
-import { TollInfoDisplay } from './TollInfoDisplay'
-import { Separator } from './ui/separator'
-import { CostItemDisplay } from './cost/CostItemDisplay'
 import { Switch } from './ui/switch'
 import { Label } from './ui/label'
 import { NotificationBadge } from './notifications/NotificationBadge'
 import { PaymentSteps } from './payment/PaymentSteps'
 import { useToast } from '@/hooks/use-toast'
-
-interface QuestionPage {
-  id: number
-  title: string
-  component: React.ReactNode
-}
+import { LocationDetailsPanel } from './panels/LocationDetailsPanel'
+import { TollBreakdownPanel } from './panels/TollBreakdownPanel'
+import { CostSummary } from './cost/CostSummary'
 
 interface FloatingQuestionsPanelProps {
   pickupLocation: Location | null
@@ -62,7 +55,7 @@ export const FloatingQuestionsPanel = ({
     toast({
       title: "Procesando pago",
       description: "Por favor espere mientras procesamos su pago...",
-      className: "bg-primary text-white",
+      className: "bg-primary text-white text-shadow-sm",
     })
     setShowPaymentWindow(false)
   }
@@ -78,7 +71,7 @@ export const FloatingQuestionsPanel = ({
     }
   ]
 
-  const pages: QuestionPage[] = [
+  const pages = [
     {
       id: 1,
       title: 'Detalles del Servicio',
@@ -94,6 +87,12 @@ export const FloatingQuestionsPanel = ({
             onDropSelect={onDropSelect}
             onSelectingPickup={onSelectingPickup}
             onSelectingDrop={onSelectingDrop}
+          />
+          <LocationDetailsPanel
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
           />
         </>
       ),
@@ -122,6 +121,7 @@ export const FloatingQuestionsPanel = ({
                 toast({
                   title: "Preparando pago",
                   description: "Redirigiendo al formulario de pago...",
+                  className: "text-shadow-sm"
                 })
               }} 
               subtotal={subtotal}
@@ -129,49 +129,20 @@ export const FloatingQuestionsPanel = ({
               finalTotal={finalTotal}
             />
             
-            {detectedTolls.length > 0 && (
-              <>
-                <Separator className="my-4" />
-                <div className="space-y-2">
-                  <h3 className="font-medium text-gray-900 flex items-center gap-2 text-shadow-sm">
-                    <Receipt className="w-4 h-4 text-blue-500" />
-                    Costos de Peaje
-                  </h3>
-                  <TollInfoDisplay
-                    tolls={detectedTolls}
-                    totalCost={totalTollCost}
-                  />
-                </div>
-              </>
-            )}
+            <TollBreakdownPanel
+              detectedTolls={detectedTolls}
+              totalTollCost={totalTollCost}
+            />
 
-            <div className="mt-6 space-y-2 border-t pt-4">
-              <CostItemDisplay
-                label="Subtotal (incluyendo peajes)"
-                amount={subtotal}
-                description="Suma de todos los cargos incluyendo peajes"
-              />
-              {requiresInvoice && (
-                <CostItemDisplay
-                  label="IVA (16%)"
-                  amount={tax}
-                  description="Impuesto al Valor Agregado"
-                />
-              )}
-              <div className="pt-2 border-t">
-                <CostItemDisplay
-                  label="Total Final"
-                  amount={finalTotal}
-                  className="font-bold text-lg text-shadow"
-                />
-              </div>
-            </div>
+            <CostSummary
+              subtotal={subtotal}
+              tax={tax}
+              finalTotal={finalTotal}
+              detectedTolls={detectedTolls}
+              totalTollCost={totalTollCost}
+              requiresInvoice={requiresInvoice}
+            />
           </div>
-          
-          <RouteDisplay
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-          />
         </div>
       ),
     },
@@ -211,6 +182,7 @@ export const FloatingQuestionsPanel = ({
                 toast({
                   title: "Volviendo atrás",
                   description: "Puede modificar los detalles del servicio",
+                  className: "text-shadow-sm"
                 })
               }}
               disabled={currentPage === 0}
@@ -226,6 +198,7 @@ export const FloatingQuestionsPanel = ({
                 toast({
                   title: "Siguiente paso",
                   description: "Revisando costos y ruta",
+                  className: "text-shadow-sm"
                 })
               }}
               disabled={currentPage === pages.length - 1}
