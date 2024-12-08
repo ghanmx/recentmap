@@ -71,7 +71,7 @@ export const FloatingQuestionsPanel = ({
     {
       id: 1,
       title: 'Detalles del Servicio',
-      component: (
+      content: (
         <ServiceDetailsPanel
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
@@ -88,7 +88,7 @@ export const FloatingQuestionsPanel = ({
     {
       id: 2,
       title: 'Costos y Ruta',
-      component: (
+      content: (
         <CostDetailsPanel
           steps={paymentSteps}
           requiresInvoice={requiresInvoice}
@@ -126,7 +126,7 @@ export const FloatingQuestionsPanel = ({
               transition={{ duration: 0.3 }}
               className="min-h-[400px]"
             >
-              {pages[currentPage].component}
+              {pages[currentPage].content}
             </motion.div>
           </AnimatePresence>
 
@@ -175,7 +175,6 @@ export const FloatingQuestionsPanel = ({
         requiresInvoice={requiresInvoice}
         onPaymentSubmit={handlePaymentSubmit}
         finalTotal={costs.finalTotal}
-        requestId=""
       />
     </>
   )

@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/utils/priceCalculator'
 
-interface PaymentWindowProps {
+export interface PaymentWindowProps {
   isOpen: boolean
   onClose: () => void
   subtotal: number
