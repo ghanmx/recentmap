@@ -6,31 +6,34 @@ import {
   FormControl,
 } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { towTruckTypes, getTruckTypeForVehicle } from '@/utils/pricing'
+import { towTruckTypes } from '@/utils/pricing'
 import { Truck } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 import { FormData } from '@/types/form'
 import { motion } from 'framer-motion'
 import { useTowing } from '@/contexts/TowingContext'
 import { useToast } from '@/hooks/use-toast'
+import { getTruckTypeForVehicle } from '@/utils/pricing/vehicleClassification'
 
 interface TowTruckSelectorProps {
   form: UseFormReturn<FormData>
   onTruckTypeChange?: (type: 'A' | 'B' | 'C' | 'D') => void
+  selectedMake: string
   selectedModel: string
 }
 
 export const TowTruckSelector = ({
   form,
   onTruckTypeChange,
+  selectedMake,
   selectedModel,
 }: TowTruckSelectorProps) => {
   const { updateTruckType } = useTowing()
   const { toast } = useToast()
 
   useEffect(() => {
-    if (selectedModel) {
-      const recommendedType = getTruckTypeForVehicle(selectedModel)
+    if (selectedMake && selectedModel) {
+      const recommendedType = getTruckTypeForVehicle(selectedMake, selectedModel)
       form.setValue('truckType', recommendedType)
       onTruckTypeChange?.(recommendedType)
       updateTruckType(recommendedType)
@@ -38,11 +41,11 @@ export const TowTruckSelector = ({
       const truckInfo = towTruckTypes[recommendedType]
       toast({
         title: 'Tipo de grúa recomendado',
-        description: `Se ha seleccionado ${truckInfo.name} para ${selectedModel} (capacidad: ${truckInfo.maxWeight.toLocaleString()} kg)`,
+        description: `Se ha seleccionado ${truckInfo.name} para ${selectedMake} ${selectedModel} (capacidad: ${truckInfo.maxWeight.toLocaleString()} kg)`,
         duration: 5000,
       })
     }
-  }, [selectedModel, form, onTruckTypeChange, updateTruckType])
+  }, [selectedMake, selectedModel, form, onTruckTypeChange, updateTruckType])
 
   return (
     <motion.div

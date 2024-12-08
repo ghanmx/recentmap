@@ -1,74 +1,65 @@
-const typeDVehicles = [
-  'f-150', 'f-250', 'f-350', 'f-450', 'silverado', 'sierra', 'ram',
-  'tundra', 'titan', 'super duty', 'power wagon', 'sprinter', 'transit',
-  'promaster', 'gmc canyon', 'chevrolet colorado', 'ford ranger',
-  'dodge dakota', 'toyota hilux', 'nissan frontier', 'jeep gladiator',
-  'land rover defender', 'hummer h2', 'toyota land cruiser', 'chevrolet tahoe',
-  'freightliner m2', 'international durastar', 'mack granite', 'volvo vnl',
-  'kenworth t180', 'peterbilt 579', 'ram 2500', 'ram 3500', 'toyota tundra',
-  'isuzu n-series',
-]
+import { sedanBrands } from '@/data/vehicles/sedans'
+import { suvBrands } from '@/data/vehicles/suvs'
+import { pickupBrands } from '@/data/vehicles/pickups'
+import { commercialBrands } from '@/data/vehicles/commercial'
 
-const typeCVehicles = [
-  'murano', 'pathfinder', 'highlander', 'pilot', '4runner', 'expedition',
-  'tahoe', 'suburban', 'sequoia', 'armada', 'telluride', 'palisade',
-  'honda cr-v', 'mazda cx-9', 'ford explorer', 'toyota 4runner',
-  'subaru ascent', 'volvo xc90', 'audi q7', 'mercedes-benz gle', 'bmw x5',
-  'jeep grand cherokee', 'nissan murano', 'buick enclave', 'lincoln aviator',
-  'ford edge', 'hyundai santa fe', 'toyota venza', 'chevrolet blazer',
-  'chevrolet traverse', 'honda pilot', 'kia sorento', 'gmc acadia',
-  'nissan pathfinder',
-]
-
-const typeBVehicles = [
-  'rav4', 'cr-v', 'rogue', 'tucson', 'sportage', 'equinox', 'escape',
-  'compass', 'cherokee', 'forester', 'outback', 'cx-5', 'honda hr-v',
-  'nissan kicks', 'subaru crosstrek', 'jeep renegade', 'ford bronco sport',
-  'toyota corolla cross', 'hyundai kona', 'mazda cx-30', 'kia seltos',
-  'chevrolet trax', 'volkswagen tiguan', 'gmc terrain', 'nissan rogue sport',
-  'jeep compass', 'ford escape hybrid', 'honda fit', 'ram 1500 classic',
-  'chevrolet s10', 'toyota tacoma', 'nissan nv200',
-]
-
-export const getTruckTypeForVehicle = (model: string): 'A' | 'B' | 'C' | 'D' => {
+const getVehicleType = (make: string, model: string): 'A' | 'B' | 'C' | 'D' => {
   const modelLower = model.toLowerCase()
+  const makeLower = make.toLowerCase()
 
-  if (isTypeDVehicle(modelLower)) return 'D'
-  if (isTypeCVehicle(modelLower)) return 'C'
-  if (isTypeBVehicle(modelLower)) return 'B'
+  // Type D (Heavy/Commercial)
+  if (isCommercialVehicle(makeLower, modelLower)) return 'D'
+  
+  // Type C (Large SUVs/Pickups)
+  if (isLargeVehicle(makeLower, modelLower)) return 'C'
+  
+  // Type B (Medium SUVs/Crossovers)
+  if (isMediumVehicle(makeLower, modelLower)) return 'B'
+  
+  // Type A (Default - Sedans and small vehicles)
   return 'A'
 }
 
-const isTypeDVehicle = (model: string): boolean => {
-  const heavyKeywords = [
-    'heavy duty', 'commercial', 'camion', 'truck',
-    '2500', '3500', '4500', '5500',
-  ]
+const isCommercialVehicle = (make: string, model: string): boolean => {
+  // Check commercial vehicles
+  const isCommercial = Object.entries(commercialBrands).some(([brand, models]) => {
+    return make.includes(brand.toLowerCase()) && 
+           models.some(m => model.includes(m.toLowerCase()))
+  })
 
-  return (
-    typeDVehicles.some((v) => model.includes(v)) ||
-    heavyKeywords.some((k) => model.includes(k))
-  )
+  // Check heavy duty pickups
+  const heavyDutyKeywords = ['2500', '3500', '4500', 'heavy duty', 'hd']
+  const isHeavyDuty = heavyDutyKeywords.some(keyword => model.includes(keyword))
+
+  return isCommercial || isHeavyDuty
 }
 
-const isTypeCVehicle = (model: string): boolean => {
-  const largeKeywords = [
-    'full-size', 'large suv', 'luxury suv', 'van', 'executive',
-  ]
+const isLargeVehicle = (make: string, model: string): boolean => {
+  // Large SUVs
+  const largeSuvs = ['tahoe', 'suburban', 'expedition', 'sequoia', 'armada', 'telluride', 'palisade']
+  if (largeSuvs.some(suv => model.includes(suv))) return true
 
-  return (
-    typeCVehicles.some((v) => model.includes(v)) ||
-    largeKeywords.some((k) => model.includes(k))
-  )
+  // Full-size pickups
+  const fullSizePickups = ['f-150', 'silverado 1500', 'ram 1500', 'tundra', 'titan']
+  if (fullSizePickups.some(pickup => model.includes(pickup))) return true
+
+  return false
 }
 
-const isTypeBVehicle = (model: string): boolean => {
-  const mediumKeywords = [
-    'suv', 'crossover', 'pickup', 'mid-size', 'compact suv',
-  ]
+const isMediumVehicle = (make: string, model: string): boolean => {
+  // Check medium SUVs
+  const isMediumSuv = Object.entries(suvBrands).some(([brand, models]) => {
+    return make.includes(brand.toLowerCase()) && 
+           models.some(m => model.includes(m.toLowerCase()))
+  })
 
-  return (
-    typeBVehicles.some((v) => model.includes(v)) ||
-    mediumKeywords.some((k) => model.includes(k))
-  )
+  // Medium-size keywords
+  const mediumKeywords = ['suv', 'crossover', 'pickup', 'mid-size']
+  const hasMediumKeyword = mediumKeywords.some(keyword => model.includes(keyword))
+
+  return isMediumSuv || hasMediumKeyword
+}
+
+export const getTruckTypeForVehicle = (make: string, model: string): 'A' | 'B' | 'C' | 'D' => {
+  return getVehicleType(make, model)
 }
