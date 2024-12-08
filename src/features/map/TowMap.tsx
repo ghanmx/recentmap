@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { Map } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { MapContainerComponent } from './components/MapContainer'
+import { MapContainerComponent } from '@/components/map/MapContainer'
 import { MapControlPanel } from './components/MapControlPanel'
 import { useToast } from '@/hooks/use-toast'
 import { detectTollsOnRoute } from '@/utils/tollCalculator'

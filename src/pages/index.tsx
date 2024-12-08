@@ -13,7 +13,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel'
 
-const TowMap = lazy(() => import('@/components/TowMap'))
+const TowMap = lazy(() => import('@/features/map/TowMap'))
 
 const FEATURED_IMAGES = [
   {
