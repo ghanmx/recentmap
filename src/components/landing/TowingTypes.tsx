@@ -5,15 +5,15 @@ import { CarFront, Truck } from 'lucide-react';
 const towingTypes = [
   {
     icon: <CarFront className="w-12 h-12 text-primary" aria-label="Car Front Icon" />,
-    title: 'Grúa Plataforma',
+    title: 'Servicio Plataforma',
     description: 'Ideal para vehículos ligeros y medianos. Transporte seguro sin arrastre.',
-    gif: '/lovable-uploads/TipoA.gif',
+    gifs: ['/lovable-uploads/TipoA.gif', '/lovable-uploads/TipoB.gif'],
   },
   {
     icon: <Truck className="w-12 h-12 text-primary" aria-label="Truck Icon" />,
-    title: 'Grúa de Arrastre',
+    title: 'Servicio de Rescate',
     description: 'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
-    gif: '/lovable-uploads/TipoD2.gif',
+    gifs: ['/lovable-uploads/TipoC.gif', '/lovable-uploads/TipoD.gif'],
   },
 ];
 
@@ -47,19 +47,17 @@ export const TowingTypes = () => {
               className="flex flex-col items-center"
             >
               <Card className="w-full p-8 text-center hover:shadow-xl transition-all duration-300">
-                {type.gif ? (
-                  <div className="w-full h-48 mb-6 overflow-hidden rounded-lg">
-                    <img
-                      src={type.gif}
-                      alt={`GIF for ${type.title}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="rounded-full bg-primary/10 p-6 mx-auto mb-6">
-                    {type.icon}
-                  </div>
-                )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                  {type.gifs.map((gif, gifIndex) => (
+                    <div key={gifIndex} className="w-full h-48 overflow-hidden rounded-lg">
+                      <img
+                        src={gif}
+                        alt={`GIF ${gifIndex + 1} for ${type.title}`}
+                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
+                  ))}
+                </div>
                 <h3 className="text-2xl font-semibold mb-4">{type.title}</h3>
                 <p className="text-gray-600 dark:text-gray-300">{type.description}</p>
               </Card>
