@@ -18,18 +18,17 @@ import { getTruckTypeForVehicle } from '@/utils/pricing/vehicleClassification'
 interface TowTruckSelectorProps {
   form: UseFormReturn<FormData>
   onTruckTypeChange?: (type: 'A' | 'B' | 'C' | 'D') => void
-  selectedMake: string
-  selectedModel: string
+  selectedModel?: string
 }
 
 export const TowTruckSelector = ({
   form,
   onTruckTypeChange,
-  selectedMake,
   selectedModel,
 }: TowTruckSelectorProps) => {
   const { updateTruckType } = useTowing()
   const { toast } = useToast()
+  const selectedMake = form.watch('vehicleMake')
 
   useEffect(() => {
     if (selectedMake && selectedModel) {

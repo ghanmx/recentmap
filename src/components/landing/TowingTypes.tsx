@@ -1,13 +1,12 @@
-import { motion } from 'framer-motion'; // Correct import for Framer Motion
-import { Card } from '../ui/card'; // Ensure the Card component is exported correctly from the specified path
-import { CarFront, Truck } from 'lucide-react'; // Ensure lucide-react is properly installed
+import { motion } from 'framer-motion';
+import { Card } from '../ui/card';
+import { CarFront, Truck } from 'lucide-react';
 
 const towingTypes = [
   {
     icon: <CarFront className="w-12 h-12 text-primary" aria-label="Car Front Icon" />,
     title: 'Grúa Plataforma',
     description: 'Ideal para vehículos ligeros y medianos. Transporte seguro sin arrastre.',
-    gif: '/lovable-uploads/TipoC.gif',
     gif: '/lovable-uploads/TipoA.gif',
   },
   {
@@ -15,7 +14,6 @@ const towingTypes = [
     title: 'Grúa de Arrastre',
     description: 'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
     gif: '/lovable-uploads/TipoD2.gif',
-    gif: '/lovable-uploads/TipoB.gif',
   },
 ];
 

@@ -79,7 +79,8 @@ async function tryFetchWithUrls(
         credentials: 'omit',
         headers: {
           ...options.headers,
-          Accept: 'application/json',
+          'Accept': 'application/json',
+          'Origin': window.location.origin,
         },
       })
 
@@ -125,12 +126,14 @@ export async function getRouteFromOSRM(
   const coordinates = `${start.lng},${start.lat};${end.lng},${end.lat}`
 
   try {
+    console.log('Starting route calculation:', { start, end })
     const result = await new Promise((resolve, reject) => {
       requestQueue = requestQueue
         .then(() =>
           tryFetchWithUrls(OSRM_API_URLS, coordinates, {
             headers: {
-              Accept: 'application/json',
+              'Accept': 'application/json',
+              'Origin': window.location.origin,
             },
           }),
         )
@@ -145,6 +148,7 @@ export async function getRouteFromOSRM(
       throw new Error('No route found')
     }
 
+    console.log('Route calculation successful:', data.routes[0])
     return {
       distance: data.routes[0].distance / 1000,
       duration: data.routes[0].duration,
