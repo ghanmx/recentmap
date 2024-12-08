@@ -1,4 +1,4 @@
-export const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 20000) => {
+export const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 8000) => {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeout)
 
@@ -32,6 +32,6 @@ export const fetchWithTimeout = async (url: string, options: RequestInit = {}, t
 }
 
 export const exponentialBackoff = (attempt: number) => {
-  const delay = Math.min(1000 * Math.pow(2, attempt), 10000) // Cap at 10 seconds
+  const delay = Math.min(1000 * Math.pow(2, attempt), 5000) // Cap at 5 seconds
   return new Promise(resolve => setTimeout(resolve, delay))
 }
