@@ -54,6 +54,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          notification_preferences: Json | null
           operator_status: Json | null
           phone_number: string | null
           preferences: Json | null
@@ -66,6 +67,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id: string
+          notification_preferences?: Json | null
           operator_status?: Json | null
           phone_number?: string | null
           preferences?: Json | null
@@ -78,6 +80,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          notification_preferences?: Json | null
           operator_status?: Json | null
           phone_number?: string | null
           preferences?: Json | null
@@ -92,6 +95,7 @@ export type Database = {
           created_at: string
           dropoff_location: Json | null
           id: string
+          notifications_sent: Json | null
           payment_amount: number | null
           payment_intent_id: string | null
           payment_status: string | null
@@ -114,6 +118,7 @@ export type Database = {
           created_at?: string
           dropoff_location?: Json | null
           id?: string
+          notifications_sent?: Json | null
           payment_amount?: number | null
           payment_intent_id?: string | null
           payment_status?: string | null
@@ -136,6 +141,7 @@ export type Database = {
           created_at?: string
           dropoff_location?: Json | null
           id?: string
+          notifications_sent?: Json | null
           payment_amount?: number | null
           payment_intent_id?: string | null
           payment_status?: string | null

@@ -1,4 +1,5 @@
-import { CardElement } from '@stripe/react-stripe-js'
+import { useState } from 'react'
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { PaymentAmount } from './PaymentAmount'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { formatCurrency } from '@/utils/priceCalculator'
@@ -6,6 +7,8 @@ import { useTowing } from '@/contexts/TowingContext'
 import { towTruckTypes } from '@/utils/pricing'
 import { motion } from 'framer-motion'
 import { Receipt, Flag, Truck, TrendingUp } from 'lucide-react'
+import { supabase } from '@/integrations/supabase/client'
+import { useToast } from '@/hooks/use-toast'
 
 interface PaymentFormProps {
   subtotal: number
@@ -13,6 +16,7 @@ interface PaymentFormProps {
   requiresInvoice: boolean
   onCardChange: (complete: boolean) => void
   finalTotal: number
+  requestId: string
 }
 
 export const PaymentForm = ({
@@ -21,12 +25,78 @@ export const PaymentForm = ({
   requiresInvoice,
   onCardChange,
   finalTotal,
+  requestId,
 }: PaymentFormProps) => {
+  const stripe = useStripe()
+  const elements = useElements()
+  const [isProcessing, setIsProcessing] = useState(false)
+  const { toast } = useToast()
   const { totalDistance, truckType, requiresManeuver, totalTollCost } = useTowing()
   const selectedTruck = towTruckTypes[truckType || 'A']
   const baseCost = totalDistance * selectedTruck.perKm
   const flagDropFee = selectedTruck.flagDropFee
   const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!stripe || !elements) return
+
+    setIsProcessing(true)
+    try {
+      const { error: intentError, data: intentData } = await supabase.functions.invoke(
+        'create-payment-intent',
+        {
+          body: {
+            amount: finalTotal,
+            requestId,
+          },
+        },
+      )
+
+      if (intentError) throw intentError
+
+      const cardElement = elements.getElement(CardElement)
+      if (!cardElement) throw new Error('Card element not found')
+
+      const { error: stripeError } = await stripe.confirmCardPayment(
+        intentData.clientSecret,
+        {
+          payment_method: {
+            card: cardElement,
+          },
+        },
+      )
+
+      if (stripeError) {
+        throw stripeError
+      }
+
+      // Update request status
+      await supabase
+        .from('vehicle_requests')
+        .update({
+          payment_status: 'processing',
+          payment_intent_id: intentData.paymentIntentId,
+          payment_amount: finalTotal,
+        })
+        .eq('id', requestId)
+
+      toast({
+        title: 'Pago Procesado',
+        description: 'Tu pago ha sido procesado exitosamente.',
+      })
+
+    } catch (error: any) {
+      console.error('Payment error:', error)
+      toast({
+        title: 'Error en el Pago',
+        description: error.message || 'Hubo un error al procesar el pago.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsProcessing(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -89,7 +159,7 @@ export const PaymentForm = ({
         </div>
       </ScrollArea>
 
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="rounded-md border p-4">
           <CardElement
             options={{
@@ -109,7 +179,30 @@ export const PaymentForm = ({
             onChange={(e) => onCardChange(e.complete)}
           />
         </div>
-      </div>
+
+        <button
+          type="submit"
+          disabled={!stripe || isProcessing}
+          className={`
+            w-full px-4 py-2 rounded-md text-sm font-medium text-white
+            ${
+              !stripe || isProcessing
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-primary hover:bg-primary/90'
+            }
+            transition-colors duration-200
+          `}
+        >
+          {isProcessing ? (
+            <span className="flex items-center justify-center gap-2">
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Procesando...
+            </span>
+          ) : (
+            `Pagar ${formatCurrency(finalTotal)}`
+          )}
+        </button>
+      </form>
     </div>
   )
 }
