@@ -13,7 +13,7 @@ const towingTypes = [
     icon: <Truck className="w-12 h-12 text-primary" aria-label="Truck Icon" />,
     title: 'Servicio de Rescate',
     description: 'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
-    gifs: ['/lovable-uploads/TipoD2.gif', '/lovable-uploads/TipoD.gif'],
+    gifs: ['/lovable-uploads/TipoD2.gif', '/lovable-uploads/TipoD2.gif'],
   },
 ];
 
