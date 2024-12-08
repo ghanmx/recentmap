@@ -4,6 +4,7 @@ import { fetchWithTimeout, exponentialBackoff } from './fetchUtils'
 export const tryFetchWithProxies = async (url: string, retryCount = DEFAULT_RETRY_COUNT) => {
   let lastError: Error | null = null
   
+  // Try each proxy in sequence
   for (const proxyUrl of CORS_PROXIES) {
     const proxiedUrl = `${proxyUrl}${encodeURIComponent(url)}`
     console.log('Attempting proxy:', proxyUrl)
@@ -18,8 +19,6 @@ export const tryFetchWithProxies = async (url: string, retryCount = DEFAULT_RETR
         lastError = error as Error
         
         if (attempt < retryCount - 1) {
-          const backoffTime = Math.pow(2, attempt) * 1000
-          console.log(`Retrying in ${backoffTime}ms...`)
           await exponentialBackoff(attempt)
         }
       }
