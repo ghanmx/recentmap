@@ -23,6 +23,12 @@ interface FloatingQuestionsPanelProps {
   onSelectingDrop: () => void
 }
 
+interface PageContent {
+  id: number
+  title: string
+  content: JSX.Element
+}
+
 export const FloatingQuestionsPanel = ({
   pickupLocation,
   dropLocation,
@@ -67,7 +73,7 @@ export const FloatingQuestionsPanel = ({
     }
   ]
 
-  const pages = [
+  const pages: PageContent[] = [
     {
       id: 1,
       title: 'Detalles del Servicio',
