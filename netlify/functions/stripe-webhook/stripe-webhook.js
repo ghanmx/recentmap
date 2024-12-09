@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
 )
 
 router.post('/', async (req, res) => {
@@ -22,21 +22,24 @@ router.post('/', async (req, res) => {
       process.env.STRIPE_WEBHOOK_SECRET,
     )
   } catch (err) {
-    console.error('Webhook signature verification failed.', err)
+    console.error('Webhook signature verification failed:', err)
     return res.sendStatus(400)
   }
 
   try {
+    console.log('Processing Stripe webhook event:', event.type)
+
     switch (event.type) {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object
-        
-        // Update payment status in database
+        console.log('Payment succeeded:', paymentIntent.id)
+
+        // Update payment status
         const { error: paymentError } = await supabase
           .from('payment_transactions')
-          .update({ 
+          .update({
             status: 'completed',
-            stripe_payment_intent_id: paymentIntent.id
+            stripe_payment_intent_id: paymentIntent.id,
           })
           .eq('stripe_payment_intent_id', paymentIntent.id)
 
@@ -48,9 +51,9 @@ router.post('/', async (req, res) => {
         // Update vehicle request status
         const { error: requestError } = await supabase
           .from('vehicle_requests')
-          .update({ 
+          .update({
             payment_status: 'completed',
-            status: 'confirmed'
+            status: 'confirmed',
           })
           .eq('payment_intent_id', paymentIntent.id)
 
@@ -65,21 +68,22 @@ router.post('/', async (req, res) => {
 
       case 'payment_intent.payment_failed':
         const failedPayment = event.data.object
-        
+        console.log('Payment failed:', failedPayment.id)
+
         // Update payment status
         await supabase
           .from('payment_transactions')
-          .update({ 
+          .update({
             status: 'failed',
-            stripe_payment_intent_id: failedPayment.id
+            stripe_payment_intent_id: failedPayment.id,
           })
           .eq('stripe_payment_intent_id', failedPayment.id)
 
         // Update vehicle request status
         await supabase
           .from('vehicle_requests')
-          .update({ 
-            payment_status: 'failed'
+          .update({
+            payment_status: 'failed',
           })
           .eq('payment_intent_id', failedPayment.id)
         break
@@ -87,12 +91,12 @@ router.post('/', async (req, res) => {
       default:
         console.log(`Unhandled event type ${event.type}`)
     }
+
+    return res.sendStatus(200)
   } catch (err) {
-    console.error('Webhook handler failed.', err)
+    console.error('Webhook handler failed:', err)
     return res.sendStatus(500)
   }
-
-  res.sendStatus(200)
 })
 
 async function notifyAdmin(paymentIntentId) {
@@ -104,14 +108,19 @@ async function notifyAdmin(paymentIntentId) {
       .eq('stripe_payment_intent_id', paymentIntentId)
       .single()
 
-    if (!payment) return
+    if (!payment) {
+      console.log('No payment found for notification')
+      return
+    }
+
+    console.log('Sending admin notification for payment:', paymentIntentId)
 
     // Send email notification using Resend
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
         from: 'MRGruas <onboarding@resend.dev>',
@@ -126,6 +135,8 @@ async function notifyAdmin(paymentIntentId) {
         `,
       }),
     })
+
+    console.log('Admin notification sent successfully')
   } catch (error) {
     console.error('Error sending admin notification:', error)
   }
