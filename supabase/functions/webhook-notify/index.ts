@@ -8,6 +8,7 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -18,8 +19,9 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     const { requestId } = await req.json()
+    console.log('Processing webhook for request:', requestId)
 
-    // Fetch request details
+    // Fetch request details with profile information
     const { data: request, error: requestError } = await supabase
       .from('vehicle_requests')
       .select(
@@ -31,8 +33,10 @@ serve(async (req) => {
       .eq('id', requestId)
       .single()
 
-    if (requestError)
+    if (requestError) {
+      console.error('Error fetching request:', requestError)
       throw new Error(`Failed to fetch request: ${requestError.message}`)
+    }
 
     // Fetch active webhooks
     const { data: webhooks, error: webhooksError } = await supabase
@@ -40,8 +44,12 @@ serve(async (req) => {
       .select('*')
       .eq('is_active', true)
 
-    if (webhooksError)
+    if (webhooksError) {
+      console.error('Error fetching webhooks:', webhooksError)
       throw new Error(`Failed to fetch webhooks: ${webhooksError.message}`)
+    }
+
+    console.log(`Found ${webhooks.length} active webhooks`)
 
     // Send webhook notifications
     const notifications = webhooks.map(async (webhook) => {
@@ -64,32 +72,58 @@ serve(async (req) => {
         },
       }
 
-      const signature = await createSignature(
-        JSON.stringify(payload),
-        webhook.secret_key,
-      )
+      try {
+        const signature = await createSignature(
+          JSON.stringify(payload),
+          webhook.secret_key,
+        )
 
-      return fetch(webhook.url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Webhook-Signature': signature,
-        },
-        body: JSON.stringify(payload),
-      })
+        console.log(`Sending webhook to ${webhook.url}`)
+        const response = await fetch(webhook.url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Webhook-Signature': signature,
+            ...corsHeaders,
+          },
+          body: JSON.stringify(payload),
+        })
+
+        if (!response.ok) {
+          console.error(
+            `Webhook to ${webhook.url} failed with status ${response.status}`,
+          )
+          throw new Error(`Webhook failed with status ${response.status}`)
+        }
+
+        console.log(`Successfully sent webhook to ${webhook.url}`)
+        return response
+      } catch (error) {
+        console.error(`Error sending webhook to ${webhook.url}:`, error)
+        throw error
+      }
     })
 
     await Promise.all(notifications)
 
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    return new Response(
+      JSON.stringify({ success: true, message: 'Webhooks sent successfully' }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
+    )
   } catch (error) {
-    console.error('Error:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    console.error('Error in webhook handler:', error)
+    return new Response(
+      JSON.stringify({
+        error: error.message,
+        details: 'Failed to process webhook notifications',
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
+    )
   }
 })
 

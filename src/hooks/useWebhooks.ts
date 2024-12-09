@@ -15,14 +15,16 @@ export const useWebhooks = () => {
   const { data: webhooks, isLoading } = useQuery({
     queryKey: ['webhooks'],
     queryFn: async () => {
+      console.log('Fetching webhooks')
       const { data, error } = await supabase
         .from('webhooks')
         .select('*')
         .order('created_at', { ascending: false })
 
       if (error) {
+        console.error('Error fetching webhooks:', error)
         toast({
-          title: 'Error fetching webhooks',
+          title: 'Error al cargar webhooks',
           description: error.message,
           variant: 'destructive',
         })
@@ -35,6 +37,7 @@ export const useWebhooks = () => {
 
   const createWebhook = useMutation({
     mutationFn: async (webhookData: WebhookInsert) => {
+      console.log('Creating webhook:', webhookData)
       const { data, error } = await supabase
         .from('webhooks')
         .insert([webhookData])
@@ -47,11 +50,12 @@ export const useWebhooks = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks'] })
       toast({
-        title: 'Webhook Created',
-        description: 'Your webhook has been created successfully.',
+        title: 'Webhook Creado',
+        description: 'El webhook ha sido creado exitosamente.',
       })
     },
     onError: (error: Error) => {
+      console.error('Error creating webhook:', error)
       toast({
         title: 'Error',
         description: error.message,
@@ -65,6 +69,7 @@ export const useWebhooks = () => {
       id,
       ...updateData
     }: WebhookUpdate & { id: string }) => {
+      console.log('Updating webhook:', id, updateData)
       const { data, error } = await supabase
         .from('webhooks')
         .update(updateData)
@@ -78,11 +83,12 @@ export const useWebhooks = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks'] })
       toast({
-        title: 'Webhook Updated',
-        description: 'The webhook has been updated successfully.',
+        title: 'Webhook Actualizado',
+        description: 'El webhook ha sido actualizado exitosamente.',
       })
     },
     onError: (error: Error) => {
+      console.error('Error updating webhook:', error)
       toast({
         title: 'Error',
         description: error.message,
@@ -93,6 +99,7 @@ export const useWebhooks = () => {
 
   const deleteWebhook = useMutation({
     mutationFn: async (id: string) => {
+      console.log('Deleting webhook:', id)
       const { error } = await supabase.from('webhooks').delete().eq('id', id)
 
       if (error) throw error
@@ -100,11 +107,12 @@ export const useWebhooks = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks'] })
       toast({
-        title: 'Webhook Deleted',
-        description: 'The webhook has been deleted successfully.',
+        title: 'Webhook Eliminado',
+        description: 'El webhook ha sido eliminado exitosamente.',
       })
     },
     onError: (error: Error) => {
+      console.error('Error deleting webhook:', error)
       toast({
         title: 'Error',
         description: error.message,

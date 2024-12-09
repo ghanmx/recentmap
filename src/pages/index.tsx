@@ -1,10 +1,21 @@
 import { useState, Suspense, lazy } from 'react'
 import { useToast } from '@/components/ui/use-toast'
 import { TowingWrapper } from '@/components/TowingWrapper'
-import { Loader2 } from 'lucide-react'
+import { Loader2, User, Shield, Search as SearchIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Separator } from '@/components/ui/separator'
 import { FormProvider, useForm } from 'react-hook-form'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useNavigate } from 'react-router-dom'
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu'
 import {
   Carousel,
   CarouselContent,
@@ -120,6 +131,24 @@ const LoadingSpinner = () => (
 
 const Index = (): JSX.Element => {
   const methods = useForm()
+  const navigate = useNavigate()
+  const { toast } = useToast()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  const handleAdminAccess = () => {
+    // This is just for testing - in production, use proper authentication
+    setIsAdmin(true)
+    toast({
+      title: 'Modo Administrador Activado',
+      description: 'Has accedido como administrador (modo prueba)',
+    })
+    navigate('/admin')
+  }
+
+  const handleUserAccess = () => {
+    navigate('/user')
+  }
 
   return (
     <FormProvider {...methods}>
@@ -132,6 +161,68 @@ const Index = (): JSX.Element => {
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-blue-600/5" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-200/20 via-transparent to-transparent" />
+        
+        {/* Navigation Bar */}
+        <div className="relative z-20 w-full bg-white/80 backdrop-blur-sm shadow-sm">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger>Navegación</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <div className="grid gap-3 p-6 w-[400px]">
+                        <NavigationMenuLink
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          onClick={() => navigate('/')}
+                        >
+                          <div className="text-sm font-medium leading-none">Inicio</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            Volver a la página principal
+                          </p>
+                        </NavigationMenuLink>
+                      </div>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 w-[200px]"
+                  />
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleUserAccess}
+                  className="flex items-center space-x-2"
+                >
+                  <User className="h-4 w-4" />
+                  <span>Usuario</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAdminAccess}
+                  className="flex items-center space-x-2"
+                >
+                  <Shield className="h-4 w-4" />
+                  <span>Admin</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="relative z-10 h-full">
           <TowingWrapper>
             <Suspense fallback={<LoadingSpinner />}>
