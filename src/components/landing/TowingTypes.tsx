@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Card } from '../ui/card';
-import { CarFront, Truck, Wrench } from 'lucide-react';
+import { CarFront, Truck } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
