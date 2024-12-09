@@ -8,7 +8,7 @@ const towingTypes = [
     title: 'Servicio Plataforma',
     description: 'Ideal para vehículos ligeros y medianos. Transporte seguro sin arrastre.',
     gifs: ['/lovable-uploads/TipoA.gif', '/lovable-uploads/TipoC.gif'],
-
+  },
   {
     icon: <Truck className="w-12 h-12 text-primary" aria-label="Truck Icon" />,
     title: 'Servicio de Rescate',
@@ -16,7 +16,6 @@ const towingTypes = [
     gifs: ['/lovable-uploads/TipoD.gif', '/lovable-uploads/TipoD2.gif'],
   },
 ];
-
 export const TowingTypes = () => {
   return (
     <section className="py-20 px-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
