@@ -7,13 +7,13 @@ const towingTypes = [
     icon: <CarFront className="w-12 h-12 text-primary" aria-label="Car Front Icon" />,
     title: 'Servicio Plataforma',
     description: 'Ideal para vehículos ligeros y medianos. Transporte seguro sin arrastre.',
-    gifs: ['/lovable-uploads/TipoA.gif', '/lovable-uploads/TipoB.gif'],
+    gifs: ['/lovable-uploads/TipoA.gif', '/lovable-uploads/TipoC  .gif'],
   },
   {
     icon: <Truck className="w-12 h-12 text-primary" aria-label="Truck Icon" />,
     title: 'Servicio de Rescate',
     description: 'Para situaciones de emergencia y traslados rápidos. Servicio económico.',
-    gifs: ['/lovable-uploads/TipoD2.gif', '/lovable-uploads/TipoD2.gif'],
+    gifs: ['/lovable-uploads/TipoD.gif', '/lovable-uploads/TipoD2.gif'],
   },
 ];
 
