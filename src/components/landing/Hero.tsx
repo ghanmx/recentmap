@@ -8,7 +8,6 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-20 lg:py-32">
-      {/* Enhanced background with parallax effect */}
       <div className="absolute inset-0 z-0">
         <motion.img
           initial={{ scale: 1.1, opacity: 0 }}
@@ -29,18 +28,18 @@ export const Hero = () => {
           className="max-w-4xl mx-auto text-center space-y-8"
         >
           <motion.h1
-            className="text-5xl md:text-7xl font-bold font-heading text-shadow-lg"
+            className="text-4xl sm:text-5xl md:text-7xl font-bold font-heading tracking-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <span className="text-gradient-shine drop-shadow-xl">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-600 to-primary animate-gradient">
               Servicio de Grúas Profesional
             </span>
           </motion.h1>
 
           <motion.p
-            className="text-xl md:text-2xl text-gradient-shine drop-shadow-lg font-semibold"
+            className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 font-medium"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
@@ -74,7 +73,7 @@ export const Hero = () => {
           </motion.div>
 
           <motion.div
-            className="flex justify-center items-center gap-8 pt-8"
+            className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 pt-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}

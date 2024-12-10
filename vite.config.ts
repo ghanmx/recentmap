@@ -4,38 +4,35 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { componentTagger } from 'lovable-tagger'
 
-// Calculate __dirname using fileURLToPath for ES module compatibility
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  plugins: [
-    react(),
-    componentTagger() // Ensure this plugin is correctly configured and used
-  ],
+  plugins: [react(), componentTagger()],
+  base: '/mrgruas/', // Add this line for GitHub Pages
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), // Alias for src directory
+      '@': path.resolve(__dirname, './src'),
     },
   },
   server: {
-    host: true, // Allow access from network
-    port: 8080, // Set development server port
+    host: true,
+    port: 8080,
   },
   build: {
-    sourcemap: true, // Enable source maps for debugging
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'], // Separate vendor libraries
+          vendor: ['react', 'react-dom'],
         },
       },
     },
     commonjsOptions: {
-      include: [/node_modules/], // Include node_modules for CommonJS
-      extensions: ['.js', '.cjs'], // Handle .js and .cjs extensions
+      include: [/node_modules/],
+      extensions: ['.js', '.cjs'],
     },
   },
   optimizeDeps: {
-    exclude: ['lmdb'], // Exclude lmdb from optimization
+    exclude: ['lmdb'],
   },
 })

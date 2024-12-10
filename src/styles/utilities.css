@@ -1,0 +1,23 @@
+@layer utilities {
+  .safe-area-view {
+    padding-top: var(--sat);
+    padding-right: var(--sar);
+    padding-bottom: var(--sab);
+    padding-left: var(--sal);
+  }
+
+  .py-safe {
+    padding-top: var(--sat);
+    padding-bottom: var(--sab);
+  }
+
+  .px-safe {
+    padding-right: var(--sar);
+    padding-left: var(--sal);
+  }
+
+  .pt-safe { padding-top: var(--sat); }
+  .pr-safe { padding-right: var(--sar); }
+  .pb-safe { padding-bottom: var(--sab); }
+  .pl-safe { padding-left: var(--sal); }
+}
