@@ -13,6 +13,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15  # Increased timeout
 
     steps:
       - uses: actions/checkout@v3
@@ -31,10 +32,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          npm ci
-        
+          npm ci --legacy-peer-deps
+        env:
+          PYTHON: python3  # Explicitly set Python path
+          
       - name: Build
         run: npm run build
+        env:
+          PYTHON: python3  # Ensure Python is available during build
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2

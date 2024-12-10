@@ -24,6 +24,8 @@
   PYTHON_VERSION = "3.11"
   # Add CI environment variable to optimize build
   CI = "true"
+  # Explicitly set Python path
+  PYTHON = "python3"
 
 [functions]
   node_bundler = "esbuild"

@@ -33,6 +33,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['lmdb'],
+    exclude: ['lmdb', 'node-gyp', 'esbuild'],
   },
 })
