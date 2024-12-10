@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react(), componentTagger()],
-  base: '/recentmap/', // Updated to match your repository name
+  base: '/recentmap/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -24,6 +24,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-slot'],
         },
       },
     },
@@ -33,6 +34,10 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['lmdb', 'node-gyp', 'esbuild', 'foreground-child', 'strip-ansi', 'isexe'],
+    exclude: ['lmdb', 'node-gyp', 'esbuild'],
+    include: ['react', 'react-dom'],
+  },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   },
 })
