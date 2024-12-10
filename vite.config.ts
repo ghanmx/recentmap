@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react(), componentTagger()],
-  base: '/mrgruas/', // Add this line for GitHub Pages
+  base: '/recentmap/', // Updated to match your repository name
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
