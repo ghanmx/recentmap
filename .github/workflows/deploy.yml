@@ -41,6 +41,9 @@ jobs:
         env:
           PYTHON: python3  # Ensure Python is available during build
         
+      - name: Checks App Compliance Scan
+        uses: google-checks/checks-app-scan-github-action@v1.0.3
+        
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:

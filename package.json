@@ -11,8 +11,7 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "analyze": "vite build --mode analyze",
-    "install": "npm install"
+    "analyze": "vite build --mode analyze"
   },
   "dependencies": {
     "@eslint/plugin-kit": "^0.2.3",
