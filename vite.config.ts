@@ -8,7 +8,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react(), componentTagger()],
-  base: '/recentmap/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
