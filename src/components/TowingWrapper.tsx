@@ -1,12 +1,10 @@
-import React from 'react'
+import { ReactNode } from 'react'
 import { TowingProvider } from '../contexts/TowingContext'
 
 interface TowingWrapperProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
-export const TowingWrapper: React.FC<TowingWrapperProps> = ({
-  children,
-}) => {
+export const TowingWrapper = ({ children }: TowingWrapperProps) => {
   return <TowingProvider>{children}</TowingProvider>
 }

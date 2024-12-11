@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react'
-import { TollLocation } from '../data/tollData'
+import { TollLocation } from '@/data/tollData'
 
 interface LocationInfo {
   pickup?: { lat: number; lng: number; address: string }
@@ -31,7 +31,6 @@ interface TowingContextType {
 const TowingContext = createContext<TowingContextType | undefined>(undefined)
 
 export const TowingProvider = ({ children }: { children: ReactNode }) => {
-  console.log('TowingProvider rendered')
   const [totalDistance, setTotalDistance] = useState(0)
   const [totalCost, setTotalCost] = useState(0)
   const [detectedTolls, setDetectedTolls] = useState<TollLocation[]>([])
@@ -105,7 +104,6 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
 }
 
 export const useTowing = () => {
-  console.log('useTowing hook called')
   const context = useContext(TowingContext)
   if (context === undefined) {
     throw new Error('useTowing must be used within a TowingProvider')
@@ -129,11 +127,11 @@ const calculateTotalCost = (
 
   const maneuverCost = requiresManeuver
     ? {
-      A: 1219.55,
-      B: 1336.73,
-      C: 1524.21,
-      D: 2101.65,
-    }[truckType]
+        A: 1219.55,
+        B: 1336.73,
+        C: 1524.21,
+        D: 2101.65,
+      }[truckType]
     : 0
 
   const flagDropFee = {

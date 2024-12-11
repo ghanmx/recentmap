@@ -18,23 +18,21 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <TowingProvider>
-          <StripeProvider>
-            <SidebarProvider>
-              <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-                <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-                <div className="relative z-10">
-                  <RouterProvider router={router} />
-                </div>
-                <Toaster />
+    <QueryClientProvider client={queryClient}>
+      <TowingProvider>
+        <StripeProvider>
+          <SidebarProvider>
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+              <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+              <div className="relative z-10">
+                <RouterProvider router={router} />
               </div>
-            </SidebarProvider>
-          </StripeProvider>
-        </TowingProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+              <Toaster />
+            </div>
+          </SidebarProvider>
+        </StripeProvider>
+      </TowingProvider>
+    </QueryClientProvider>
   )
 }
 

@@ -21,7 +21,7 @@ const Index = (): JSX.Element => {
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-blue-600/5" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-200/20 via-transparent to-transparent" />
-
+        
         <NavigationBar />
 
         <div className="relative z-10 h-full">

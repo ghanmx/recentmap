@@ -26,8 +26,7 @@ const towingTypes = [
         'Sistema hidráulico de última generación',
         'Equipado con sistema de winch para carga segura',
       ],
-      pricing: 'Tarifa base desde $528.69 MXN + $18.82 MXN/km. BASE TARIFARIA DE LOS SERVICIOS DE ARRASTRE, ARRASTRE Y SALVAMENTO Y DEPÓSITO DE VEHÍCULOS EN EL AUTOTRANSPORTE FEDERAL',
-
+      pricing: 'Tarifa base desde $528.69 MXN + $18.82 MXN/km',
     },
   },
   {

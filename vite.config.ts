@@ -7,10 +7,7 @@ import { componentTagger } from 'lovable-tagger'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  plugins: [
-    react(),
-    process.env.NODE_ENV === 'production' ? componentTagger() : null,
-  ].filter(Boolean),
+  plugins: [react(), componentTagger()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
