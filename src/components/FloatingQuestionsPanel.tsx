@@ -2,15 +2,13 @@ import { useState } from 'react'
 import { FloatingPanel } from './form/FloatingPanel'
 import { Button } from './ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useTowing } from '@/contexts/TowingContext'
+import { useTowing } from '@/contexts/towing/TowingContext'
 import PaymentWindow from './payment/PaymentWindow'
 import { Location } from '@/types/location'
 import { NotificationBadge } from './notifications/NotificationBadge'
 import { useToast } from '@/hooks/use-toast'
-import { ServiceDetailsPanel } from './panels/ServiceDetailsPanel'
-import { CostDetailsPanel } from './panels/CostDetailsPanel'
 import { calculateServiceCosts } from '@/utils/costCalculations'
+import { FloatingQuestionsPanelContent } from './panels/FloatingQuestionsPanelContent'
 
 interface FloatingQuestionsPanelProps {
   pickupLocation: Location | null
@@ -21,12 +19,6 @@ interface FloatingQuestionsPanelProps {
   onDropSelect: (location: Location) => void
   onSelectingPickup: () => void
   onSelectingDrop: () => void
-}
-
-interface PageContent {
-  id: number
-  title: string
-  content: JSX.Element
 }
 
 export const FloatingQuestionsPanel = ({
@@ -73,49 +65,12 @@ export const FloatingQuestionsPanel = ({
     }
   ]
 
-  const pages: PageContent[] = [
-    {
-      id: 1,
-      title: 'Detalles del Servicio',
-      content: (
-        <ServiceDetailsPanel
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          pickupAddress={pickupAddress}
-          dropAddress={dropAddress}
-          onPickupSelect={onPickupSelect}
-          onDropSelect={onDropSelect}
-          onSelectingPickup={onSelectingPickup}
-          onSelectingDrop={onSelectingDrop}
-          steps={paymentSteps}
-        />
-      ),
-    },
-    {
-      id: 2,
-      title: 'Costos y Ruta',
-      content: (
-        <CostDetailsPanel
-          steps={paymentSteps}
-          requiresInvoice={requiresInvoice}
-          setRequiresInvoice={setRequiresInvoice}
-          subtotal={costs.subtotal}
-          tax={costs.tax}
-          finalTotal={costs.finalTotal}
-          detectedTolls={detectedTolls}
-          totalTollCost={totalTollCost}
-          onShowPayment={() => setShowPaymentWindow(true)}
-        />
-      ),
-    },
-  ]
-
   return (
     <>
       <FloatingPanel
         title={
           <div className="flex items-center justify-between">
-            <span className="text-shadow-sm">{pages[currentPage].title}</span>
+            <span className="text-shadow-sm">{currentPage === 0 ? 'Detalles del Servicio' : 'Costos y Ruta'}</span>
             <NotificationBadge count={detectedTolls.length} />
           </div>
         }
@@ -123,18 +78,26 @@ export const FloatingQuestionsPanel = ({
         className="w-full max-w-md mx-auto bg-white/95 backdrop-blur-sm shadow-lg"
       >
         <div className="space-y-6 p-6">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentPage}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="min-h-[400px]"
-            >
-              {pages[currentPage].content}
-            </motion.div>
-          </AnimatePresence>
+          <FloatingQuestionsPanelContent
+            currentPage={currentPage}
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            pickupAddress={pickupAddress}
+            dropAddress={dropAddress}
+            onPickupSelect={onPickupSelect}
+            onDropSelect={onDropSelect}
+            onSelectingPickup={onSelectingPickup}
+            onSelectingDrop={onSelectingDrop}
+            requiresInvoice={requiresInvoice}
+            setRequiresInvoice={setRequiresInvoice}
+            subtotal={costs.subtotal}
+            tax={costs.tax}
+            finalTotal={costs.finalTotal}
+            detectedTolls={detectedTolls}
+            totalTollCost={totalTollCost}
+            onShowPayment={() => setShowPaymentWindow(true)}
+            paymentSteps={paymentSteps}
+          />
 
           <div className="flex justify-between mt-4 pt-4 border-t border-gray-200">
             <Button
@@ -156,14 +119,14 @@ export const FloatingQuestionsPanel = ({
             <Button
               variant="outline"
               onClick={() => {
-                setCurrentPage((prev) => Math.min(pages.length - 1, prev + 1))
+                setCurrentPage((prev) => Math.min(1, prev + 1))
                 toast({
                   title: "Siguiente paso",
                   description: "Revisando costos y ruta",
                   className: "text-shadow-sm"
                 })
               }}
-              disabled={currentPage === pages.length - 1}
+              disabled={currentPage === 1}
               className="w-24 bg-white/80 hover:bg-white/95 transition-all text-shadow-sm"
             >
               Siguiente
