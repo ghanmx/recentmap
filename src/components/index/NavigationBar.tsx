@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,7 @@ import { useToast } from '@/components/ui/use-toast'
 export const NavigationBar = () => {
   const navigate = useNavigate()
   const { toast } = useToast()
+  const [isAdmin, setIsAdmin] = useState(false)
 
   const handleAdminAccess = () => {
     setIsAdmin(true)
