@@ -1,35 +1,61 @@
 @layer utilities {
-  @keyframes shine {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
   }
 
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
-  .animate-shimmer {
-    animation: shimmer 2s infinite;
+  .animate-shine {
+    position: relative;
+    overflow: hidden;
   }
 
-  .animate-gradient {
-    background-size: 200% auto;
-    animation: shine 5s ease-in-out infinite alternate;
-  }
-
-  .text-gradient-shine {
+  .animate-shine::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
     background: linear-gradient(
       to right,
-      theme(colors.primary.DEFAULT) 20%,
-      theme(colors.secondary.DEFAULT) 30%,
-      theme(colors.primary.DEFAULT) 70%
+      transparent 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 100%
     );
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-fill-color: transparent;
-    background-size: 500% auto;
-    animation: shine 5s ease-in-out infinite alternate;
+    transform: rotate(30deg);
+    animation: shine 3s infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  @keyframes shine {
+    from {
+      transform: translateX(-100%) rotate(30deg);
+    }
+    to {
+      transform: translateX(100%) rotate(30deg);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: .7;
+    }
   }
 }

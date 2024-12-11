@@ -11,6 +11,8 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+    min-height: 100vh;
   }
 }
 
@@ -19,4 +21,20 @@
   .min-h-screen {
     min-height: -webkit-fill-available;
   }
+}
+
+.form-card {
+  @apply bg-white/80 backdrop-blur-md shadow-lg rounded-lg p-6 border border-primary/10
+         hover:shadow-xl transition-all duration-300;
+}
+
+.input-field {
+  @apply bg-white/90 border-gray-200 focus:border-primary/30 focus:ring-2 
+         ring-primary/20 rounded-lg transition-all duration-200;
+}
+
+.button-primary {
+  @apply bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark 
+         hover:to-primary text-white shadow-lg hover:shadow-xl 
+         transition-all duration-300;
 }
