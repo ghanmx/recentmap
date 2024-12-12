@@ -4,7 +4,8 @@ import { StripeProvider } from '@/providers/StripeProvider'
 import { TowingProvider } from '@/contexts/TowingContext'
 import { SidebarProvider } from '@/contexts/SidebarContext'
 import { Toaster } from '@/components/ui/toaster'
-import { Routes } from '@/routes'
+import { RouterProvider } from 'react-router-dom'
+import { router } from '@/routes'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,7 +25,7 @@ const App = () => {
             <SidebarProvider>
               <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
                 <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-                <Routes />
+                <RouterProvider router={router} />
                 <Toaster />
               </div>
             </SidebarProvider>
