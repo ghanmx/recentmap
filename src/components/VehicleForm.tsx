@@ -7,7 +7,7 @@ import { VehicleBasicFields } from './form/VehicleBasicFields'
 import { UserInfoFields } from './form/UserInfoFields'
 import { TowTruckSelector } from './form/TowTruckSelector'
 import { Card } from '@/components/ui/card'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { FormData, formSchema } from '@/types/form'
 import { useToast } from '@/hooks/use-toast'
 import { useTowing } from '@/contexts/TowingContext'
@@ -108,10 +108,13 @@ export const VehicleForm = ({
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <Progress
-              value={progress}
-              className="h-2 bg-[#2c5ea8]/20"
-              indicatorClassName="bg-gradient-to-r from-[#2c5ea8] to-primary"
+            <Progress 
+              value={progress} 
+              className="h-2 bg-[#6873BC]/20"
+              // Removed indicatorClassName and using style prop instead
+              style={{
+                '--progress-foreground': '#6873BC',
+              } as React.CSSProperties}
             />
           </motion.div>
 
