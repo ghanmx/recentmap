@@ -1,38 +1,25 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ThemeProvider } from '@/providers/ThemeProvider'
-import { StripeProvider } from '@/providers/StripeProvider'
-import { TowingProvider } from '@/contexts/TowingContext'
-import { SidebarProvider } from '@/contexts/SidebarContext'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
-import { RouterProvider } from 'react-router-dom'
-import { router } from '@/routes'
+import { TowingProvider } from '@/contexts/towing/TowingContext'
+import { MapPage } from '@/features/map'
+import { UserPage } from '@/components/UserPage'
+import { AdminPanel } from '@/components/admin/AdminPanel'
+import { Layout } from '@/components/layout/Layout'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-})
-
-const App = () => {
+function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TowingProvider>
-          <StripeProvider>
-            <SidebarProvider>
-              <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-                <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-                <RouterProvider router={router} />
-                <Toaster />
-              </div>
-            </SidebarProvider>
-          </StripeProvider>
-        </TowingProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <TowingProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<MapPage />} />
+            <Route path="/user" element={<UserPage />} />
+            <Route path="/admin" element={<AdminPanel />} />
+          </Routes>
+        </Layout>
+        <Toaster />
+      </Router>
+    </TowingProvider>
   )
 }
 
