@@ -25,7 +25,6 @@
   npm_config_python = "/usr/bin/python3"
   npm_config_node_gyp = "/usr/local/lib/node_modules/node-gyp/bin/node-gyp.js"
   npm_config_build_from_source = "true"
-  PYTHON_PATH = "/usr/bin/python3"
   npm_config_python_install_dir = "/usr/local"
   npm_config_legacy_peer_deps = "true"
   npm_config_ignore_scripts = "false"
@@ -43,7 +42,7 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.gpteng.co; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.netlify.app https://api.openstreetmap.org; frame-src 'self' https://*.stripe.com;"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.netlify.app https://api.openstreetmap.org;"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(self)"
 
 [build.processing]
