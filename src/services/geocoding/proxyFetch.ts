@@ -5,8 +5,10 @@ export const tryFetchWithProxies = async (url: string, retryCount = 3) => {
   
   // Try each proxy in sequence
   for (const proxyUrl of CORS_PROXIES) {
-    const proxiedUrl = `${proxyUrl}${encodeURIComponent(url)}`
-    console.log('Attempting proxy:', proxyUrl)
+    // Properly encode the URL for the proxy
+    const encodedUrl = encodeURIComponent(url)
+    const proxiedUrl = `${proxyUrl}${encodedUrl}`
+    console.log('Attempting proxy:', proxyUrl, 'with URL:', url)
 
     for (let attempt = 0; attempt < retryCount; attempt++) {
       try {
@@ -24,6 +26,8 @@ export const tryFetchWithProxies = async (url: string, retryCount = 3) => {
         clearTimeout(timeoutId)
 
         if (!response.ok) {
+          const errorText = await response.text()
+          console.error(`Proxy error (${response.status}):`, errorText)
           throw new Error(`HTTP error! status: ${response.status}`)
         }
 

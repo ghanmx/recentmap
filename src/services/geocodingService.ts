@@ -75,17 +75,21 @@ export const searchAddresses = async (
 }
 
 export const getAddressFromCoords = async (lat: number, lon: number): Promise<string> => {
-  const params = new URLSearchParams({
-    format: 'json',
-    lat: lat.toString(),
-    lon: lon.toString(),
-  })
+  // Ensure lat and lon are valid numbers and convert to fixed precision strings
+  const validLat = Number(lat).toFixed(6)
+  const validLon = Number(lon).toFixed(6)
+
+  const params = new URLSearchParams()
+  params.append('format', 'json')
+  params.append('lat', validLat)
+  params.append('lon', validLon)
 
   try {
-    console.log('Reverse geocoding request:', { lat, lon })
+    console.log('Reverse geocoding request:', { lat: validLat, lon: validLon })
     // Remove any trailing slashes and ensure proper URL construction
     const baseUrl = FALLBACK_GEOCODING_URL.replace(/\/+$/, '')
-    const url = `${baseUrl}/reverse?${params}`
+    // Construct the URL without encoding it (the proxy function will handle that)
+    const url = `${baseUrl}/reverse?${params.toString()}`
     
     const result = await tryFetchWithProxies(url)
     console.log('Reverse geocoding result:', result)
