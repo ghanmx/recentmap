@@ -2,7 +2,6 @@
   command = "npm run build"
   publish = "dist"
   functions = "netlify/functions"
-  # Increase build timeout to 60 minutes (in minutes)
   timeout = 60
 
 [dev]
@@ -20,25 +19,17 @@
 [build.environment]
   NODE_VERSION = "20.11.1"
   NPM_VERSION = "10.2.4"
-  # Add Python version and ensure it's available
   PYTHON_VERSION = "3.11"
-  # Add CI environment variable to optimize build
   CI = "true"
-  # Set Python path explicitly
   PYTHON = "/usr/bin/python3"
-  # Add node-gyp configuration
   npm_config_python = "/usr/bin/python3"
   npm_config_node_gyp = "/usr/local/lib/node_modules/node-gyp/bin/node-gyp.js"
-  # Add Python-related configurations
   npm_config_build_from_source = "true"
   PYTHON_PATH = "/usr/bin/python3"
-  # Add Python installation directory
   npm_config_python_install_dir = "/usr/local"
-  # Add build optimizations
   npm_config_legacy_peer_deps = "true"
   npm_config_ignore_scripts = "false"
   npm_config_unsafe_perm = "true"
-  # Add node-gyp specific configurations
   npm_config_node_gyp_force_python = "/usr/bin/python3"
   npm_config_python_binary = "/usr/bin/python3"
 
@@ -68,7 +59,6 @@
 [build.processing.images]
   compress = true
 
-# Add build optimization settings
 [build.optimization]
   bundle = true
   minify = true
