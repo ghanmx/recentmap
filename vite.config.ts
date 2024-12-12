@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
@@ -33,6 +33,7 @@ export default defineConfig(({ mode }) => ({
   },
   optimizeDeps: {
     exclude: ['lmdb', 'node-gyp'],
+    include: ['react', 'react-dom'],
     esbuildOptions: {
       target: 'esnext',
     },
@@ -40,4 +41,4 @@ export default defineConfig(({ mode }) => ({
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   },
-}))
+})
