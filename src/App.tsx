@@ -5,7 +5,7 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './routes'
 import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from '@/providers/ThemeProvider'
-import { TowingProvider } from '@/contexts/towing/TowingContext'
+import { TowingProvider } from '@/contexts/TowingContext'
 
 const queryClient = new QueryClient({
   defaultOptions: {
