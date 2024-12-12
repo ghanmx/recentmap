@@ -32,7 +32,7 @@ export default {
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
-          dark: 'hsl(221.2 83.2% 43.3%)', // Added primary-dark color
+          dark: 'hsl(221.2 83.2% 43.3%)',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
