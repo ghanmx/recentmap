@@ -34,6 +34,10 @@
   PYTHON_PATH = "/usr/bin/python3"
   # Add Python installation directory
   npm_config_python_install_dir = "/usr/local"
+  # Add additional build configurations
+  npm_config_legacy_peer_deps = "true"
+  npm_config_ignore_scripts = "false"
+  npm_config_unsafe_perm = "true"
 
 [functions]
   node_bundler = "esbuild"
