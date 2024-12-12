@@ -1,7 +1,9 @@
 @layer components {
+
+  /* Custom Scrollbar */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--primary)) transparent;
+    scrollbar-color: hsl(var(--primary)) hsl(var(--background));
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -10,16 +12,48 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+    background: hsl(var(--background));
     border-radius: 4px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-primary/20 rounded-full hover:bg-primary/30 transition-colors;
+    @apply bg-primary/30 rounded-full hover:bg-primary/50 transition-colors;
   }
 
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50 scale-110;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:active {
+    @apply bg-primary/70 shadow-md;
+  }
+
+  /* Glass Card */
   .glass-card {
+    @apply bg-white/40 dark:bg-black/20 shadow-xl rounded-lg border border-white/20 dark:border-black/30;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .glass-card:hover {
+    @apply shadow-2xl scale-105;
+  }
+
+  .glass-card:focus-within {
+    @apply ring-2 ring-primary/50;
+  }
+
+  /* Extra Variant: Interactive Glass Button (Optional) */
+  .glass-button {
+    @apply bg-white/30 dark:bg-black/30 border border-white/20 dark:border-black/20 text-primary rounded-lg px-4 py-2 font-semibold backdrop-filter blur(8px) transition-colors;
+  }
+
+  .glass-button:hover {
+    @apply bg-white/50 dark:bg-black/40 text-primary/80;
+  }
+
+  .glass-button:active {
+    @apply bg-white/60 dark:bg-black/50 text-primary/90 ring-2 ring-primary/50;
   }
 }

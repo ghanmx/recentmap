@@ -1,4 +1,6 @@
 @layer utilities {
+
+  /* Safe Area Padding Classes */
   .safe-area-view {
     padding-top: var(--sat);
     padding-right: var(--sar);
@@ -16,8 +18,75 @@
     padding-left: var(--sal);
   }
 
-  .pt-safe { padding-top: var(--sat); }
-  .pr-safe { padding-right: var(--sar); }
-  .pb-safe { padding-bottom: var(--sab); }
-  .pl-safe { padding-left: var(--sal); }
+  .pt-safe {
+    padding-top: var(--sat);
+  }
+
+  .pr-safe {
+    padding-right: var(--sar);
+  }
+
+  .pb-safe {
+    padding-bottom: var(--sab);
+  }
+
+  .pl-safe {
+    padding-left: var(--sal);
+  }
+
+  /* Safe Area Margin Classes */
+  .safe-margin {
+    margin-top: var(--sat);
+    margin-right: var(--sar);
+    margin-bottom: var(--sab);
+    margin-left: var(--sal);
+  }
+
+  .my-safe {
+    margin-top: var(--sat);
+    margin-bottom: var(--sab);
+  }
+
+  .mx-safe {
+    margin-right: var(--sar);
+    margin-left: var(--sal);
+  }
+
+  .mt-safe {
+    margin-top: var(--sat);
+  }
+
+  .mr-safe {
+    margin-right: var(--sar);
+  }
+
+  .mb-safe {
+    margin-bottom: var(--sab);
+  }
+
+  .ml-safe {
+    margin-left: var(--sal);
+  }
+
+  /* Responsive Adjustments for Safe Areas */
+  @media (max-width: 768px) {
+    .safe-area-view {
+      padding-top: calc(var(--sat) + 10px);
+      padding-bottom: calc(var(--sab) + 10px);
+    }
+
+    .safe-margin {
+      margin-top: calc(var(--sat) + 10px);
+      margin-bottom: calc(var(--sab) + 10px);
+    }
+  }
+
+  /* Debug Mode for Safe Areas */
+  .debug-safe-area {
+    background: rgba(0, 255, 0, 0.2);
+  }
+
+  .debug-safe-margin {
+    outline: 2px dashed rgba(255, 0, 0, 0.5);
+  }
 }
