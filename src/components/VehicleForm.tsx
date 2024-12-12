@@ -108,10 +108,10 @@ export const VehicleForm = ({
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <Progress 
-              value={progress} 
-              className="h-2 bg-[#6873BC]/20"
-              indicatorClassName="bg-gradient-to-r from-[#6873BC] to-primary" 
+            <Progress
+              value={progress}
+              className="h-2 bg-[#2c5ea8]/20"
+              indicatorClassName="bg-gradient-to-r from-[#2c5ea8] to-primary"
             />
           </motion.div>
 
@@ -123,14 +123,14 @@ export const VehicleForm = ({
             className="space-y-4"
           >
             <AccordionItem value="location">
-              <AccordionTrigger 
+              <AccordionTrigger
                 className="hover:no-underline group transition-all duration-300"
               >
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-2 text-lg font-semibold"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <MapPin className="h-5 w-5 text-[#6873BC] group-hover:text-primary transition-colors" />
+                  <MapPin className="h-5 w-5 text-[#2c5ea8] group-hover:text-primary transition-colors" />
                   <AnimatedFormText>Ubicación</AnimatedFormText>
                 </motion.div>
               </AccordionTrigger>
@@ -140,7 +140,7 @@ export const VehicleForm = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Card className="p-6 bg-gradient-to-br from-white/95 to-[#6873BC]/5 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-[#6873BC]/10">
+                  <Card className="p-6 bg-gradient-to-br from-white/95 to-[#2c5ea8]/5 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-[#2c5ea8]/10">
                     <LocationSelector
                       form={methods}
                       pickupLocation={pickupLocation}
@@ -159,11 +159,11 @@ export const VehicleForm = ({
 
             <AccordionItem value="user">
               <AccordionTrigger className="hover:no-underline group transition-all duration-300">
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-2 text-lg font-semibold"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <User className="h-5 w-5 text-[#6873BC] group-hover:text-primary transition-colors" />
+                  <User className="h-5 w-5 text-[#2c5ea8] group-hover:text-primary transition-colors" />
                   <AnimatedFormText>Información Personal</AnimatedFormText>
                 </motion.div>
               </AccordionTrigger>
@@ -173,7 +173,7 @@ export const VehicleForm = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Card className="p-6 bg-gradient-to-br from-white/95 to-[#6873BC]/5 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-[#6873BC]/10">
+                  <Card className="p-6 bg-gradient-to-br from-white/95 to-[#2c5ea8]/5 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-[#2c5ea8]/10">
                     <UserInfoFields form={methods} />
                   </Card>
                 </motion.div>
@@ -182,11 +182,11 @@ export const VehicleForm = ({
 
             <AccordionItem value="vehicle">
               <AccordionTrigger className="hover:no-underline group transition-all duration-300">
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-2 text-lg font-semibold"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <Car className="h-5 w-5 text-[#6873BC] group-hover:text-primary transition-colors" />
+                  <Car className="h-5 w-5 text-[#2c5ea8] group-hover:text-primary transition-colors" />
                   <AnimatedFormText>Detalles del Vehículo</AnimatedFormText>
                 </motion.div>
               </AccordionTrigger>
@@ -196,7 +196,7 @@ export const VehicleForm = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Card className="p-6 bg-gradient-to-br from-white/95 to-[#6873BC]/5 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-[#6873BC]/10">
+                  <Card className="p-6 bg-gradient-to-br from-white/95 to-[#2c5ea8]/5 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-[#2c5ea8]/10">
                     <VehicleBasicFields
                       form={methods}
                       onVehicleModelChange={handleVehicleModelChange}
@@ -208,11 +208,11 @@ export const VehicleForm = ({
 
             <AccordionItem value="truck">
               <AccordionTrigger className="hover:no-underline group transition-all duration-300">
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-2 text-lg font-semibold"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <Truck className="h-5 w-5 text-[#6873BC] group-hover:text-primary transition-colors" />
+                  <Truck className="h-5 w-5 text-[#2c5ea8] group-hover:text-primary transition-colors" />
                   <AnimatedFormText>Selección de Grúa</AnimatedFormText>
                 </motion.div>
               </AccordionTrigger>
@@ -222,7 +222,7 @@ export const VehicleForm = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Card className="p-6 bg-gradient-to-br from-white/95 to-[#6873BC]/5 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-[#6873BC]/10">
+                  <Card className="p-6 bg-gradient-to-br from-white/95 to-[#2c5ea8]/5 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-[#2c5ea8]/10">
                     <TowTruckSelector
                       form={methods}
                       onTruckTypeChange={updateTruckType}

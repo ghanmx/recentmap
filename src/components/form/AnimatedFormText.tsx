@@ -10,7 +10,7 @@ export const AnimatedFormText = ({ children, className }: AnimatedTextProps) => 
   return (
     <motion.span
       className={cn(
-        'inline-block bg-gradient-to-r from-[#6873BC] to-primary bg-clip-text text-transparent',
+        'inline-block bg-gradient-to-r from-[#2c5ea8] to-primary bg-clip-text text-transparent',
         className
       )}
       initial={{ opacity: 0, y: 20 }}
