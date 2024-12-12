@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StripeProvider } from './providers/StripeProvider'
-import { TowingProvider } from './contexts/TowingContext'
+import { TowingProvider } from './contexts/towing/TowingContext'
 import { SidebarProvider } from './contexts/SidebarContext'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './routes'
@@ -19,10 +19,10 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TowingProvider>
-        <StripeProvider>
-          <SidebarProvider>
-            <ThemeProvider>
+      <ThemeProvider>
+        <TowingProvider>
+          <StripeProvider>
+            <SidebarProvider>
               <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
                 <div className="absolute inset-0 bg-grid-pattern opacity-5" />
                 <div className="relative z-10">
@@ -30,10 +30,10 @@ function App() {
                 </div>
                 <Toaster />
               </div>
-            </ThemeProvider>
-          </SidebarProvider>
-        </StripeProvider>
-      </TowingProvider>
+            </SidebarProvider>
+          </StripeProvider>
+        </TowingProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }
