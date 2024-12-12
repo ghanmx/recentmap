@@ -13,7 +13,7 @@ export type TowingAction =
 export const towingReducer = (state: TowingState, action: TowingAction): TowingState => {
   switch (action.type) {
     case 'UPDATE_DISTANCE': {
-      const newCost = calculateTotalCost(
+      const costBreakdown = calculateTotalCost(
         action.payload,
         state.truckType,
         state.requiresManeuver,
@@ -22,11 +22,11 @@ export const towingReducer = (state: TowingState, action: TowingAction): TowingS
       return {
         ...state,
         totalDistance: action.payload,
-        totalCost: newCost,
+        totalCost: costBreakdown.finalTotal,
         paymentInfo: {
           ...state.paymentInfo,
-          subtotal: newCost,
-          total: newCost * 1.16,
+          subtotal: costBreakdown.subtotal,
+          total: costBreakdown.finalTotal,
         },
       }
     }
