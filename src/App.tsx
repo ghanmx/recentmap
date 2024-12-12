@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { TowingProvider } from '@/contexts/towing/TowingContext'
-import MapPage from '@/features/map'
+import { MapPage } from '@/features/map'
 import { UserPage } from '@/components/UserPage'
 import { AdminPanel } from '@/components/admin/AdminPanel'
 import { Layout } from '@/components/layout/Layout'
