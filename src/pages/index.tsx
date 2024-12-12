@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { TowingWrapper } from '@/components/TowingWrapper'
 import { LoadingSpinner } from '@/components/index/LoadingSpinner'
 import { NavigationBar } from '@/components/index/NavigationBar'
+import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 
 const TowMap = lazy(() => import('@/features/map/TowMap'))
 
@@ -25,11 +26,13 @@ const Index = (): JSX.Element => {
         <NavigationBar />
 
         <div className="relative z-10 h-full">
-          <TowingWrapper>
-            <Suspense fallback={<LoadingSpinner />}>
-              <TowMap />
-            </Suspense>
-          </TowingWrapper>
+          <ErrorBoundary>
+            <TowingWrapper>
+              <Suspense fallback={<LoadingSpinner />}>
+                <TowMap />
+              </Suspense>
+            </TowingWrapper>
+          </ErrorBoundary>
         </div>
       </motion.div>
     </FormProvider>
