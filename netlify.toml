@@ -26,6 +26,9 @@
   CI = "true"
   # Explicitly set Python path
   PYTHON = "python3"
+  # Add node-gyp configuration
+  npm_config_python = "python3"
+  npm_config_node_gyp = "/usr/local/lib/node_modules/node-gyp/bin/node-gyp.js"
 
 [functions]
   node_bundler = "esbuild"
