@@ -4,6 +4,7 @@ import MapPage from '@/features/map'
 import { UserPage } from '@/components/UserPage'
 import { AdminPanel } from '@/components/admin/AdminPanel'
 import { Layout } from '@/components/layout/Layout'
+import { TowingProvider } from '@/contexts/towing/TowingContext'
 
 function App() {
   return (
@@ -11,7 +12,14 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<MapPage />} />
-          <Route path="/user" element={<UserPage />} />
+          <Route 
+            path="/user" 
+            element={
+              <TowingProvider>
+                <UserPage />
+              </TowingProvider>
+            } 
+          />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
       </Layout>
