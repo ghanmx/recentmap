@@ -24,11 +24,14 @@
   PYTHON_VERSION = "3.11"
   # Add CI environment variable to optimize build
   CI = "true"
-  # Explicitly set Python path
-  PYTHON = "python3"
+  # Explicitly set Python path and ensure it's available
+  PYTHON = "/usr/bin/python3"
   # Add node-gyp configuration
-  npm_config_python = "python3"
+  npm_config_python = "/usr/bin/python3"
   npm_config_node_gyp = "/usr/local/lib/node_modules/node-gyp/bin/node-gyp.js"
+  # Add additional Python-related configurations
+  npm_config_build_from_source = "true"
+  PYTHON_PATH = "/usr/bin/python3"
 
 [functions]
   node_bundler = "esbuild"
