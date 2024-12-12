@@ -2,6 +2,7 @@ import { PaymentSteps } from '../payment/PaymentSteps'
 import { VehicleForm } from '../VehicleForm'
 import { LocationDetailsPanel } from './LocationDetailsPanel'
 import { Location } from '@/types/location'
+import { TowingProvider } from '@/contexts/TowingContext'
 
 interface ServiceDetailsPanelProps {
   pickupLocation: Location | null
@@ -29,16 +30,18 @@ export const ServiceDetailsPanel = ({
   return (
     <>
       <PaymentSteps currentStep={0} steps={steps} />
-      <VehicleForm
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-        pickupAddress={pickupAddress}
-        dropAddress={dropAddress}
-        onPickupSelect={onPickupSelect}
-        onDropSelect={onDropSelect}
-        onSelectingPickup={onSelectingPickup}
-        onSelectingDrop={onSelectingDrop}
-      />
+      <TowingProvider>
+        <VehicleForm
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+          pickupAddress={pickupAddress}
+          dropAddress={dropAddress}
+          onPickupSelect={onPickupSelect}
+          onDropSelect={onDropSelect}
+          onSelectingPickup={onSelectingPickup}
+          onSelectingDrop={onSelectingDrop}
+        />
+      </TowingProvider>
       <LocationDetailsPanel
         pickupLocation={pickupLocation}
         dropLocation={dropLocation}
