@@ -36,7 +36,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['lmdb', 'node-gyp', 'esbuild'],
+    exclude: ['lmdb', 'node-gyp'],
     include: ['react', 'react-dom'],
   },
   define: {
