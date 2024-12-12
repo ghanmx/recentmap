@@ -25,7 +25,6 @@
   npm_config_python = "/usr/bin/python3"
   npm_config_node_gyp = "/usr/local/lib/node_modules/node-gyp/bin/node-gyp.js"
   npm_config_build_from_source = "true"
-  PYTHON_PATH = "/usr/bin/python3"
   npm_config_python_install_dir = "/usr/local"
   npm_config_legacy_peer_deps = "true"
   npm_config_ignore_scripts = "false"
