@@ -83,15 +83,15 @@ export default {
           '100%': { transform: 'translateX(100%)' },
         },
         shine: {
-          '0%': { backgroundPosition: '0% 50%' },
-          '100%': { backgroundPosition: '100% 50%' },
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' }
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'shimmer': 'shimmer 2s infinite',
-        'shine': 'shine 5s ease-in-out infinite alternate',
+        'shine': 'shine 6s linear infinite',
       },
       textShadow: {
         sm: '0 1px 2px var(--tw-shadow-color)',
@@ -105,7 +105,7 @@ export default {
     require('tailwindcss-animate'),
     require('@tailwindcss/typography'),
     require('@tailwindcss/aspect-ratio'),
-    function({ addUtilities }) {
+    function ({ addUtilities }) {
       const newUtilities = {
         '.text-shadow': {
           'text-shadow': '0 2px 4px rgba(0, 0, 0, 0.3)',
