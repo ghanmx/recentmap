@@ -33,7 +33,9 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lmdb', 'node-gyp'],
-    include: ['react', 'react-dom'],
+    esbuildOptions: {
+      target: 'esnext',
+    },
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
