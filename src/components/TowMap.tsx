@@ -5,7 +5,7 @@ import { MapContainerComponent } from './map/MapContainer'
 import { MapControlPanel } from '@/features/map/components/MapControlPanel'
 import { useToast } from '@/hooks/use-toast'
 import { detectTollsOnRoute } from '@/utils/tollCalculator'
-import { useTowing, TowingProvider } from '@/contexts/towing/TowingContext'
+import { useTowing } from '@/contexts/towing/TowingContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FloatingQuestionsPanel } from './FloatingQuestionsPanel'
 import { useMapState } from '@/features/map/hooks/useMapState'
@@ -14,7 +14,7 @@ import { getAddressFromCoords } from '@/services/geocodingService'
 import { MapLoadingOverlay } from './map/MapLoadingOverlay'
 import { LocationSelectionHint } from './map/LocationSelectionHint'
 
-const TowMapContent = () => {
+const TowMap = () => {
   const mapRef = useRef<Map | null>(null)
   const { toast } = useToast()
   const { updateTollInfo } = useTowing()
@@ -144,14 +144,6 @@ const TowMapContent = () => {
         isSelectingDrop={selectingDrop}
       />
     </motion.div>
-  )
-}
-
-const TowMap = () => {
-  return (
-    <TowingProvider>
-      <TowMapContent />
-    </TowingProvider>
   )
 }
 
