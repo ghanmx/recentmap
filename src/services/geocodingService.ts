@@ -39,7 +39,10 @@ export const searchAddresses = async (
   }
 
   console.log('Geocoding search params:', Object.fromEntries(params.entries()))
-  const url = `${FALLBACK_GEOCODING_URL}/search?${params}`
+  
+  // Remove any trailing slashes and ensure proper URL construction
+  const baseUrl = FALLBACK_GEOCODING_URL.replace(/\/+$/, '')
+  const url = `${baseUrl}/search?${params}`
   
   try {
     const results = await tryFetchWithProxies(url)
@@ -80,7 +83,10 @@ export const getAddressFromCoords = async (lat: number, lon: number): Promise<st
 
   try {
     console.log('Reverse geocoding request:', { lat, lon })
-    const url = `${FALLBACK_GEOCODING_URL}/reverse?${params}`
+    // Remove any trailing slashes and ensure proper URL construction
+    const baseUrl = FALLBACK_GEOCODING_URL.replace(/\/+$/, '')
+    const url = `${baseUrl}/reverse?${params}`
+    
     const result = await tryFetchWithProxies(url)
     console.log('Reverse geocoding result:', result)
     return result?.display_name || 'Address not found'
