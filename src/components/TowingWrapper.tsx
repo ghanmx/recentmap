@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { useTowing } from '@/contexts/TowingContext'
+import { useTowing } from '@/contexts/towing/TowingContext'
 
 interface TowingWrapperProps {
   children: ReactNode
