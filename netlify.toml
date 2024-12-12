@@ -32,6 +32,8 @@
   # Add additional Python-related configurations
   npm_config_build_from_source = "true"
   PYTHON_PATH = "/usr/bin/python3"
+  # Add Python installation directory
+  npm_config_python_install_dir = "/usr/local"
 
 [functions]
   node_bundler = "esbuild"
