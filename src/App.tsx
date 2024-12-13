@@ -5,13 +5,15 @@ import { UserPage } from '@/components/UserPage'
 import { AdminPanel } from '@/components/admin/AdminPanel'
 import { Layout } from '@/components/layout/Layout'
 import { TowingProvider } from '@/contexts/towing/TowingContext'
+import Landing from '@/pages/Landing'
 
 function App() {
   return (
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<MapPage />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/map" element={<MapPage />} />
           <Route 
             path="/user" 
             element={
