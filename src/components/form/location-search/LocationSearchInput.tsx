@@ -2,13 +2,16 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 
-interface LocationSearchInputProps {
+export interface LocationSearchInputProps {
   value: string
   onChange: (value: string) => void
   onFocus?: () => void
   placeholder?: string
   className?: string
   icon?: React.ReactNode
+  isSearching?: boolean
+  error?: string | null
+  onSearchClick?: () => Promise<void> | undefined
 }
 
 export const LocationSearchInput = ({
@@ -18,6 +21,9 @@ export const LocationSearchInput = ({
   placeholder = 'Buscar ubicación...',
   className,
   icon,
+  isSearching,
+  error,
+  onSearchClick,
 }: LocationSearchInputProps) => {
   return (
     <motion.div

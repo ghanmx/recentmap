@@ -4,7 +4,7 @@ export interface FloatingPanelProps {
   children: ReactNode
   className?: string
   position?: 'left' | 'right'
-  title?: string
+  title?: ReactNode | string
 }
 
 export interface FloatingPanelHeaderProps {

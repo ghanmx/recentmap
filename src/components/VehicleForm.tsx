@@ -6,8 +6,29 @@ import { VehicleFormHeader } from './form/VehicleFormHeader'
 import { VehicleFormActions } from './form/VehicleFormActions'
 import { LocationSelector } from './form/LocationSelector'
 import { ServiceRequirements } from './form/ServiceRequirements'
+import { Location } from '@/types/location'
 
-export const VehicleForm = () => {
+interface VehicleFormProps {
+  pickupLocation: Location | null
+  dropLocation: Location | null
+  pickupAddress: string
+  dropAddress: string
+  onPickupSelect: (location: Location) => void
+  onDropSelect: (location: Location) => void
+  onSelectingPickup: () => void
+  onSelectingDrop: () => void
+}
+
+export const VehicleForm = ({
+  pickupLocation,
+  dropLocation,
+  pickupAddress,
+  dropAddress,
+  onPickupSelect,
+  onDropSelect,
+  onSelectingPickup,
+  onSelectingDrop,
+}: VehicleFormProps) => {
   const [formData, setFormData] = useState({
     vehicleMake: '',
     vehicleModel: '',
@@ -45,7 +66,10 @@ export const VehicleForm = () => {
             whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.2 }}
           >
-            <VehicleFormFields formData={formData} onChange={handleChange} />
+            <VehicleFormFields 
+              values={formData}
+              onChange={handleChange}
+            />
           </motion.div>
 
           <motion.div
@@ -54,7 +78,16 @@ export const VehicleForm = () => {
             whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.2 }}
           >
-            <LocationSelector formData={formData} onChange={handleChange} />
+            <LocationSelector 
+              pickupLocation={pickupLocation}
+              dropLocation={dropLocation}
+              pickupAddress={pickupAddress}
+              dropAddress={dropAddress}
+              onPickupSelect={onPickupSelect}
+              onDropSelect={onDropSelect}
+              onSelectingPickup={onSelectingPickup}
+              onSelectingDrop={onSelectingDrop}
+            />
           </motion.div>
 
           <motion.div
@@ -63,7 +96,10 @@ export const VehicleForm = () => {
             whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.2 }}
           >
-            <ServiceRequirements formData={formData} onChange={handleChange} />
+            <ServiceRequirements 
+              values={formData}
+              onChange={handleChange}
+            />
           </motion.div>
         </Accordion>
 
