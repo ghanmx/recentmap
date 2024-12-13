@@ -1,14 +1,10 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Accordion } from '@/components/ui/accordion'
-import { VehicleFormFields } from './form/VehicleFormFields'
-import { VehicleFormHeader } from './form/VehicleFormHeader'
-import { VehicleFormActions } from './form/VehicleFormActions'
-import { LocationSelector } from './form/LocationSelector'
-import { ServiceRequirements } from './form/ServiceRequirements'
+import { useForm } from 'react-hook-form'
+import { Button } from '@/components/ui/button'
 import { Location } from '@/types/location'
-import { useForm, FormProvider } from 'react-hook-form'
 import { FormData } from '@/types/form'
+import { VehicleFormFields } from './form/VehicleFormFields'
+import { useToast } from '@/hooks/use-toast'
 
 interface VehicleFormProps {
   pickupLocation: Location | null
@@ -31,105 +27,72 @@ export const VehicleForm = ({
   onSelectingPickup,
   onSelectingDrop,
 }: VehicleFormProps) => {
-  const form = useForm<FormData>()
-  const [formData, setFormData] = useState({
-    vehicleMake: '',
-    vehicleModel: '',
-    vehicleYear: '',
-    vehicleColor: '',
-    truckType: 'A',
-    requiresManeuver: false,
-    issueDescription: '',
-    pickupLocation: null,
-    dropoffLocation: null,
+  const [isPending, setIsPending] = useState(false)
+  const { toast } = useToast()
+  const form = useForm<FormData>({
+    defaultValues: {
+      vehicleMake: '',
+      vehicleModel: '',
+      vehicleYear: '',
+      vehicleColor: '',
+      truckType: 'A',
+      requiresManeuver: false,
+      issueDescription: '',
+      pickupLocation: null,
+      dropoffLocation: null,
+    },
   })
 
-  const handleChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     try {
+      setIsPending(true)
       // Handle form submission
+      const formData = form.getValues()
       console.log('Form submitted:', formData)
+      
+      toast({
+        title: 'Formulario enviado',
+        description: 'Los datos han sido procesados correctamente',
+      })
+      
       return Promise.resolve()
     } catch (error) {
       console.error('Error submitting form:', error)
+      
+      toast({
+        title: 'Error',
+        description: 'Hubo un error al procesar el formulario',
+        variant: 'destructive',
+      })
+      
       return Promise.reject(error)
+    } finally {
+      setIsPending(false)
     }
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative z-10"
-    >
-      <FormProvider {...form}>
-        <div className="p-8 bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] 
-          border border-white/20 hover:shadow-[0_8px_40px_rgb(0,0,0,0.16)] transition-all duration-500">
-          <VehicleFormHeader />
-          
-          <Accordion
-            type="single"
-            collapsible
-            className="space-y-4 mt-6"
-          >
-            <motion.div
-              className="space-y-6 backdrop-blur-sm bg-gradient-to-br from-white/40 via-white/30 to-blue-50/30 
-                p-6 rounded-xl border border-white/40 shadow-inner"
-              whileHover={{ scale: 1.01 }}
-              transition={{ duration: 0.2 }}
-            >
-              <VehicleFormFields 
-                form={form}
-                formData={formData}
-                onChange={handleChange}
-              />
-            </motion.div>
-
-            <motion.div
-              className="space-y-6 backdrop-blur-sm bg-gradient-to-br from-white/40 via-white/30 to-blue-50/30 
-                p-6 rounded-xl border border-white/40 shadow-inner"
-              whileHover={{ scale: 1.01 }}
-              transition={{ duration: 0.2 }}
-            >
-              <LocationSelector 
-                form={form}
-                pickupLocation={pickupLocation}
-                dropLocation={dropLocation}
-                pickupAddress={pickupAddress}
-                dropAddress={dropAddress}
-                onPickupSelect={onPickupSelect}
-                onDropSelect={onDropSelect}
-                onSelectingPickup={onSelectingPickup}
-                onSelectingDrop={onSelectingDrop}
-              />
-            </motion.div>
-
-            <motion.div
-              className="space-y-6 backdrop-blur-sm bg-gradient-to-br from-white/40 via-white/30 to-blue-50/30 
-                p-6 rounded-xl border border-white/40 shadow-inner"
-              whileHover={{ scale: 1.01 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ServiceRequirements 
-                form={form}
-                formData={formData}
-                onChange={handleChange}
-              />
-            </motion.div>
-          </Accordion>
-
-          <VehicleFormActions 
-            onDownload={() => console.log('Download')}
-            onCopy={() => console.log('Copy')}
-            onSubmit={handleSubmit}
-            isPending={false}
-            formData={JSON.stringify(formData)}
-          />
-        </div>
-      </FormProvider>
-    </motion.div>
+    <div className="w-full max-w-2xl mx-auto space-y-8">
+      <VehicleFormFields
+        form={form}
+        pickupLocation={pickupLocation}
+        dropLocation={dropLocation}
+        pickupAddress={pickupAddress}
+        dropAddress={dropAddress}
+        onPickupSelect={onPickupSelect}
+        onDropSelect={onDropSelect}
+        onSelectingPickup={onSelectingPickup}
+        onSelectingDrop={onSelectingDrop}
+      />
+      
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isPending}
+        onClick={() => handleSubmit()}
+      >
+        {isPending ? 'Procesando...' : 'Enviar'}
+      </Button>
+    </div>
   )
 }

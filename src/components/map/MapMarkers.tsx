@@ -6,7 +6,7 @@ import { COMPANY_LOCATION } from '@/services/routeService'
 import { Marker, Popup } from 'react-leaflet'
 import { Location } from '@/types/location'
 import { useToast } from '@/hooks/use-toast'
-import { TowingProvider } from '@/contexts/towing/TowingContext'
+import { TowingProvider } from '@/contexts/TowingContext'
 
 interface MapMarkersProps {
   pickupLocation: Location | null
