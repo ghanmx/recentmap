@@ -1,55 +1,51 @@
 import { UseFormReturn } from 'react-hook-form'
 import { FormData } from '@/types/form'
-import { Card } from '@/components/ui/card'
-import { motion } from 'framer-motion'
-import { UserInfoFields } from './UserInfoFields'
-import { VehicleBasicFields } from './VehicleBasicFields'
-import { ManeuverField } from './ManeuverField'
-import { TowTruckSelector } from './TowTruckSelector'
+import { VehicleDetails } from './VehicleDetails'
 
 interface VehicleFormFieldsProps {
   form: UseFormReturn<FormData>
-  onVehicleModelChange: (value: string) => void
-  onTruckTypeChange: (value: 'A' | 'B' | 'C' | 'D') => void
+  formData: {
+    vehicleMake: string
+    vehicleModel: string
+    vehicleYear: string
+    vehicleColor: string
+    truckType: string
+    requiresManeuver: boolean
+    issueDescription: string
+    pickupLocation: null | any
+    dropoffLocation: null | any
+  }
+  onChange: (field: string, value: any) => void
+  onVehicleModelChange?: (value: string) => void
 }
 
 export const VehicleFormFields = ({
   form,
+  formData,
+  onChange,
   onVehicleModelChange,
-  onTruckTypeChange,
 }: VehicleFormFieldsProps) => {
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        <Card className="p-6 bg-gradient-to-br from-white/95 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
-          <div className="space-y-6">
-            <UserInfoFields form={form} />
-            <VehicleBasicFields
-              form={form}
-              onVehicleModelChange={onVehicleModelChange}
-            />
-            <ManeuverField form={form} />
-          </div>
-        </Card>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-      >
-        <Card className="p-6 bg-gradient-to-br from-white/95 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
-          <TowTruckSelector
-            form={form}
-            selectedModel={form.watch('vehicleModel')}
-            onTruckTypeChange={onTruckTypeChange}
-          />
-        </Card>
-      </motion.div>
-    </>
+    <div className="space-y-6">
+      <VehicleDetails
+        onBrandChange={(brand) => {
+          form.setValue('vehicleMake', brand)
+          onChange('vehicleMake', brand)
+        }}
+        onModelChange={(model) => {
+          form.setValue('vehicleModel', model)
+          onChange('vehicleModel', model)
+          onVehicleModelChange?.(model)
+        }}
+        onYearChange={(year) => {
+          form.setValue('vehicleYear', year)
+          onChange('vehicleYear', year)
+        }}
+        onColorChange={(color) => {
+          form.setValue('vehicleColor', color)
+          onChange('vehicleColor', color)
+        }}
+      />
+    </div>
   )
 }

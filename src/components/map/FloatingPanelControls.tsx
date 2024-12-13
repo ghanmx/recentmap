@@ -3,10 +3,25 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTowing } from '@/contexts/TowingContext'
-import { towTruckTypes } from '@/utils/pricing' // Updated import path
+import { towTruckTypes } from '@/utils/pricing'
 import { FloatingPanelHeader } from './FloatingPanelHeader'
 import { CostDetailsContent } from './CostDetailsContent'
-import { FloatingPanelControlsProps } from './types/floating-panel'
+import { ReactNode } from 'react'
+
+export interface FloatingPanelControlsProps {
+  isCollapsed: boolean
+  isMaximized: boolean
+  isDragging: boolean
+  onCollapse: () => void
+  onMaximize: () => void
+  onClose: () => void
+  title?: ReactNode
+  className?: string
+  onSave?: () => void
+  onCancel?: () => void
+  onDetailsToggle?: () => void
+  children?: ReactNode
+}
 
 export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
   isCollapsed,
@@ -20,6 +35,7 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
   onSave,
   onCancel,
   onDetailsToggle,
+  children,
 }) => {
   const [showCostDetails, setShowCostDetails] = useState(false)
   const {
@@ -71,6 +87,7 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
           />
         )}
       </AnimatePresence>
+      {children}
       <div className="flex justify-end space-x-2 mt-4">
         {onCancel && (
           <Button variant="outline" onClick={onCancel}>

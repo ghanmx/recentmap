@@ -9,11 +9,6 @@ export interface LocationSearchInputProps {
   placeholder?: string
   className?: string
   icon?: ReactNode
-  searchQuery?: string
-  isSearching?: boolean
-  error?: string | null
-  onSearchClick?: () => Promise<void> | undefined
-  onSearchChange?: (value: string) => void
 }
 
 export const LocationSearchInput = ({
@@ -23,11 +18,6 @@ export const LocationSearchInput = ({
   placeholder = 'Buscar ubicación...',
   className,
   icon,
-  searchQuery,
-  isSearching,
-  error,
-  onSearchClick,
-  onSearchChange,
 }: LocationSearchInputProps) => {
   return (
     <div className={cn("relative", className)}>
@@ -38,16 +28,16 @@ export const LocationSearchInput = ({
         onFocus={onFocus}
         placeholder={placeholder}
         className={cn(
-          "w-full p-2 border rounded-md",
-          {
-            "border-red-500": error,
-            "border-gray-300": !error,
-          }
+          "w-full p-2 pl-8 border rounded-md",
+          "border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary",
+          "bg-white/80 backdrop-blur-sm"
         )}
       />
-      {icon && <div className="absolute left-2 top-1/2 transform -translate-y-1/2">{icon}</div>}
-      {isSearching && <div className="absolute right-2 top-1/2 transform -translate-y-1/2">Loading...</div>}
-      {error && <div className="text-red-500 text-sm">{error}</div>}
+      {icon && (
+        <div className="absolute left-2 top-1/2 transform -translate-y-1/2">
+          {icon}
+        </div>
+      )}
     </div>
   )
 }

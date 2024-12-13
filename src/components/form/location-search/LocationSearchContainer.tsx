@@ -109,16 +109,14 @@ export const LocationSearchContainer = ({
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`space-y-2 ${className}`}
+      className={cn("space-y-2", className)}
     >
       <div className="flex gap-2">
         <div className="relative flex-1">
           <LocationSearchInput
-            searchQuery={searchQuery}
-            isSearching={isSearching}
-            error={error}
-            onSearchChange={setSearchQuery}
-            onSearchClick={() => handleSearch(searchQuery)}
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onFocus={() => onSelectingLocation?.()}
             placeholder={placeholder}
             icon={icon}
           />
