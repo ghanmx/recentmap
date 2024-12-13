@@ -40,7 +40,6 @@ export const searchAddresses = async (
 
   console.log('Geocoding search params:', Object.fromEntries(params.entries()))
   
-  // Remove any trailing slashes and ensure proper URL construction
   const baseUrl = FALLBACK_GEOCODING_URL.replace(/\/+$/, '')
   const url = `${baseUrl}/search?${params}`
   
@@ -75,20 +74,22 @@ export const searchAddresses = async (
 }
 
 export const getAddressFromCoords = async (lat: number, lon: number): Promise<string> => {
-  // Ensure lat and lon are valid numbers and convert to fixed precision strings
-  const validLat = Number(lat).toFixed(6)
-  const validLon = Number(lon).toFixed(6)
+  // Ensure coordinates are valid numbers and convert to fixed precision strings
+  const validLat = Number(parseFloat(lat.toString()).toFixed(6))
+  const validLon = Number(parseFloat(lon.toString()).toFixed(6))
+
+  if (isNaN(validLat) || isNaN(validLon)) {
+    throw new Error('Invalid coordinates provided')
+  }
 
   const params = new URLSearchParams()
   params.append('format', 'json')
-  params.append('lat', validLat)
-  params.append('lon', validLon)
+  params.append('lat', validLat.toString())
+  params.append('lon', validLon.toString())
 
   try {
     console.log('Reverse geocoding request:', { lat: validLat, lon: validLon })
-    // Remove any trailing slashes and ensure proper URL construction
     const baseUrl = FALLBACK_GEOCODING_URL.replace(/\/+$/, '')
-    // Construct the URL without encoding it (the proxy function will handle that)
     const url = `${baseUrl}/reverse?${params.toString()}`
     
     const result = await tryFetchWithProxies(url)
