@@ -7,7 +7,7 @@ import { VehicleFormActions } from './form/VehicleFormActions'
 import { LocationSelector } from './form/LocationSelector'
 import { ServiceRequirements } from './form/ServiceRequirements'
 import { Location } from '@/types/location'
-import { useForm } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { FormData } from '@/types/form'
 
 interface VehicleFormProps {
@@ -48,9 +48,10 @@ export const VehicleForm = ({
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Handle form submission
     console.log('Form submitted:', formData)
+    return Promise.resolve()
   }
 
   return (
@@ -59,69 +60,71 @@ export const VehicleForm = ({
       animate={{ opacity: 1, y: 0 }}
       className="relative z-10"
     >
-      <div className="p-8 bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] 
-        border border-white/20 hover:shadow-[0_8px_40px_rgb(0,0,0,0.16)] transition-all duration-500">
-        <VehicleFormHeader />
-        
-        <Accordion
-          type="single"
-          collapsible
-          className="space-y-4 mt-6"
-        >
-          <motion.div
-            className="space-y-6 backdrop-blur-sm bg-gradient-to-br from-white/40 via-white/30 to-blue-50/30 
-              p-6 rounded-xl border border-white/40 shadow-inner"
-            whileHover={{ scale: 1.01 }}
-            transition={{ duration: 0.2 }}
+      <FormProvider {...form}>
+        <div className="p-8 bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] 
+          border border-white/20 hover:shadow-[0_8px_40px_rgb(0,0,0,0.16)] transition-all duration-500">
+          <VehicleFormHeader />
+          
+          <Accordion
+            type="single"
+            collapsible
+            className="space-y-4 mt-6"
           >
-            <VehicleFormFields 
-              form={form}
-              formData={formData}
-              onChange={handleChange}
-            />
-          </motion.div>
+            <motion.div
+              className="space-y-6 backdrop-blur-sm bg-gradient-to-br from-white/40 via-white/30 to-blue-50/30 
+                p-6 rounded-xl border border-white/40 shadow-inner"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
+            >
+              <VehicleFormFields 
+                form={form}
+                formData={formData}
+                onChange={handleChange}
+              />
+            </motion.div>
 
-          <motion.div
-            className="space-y-6 backdrop-blur-sm bg-gradient-to-br from-white/40 via-white/30 to-blue-50/30 
-              p-6 rounded-xl border border-white/40 shadow-inner"
-            whileHover={{ scale: 1.01 }}
-            transition={{ duration: 0.2 }}
-          >
-            <LocationSelector 
-              form={form}
-              pickupLocation={pickupLocation}
-              dropLocation={dropLocation}
-              pickupAddress={pickupAddress}
-              dropAddress={dropAddress}
-              onPickupSelect={onPickupSelect}
-              onDropSelect={onDropSelect}
-              onSelectingPickup={onSelectingPickup}
-              onSelectingDrop={onSelectingDrop}
-            />
-          </motion.div>
+            <motion.div
+              className="space-y-6 backdrop-blur-sm bg-gradient-to-br from-white/40 via-white/30 to-blue-50/30 
+                p-6 rounded-xl border border-white/40 shadow-inner"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
+            >
+              <LocationSelector 
+                form={form}
+                pickupLocation={pickupLocation}
+                dropLocation={dropLocation}
+                pickupAddress={pickupAddress}
+                dropAddress={dropAddress}
+                onPickupSelect={onPickupSelect}
+                onDropSelect={onDropSelect}
+                onSelectingPickup={onSelectingPickup}
+                onSelectingDrop={onSelectingDrop}
+              />
+            </motion.div>
 
-          <motion.div
-            className="space-y-6 backdrop-blur-sm bg-gradient-to-br from-white/40 via-white/30 to-blue-50/30 
-              p-6 rounded-xl border border-white/40 shadow-inner"
-            whileHover={{ scale: 1.01 }}
-            transition={{ duration: 0.2 }}
-          >
-            <ServiceRequirements 
-              form={form}
-              formData={formData}
-              onChange={handleChange}
-            />
-          </motion.div>
-        </Accordion>
+            <motion.div
+              className="space-y-6 backdrop-blur-sm bg-gradient-to-br from-white/40 via-white/30 to-blue-50/30 
+                p-6 rounded-xl border border-white/40 shadow-inner"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ServiceRequirements 
+                form={form}
+                formData={formData}
+                onChange={handleChange}
+              />
+            </motion.div>
+          </Accordion>
 
-        <VehicleFormActions 
-          onDownload={() => console.log('Download')}
-          onCopy={() => console.log('Copy')}
-          onSubmit={handleSubmit}
-          isPending={false}
-          formData={JSON.stringify(formData)}
-        />
-      </div>
+          <VehicleFormActions 
+            onDownload={() => console.log('Download')}
+            onCopy={() => console.log('Copy')}
+            onSubmit={handleSubmit}
+            isPending={false}
+            formData={JSON.stringify(formData)}
+          />
+        </div>
+      </FormProvider>
     </motion.div>
   )
 }
