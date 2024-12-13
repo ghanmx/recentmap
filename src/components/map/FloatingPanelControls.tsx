@@ -1,46 +1,23 @@
-import React, { useState } from 'react'
+import { ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useTowing } from '@/contexts/TowingContext'
-import { towTruckTypes } from '@/utils/pricing' // Updated import path
-import { FloatingPanelHeader } from './FloatingPanelHeader'
-import { CostDetailsContent } from './CostDetailsContent'
+import { motion } from 'framer-motion'
 import { FloatingPanelControlsProps } from './types/floating-panel'
 
-export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
-  isCollapsed,
-  isMaximized,
-  isDragging,
-  onCollapse,
-  onMaximize,
-  onClose,
+export const FloatingPanelControls = ({
+  isCollapsed = false,
+  isMaximized = false,
+  isDragging = false,
+  onCollapse = () => {},
+  onMaximize = () => {},
+  onClose = () => {},
   title,
   className,
   onSave,
   onCancel,
   onDetailsToggle,
-}) => {
-  const [showCostDetails, setShowCostDetails] = useState(false)
-  const {
-    totalDistance,
-    truckType,
-    requiresManeuver,
-    totalTollCost,
-    detectedTolls,
-  } = useTowing()
-
-  const selectedTruck = towTruckTypes[truckType || 'A']
-  const baseCost = totalDistance * selectedTruck.perKm
-  const flagDropFee = selectedTruck.flagDropFee
-  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
-  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
-
-  const handleDetailsToggle = () => {
-    setShowCostDetails((prev) => !prev)
-    onDetailsToggle?.()
-  }
-
+  children,
+}: FloatingPanelControlsProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -48,42 +25,40 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
       exit={{ opacity: 0, y: -10 }}
       className={cn('p-4 border-t bg-white shadow rounded-lg', className)}
     >
-      <FloatingPanelHeader
-        title={title}
-        isCollapsed={isCollapsed}
-        isMaximized={isMaximized}
-        onCollapse={onCollapse}
-        onMaximize={onMaximize}
-        onClose={onClose}
-        onDetailsToggle={handleDetailsToggle}
-      />
-      <AnimatePresence>
-        {showCostDetails && (
-          <CostDetailsContent
-            baseCost={baseCost}
-            flagDropFee={flagDropFee}
-            maneuverCost={maneuverCost}
-            totalTollCost={totalTollCost}
-            subtotal={subtotal}
-            detectedTolls={detectedTolls}
-            totalDistance={totalDistance}
-            requiresManeuver={requiresManeuver}
-          />
-        )}
-      </AnimatePresence>
-      <div className="flex justify-end space-x-2 mt-4">
-        {onCancel && (
-          <Button variant="outline" onClick={onCancel}>
-            Cancel
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-2">
+          {title}
+        </div>
+        <div className="flex items-center space-x-2">
+          {onDetailsToggle && (
+            <Button variant="ghost" size="sm" onClick={onDetailsToggle}>
+              Details
+            </Button>
+          )}
+          <Button variant="ghost" size="sm" onClick={onCollapse}>
+            {isCollapsed ? 'Expand' : 'Collapse'}
           </Button>
-        )}
-        {onSave && <Button onClick={onSave}>Save</Button>}
-        <Button variant="ghost" onClick={onClose}>
-          Close
-        </Button>
+          <Button variant="ghost" size="sm" onClick={onMaximize}>
+            {isMaximized ? 'Restore' : 'Maximize'}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            Close
+          </Button>
+        </div>
       </div>
+      {children}
+      {(onSave || onCancel) && (
+        <div className="flex justify-end space-x-2 mt-4">
+          {onCancel && (
+            <Button variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+          )}
+          {onSave && (
+            <Button onClick={onSave}>Save</Button>
+          )}
+        </div>
+      )}
     </motion.div>
   )
 }
-
-export default FloatingPanelControls

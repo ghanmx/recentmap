@@ -3,9 +3,7 @@ import { CORS_PROXIES, DEFAULT_TIMEOUT } from './proxyConfig'
 export const tryFetchWithProxies = async (url: string, retryCount = 3) => {
   let lastError: Error | null = null
   
-  // Try each proxy in sequence
   for (const proxyUrl of CORS_PROXIES) {
-    // Properly encode the URL for the proxy
     const encodedUrl = encodeURIComponent(url)
     const proxiedUrl = `${proxyUrl}${encodedUrl}`
     console.log('Attempting proxy:', proxyUrl, 'with URL:', url)

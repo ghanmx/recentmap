@@ -6,6 +6,7 @@ import { COMPANY_LOCATION } from '@/services/routeService'
 import { Marker, Popup } from 'react-leaflet'
 import { Location } from '@/types/location'
 import { useToast } from '@/hooks/use-toast'
+import { TowingProvider } from '@/contexts/TowingContext'
 
 interface MapMarkersProps {
   pickupLocation: Location | null
@@ -50,22 +51,15 @@ export const MapMarkers = ({
     })
   }
 
-  const handleMapLocationSelect = (location: { lat: number; lng: number }) => {
-    onLocationSelect(location)
-  }
-
   return (
     <>
       <MapLocationHandler
-        onLocationSelect={handleMapLocationSelect}
+        onLocationSelect={onLocationSelect}
         selectingPickup={selectingPickup}
         selectingDrop={selectingDrop}
       />
 
-      <Marker
-        position={[COMPANY_LOCATION.lat, COMPANY_LOCATION.lng]}
-        icon={enterpriseIcon}
-      >
+      <Marker position={[COMPANY_LOCATION.lat, COMPANY_LOCATION.lng]} icon={enterpriseIcon}>
         <Popup className="rounded-lg shadow-lg">
           <div className="font-semibold">Empresa de Grúas</div>
           <div className="text-sm text-gray-600">Ubicación Principal</div>
@@ -93,11 +87,13 @@ export const MapMarkers = ({
       )}
 
       {pickupLocation && dropLocation && (
-        <RoutePolyline
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          onRouteCalculated={onRouteCalculated}
-        />
+        <TowingProvider>
+          <RoutePolyline
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            onRouteCalculated={onRouteCalculated}
+          />
+        </TowingProvider>
       )}
     </>
   )

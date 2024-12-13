@@ -15,12 +15,26 @@ export interface ServiceRequirementsProps {
   form: UseFormReturn<FormData>
   requiresManeuver?: boolean
   onManeuverChange?: (checked: boolean) => void
+  formData: {
+    vehicleMake: string
+    vehicleModel: string
+    vehicleYear: string
+    vehicleColor: string
+    truckType: string
+    requiresManeuver: boolean
+    issueDescription: string
+    pickupLocation: null | any
+    dropoffLocation: null | any
+  }
+  onChange: (field: string, value: any) => void
 }
 
 export const ServiceRequirements = ({
   form,
   requiresManeuver,
   onManeuverChange,
+  formData,
+  onChange,
 }: ServiceRequirementsProps) => {
   return (
     <motion.div

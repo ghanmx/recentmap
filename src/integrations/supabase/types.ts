@@ -89,6 +89,39 @@ export type Database = {
         }
         Relationships: []
       }
+      toll_points: {
+        Row: {
+          cost: number
+          created_at: string
+          end_lat: number
+          end_lng: number
+          id: string
+          name: string
+          start_lat: number
+          start_lng: number
+        }
+        Insert: {
+          cost: number
+          created_at?: string
+          end_lat: number
+          end_lng: number
+          id?: string
+          name: string
+          start_lat: number
+          start_lng: number
+        }
+        Update: {
+          cost?: number
+          created_at?: string
+          end_lat?: number
+          end_lng?: number
+          id?: string
+          name?: string
+          start_lat?: number
+          start_lng?: number
+        }
+        Relationships: []
+      }
       vehicle_requests: {
         Row: {
           admin_notified: boolean | null

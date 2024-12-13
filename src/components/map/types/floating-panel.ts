@@ -1,37 +1,20 @@
 import { ReactNode } from 'react'
 
 export interface FloatingPanelProps {
-  children: ReactNode
-  className?: string
-  position?: 'left' | 'right'
-  title?: string
-}
-
-export interface FloatingPanelHeaderProps {
-  title: string
-  isCollapsed: boolean
-  isMaximized: boolean
+  isCollapsed?: boolean
+  isMaximized?: boolean
   isDragging?: boolean
-  onCollapse: () => void
-  onMaximize: () => void
-  onClose: () => void
-  onDetailsToggle?: () => void
-}
-
-export interface FloatingPanelContentProps {
-  children: ReactNode
-}
-
-export interface FloatingPanelControlsProps {
-  isCollapsed: boolean
-  isMaximized: boolean
-  isDragging: boolean
-  onCollapse: () => void
-  onMaximize: () => void
-  onClose: () => void
-  title: string
-  onDetailsToggle?: () => void
+  onCollapse?: () => void
+  onMaximize?: () => void
+  onClose?: () => void
+  title?: ReactNode
   className?: string
+  children?: ReactNode
+}
+
+export interface FloatingPanelControlsProps extends FloatingPanelProps {
   onSave?: () => void
   onCancel?: () => void
+  onDetailsToggle?: () => void
+  children?: ReactNode
 }

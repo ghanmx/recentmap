@@ -1,29 +1,44 @@
 import { ReactNode } from 'react'
+import { motion } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
 interface FloatingPanelProps {
-  title: ReactNode
   children: ReactNode
-  position?: 'left' | 'right'
   className?: string
+  withGrid?: boolean
+  title?: ReactNode
+  position?: 'left' | 'right'
 }
 
 export const FloatingPanel = ({
-  title,
   children,
+  className,
+  withGrid = true,
+  title,
   position = 'left',
-  className = '',
 }: FloatingPanelProps) => {
-  const positionClasses = {
-    left: 'left-4',
-    right: 'right-4',
-  }
-
   return (
-    <div
-      className={`fixed ${positionClasses[position]} bottom-4 p-4 rounded-lg ${className}`}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      className={cn(
+        'fixed bottom-0 left-0 right-0 z-50',
+        'bg-gradient-to-t from-white/95 to-white/80',
+        'backdrop-blur-xl shadow-[0_-8px_30px_rgb(0,0,0,0.12)]',
+        'border-t border-white/20',
+        'rounded-t-[2rem] overflow-hidden',
+        'transition-all duration-500 ease-in-out',
+        className
+      )}
     >
-      <div className="font-semibold mb-4">{title}</div>
-      {children}
-    </div>
+      {withGrid && (
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none" />
+      )}
+      <div className="relative z-10">
+        {title && <div className="p-4 border-b border-gray-100">{title}</div>}
+        {children}
+      </div>
+    </motion.div>
   )
 }

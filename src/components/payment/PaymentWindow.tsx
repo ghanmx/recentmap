@@ -5,6 +5,11 @@ import { Lock, ShieldCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/utils/priceCalculator'
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
+
+// Initialize Stripe outside of component to avoid recreating the Stripe object
+const stripePromise = loadStripe('pk_test_51Kmzu5Huhx2WCwdMfDhPkRWGwdER3XFkbCmvOYMtKoI5h15QuU7R0QnkgjkFK3gMLoYXuRxKQrqv6fMatPWQFUEx00YLH32VSn')
 
 export interface PaymentWindowProps {
   isOpen: boolean
@@ -70,13 +75,15 @@ const PaymentWindow = ({
               <span>{format(new Date(), 'dd/MM/yyyy')}</span>
             </div>
 
-            <PaymentForm
-              subtotal={subtotal}
-              tax={tax}
-              requiresInvoice={requiresInvoice}
-              onCardChange={(complete: boolean) => setCardComplete(complete)}
-              finalTotal={finalTotal}
-            />
+            <Elements stripe={stripePromise}>
+              <PaymentForm
+                subtotal={subtotal}
+                tax={tax}
+                requiresInvoice={requiresInvoice}
+                onCardChange={(complete: boolean) => setCardComplete(complete)}
+                finalTotal={finalTotal}
+              />
+            </Elements>
 
             <div className="flex justify-end gap-3 mt-6">
               <button
