@@ -49,9 +49,14 @@ export const VehicleForm = ({
   }
 
   const handleSubmit = async () => {
-    // Handle form submission
-    console.log('Form submitted:', formData)
-    return Promise.resolve()
+    try {
+      // Handle form submission
+      console.log('Form submitted:', formData)
+      return Promise.resolve()
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      return Promise.reject(error)
+    }
   }
 
   return (
