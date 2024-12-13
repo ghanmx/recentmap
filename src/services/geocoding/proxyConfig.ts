@@ -7,7 +7,7 @@ export const CORS_PROXIES = [
 ]
 
 export const FALLBACK_GEOCODING_URL = 'https://nominatim.openstreetmap.org'
-export const DEFAULT_TIMEOUT = 8000
+export const DEFAULT_TIMEOUT = 15000 // Increased timeout to 15 seconds
 export const DEFAULT_RETRY_COUNT = 3
 export const DEFAULT_COUNTRY_CODE = 'MX'
 export const DEFAULT_SEARCH_LIMIT = 5

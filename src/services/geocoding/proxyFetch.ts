@@ -11,7 +11,13 @@ export const tryFetchWithProxies = async (url: string, retryCount = 3) => {
     for (let attempt = 0; attempt < retryCount; attempt++) {
       try {
         const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT)
+        const timeoutId = setTimeout(() => {
+          try {
+            controller.abort()
+          } catch (e) {
+            console.warn('Error aborting controller:', e)
+          }
+        }, DEFAULT_TIMEOUT)
 
         const response = await fetch(proxiedUrl, {
           signal: controller.signal,
@@ -19,9 +25,9 @@ export const tryFetchWithProxies = async (url: string, retryCount = 3) => {
             'Accept': 'application/json',
             'User-Agent': 'TowingServiceApplication/1.0',
           }
+        }).finally(() => {
+          clearTimeout(timeoutId)
         })
-
-        clearTimeout(timeoutId)
 
         if (!response.ok) {
           const errorText = await response.text()
@@ -37,6 +43,7 @@ export const tryFetchWithProxies = async (url: string, retryCount = 3) => {
         lastError = error as Error
         
         if (attempt < retryCount - 1) {
+          // Exponential backoff between retries
           await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
         }
       }
