@@ -48,6 +48,11 @@ export const VehicleForm = ({
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
+  const handleSubmit = () => {
+    // Handle form submission
+    console.log('Form submitted:', formData)
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -109,7 +114,13 @@ export const VehicleForm = ({
           </motion.div>
         </Accordion>
 
-        <VehicleFormActions formData={formData} />
+        <VehicleFormActions 
+          onDownload={() => console.log('Download')}
+          onCopy={() => console.log('Copy')}
+          onSubmit={handleSubmit}
+          isPending={false}
+          formData={JSON.stringify(formData)}
+        />
       </div>
     </motion.div>
   )
