@@ -101,6 +101,7 @@ export const VehicleForm = ({
             transition={{ duration: 0.2 }}
           >
             <ServiceRequirements 
+              form={form}
               formData={formData}
               onChange={handleChange}
             />

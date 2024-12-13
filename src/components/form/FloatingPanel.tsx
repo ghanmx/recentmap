@@ -6,12 +6,16 @@ interface FloatingPanelProps {
   children: ReactNode
   className?: string
   withGrid?: boolean
+  title?: ReactNode
+  position?: 'left' | 'right'
 }
 
 export const FloatingPanel = ({
   children,
   className,
   withGrid = true,
+  title,
+  position = 'left',
 }: FloatingPanelProps) => {
   return (
     <motion.div
@@ -32,6 +36,7 @@ export const FloatingPanel = ({
         <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none" />
       )}
       <div className="relative z-10">
+        {title && <div className="p-4 border-b border-gray-100">{title}</div>}
         {children}
       </div>
     </motion.div>

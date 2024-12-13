@@ -7,12 +7,16 @@ export interface FloatingPanelProps {
   title?: ReactNode
 }
 
-export interface FloatingPanelHeaderProps {
-  title?: ReactNode
+export interface FloatingPanelControlsProps {
   isCollapsed: boolean
   isMaximized: boolean
   isDragging: boolean
   onCollapse: () => void
   onMaximize: () => void
   onClose: () => void
+  title?: ReactNode
+  className?: string
+  onSave?: () => void
+  onCancel?: () => void
+  onDetailsToggle?: () => void
 }
