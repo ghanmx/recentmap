@@ -7,6 +7,7 @@ import { searchAddresses } from '@/services/geocodingService'
 import { calculateDistance } from '@/utils/distanceUtils'
 import { COMPANY_LOCATION } from '@/utils/priceCalculator'
 import { useToast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
 import debounce from 'lodash/debounce'
 import { motion, AnimatePresence } from 'framer-motion'
 

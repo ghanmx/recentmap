@@ -6,22 +6,7 @@ import { useTowing } from '@/contexts/TowingContext'
 import { towTruckTypes } from '@/utils/pricing'
 import { FloatingPanelHeader } from './FloatingPanelHeader'
 import { CostDetailsContent } from './CostDetailsContent'
-import { ReactNode } from 'react'
-
-export interface FloatingPanelControlsProps {
-  isCollapsed: boolean
-  isMaximized: boolean
-  isDragging: boolean
-  onCollapse: () => void
-  onMaximize: () => void
-  onClose: () => void
-  title?: ReactNode
-  className?: string
-  onSave?: () => void
-  onCancel?: () => void
-  onDetailsToggle?: () => void
-  children?: ReactNode
-}
+import { FloatingPanelControlsProps } from './types/floating-panel'
 
 export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
   isCollapsed,
