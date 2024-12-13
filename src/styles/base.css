@@ -3,47 +3,40 @@
 @tailwind utilities;
 
 @layer base {
+
   :root {
-    --background: 228 12% 95%;
-    /* Soft gray for background */
-    --foreground: 220 14% 16%;
-    /* Darker blue-gray for text */
-    --card: 228 14% 92%;
-    /* Light gray for cards */
-    --card-foreground: 220 14% 16%;
-    /* Same as foreground for text on cards */
-    --popover: 228 14% 92%;
-    /* Matches card colors */
-    --popover-foreground: 220 14% 16%;
+    --background: 228 16% 95%;
+    /* Slightly brighter gray for better contrast */
+    --foreground: 220 14% 12%;
+    /* Darker, richer tone for text */
+    --card: 228 15% 92%;
+    /* Light gray with subtle warmth */
+    --card-foreground: 220 12% 18%;
+    /* Slightly softer text on cards */
+    --popover: 228 15% 92%;
+    --popover-foreground: 220 12% 18%;
     --primary: 217 100% 62%;
-    /* Vibrant chrome-style blue */
+    /* Vibrant chrome blue */
     --primary-dark: 217 90% 45%;
-    /* Slightly darker blue for deeper accents */
     --primary-foreground: 220 12% 96%;
-    /* Light shade for primary elements */
-    --secondary: 220 15% 80%;
-    /* Muted light gray for secondary surfaces */
+    --secondary: 220 10% 82%;
+    /* More muted secondary surfaces */
     --secondary-foreground: 220 14% 16%;
-    /* Darker blue-gray */
-    --muted: 228 10% 85%;
-    /* Muted lighter gray */
-    --muted-foreground: 220 14% 40%;
-    /* Medium gray for "muted" text */
-    --accent: 220 12% 88%;
-    /* Accent surfaces with a metallic gray */
+    --muted: 228 10% 87%;
+    /* Slightly brighter muted gray */
+    --muted-foreground: 220 12% 40%;
+    --accent: 220 15% 90%;
+    /* Brightened accent tone */
     --accent-foreground: 217 100% 62%;
-    /* Pair with vibrant blue for accents */
-    --destructive: 0 84.2% 60.2%;
-    /* Retain red for destructive elements */
+    --destructive: 0 70% 58%;
+    /* More vivid red for destructive elements */
     --destructive-foreground: 220 12% 96%;
-    --border: 228 10% 80%;
-    /* Light but noticeable gray for borders */
-    --input: 228 10% 85%;
-    /* Matches muted surfaces */
+    --border: 228 10% 82%;
+    /* Noticeable but subtle border */
+    --input: 228 10% 87%;
     --ring: 217 100% 62%;
-    /* Chrome blue for focus rings */
-    --radius: 0.5rem;
-    /* Keep consistent border-radius */
+    --radius: 0.75rem;
+    /* Slightly rounded for modern aesthetics */
     --sat: env(safe-area-inset-top);
     --sar: env(safe-area-inset-right);
     --sab: env(safe-area-inset-bottom);
@@ -51,41 +44,30 @@
   }
 
   .dark {
-    --background: 220 14% 10%;
-    /* Deep gray-blue for dark mode background */
-    --foreground: 220 30% 90%;
-    /* Light text for contrast */
+    --background: 220 14% 8%;
+    /* Richer dark background */
+    --foreground: 220 30% 92%;
+    /* Bright text for readability */
     --card: 220 14% 12%;
-    /* Slightly lighter for cards in dark mode */
-    --card-foreground: 220 30% 90%;
-    /* Matches foreground for readability */
+    --card-foreground: 220 30% 92%;
     --popover: 220 14% 12%;
-    /* Matches card colors for consistency */
-    --popover-foreground: 220 30% 90%;
+    --popover-foreground: 220 30% 92%;
     --primary: 217 100% 65%;
-    /* Vibrant chrome blue, slightly brighter in dark mode */
     --primary-dark: 217 90% 50%;
-    /* Accentuated dark chrome blue */
-    --primary-foreground: 220 10% 95%;
-    /* Soft tint for text on primary elements */
-    --secondary: 220 10% 22%;
-    /* Muted gray for dark surfaces */
-    --secondary-foreground: 220 30% 90%;
-    --muted: 220 10% 15%;
-    /* Dark muted backgrounds */
-    --muted-foreground: 220 15% 65%;
-    /* Softer text tones */
-    --accent: 220 10% 18%;
-    /* Slightly brighter dark tones */
+    --primary-foreground: 220 12% 96%;
+    --secondary: 220 12% 20%;
+    /* Enhanced muted dark surfaces */
+    --secondary-foreground: 220 30% 92%;
+    --muted: 220 12% 15%;
+    /* Slightly lighter for muted backgrounds */
+    --muted-foreground: 220 16% 68%;
+    --accent: 220 12% 20%;
+    /* Brighter accent on dark tones */
     --accent-foreground: 217 100% 65%;
-    /* Chrome gradient blue for accents */
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 220 30% 90%;
-    --border: 220 10% 18%;
-    /* Blends well with dark surfaces */
-    --input: 220 10% 20%;
-    /* Matches overall muted dark tones */
-    --ring: 217 90% 50%;
-    /* Sharp chrome blue for focus rings */
+    --destructive: 0 60% 30%;
+    --destructive-foreground: 220 30% 92%;
+    --border: 220 12% 20%;
+    --input: 220 12% 22%;
+    --ring: 217 100% 60%;
   }
 }

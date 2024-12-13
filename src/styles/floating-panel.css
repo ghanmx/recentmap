@@ -3,7 +3,9 @@
   /* Custom Scrollbar */
   .custom-scrollbar {
     scrollbar-width: thin;
+    /* Standard scrollbar width */
     scrollbar-color: hsl(var(--primary)) hsl(var(--background));
+    /* Scrollbar color */
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -14,46 +16,53 @@
   .custom-scrollbar::-webkit-scrollbar-track {
     background: hsl(var(--background));
     border-radius: 4px;
+    /* Smooth corners */
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-primary/30 rounded-full hover:bg-primary/50 transition-colors;
+    @apply bg-primary/30 rounded-full hover:bg-primary/50 transition-all duration-200 ease-in-out;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary/50 scale-110;
+    @apply bg-primary/50 scale-110 shadow-md;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:active {
-    @apply bg-primary/70 shadow-md;
+    @apply bg-primary/70 shadow-lg scale-125;
   }
 
   /* Glass Card */
   .glass-card {
     @apply bg-white/40 dark:bg-black/20 shadow-xl rounded-lg border border-white/20 dark:border-black/30;
     backdrop-filter: blur(12px);
+    /* Applies glass effect */
     -webkit-backdrop-filter: blur(12px);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   .glass-card:hover {
     @apply shadow-2xl scale-105;
+    /* Elevate on hover */
   }
 
   .glass-card:focus-within {
     @apply ring-2 ring-primary/50;
+    /* Highlight when focused */
   }
 
-  /* Extra Variant: Interactive Glass Button (Optional) */
+  /* Interactive Glass Button */
   .glass-button {
-    @apply bg-white/30 dark:bg-black/30 border border-white/20 dark:border-black/20 text-primary rounded-lg px-4 py-2 font-semibold backdrop-filter blur(8px) transition-colors;
+    @apply bg-white/30 dark:bg-black/30 border border-white/20 dark:border-black/20 text-primary rounded-lg px-4 py-2 font-semibold;
+    @apply backdrop-filter blur(8px) transition-all duration-200 ease-in-out;
   }
 
   .glass-button:hover {
-    @apply bg-white/50 dark:bg-black/40 text-primary/80;
+    @apply bg-white/50 dark:bg-black/40 text-primary/80 shadow-lg;
   }
 
   .glass-button:active {
     @apply bg-white/60 dark:bg-black/50 text-primary/90 ring-2 ring-primary/50;
+    transform: translateY(1px) scale(0.98);
+    /* Adds a subtle press effect */
   }
 }
