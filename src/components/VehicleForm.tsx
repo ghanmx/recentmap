@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Location } from '@/types/location'
 import { FormData } from '@/types/form'
@@ -38,8 +38,16 @@ export const VehicleForm = ({
       truckType: 'A',
       requiresManeuver: false,
       issueDescription: '',
-      pickupLocation: null,
-      dropoffLocation: null,
+      pickupLocation: pickupLocation ? {
+        lat: pickupLocation.lat,
+        lng: pickupLocation.lng,
+        address: pickupLocation.address
+      } : undefined,
+      dropoffLocation: dropLocation ? {
+        lat: dropLocation.lat,
+        lng: dropLocation.lng,
+        address: dropLocation.address
+      } : undefined,
     },
   })
 
@@ -72,27 +80,29 @@ export const VehicleForm = ({
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-8">
-      <VehicleFormFields
-        form={form}
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-        pickupAddress={pickupAddress}
-        dropAddress={dropAddress}
-        onPickupSelect={onPickupSelect}
-        onDropSelect={onDropSelect}
-        onSelectingPickup={onSelectingPickup}
-        onSelectingDrop={onSelectingDrop}
-      />
-      
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={isPending}
-        onClick={() => handleSubmit()}
-      >
-        {isPending ? 'Procesando...' : 'Enviar'}
-      </Button>
-    </div>
+    <FormProvider {...form}>
+      <div className="w-full max-w-2xl mx-auto space-y-8">
+        <VehicleFormFields
+          form={form}
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+          pickupAddress={pickupAddress}
+          dropAddress={dropAddress}
+          onPickupSelect={onPickupSelect}
+          onDropSelect={onDropSelect}
+          onSelectingPickup={onSelectingPickup}
+          onSelectingDrop={onSelectingDrop}
+        />
+        
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isPending}
+          onClick={() => handleSubmit()}
+        >
+          {isPending ? 'Procesando...' : 'Enviar'}
+        </Button>
+      </div>
+    </FormProvider>
   )
 }
