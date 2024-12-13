@@ -1,6 +1,6 @@
-import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
+import { ReactNode } from 'react'
 
 export interface LocationSearchInputProps {
   value: string
@@ -8,10 +8,12 @@ export interface LocationSearchInputProps {
   onFocus?: () => void
   placeholder?: string
   className?: string
-  icon?: React.ReactNode
+  icon?: ReactNode
+  searchQuery?: string
   isSearching?: boolean
   error?: string | null
   onSearchClick?: () => Promise<void> | undefined
+  onSearchChange?: (value: string) => void
 }
 
 export const LocationSearchInput = ({
@@ -21,35 +23,31 @@ export const LocationSearchInput = ({
   placeholder = 'Buscar ubicación...',
   className,
   icon,
+  searchQuery,
   isSearching,
   error,
   onSearchClick,
+  onSearchChange,
 }: LocationSearchInputProps) => {
   return (
-    <motion.div
-      whileHover={{ scale: 1.01 }}
-      className="relative"
-    >
-      <Input
+    <div className={cn("relative", className)}>
+      <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         placeholder={placeholder}
         className={cn(
-          'pl-10 bg-white/80 backdrop-blur-sm',
-          'border-gray-200/80 focus:border-primary/30',
-          'shadow-[0_2px_10px_rgba(0,0,0,0.06)]',
-          'focus:shadow-[0_2px_15px_rgba(0,0,0,0.1)]',
-          'rounded-xl transition-all duration-300',
-          className
+          "w-full p-2 border rounded-md",
+          {
+            "border-red-500": error,
+            "border-gray-300": !error,
+          }
         )}
       />
-      {icon && (
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-          {icon}
-        </div>
-      )}
-    </motion.div>
+      {icon && <div className="absolute left-2 top-1/2 transform -translate-y-1/2">{icon}</div>}
+      {isSearching && <div className="absolute right-2 top-1/2 transform -translate-y-1/2">Loading...</div>}
+      {error && <div className="text-red-500 text-sm">{error}</div>}
+    </div>
   )
 }

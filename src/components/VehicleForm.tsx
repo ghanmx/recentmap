@@ -7,6 +7,8 @@ import { VehicleFormActions } from './form/VehicleFormActions'
 import { LocationSelector } from './form/LocationSelector'
 import { ServiceRequirements } from './form/ServiceRequirements'
 import { Location } from '@/types/location'
+import { useForm } from 'react-hook-form'
+import { FormData } from '@/types/form'
 
 interface VehicleFormProps {
   pickupLocation: Location | null
@@ -29,6 +31,7 @@ export const VehicleForm = ({
   onSelectingPickup,
   onSelectingDrop,
 }: VehicleFormProps) => {
+  const form = useForm<FormData>()
   const [formData, setFormData] = useState({
     vehicleMake: '',
     vehicleModel: '',
@@ -67,7 +70,7 @@ export const VehicleForm = ({
             transition={{ duration: 0.2 }}
           >
             <VehicleFormFields 
-              values={formData}
+              formData={formData}
               onChange={handleChange}
             />
           </motion.div>
@@ -79,6 +82,7 @@ export const VehicleForm = ({
             transition={{ duration: 0.2 }}
           >
             <LocationSelector 
+              form={form}
               pickupLocation={pickupLocation}
               dropLocation={dropLocation}
               pickupAddress={pickupAddress}
@@ -97,7 +101,7 @@ export const VehicleForm = ({
             transition={{ duration: 0.2 }}
           >
             <ServiceRequirements 
-              values={formData}
+              formData={formData}
               onChange={handleChange}
             />
           </motion.div>

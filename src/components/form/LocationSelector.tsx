@@ -10,6 +10,7 @@ import { LocationSearch } from './location-search'
 import { MapPin, Navigation } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useEffect } from 'react'
+import { Location } from '@/types/location'
 
 export interface LocationSelectorProps {
   form: UseFormReturn<FormData>
