@@ -17,5 +17,5 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_RECENTMAP_2023 }}
-          projectId: recentmap-2023
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MRGRUAS }}
+          projectId: mrgruas
