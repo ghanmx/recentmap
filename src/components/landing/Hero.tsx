@@ -36,7 +36,7 @@ export const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-gray-600 to-blue-500 animate-gradient-text">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-gray-100 to-blue-500 animate-gradient-text">
               Servicio de Grúas Profesional
             </span>
           </motion.h1>
