@@ -18,15 +18,9 @@ export const RoutePolyline = ({
   dropLocation,
   onRouteCalculated,
 }: RoutePolylineProps) => {
-  const [companyToPickupRoute, setCompanyToPickupRoute] = useState<
-    [number, number][]
-  >([])
-  const [pickupToDropRoute, setPickupToDropRoute] = useState<
-    [number, number][]
-  >([])
-  const [dropToCompanyRoute, setDropToCompanyRoute] = useState<
-    [number, number][]
-  >([])
+  const [companyToPickupRoute, setCompanyToPickupRoute] = useState<[number, number][]>([])
+  const [pickupToDropRoute, setPickupToDropRoute] = useState<[number, number][]>([])
+  const [dropToCompanyRoute, setDropToCompanyRoute] = useState<[number, number][]>([])
   const { updateTowingInfo } = useTowing()
   const { toast } = useToast()
 
@@ -34,51 +28,49 @@ export const RoutePolyline = ({
     const fetchRoutes = async () => {
       if (pickupLocation && dropLocation) {
         try {
+          console.log('Calculating routes for complete journey...')
+          
           // Calculate route from company to pickup
-          const companyToPickup = await getRouteDetails(
-            COMPANY_LOCATION,
-            pickupLocation,
-          )
-          setCompanyToPickupRoute(
-            decode(companyToPickup.geometry).map(([lat, lng]) => [lat, lng]),
-          )
+          const companyToPickup = await getRouteDetails(COMPANY_LOCATION, pickupLocation)
+          setCompanyToPickupRoute(decode(companyToPickup.geometry).map(([lat, lng]) => [lat, lng]))
+          console.log('Company to pickup distance:', companyToPickup.distance)
 
           // Calculate route from pickup to drop
-          const pickupToDrop = await getRouteDetails(
-            pickupLocation,
-            dropLocation,
-          )
-          setPickupToDropRoute(
-            decode(pickupToDrop.geometry).map(([lat, lng]) => [lat, lng]),
-          )
+          const pickupToDrop = await getRouteDetails(pickupLocation, dropLocation)
+          setPickupToDropRoute(decode(pickupToDrop.geometry).map(([lat, lng]) => [lat, lng]))
+          console.log('Pickup to drop distance:', pickupToDrop.distance)
 
           // Calculate route from drop back to company
-          const dropToCompany = await getRouteDetails(
-            dropLocation,
-            COMPANY_LOCATION,
-          )
-          setDropToCompanyRoute(
-            decode(dropToCompany.geometry).map(([lat, lng]) => [lat, lng]),
-          )
+          const dropToCompany = await getRouteDetails(dropLocation, COMPANY_LOCATION)
+          setDropToCompanyRoute(decode(dropToCompany.geometry).map(([lat, lng]) => [lat, lng]))
+          console.log('Drop to company distance:', dropToCompany.distance)
 
-          // Calculate total distance including return to company
-          const totalDistance =
+          // Calculate total distance for complete journey
+          const totalDistance = (
             companyToPickup.distance +
             pickupToDrop.distance +
             dropToCompany.distance
+          )
+
+          console.log('Total journey distance:', totalDistance)
 
           // Update global towing context with total distance
           updateTowingInfo(totalDistance)
           onRouteCalculated?.(totalDistance)
+
+          // Show route notification with complete journey details
           showRouteNotification(totalDistance)
+
+          toast({
+            title: 'Ruta calculada',
+            description: `Distancia total del viaje: ${totalDistance.toFixed(2)}km`,
+            className: 'bg-green-50 border-green-200 text-green-800',
+          })
         } catch (error) {
           console.error('Error calculating routes:', error)
           toast({
             title: 'Error al calcular la ruta',
-            description:
-              error instanceof Error
-                ? error.message
-                : 'Por favor, intente nuevamente en unos segundos',
+            description: error instanceof Error ? error.message : 'Por favor, intente nuevamente',
             variant: 'destructive',
           })
         }
