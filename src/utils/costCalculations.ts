@@ -38,12 +38,32 @@ export const calculateServiceCosts = (
     D: 885.84,
   }
 
+  // Calculate base cost using total round-trip distance
   const baseCost = totalDistance * baseRate
   const maneuverCost = requiresManeuver ? maneuverCostRates[truckType] : 0
   const flagDropFee = flagDropFeeRates[truckType]
+
+  // Calculate subtotal including all components
   const subtotal = baseCost + maneuverCost + flagDropFee + totalTollCost
+  
+  // Calculate tax if invoice is required
   const tax = requiresInvoice ? subtotal * 0.16 : 0
+  
+  // Calculate final total
   const finalTotal = subtotal + tax
+
+  console.log('Cost calculation details:', {
+    totalDistance,
+    truckType,
+    baseRate,
+    baseCost,
+    maneuverCost,
+    flagDropFee,
+    tollCost: totalTollCost,
+    subtotal,
+    tax,
+    finalTotal,
+  })
 
   return {
     baseCost,
