@@ -16,7 +16,7 @@ interface MapControlPanelProps {
   pickupAddress?: string
   dropAddress?: string
   isLoading?: boolean
-  className?: string // Added className prop
+  className?: string
 }
 
 export const MapControlPanel = ({
@@ -46,14 +46,14 @@ export const MapControlPanel = ({
   }
 
   return (
-    <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-3 sm:px-4">
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-3 sm:px-4">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className="w-full"
       >
-        <Card className="relative w-full bg-white/90 backdrop-blur-xl shadow-lg rounded-lg p-4 border-2 border-primary/20 hover:border-primary/30 transition-all duration-300 ring-4 ring-primary/5">
+        <Card className="relative w-full bg-white/95 backdrop-blur-xl shadow-lg rounded-lg p-3 sm:p-4 border-2 border-primary/20 hover:border-primary/30 transition-all duration-300">
           {isLoading && (
             <motion.div
               initial={{ opacity: 0 }}
