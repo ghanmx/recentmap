@@ -2,6 +2,9 @@ import { createContext, useContext, useReducer, ReactNode } from 'react'
 import { TowingContextType, LocationInfo } from './types'
 import { towingReducer } from './towingReducer'
 import { useToast } from '@/hooks/use-toast'
+import { calculateServiceCosts } from '@/utils/costCalculations'
+import { COMPANY_LOCATION } from '@/utils/priceCalculator'
+import { calculateDistance } from '@/utils/distanceUtils'
 
 const initialState = {
   totalDistance: 0,
@@ -29,8 +32,39 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(towingReducer, initialState)
   const { toast } = useToast()
 
+  const calculateTotalDistance = (pickup: LocationInfo['pickup'], drop: LocationInfo['drop']) => {
+    if (!pickup || !drop) return 0
+
+    // Calculate distances for complete journey
+    const companyToPickup = calculateDistance(COMPANY_LOCATION, pickup)
+    const pickupToDrop = calculateDistance(pickup, drop)
+    const dropToCompany = calculateDistance(drop, COMPANY_LOCATION)
+
+    // Total round trip distance
+    return companyToPickup + pickupToDrop + dropToCompany
+  }
+
   const updateTowingInfo = (distance: number) => {
-    dispatch({ type: 'UPDATE_DISTANCE', payload: distance })
+    const costs = calculateServiceCosts(
+      distance,
+      state.truckType,
+      state.requiresManeuver,
+      state.totalTollCost,
+      false // requiresInvoice default to false
+    )
+
+    dispatch({ 
+      type: 'UPDATE_DISTANCE_AND_COSTS', 
+      payload: { 
+        distance,
+        costs
+      }
+    })
+
+    toast({
+      title: "Costo actualizado",
+      description: `Distancia total: ${distance.toFixed(2)}km`,
+    })
   }
 
   const updateTollInfo = (tolls: any[], tollCost: number) => {
@@ -52,6 +86,11 @@ export const TowingProvider = ({ children }: { children: ReactNode }) => {
   const updateLocationInfo = async (info: LocationInfo) => {
     dispatch({ type: 'SET_LOADING_LOCATIONS', payload: true })
     try {
+      if (info.pickup && info.drop) {
+        const totalDistance = calculateTotalDistance(info.pickup, info.drop)
+        updateTowingInfo(totalDistance)
+      }
+
       if (info.pickup) {
         toast({
           title: 'Ubicación de Recogida Actualizada',

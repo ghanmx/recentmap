@@ -32,7 +32,17 @@ export interface TowingState {
   isProcessingPayment: boolean
 }
 
-export interface TowingActions {
+export type TowingAction =
+  | { type: 'UPDATE_DISTANCE'; payload: number }
+  | { type: 'UPDATE_DISTANCE_AND_COSTS'; payload: { distance: number; costs: { subtotal: number; tax: number; finalTotal: number } } }
+  | { type: 'UPDATE_TOLL_INFO'; payload: { tolls: TollLocation[]; tollCost: number } }
+  | { type: 'UPDATE_TRUCK_TYPE'; payload: 'A' | 'B' | 'C' | 'D' }
+  | { type: 'UPDATE_MANEUVER'; payload: boolean }
+  | { type: 'UPDATE_VEHICLE_MODEL'; payload: string }
+  | { type: 'SET_LOADING_LOCATIONS'; payload: boolean }
+  | { type: 'SET_PROCESSING_PAYMENT'; payload: boolean }
+
+export interface TowingContextType extends TowingState {
   updateTowingInfo: (distance: number) => void
   updateTollInfo: (tolls: TollLocation[], tollCost: number) => void
   updateTruckType: (type: 'A' | 'B' | 'C' | 'D') => void
@@ -42,5 +52,3 @@ export interface TowingActions {
   processPayment: (amount: number) => Promise<boolean>
   setLoadingLocations: (loading: boolean) => void
 }
-
-export interface TowingContextType extends TowingState, TowingActions {}
