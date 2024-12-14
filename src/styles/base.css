@@ -2,72 +2,117 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ======================================= */
+/* BASE LAYER                              */
+/* Define CSS variables for theming        */
+/* ======================================= */
+
 @layer base {
 
+  /* Global theme variables (Light Theme) */
   :root {
+    /* Backgrounds */
     --background: 228 16% 95%;
-    /* Slightly brighter gray for better contrast */
+    /* Slightly brighter gray for contrast */
     --foreground: 220 14% 12%;
-    /* Darker, richer tone for text */
+    /* Darker tone for text */
     --card: 228 15% 92%;
-    /* Light gray with subtle warmth */
+    /* Light gray with warmth */
     --card-foreground: 220 12% 18%;
-    /* Slightly softer text on cards */
+    /* Softer text on cards */
     --popover: 228 15% 92%;
     --popover-foreground: 220 12% 18%;
+
+    /* Primary Colors */
     --primary: 217 100% 62%;
     /* Vibrant chrome blue */
     --primary-dark: 217 90% 45%;
+    /* Darker variant of primary */
     --primary-foreground: 220 12% 96%;
+    /* Text on primary surfaces */
+
+    /* Secondary Colors */
     --secondary: 220 10% 82%;
-    /* More muted secondary surfaces */
+    /* Muted secondary surface */
     --secondary-foreground: 220 14% 16%;
+
+    /* Muted Colors */
     --muted: 228 10% 87%;
-    /* Slightly brighter muted gray */
+    /* Brighter muted gray */
     --muted-foreground: 220 12% 40%;
+
+    /* Accent Colors */
     --accent: 220 15% 90%;
-    /* Brightened accent tone */
+    /* Brightened accent */
     --accent-foreground: 217 100% 62%;
+
+    /* Destructive Colors */
     --destructive: 0 70% 58%;
-    /* More vivid red for destructive elements */
+    /* Vivid red for destructive elements */
     --destructive-foreground: 220 12% 96%;
+
+    /* Borders and Inputs */
     --border: 228 10% 82%;
-    /* Noticeable but subtle border */
+    /* Noticeable border tone */
     --input: 228 10% 87%;
+
+    /* Rings and Radius */
     --ring: 217 100% 62%;
+    /* Focus ring color */
     --radius: 0.75rem;
-    /* Slightly rounded for modern aesthetics */
+    /* Slightly rounded corners */
+
+    /* Safe Area Insets */
     --sat: env(safe-area-inset-top);
     --sar: env(safe-area-inset-right);
     --sab: env(safe-area-inset-bottom);
     --sal: env(safe-area-inset-left);
   }
 
+  /* Dark Theme Variables */
   .dark {
+    /* Backgrounds */
     --background: 220 14% 8%;
-    /* Richer dark background */
+    /* Rich dark background */
     --foreground: 220 30% 92%;
     /* Bright text for readability */
     --card: 220 14% 12%;
     --card-foreground: 220 30% 92%;
     --popover: 220 14% 12%;
     --popover-foreground: 220 30% 92%;
+
+    /* Primary Colors */
     --primary: 217 100% 65%;
+    /* Slightly lighter chrome blue */
     --primary-dark: 217 90% 50%;
     --primary-foreground: 220 12% 96%;
+
+    /* Secondary Colors */
     --secondary: 220 12% 20%;
     /* Enhanced muted dark surfaces */
     --secondary-foreground: 220 30% 92%;
+
+    /* Muted Colors */
     --muted: 220 12% 15%;
-    /* Slightly lighter for muted backgrounds */
+    /* Lighter muted background */
     --muted-foreground: 220 16% 68%;
+
+    /* Accent Colors */
     --accent: 220 12% 20%;
-    /* Brighter accent on dark tones */
+    /* Brighter accent */
     --accent-foreground: 217 100% 65%;
+
+    /* Destructive Colors */
     --destructive: 0 60% 30%;
+    /* Softer red for dark theme */
     --destructive-foreground: 220 30% 92%;
+
+    /* Borders and Inputs */
     --border: 220 12% 20%;
+    /* Dark border tone */
     --input: 220 12% 22%;
+
+    /* Rings */
     --ring: 217 100% 60%;
   }
 }

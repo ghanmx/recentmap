@@ -1424,6 +1424,15 @@ function App() {
 export default App
 
 
+// C:\Users\israe\Documents\GitHub\recentmap\src\firebase.js
+// Actualiza el firebaseConfig con los nuevos datos
+const firebaseConfig = {
+    // ... tus otras configuraciones
+    projectId: "mrgruas",
+};
+
+
+
 // C:\Users\israe\Documents\GitHub\recentmap\src\main.tsx
 import React from 'react'
 import ReactDOM from 'react-dom/client'
@@ -1512,12 +1521,12 @@ import { useState } from 'react'
 import { FloatingPanel } from './form/FloatingPanel'
 import { Button } from './ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useTowing } from '@/contexts/towing/TowingContext'
+import { useTowing } from '../contexts/TowingContext'
 import PaymentWindow from './payment/PaymentWindow'
-import { Location } from '@/types/location'
+import { Location } from '../types/location'
 import { NotificationBadge } from './notifications/NotificationBadge'
-import { useToast } from '@/hooks/use-toast'
-import { calculateServiceCosts } from '@/utils/costCalculations'
+import { useToast } from '../hooks/use-toast'
+import { calculateServiceCosts } from '../utils/costCalculations'
 import { FloatingQuestionsPanelContent } from './panels/FloatingQuestionsPanelContent'
 
 interface FloatingQuestionsPanelProps {
@@ -1658,6 +1667,7 @@ export const FloatingQuestionsPanel = ({
     </>
   )
 }
+
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\index.ts
@@ -2283,14 +2293,14 @@ import { Progress } from '@/components/ui/progress'
 import { Car, MapPin, User, Truck } from 'lucide-react'
 
 interface VehicleFormProps {
-  pickupLocation: Location | null
-  dropLocation: Location | null
-  pickupAddress: string
-  dropAddress: string
-  onPickupSelect: (location: Location) => void
-  onDropSelect: (location: Location) => void
-  onSelectingPickup: () => void
-  onSelectingDrop: () => void
+  pickupLocation: Location | null;
+  dropLocation: Location | null;
+  pickupAddress: string;
+  dropAddress: string;
+  onPickupSelect: (location: Location) => void;
+  onDropSelect: (location: Location) => void;
+  onSelectingPickup: () => void;
+  onSelectingDrop: () => void;
 }
 
 export const VehicleForm = ({
@@ -2312,13 +2322,12 @@ export const VehicleForm = ({
   const methods = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      userName: '',
-      phone: '',
       vehicleMake: '',
       vehicleModel: '',
       vehicleYear: '',
       vehicleColor: '',
       truckType: 'A',
+      requiresManeuver: false,
       issueDescription: '',
     },
   })
@@ -2337,7 +2346,7 @@ export const VehicleForm = ({
     } catch (error) {
       console.error('Error submitting form:', error)
     } finally {
-      setIsPending(false)
+      setIsPending(false);
     }
   })
 
@@ -2368,8 +2377,8 @@ export const VehicleForm = ({
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <Progress 
-              value={progress} 
+            <Progress
+              value={progress}
               className="h-2 bg-[#6873BC]/20"
               // Removed indicatorClassName and using style prop instead
               style={{
@@ -2499,8 +2508,8 @@ export const VehicleForm = ({
         </form>
       </Form>
     </FormProvider>
-  )
-}
+  );
+};
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\admin\AdminMetrics.tsx
@@ -4690,32 +4699,47 @@ export const EnhancedFormHeader = () => {
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\form\FloatingPanel.tsx
 import { ReactNode } from 'react'
+import { motion } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
 interface FloatingPanelProps {
-  title: ReactNode
   children: ReactNode
-  position?: 'left' | 'right'
   className?: string
+  withGrid?: boolean
+  title?: ReactNode
+  position?: 'left' | 'right'
 }
 
 export const FloatingPanel = ({
-  title,
   children,
+  className,
+  withGrid = true,
+  title,
   position = 'left',
-  className = '',
 }: FloatingPanelProps) => {
-  const positionClasses = {
-    left: 'left-4',
-    right: 'right-4',
-  }
-
   return (
-    <div
-      className={`fixed ${positionClasses[position]} bottom-4 p-4 rounded-lg ${className}`}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      className={cn(
+        'fixed bottom-0 left-0 right-0 z-50',
+        'bg-gradient-to-t from-white/95 to-white/80',
+        'backdrop-blur-xl shadow-[0_-8px_30px_rgb(0,0,0,0.12)]',
+        'border-t border-white/20',
+        'rounded-t-[2rem] overflow-hidden',
+        'transition-all duration-500 ease-in-out',
+        className
+      )}
     >
-      <div className="font-semibold mb-4">{title}</div>
-      {children}
-    </div>
+      {withGrid && (
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none" />
+      )}
+      <div className="relative z-10">
+        {title && <div className="p-4 border-b border-gray-100">{title}</div>}
+        {children}
+      </div>
+    </motion.div>
   )
 }
 
@@ -4733,6 +4757,7 @@ import { LocationSearch } from './location-search'
 import { MapPin, Navigation } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useEffect } from 'react'
+import { Location } from '@/types/location'
 
 export interface LocationSelectorProps {
   form: UseFormReturn<FormData>
@@ -4866,6 +4891,7 @@ export const LocationSelector = ({
 }
 
 
+
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\form\ManeuverField.tsx
 import {
   FormField,
@@ -4938,12 +4964,26 @@ export interface ServiceRequirementsProps {
   form: UseFormReturn<FormData>
   requiresManeuver?: boolean
   onManeuverChange?: (checked: boolean) => void
+  formData: {
+    vehicleMake: string
+    vehicleModel: string
+    vehicleYear: string
+    vehicleColor: string
+    truckType: string
+    requiresManeuver: boolean
+    issueDescription: string
+    pickupLocation: null | any
+    dropoffLocation: null | any
+  }
+  onChange: (field: string, value: any) => void
 }
 
 export const ServiceRequirements = ({
   form,
   requiresManeuver,
   onManeuverChange,
+  formData,
+  onChange,
 }: ServiceRequirementsProps) => {
   return (
     <motion.div
@@ -5430,60 +5470,51 @@ Generado automáticamente - ${new Date().toLocaleString()}
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\form\VehicleFormFields.tsx
 import { UseFormReturn } from 'react-hook-form'
 import { FormData } from '@/types/form'
-import { Card } from '@/components/ui/card'
-import { motion } from 'framer-motion'
-import { UserInfoFields } from './UserInfoFields'
-import { VehicleBasicFields } from './VehicleBasicFields'
-import { ManeuverField } from './ManeuverField'
-import { TowTruckSelector } from './TowTruckSelector'
+import { VehicleDetails } from './VehicleDetails'
+import { Location } from '@/types/location'
 
 interface VehicleFormFieldsProps {
   form: UseFormReturn<FormData>
-  onVehicleModelChange: (value: string) => void
-  onTruckTypeChange: (value: 'A' | 'B' | 'C' | 'D') => void
+  pickupLocation: Location | null
+  dropLocation: Location | null
+  pickupAddress: string
+  dropAddress: string
+  onPickupSelect: (location: Location) => void
+  onDropSelect: (location: Location) => void
+  onSelectingPickup: () => void
+  onSelectingDrop: () => void
 }
 
 export const VehicleFormFields = ({
   form,
-  onVehicleModelChange,
-  onTruckTypeChange,
+  pickupLocation,
+  dropLocation,
+  pickupAddress,
+  dropAddress,
+  onPickupSelect,
+  onDropSelect,
+  onSelectingPickup,
+  onSelectingDrop,
 }: VehicleFormFieldsProps) => {
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        <Card className="p-6 bg-gradient-to-br from-white/95 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
-          <div className="space-y-6">
-            <UserInfoFields form={form} />
-            <VehicleBasicFields
-              form={form}
-              onVehicleModelChange={onVehicleModelChange}
-            />
-            <ManeuverField form={form} />
-          </div>
-        </Card>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-      >
-        <Card className="p-6 bg-gradient-to-br from-white/95 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
-          <TowTruckSelector
-            form={form}
-            selectedModel={form.watch('vehicleModel')}
-            onTruckTypeChange={onTruckTypeChange}
-          />
-        </Card>
-      </motion.div>
-    </>
+    <div className="space-y-6">
+      <VehicleDetails
+        onBrandChange={(brand) => {
+          form.setValue('vehicleMake', brand)
+        }}
+        onModelChange={(model) => {
+          form.setValue('vehicleModel', model)
+        }}
+        onYearChange={(year) => {
+          form.setValue('vehicleYear', year)
+        }}
+        onColorChange={(color) => {
+          form.setValue('vehicleColor', color)
+        }}
+      />
+    </div>
   )
 }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\form\VehicleFormHeader.tsx
@@ -5648,6 +5679,7 @@ import { searchAddresses } from '@/services/geocodingService'
 import { calculateDistance } from '@/utils/distanceUtils'
 import { COMPANY_LOCATION } from '@/utils/priceCalculator'
 import { useToast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
 import debounce from 'lodash/debounce'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -5750,16 +5782,14 @@ export const LocationSearchContainer = ({
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`space-y-2 ${className}`}
+      className={cn("space-y-2", className)}
     >
       <div className="flex gap-2">
         <div className="relative flex-1">
           <LocationSearchInput
-            searchQuery={searchQuery}
-            isSearching={isSearching}
-            error={error}
-            onSearchChange={setSearchQuery}
-            onSearchClick={() => handleSearch(searchQuery)}
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onFocus={() => onSelectingLocation?.()}
             placeholder={placeholder}
             icon={icon}
           />
@@ -5787,98 +5817,49 @@ export const LocationSearchContainer = ({
 }
 
 
-// C:\Users\israe\Documents\GitHub\recentmap\src\components\form\location-search\LocationSearchInput.tsx
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Search, Loader2, MapPin } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
 
-interface LocationSearchInputProps {
-  searchQuery: string
-  isSearching: boolean
-  error: string | null
-  onSearchChange: (value: string) => void
-  onSearchClick: () => void
+// C:\Users\israe\Documents\GitHub\recentmap\src\components\form\location-search\LocationSearchInput.tsx
+import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
+import { ReactNode } from 'react'
+
+export interface LocationSearchInputProps {
+  value: string
+  onChange: (value: string) => void
+  onFocus?: () => void
   placeholder?: string
-  icon?: React.ReactNode
+  className?: string
+  icon?: ReactNode
 }
 
 export const LocationSearchInput = ({
-  searchQuery,
-  isSearching,
-  error,
-  onSearchChange,
-  onSearchClick,
-  placeholder = 'Buscar dirección...',
-  icon = <MapPin className="h-4 w-4 text-primary" />,
+  value,
+  onChange,
+  onFocus,
+  placeholder = 'Buscar ubicación...',
+  className,
+  icon,
 }: LocationSearchInputProps) => {
   return (
-    <motion.div
-      className="relative"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="relative flex items-center group">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors group-hover:text-primary/70">
+    <div className={cn("relative", className)}>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={onFocus}
+        placeholder={placeholder}
+        className={cn(
+          "w-full p-2 pl-8 border rounded-md",
+          "border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary",
+          "bg-white/80 backdrop-blur-sm"
+        )}
+      />
+      {icon && (
+        <div className="absolute left-2 top-1/2 transform -translate-y-1/2">
           {icon}
         </div>
-        <Input
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={placeholder}
-          className={`
-            pl-10 pr-10 h-12 bg-white/95 backdrop-blur-sm 
-            border-gray-200 hover:border-primary/50 focus:border-primary
-            focus:ring-2 focus:ring-primary/20 
-            placeholder:text-gray-400 transition-all duration-200
-            ${error ? 'border-red-300 focus:border-red-400 focus:ring-red-200' : ''}
-            ${isSearching ? 'pr-16' : ''}
-          `}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              onSearchClick()
-            }
-          }}
-        />
-        <AnimatePresence>
-          {isSearching ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              <Loader2 className="h-5 w-5 animate-spin text-primary" />
-            </motion.div>
-          ) : (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 hover:bg-primary/10 transition-colors"
-              onClick={onSearchClick}
-              disabled={isSearching || searchQuery.length < 3}
-            >
-              <Search className="h-4 w-4 text-primary" />
-            </Button>
-          )}
-        </AnimatePresence>
-      </div>
-      <AnimatePresence>
-        {error && (
-          <motion.p
-            className="text-sm text-red-500 mt-1 ml-1"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            {error}
-          </motion.p>
-        )}
-      </AnimatePresence>
-    </motion.div>
+      )}
+    </div>
   )
 }
 
@@ -7787,49 +7768,26 @@ export const FloatingPanelContent = ({
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\FloatingPanelControls.tsx
-import React, { useState } from 'react'
+import { ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useTowing } from '@/contexts/TowingContext'
-import { towTruckTypes } from '@/utils/pricing' // Updated import path
-import { FloatingPanelHeader } from './FloatingPanelHeader'
-import { CostDetailsContent } from './CostDetailsContent'
+import { motion } from 'framer-motion'
 import { FloatingPanelControlsProps } from './types/floating-panel'
 
-export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
-  isCollapsed,
-  isMaximized,
-  isDragging,
-  onCollapse,
-  onMaximize,
-  onClose,
+export const FloatingPanelControls = ({
+  isCollapsed = false,
+  isMaximized = false,
+  isDragging = false,
+  onCollapse = () => {},
+  onMaximize = () => {},
+  onClose = () => {},
   title,
   className,
   onSave,
   onCancel,
   onDetailsToggle,
-}) => {
-  const [showCostDetails, setShowCostDetails] = useState(false)
-  const {
-    totalDistance,
-    truckType,
-    requiresManeuver,
-    totalTollCost,
-    detectedTolls,
-  } = useTowing()
-
-  const selectedTruck = towTruckTypes[truckType || 'A']
-  const baseCost = totalDistance * selectedTruck.perKm
-  const flagDropFee = selectedTruck.flagDropFee
-  const maneuverCost = requiresManeuver ? selectedTruck.maneuverCharge : 0
-  const subtotal = baseCost + flagDropFee + maneuverCost + totalTollCost
-
-  const handleDetailsToggle = () => {
-    setShowCostDetails((prev) => !prev)
-    onDetailsToggle?.()
-  }
-
+  children,
+}: FloatingPanelControlsProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -7837,45 +7795,43 @@ export const FloatingPanelControls: React.FC<FloatingPanelControlsProps> = ({
       exit={{ opacity: 0, y: -10 }}
       className={cn('p-4 border-t bg-white shadow rounded-lg', className)}
     >
-      <FloatingPanelHeader
-        title={title}
-        isCollapsed={isCollapsed}
-        isMaximized={isMaximized}
-        onCollapse={onCollapse}
-        onMaximize={onMaximize}
-        onClose={onClose}
-        onDetailsToggle={handleDetailsToggle}
-      />
-      <AnimatePresence>
-        {showCostDetails && (
-          <CostDetailsContent
-            baseCost={baseCost}
-            flagDropFee={flagDropFee}
-            maneuverCost={maneuverCost}
-            totalTollCost={totalTollCost}
-            subtotal={subtotal}
-            detectedTolls={detectedTolls}
-            totalDistance={totalDistance}
-            requiresManeuver={requiresManeuver}
-          />
-        )}
-      </AnimatePresence>
-      <div className="flex justify-end space-x-2 mt-4">
-        {onCancel && (
-          <Button variant="outline" onClick={onCancel}>
-            Cancel
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-2">
+          {title}
+        </div>
+        <div className="flex items-center space-x-2">
+          {onDetailsToggle && (
+            <Button variant="ghost" size="sm" onClick={onDetailsToggle}>
+              Details
+            </Button>
+          )}
+          <Button variant="ghost" size="sm" onClick={onCollapse}>
+            {isCollapsed ? 'Expand' : 'Collapse'}
           </Button>
-        )}
-        {onSave && <Button onClick={onSave}>Save</Button>}
-        <Button variant="ghost" onClick={onClose}>
-          Close
-        </Button>
+          <Button variant="ghost" size="sm" onClick={onMaximize}>
+            {isMaximized ? 'Restore' : 'Maximize'}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            Close
+          </Button>
+        </div>
       </div>
+      {children}
+      {(onSave || onCancel) && (
+        <div className="flex justify-end space-x-2 mt-4">
+          {onCancel && (
+            <Button variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+          )}
+          {onSave && (
+            <Button onClick={onSave}>Save</Button>
+          )}
+        </div>
+      )}
     </motion.div>
   )
 }
-
-export default FloatingPanelControls
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\FloatingPanelDragHandle.tsx
@@ -8363,16 +8319,17 @@ export const MapControls = ({
   onDropClick,
 }: MapControlsProps) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-3">
+    <div className="flex flex-col sm:flex-row gap-3 p-4 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg">
       <Button
         variant="outline"
         size="lg"
         onClick={onPickupClick}
         className={cn(
-          'flex items-center gap-2 transition-all duration-300',
+          'flex items-center gap-2 transition-all duration-500',
+          'bg-gradient-to-r hover:scale-[1.02]',
           selectingPickup
-            ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100'
-            : 'hover:bg-green-50',
+            ? 'from-green-50 to-green-100 border-green-200 text-green-700 shadow-[0_0_15px_rgba(0,255,0,0.1)]'
+            : 'hover:from-green-50 hover:to-white',
         )}
       >
         <MapPin className="h-4 w-4" />
@@ -8384,10 +8341,11 @@ export const MapControls = ({
         size="lg"
         onClick={onDropClick}
         className={cn(
-          'flex items-center gap-2 transition-all duration-300',
+          'flex items-center gap-2 transition-all duration-500',
+          'bg-gradient-to-r hover:scale-[1.02]',
           selectingDrop
-            ? 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
-            : 'hover:bg-blue-50',
+            ? 'from-blue-50 to-blue-100 border-blue-200 text-blue-700 shadow-[0_0_15px_rgba(0,0,255,0.1)]'
+            : 'hover:from-blue-50 hover:to-white',
         )}
       >
         <Navigation className="h-4 w-4" />
@@ -8396,7 +8354,6 @@ export const MapControls = ({
     </div>
   )
 }
-
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\components\map\MapHeader.tsx
@@ -8575,6 +8532,7 @@ import { COMPANY_LOCATION } from '@/services/routeService'
 import { Marker, Popup } from 'react-leaflet'
 import { Location } from '@/types/location'
 import { useToast } from '@/hooks/use-toast'
+import { TowingProvider } from '@/contexts/TowingContext'
 
 interface MapMarkersProps {
   pickupLocation: Location | null
@@ -8619,22 +8577,15 @@ export const MapMarkers = ({
     })
   }
 
-  const handleMapLocationSelect = (location: { lat: number; lng: number }) => {
-    onLocationSelect(location)
-  }
-
   return (
     <>
       <MapLocationHandler
-        onLocationSelect={handleMapLocationSelect}
+        onLocationSelect={onLocationSelect}
         selectingPickup={selectingPickup}
         selectingDrop={selectingDrop}
       />
 
-      <Marker
-        position={[COMPANY_LOCATION.lat, COMPANY_LOCATION.lng]}
-        icon={enterpriseIcon}
-      >
+      <Marker position={[COMPANY_LOCATION.lat, COMPANY_LOCATION.lng]} icon={enterpriseIcon}>
         <Popup className="rounded-lg shadow-lg">
           <div className="font-semibold">Empresa de Grúas</div>
           <div className="text-sm text-gray-600">Ubicación Principal</div>
@@ -8662,11 +8613,13 @@ export const MapMarkers = ({
       )}
 
       {pickupLocation && dropLocation && (
-        <RoutePolyline
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          onRouteCalculated={onRouteCalculated}
-        />
+        <TowingProvider>
+          <RoutePolyline
+            pickupLocation={pickupLocation}
+            dropLocation={dropLocation}
+            onRouteCalculated={onRouteCalculated}
+          />
+        </TowingProvider>
       )}
     </>
   )
@@ -9150,39 +9103,22 @@ export const useMapNotifications = () => {
 import { ReactNode } from 'react'
 
 export interface FloatingPanelProps {
-  children: ReactNode
-  className?: string
-  position?: 'left' | 'right'
-  title?: string
-}
-
-export interface FloatingPanelHeaderProps {
-  title: string
-  isCollapsed: boolean
-  isMaximized: boolean
+  isCollapsed?: boolean
+  isMaximized?: boolean
   isDragging?: boolean
-  onCollapse: () => void
-  onMaximize: () => void
-  onClose: () => void
-  onDetailsToggle?: () => void
-}
-
-export interface FloatingPanelContentProps {
-  children: ReactNode
-}
-
-export interface FloatingPanelControlsProps {
-  isCollapsed: boolean
-  isMaximized: boolean
-  isDragging: boolean
-  onCollapse: () => void
-  onMaximize: () => void
-  onClose: () => void
-  title: string
-  onDetailsToggle?: () => void
+  onCollapse?: () => void
+  onMaximize?: () => void
+  onClose?: () => void
+  title?: ReactNode
   className?: string
+  children?: ReactNode
+}
+
+export interface FloatingPanelControlsProps extends FloatingPanelProps {
   onSave?: () => void
   onCancel?: () => void
+  onDetailsToggle?: () => void
+  children?: ReactNode
 }
 
 
@@ -9822,6 +9758,11 @@ import { Lock, ShieldCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/utils/priceCalculator'
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
+
+// Initialize Stripe outside of component to avoid recreating the Stripe object
+const stripePromise = loadStripe('pk_test_51Kmzu5Huhx2WCwdMfDhPkRWGwdER3XFkbCmvOYMtKoI5h15QuU7R0QnkgjkFK3gMLoYXuRxKQrqv6fMatPWQFUEx00YLH32VSn')
 
 export interface PaymentWindowProps {
   isOpen: boolean
@@ -9887,13 +9828,15 @@ const PaymentWindow = ({
               <span>{format(new Date(), 'dd/MM/yyyy')}</span>
             </div>
 
-            <PaymentForm
-              subtotal={subtotal}
-              tax={tax}
-              requiresInvoice={requiresInvoice}
-              onCardChange={(complete: boolean) => setCardComplete(complete)}
-              finalTotal={finalTotal}
-            />
+            <Elements stripe={stripePromise}>
+              <PaymentForm
+                subtotal={subtotal}
+                tax={tax}
+                requiresInvoice={requiresInvoice}
+                onCardChange={(complete: boolean) => setCardComplete(complete)}
+                finalTotal={finalTotal}
+              />
+            </Elements>
 
             <div className="flex justify-end gap-3 mt-6">
               <button
@@ -18538,6 +18481,39 @@ export type Database = {
         }
         Relationships: []
       }
+      toll_points: {
+        Row: {
+          cost: number
+          created_at: string
+          end_lat: number
+          end_lng: number
+          id: string
+          name: string
+          start_lat: number
+          start_lng: number
+        }
+        Insert: {
+          cost: number
+          created_at?: string
+          end_lat: number
+          end_lng: number
+          id?: string
+          name: string
+          start_lat: number
+          start_lng: number
+        }
+        Update: {
+          cost?: number
+          created_at?: string
+          end_lat?: number
+          end_lng?: number
+          id?: string
+          name?: string
+          start_lat?: number
+          start_lng?: number
+        }
+        Relationships: []
+      }
       vehicle_requests: {
         Row: {
           admin_notified: boolean | null
@@ -19363,7 +19339,6 @@ export const searchAddresses = async (
 
   console.log('Geocoding search params:', Object.fromEntries(params.entries()))
   
-  // Remove any trailing slashes and ensure proper URL construction
   const baseUrl = FALLBACK_GEOCODING_URL.replace(/\/+$/, '')
   const url = `${baseUrl}/search?${params}`
   
@@ -19398,20 +19373,22 @@ export const searchAddresses = async (
 }
 
 export const getAddressFromCoords = async (lat: number, lon: number): Promise<string> => {
-  // Ensure lat and lon are valid numbers and convert to fixed precision strings
-  const validLat = Number(lat).toFixed(6)
-  const validLon = Number(lon).toFixed(6)
+  // Ensure coordinates are valid numbers and convert to fixed precision strings
+  const validLat = Number(parseFloat(lat.toString()).toFixed(6))
+  const validLon = Number(parseFloat(lon.toString()).toFixed(6))
+
+  if (isNaN(validLat) || isNaN(validLon)) {
+    throw new Error('Invalid coordinates provided')
+  }
 
   const params = new URLSearchParams()
   params.append('format', 'json')
-  params.append('lat', validLat)
-  params.append('lon', validLon)
+  params.append('lat', validLat.toString())
+  params.append('lon', validLon.toString())
 
   try {
     console.log('Reverse geocoding request:', { lat: validLat, lon: validLon })
-    // Remove any trailing slashes and ensure proper URL construction
     const baseUrl = FALLBACK_GEOCODING_URL.replace(/\/+$/, '')
-    // Construct the URL without encoding it (the proxy function will handle that)
     const url = `${baseUrl}/reverse?${params.toString()}`
     
     const result = await tryFetchWithProxies(url)
@@ -19735,17 +19712,16 @@ export const exponentialBackoff = (attempt: number) => {
 
 
 // C:\Users\israe\Documents\GitHub\recentmap\src\services\geocoding\proxyConfig.ts
-// Updated CORS proxies list with more reliable options and better order
 export const CORS_PROXIES = [
-  'https://corsproxy.io/?',
-  'https://api.codetabs.com/v1/proxy?quest=',
   'https://api.allorigins.win/raw?url=',
+  'https://api.codetabs.com/v1/proxy?quest=',
+  'https://corsproxy.io/?',
   'https://proxy.cors.sh/',
   'https://cors-anywhere.herokuapp.com/'
 ]
 
 export const FALLBACK_GEOCODING_URL = 'https://nominatim.openstreetmap.org'
-export const DEFAULT_TIMEOUT = 8000 // Reduced timeout to fail faster
+export const DEFAULT_TIMEOUT = 15000 // Increased timeout to 15 seconds
 export const DEFAULT_RETRY_COUNT = 3
 export const DEFAULT_COUNTRY_CODE = 'MX'
 export const DEFAULT_SEARCH_LIMIT = 5
@@ -19764,9 +19740,7 @@ import { CORS_PROXIES, DEFAULT_TIMEOUT } from './proxyConfig'
 export const tryFetchWithProxies = async (url: string, retryCount = 3) => {
   let lastError: Error | null = null
   
-  // Try each proxy in sequence
   for (const proxyUrl of CORS_PROXIES) {
-    // Properly encode the URL for the proxy
     const encodedUrl = encodeURIComponent(url)
     const proxiedUrl = `${proxyUrl}${encodedUrl}`
     console.log('Attempting proxy:', proxyUrl, 'with URL:', url)
@@ -19774,7 +19748,13 @@ export const tryFetchWithProxies = async (url: string, retryCount = 3) => {
     for (let attempt = 0; attempt < retryCount; attempt++) {
       try {
         const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT)
+        const timeoutId = setTimeout(() => {
+          try {
+            controller.abort()
+          } catch (e) {
+            console.warn('Error aborting controller:', e)
+          }
+        }, DEFAULT_TIMEOUT)
 
         const response = await fetch(proxiedUrl, {
           signal: controller.signal,
@@ -19782,9 +19762,9 @@ export const tryFetchWithProxies = async (url: string, retryCount = 3) => {
             'Accept': 'application/json',
             'User-Agent': 'TowingServiceApplication/1.0',
           }
+        }).finally(() => {
+          clearTimeout(timeoutId)
         })
-
-        clearTimeout(timeoutId)
 
         if (!response.ok) {
           const errorText = await response.text()
@@ -19800,6 +19780,7 @@ export const tryFetchWithProxies = async (url: string, retryCount = 3) => {
         lastError = error as Error
         
         if (attempt < retryCount - 1) {
+          // Exponential backoff between retries
           await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
         }
       }
