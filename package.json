@@ -154,7 +154,13 @@
           "allowConstantExport": true
         }
       ]
-    }
+    },
+    "exclude": [
+      "node_modules",
+      "dist",
+      "**/*.d.ts",
+      "src/firebase.js"
+    ]
   },
   "prettier": {
     "singleQuote": true,

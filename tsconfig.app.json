@@ -1,8 +1,32 @@
+/**
+ * This is the TypeScript configuration file for the application. It specifies the compiler options and other settings
+ * used by the TypeScript compiler when building the application.
+ *
+ * The key settings in this file include:
+ * - `target`: The ECMAScript version to target, set to ES2020.
+ * - `useDefineForClassFields`: Enables a specific TypeScript feature for class fields.
+ * - `lib`: The set of library definition files to include, including ES2020, DOM, and DOM.Iterable.
+ * - `module`: The module system to use, set to ESNext.
+ * - `moduleResolution`: The module resolution strategy, set to "bundler" mode.
+ * - `allowImportingTsExtensions`: Allows importing TypeScript files with .ts extension.
+ * - `isolatedModules`: Ensures each file is treated as a separate module.
+ * - `moduleDetection`: Forces the module detection mode.
+ * - `noEmit`: Disables the emission of compiled output files.
+ * - `jsx`: Specifies the JSX emit mode as "react-jsx".
+ * - `strict`: Enables strict type checking.
+ * - `noUnusedLocals`, `noUnusedParameters`, `noImplicitAny`, `noFallthroughCasesInSwitch`: Configures various linting rules.
+ * - `baseUrl` and `paths`: Sets up path mapping for imports using the "@/" prefix.
+ * - `include`: Specifies the files and directories to include in the compilation.
+ */
 {
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     /* Bundler mode */
@@ -20,8 +44,13 @@
     "noFallthroughCasesInSwitch": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["src", "stackbit.config.ts"]
+  "include": [
+    "src",
+    "stackbit.config.ts"
+  ]
 }

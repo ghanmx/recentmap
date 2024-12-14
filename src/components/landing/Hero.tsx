@@ -31,14 +31,31 @@ export const Hero = () => {
         >
           {/* Heading */}
           <motion.h1
-            className="text-4xl sm:text-5xl md:text-7xl font-bold font-heading tracking-tight"
+            className="text-4xl sm:text-5xl md:text-7xl font-bold font-heading tracking-tight relative"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-gray-100 to-blue-500 animate-gradient-text">
+            <motion.span
+              className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-gray-100 to-blue-500 animate-gradient-text"
+              initial={{ textShadow: '0px 0px 10px rgba(0,0,255,0.5)' }}
+              animate={{
+                textShadow: [
+                  '0px 0px 10px rgba(0,0,255,0.5)',
+                  '0px 0px 20px rgba(0,255,255,0.7)',
+                  '0px 0px 10px rgba(0,0,255,0.5)'
+                ],
+                opacity: [1, 0.9, 1],
+                scale: [1, 1.05, 1],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                repeatType: 'mirror',
+              }}
+            >
               Servicio de Grúas Profesional
-            </span>
+            </motion.span>
           </motion.h1>
 
           {/* Subheading */}
@@ -70,7 +87,7 @@ export const Hero = () => {
               size="lg"
               variant="outline"
               className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white shadow-lg hover:shadow-xl transition-all duration-300 group min-w-[200px]"
-              onClick={() => window.location.href = 'tel:+5218180107110'}
+              onClick={() => (window.location.href = 'tel:+5218180107110')}
             >
               <Phone className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform" />
               Llamar Ahora
@@ -84,11 +101,7 @@ export const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            {[
-              'Servicio 24/7',
-              'Cobertura Regional',
-              'Atención Inmediata',
-            ].map((feature, index) => (
+            {['Servicio 24/7', 'Cobertura Regional', 'Atención Inmediata'].map((feature) => (
               <div
                 key={feature}
                 className="flex items-center gap-2 text-sm md:text-base font-medium text-gray-700 dark:text-gray-300"
