@@ -1,16 +1,28 @@
 import React from 'react'
 import { Navigation } from './Navigation'
 import { Button } from '../ui/button'
-import { Phone, MapIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Phone, MapIcon, ArrowLeft } from 'lucide-react'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 export const Header = (): JSX.Element => {
   const navigate = useNavigate()
+  const location = useLocation()
 
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-800 z-50 transition-all duration-300">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="flex-shrink-0">
+        <div className="flex items-center gap-4">
+          {location.pathname !== '/' && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+          )}
           <h1 className="text-2xl md:text-3xl font-heading font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
             <a href="#intro" className="hover:opacity-80 transition-opacity">
               M.R. Grúas
