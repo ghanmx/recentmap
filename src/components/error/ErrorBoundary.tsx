@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { AlertTriangle } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -49,7 +49,7 @@ interface ErrorFallbackProps {
 const ErrorFallback = ({ error, onReset }: ErrorFallbackProps) => {
   const { toast } = useToast()
 
-  React.useEffect(() => {
+  useEffect(() => {
     toast({
       title: 'An error occurred',
       description: error?.message || 'Something went wrong',
