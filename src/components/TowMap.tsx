@@ -9,6 +9,7 @@ import { motion } from 'framer-motion'
 import { useToast } from './ui/use-toast'
 import { useTowing } from '@/contexts/TowingContext'
 import { Location } from '@/types/location'
+import { cn } from '@/lib/utils'
 import 'leaflet/dist/leaflet.css'
 
 const TowMap = () => {
