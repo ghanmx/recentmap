@@ -41,6 +41,30 @@ const enforceRateLimit = async () => {
   lastRequestTime = Date.now()
 }
 
+const normalizeCoordinate = (coord: number, isLongitude: boolean): number => {
+  const max = isLongitude ? 180 : 90
+  const period = max * 2
+
+  // Normalize to [-period, period]
+  let normalized = coord % period
+
+  // Normalize to [-max, max]
+  if (normalized > max) {
+    normalized = normalized - period
+  } else if (normalized < -max) {
+    normalized = normalized + period
+  }
+
+  return normalized
+}
+
+const validateAndNormalizeCoordinates = (coords: Coordinates): Coordinates => {
+  return {
+    lat: normalizeCoordinate(coords.lat, false),
+    lng: normalizeCoordinate(coords.lng, true),
+  }
+}
+
 const calculateStraightLineDistance = (
   start: Coordinates,
   end: Coordinates,
@@ -123,10 +147,14 @@ export async function getRouteFromOSRM(
   duration: number
   geometry: string
 }> {
-  const coordinates = `${start.lng},${start.lat};${end.lng},${end.lat}`
+  // Normalize coordinates before making the request
+  const normalizedStart = validateAndNormalizeCoordinates(start)
+  const normalizedEnd = validateAndNormalizeCoordinates(end)
+  
+  const coordinates = `${normalizedStart.lng},${normalizedStart.lat};${normalizedEnd.lng},${normalizedEnd.lat}`
 
   try {
-    console.log('Starting route calculation:', { start, end })
+    console.log('Starting route calculation:', { normalizedStart, normalizedEnd })
     const result = await new Promise((resolve, reject) => {
       requestQueue = requestQueue
         .then(() =>
@@ -159,7 +187,7 @@ export async function getRouteFromOSRM(
       'OSRM routing failed, falling back to straight-line calculation:',
       error,
     )
-    const straightLineDistance = calculateStraightLineDistance(start, end)
+    const straightLineDistance = calculateStraightLineDistance(normalizedStart, normalizedEnd)
     const estimatedDuration = straightLineDistance * 60
 
     return {
