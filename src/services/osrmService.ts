@@ -45,23 +45,32 @@ const normalizeCoordinate = (coord: number, isLongitude: boolean): number => {
   const max = isLongitude ? 180 : 90
   const period = max * 2
 
-  // Normalize to [-period, period]
+  // First, handle the basic case
   let normalized = coord % period
 
-  // Normalize to [-max, max]
+  // Then normalize to [-max, max]
   if (normalized > max) {
     normalized = normalized - period
   } else if (normalized < -max) {
     normalized = normalized + period
   }
 
-  return normalized
+  // Round to 6 decimal places for precision
+  return Number(normalized.toFixed(6))
 }
 
 const validateAndNormalizeCoordinates = (coords: Coordinates): Coordinates => {
+  const normalizedLng = normalizeCoordinate(coords.lng, true)
+  const normalizedLat = normalizeCoordinate(coords.lat, false)
+
+  console.log('Normalized coordinates:', {
+    original: coords,
+    normalized: { lat: normalizedLat, lng: normalizedLng }
+  })
+
   return {
-    lat: normalizeCoordinate(coords.lat, false),
-    lng: normalizeCoordinate(coords.lng, true),
+    lat: normalizedLat,
+    lng: normalizedLng,
   }
 }
 
@@ -79,7 +88,7 @@ const calculateStraightLineDistance = (
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2)
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  return R * c
+  return Number((R * c).toFixed(2))
 }
 
 async function tryFetchWithUrls(
@@ -120,9 +129,9 @@ async function tryFetchWithUrls(
         }
       }
 
-      errors.push(
-        new Error(`Failed response from ${baseUrl}: ${response.status}`),
-      )
+      const errorText = await response.text()
+      console.error(`OSRM error (${response.status}):`, errorText)
+      errors.push(new Error(`HTTP error! status: ${response.status}`))
     } catch (error) {
       console.error('Error making request to', baseUrl, ':', error)
       errors.push(
@@ -178,7 +187,7 @@ export async function getRouteFromOSRM(
 
     console.log('Route calculation successful:', data.routes[0])
     return {
-      distance: data.routes[0].distance / 1000,
+      distance: data.routes[0].distance / 1000, // Convert to kilometers
       duration: data.routes[0].duration,
       geometry: data.routes[0].geometry,
     }
@@ -188,12 +197,12 @@ export async function getRouteFromOSRM(
       error,
     )
     const straightLineDistance = calculateStraightLineDistance(normalizedStart, normalizedEnd)
-    const estimatedDuration = straightLineDistance * 60
+    const estimatedDuration = straightLineDistance * 60 // Rough estimate: 1 km/minute
 
     return {
       distance: straightLineDistance,
       duration: estimatedDuration,
-      geometry: '_p~iF~ps|U_ulLnnqC_mqNvxq`@',
+      geometry: '_p~iF~ps|U_ulLnnqC_mqNvxq`@', // Simple straight line encoding
     }
   }
 }
