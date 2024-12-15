@@ -1,12 +1,10 @@
-import { DraggableMarker } from './DraggableMarker'
+import { useCallback, useEffect } from 'react'
+import { useMapEvents, Marker, Popup } from 'react-leaflet'
+import { Icon } from 'leaflet'
+import { getRouteFromOSRM } from '@/services/osrmService'
 import { RoutePolyline } from './RoutePolyline'
-import { MapLocationHandler } from './MapLocationHandler'
-import { enterpriseIcon, pickupIcon, dropIcon } from '@/utils/mapUtils'
-import { COMPANY_LOCATION } from '@/services/routeService'
-import { Marker, Popup } from 'react-leaflet'
-import { Location } from '@/types/location'
 import { useToast } from '@/hooks/use-toast'
-import { TowingProvider } from '@/contexts/TowingContext'
+import { Location } from '@/types/location'
 
 interface MapMarkersProps {
   pickupLocation: Location | null
@@ -18,6 +16,18 @@ interface MapMarkersProps {
   setDropLocation: (location: Location | null) => void
   onRouteCalculated: (distance: number) => void
 }
+
+const pickupIcon = new Icon({
+  iconUrl: '/marker-pickup.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+})
+
+const dropIcon = new Icon({
+  iconUrl: '/marker-drop.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+})
 
 export const MapMarkers = ({
   pickupLocation,
@@ -31,69 +41,71 @@ export const MapMarkers = ({
 }: MapMarkersProps) => {
   const { toast } = useToast()
 
-  const handlePickupDragEnd = (latlng: L.LatLng) => {
-    const location = { lat: latlng.lat, lng: latlng.lng }
-    setPickupLocation(location)
-    onLocationSelect(location)
-    toast({
-      title: 'Punto de recogida actualizado',
-      description: 'La ubicación de recogida ha sido actualizada',
-    })
-  }
+  const map = useMapEvents({
+    click(e) {
+      const { lat, lng } = e.latlng
+      if (selectingPickup || selectingDrop) {
+        onLocationSelect({ lat, lng })
+      }
+    },
+  })
 
-  const handleDropDragEnd = (latlng: L.LatLng) => {
-    const location = { lat: latlng.lat, lng: latlng.lng }
-    setDropLocation(location)
-    onLocationSelect(location)
-    toast({
-      title: 'Punto de entrega actualizado',
-      description: 'La ubicación de entrega ha sido actualizada',
-    })
-  }
+  const calculateRoute = useCallback(async () => {
+    if (pickupLocation && dropLocation) {
+      try {
+        const route = await getRouteFromOSRM(pickupLocation, dropLocation)
+        onRouteCalculated(route.distance)
+      } catch (error) {
+        console.error('Error calculating route:', error)
+        toast({
+          title: 'Error al calcular la ruta',
+          description: 'Por favor, intente nuevamente',
+          variant: 'destructive',
+        })
+      }
+    }
+  }, [pickupLocation, dropLocation, onRouteCalculated, toast])
+
+  useEffect(() => {
+    calculateRoute()
+  }, [calculateRoute])
 
   return (
     <>
-      <MapLocationHandler
-        onLocationSelect={onLocationSelect}
-        selectingPickup={selectingPickup}
-        selectingDrop={selectingDrop}
-      />
-
-      <Marker position={[COMPANY_LOCATION.lat, COMPANY_LOCATION.lng]} icon={enterpriseIcon}>
-        <Popup className="rounded-lg shadow-lg">
-          <div className="font-semibold">Empresa de Grúas</div>
-          <div className="text-sm text-gray-600">Ubicación Principal</div>
-        </Popup>
-      </Marker>
-
       {pickupLocation && (
-        <DraggableMarker
+        <Marker
           position={[pickupLocation.lat, pickupLocation.lng]}
-          onDragEnd={handlePickupDragEnd}
           icon={pickupIcon}
-          label="Punto de Recogida"
-          isPickup={true}
-        />
+          eventHandlers={{
+            click: () => {
+              setPickupLocation(null)
+            },
+          }}
+        >
+          <Popup>Punto de recogida</Popup>
+        </Marker>
       )}
 
       {dropLocation && (
-        <DraggableMarker
+        <Marker
           position={[dropLocation.lat, dropLocation.lng]}
-          onDragEnd={handleDropDragEnd}
           icon={dropIcon}
-          label="Punto de Entrega"
-          isPickup={false}
-        />
+          eventHandlers={{
+            click: () => {
+              setDropLocation(null)
+            },
+          }}
+        >
+          <Popup>Punto de entrega</Popup>
+        </Marker>
       )}
 
       {pickupLocation && dropLocation && (
-        <TowingProvider>
-          <RoutePolyline
-            pickupLocation={pickupLocation}
-            dropLocation={dropLocation}
-            onRouteCalculated={onRouteCalculated}
-          />
-        </TowingProvider>
+        <RoutePolyline
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+          onRouteCalculated={onRouteCalculated}
+        />
       )}
     </>
   )

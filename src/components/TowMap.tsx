@@ -1,121 +1,75 @@
-import { useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
+import { MapContainer, TileLayer, useMap } from 'react-leaflet'
 import { Map } from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-import { MapContainerComponent } from './map/MapContainer'
-import { MapControlPanel } from '@/features/map/components/MapControlPanel'
-import { useToast } from '@/hooks/use-toast'
-import { detectTollsOnRoute } from '@/utils/tollCalculator'
+import { MapControlPanel } from './map/MapControlPanel'
+import { MapMarkers } from './map/MapMarkers'
+import { MapUpdater } from './map/MapUpdater'
+import { UserLocationMarker } from './map/UserLocationMarker'
+import { motion } from 'framer-motion'
+import { useToast } from './ui/use-toast'
 import { useTowing } from '@/contexts/towing/TowingContext'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FloatingQuestionsPanel } from './FloatingQuestionsPanel'
-import { useMapState } from '@/features/map/hooks/useMapState'
 import { Location } from '@/types/location'
-import { getAddressFromCoords } from '@/services/geocodingService'
-import { MapLoadingOverlay } from './map/MapLoadingOverlay'
-import { LocationSelectionHint } from './map/LocationSelectionHint'
+import 'leaflet/dist/leaflet.css'
 
 const TowMap = () => {
   const mapRef = useRef<Map | null>(null)
+  const [selectingPickup, setSelectingPickup] = useState(false)
+  const [selectingDrop, setSelectingDrop] = useState(false)
+  const [pickupLocation, setPickupLocation] = useState<Location | null>(null)
+  const [dropLocation, setDropLocation] = useState<Location | null>(null)
+  const [pickupAddress, setPickupAddress] = useState<string>('')
+  const [dropAddress, setDropAddress] = useState<string>('')
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showUserLocation, setShowUserLocation] = useState(true)
   const { toast } = useToast()
-  const { updateTollInfo } = useTowing()
-  const {
-    pickupLocation,
-    dropLocation,
-    pickupAddress,
-    dropAddress,
-    selectingPickup,
-    selectingDrop,
-    isLoading,
-    setSelectingPickup,
-    setSelectingDrop,
-    handleLocationSelect: handleMapLocationSelect,
-  } = useMapState()
+  const { updateTowingInfo } = useTowing()
 
-  const handleTollDetection = async () => {
-    if (pickupLocation && dropLocation) {
-      try {
-        const tollInfo = await detectTollsOnRoute(pickupLocation, dropLocation)
-        updateTollInfo(tollInfo.tolls, tollInfo.totalTollCost)
-
-        if (tollInfo.tolls.length > 0) {
-          toast({
-            title: 'Peajes Detectados',
-            description: `Se detectaron ${tollInfo.tolls.length} peajes en la ruta con un costo total de $${tollInfo.totalTollCost}`,
-            className: 'bg-blue-50 border-blue-200 text-blue-800',
-          })
-        }
-      } catch (error) {
-        console.error('Error detecting tolls:', error)
-        toast({
-          title: 'Error',
-          description: 'No se pudieron detectar los peajes en la ruta',
-          variant: 'destructive',
-        })
-      }
-    }
-  }
-
-  const handleLocationSelect = async (location: Location) => {
-    try {
-      const address = await getAddressFromCoords(location.lat, location.lng)
-      
-      if (selectingPickup) {
-        handleMapLocationSelect({ ...location, address }, 'pickup')
-        setSelectingPickup(false)
-        toast({
-          title: 'Punto de Recogida Actualizado',
-          description: address,
-          className: 'bg-green-50 border-green-200 text-green-800',
-        })
-      } else if (selectingDrop) {
-        handleMapLocationSelect({ ...location, address }, 'drop')
-        setSelectingDrop(false)
-        toast({
-          title: 'Punto de Entrega Actualizado',
-          description: address,
-          className: 'bg-blue-50 border-blue-200 text-blue-800',
-        })
-      }
-    } catch (error) {
-      console.error('Error getting address:', error)
+  const handleLocationSelect = useCallback((location: Location) => {
+    if (selectingPickup) {
+      setPickupLocation(location)
+      setPickupAddress(location.address || '')
+      setSelectingPickup(false)
       toast({
-        title: 'Error',
-        description: 'No se pudo obtener la dirección',
-        variant: 'destructive',
+        title: 'Punto de recogida seleccionado',
+        description: location.address,
+      })
+    } else if (selectingDrop) {
+      setDropLocation(location)
+      setDropAddress(location.address || '')
+      setSelectingDrop(false)
+      toast({
+        title: 'Punto de entrega seleccionado',
+        description: location.address,
       })
     }
-  }
+  }, [selectingPickup, selectingDrop, toast])
+
+  const handleRouteCalculated = useCallback((distance: number) => {
+    updateTowingInfo(distance)
+  }, [updateTowingInfo])
+
+  const handleReset = useCallback(() => {
+    setPickupLocation(null)
+    setDropLocation(null)
+    setPickupAddress('')
+    setDropAddress('')
+    setSelectingPickup(false)
+    setSelectingDrop(false)
+    if (mapRef.current) {
+      mapRef.current.setView([25.6866, -100.3161], 13)
+    }
+  }, [])
+
+  const toggleFullscreen = useCallback(() => {
+    setIsFullscreen(prev => !prev)
+  }, [])
 
   return (
     <motion.div
-      className="relative h-screen w-full bg-gradient-to-br from-blue-50/50 via-white to-blue-50/50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      className={`relative w-full ${isFullscreen ? 'h-screen fixed inset-0 z-50' : 'h-[calc(100vh-4rem)]'} rounded-xl overflow-hidden`}
     >
-      <AnimatePresence>
-        <MapLoadingOverlay isVisible={isLoading} />
-      </AnimatePresence>
-
-      <div className="absolute inset-0 z-0">
-        <MapContainerComponent
-          pickupLocation={pickupLocation}
-          dropLocation={dropLocation}
-          selectingPickup={selectingPickup}
-          selectingDrop={selectingDrop}
-          onLocationSelect={handleLocationSelect}
-          setPickupLocation={(location: Location | null) =>
-            location && handleLocationSelect(location)
-          }
-          setDropLocation={(location: Location | null) =>
-            location && handleLocationSelect(location)
-          }
-          isLoading={isLoading}
-          mapRef={mapRef}
-          onRouteCalculated={handleTollDetection}
-        />
-      </div>
-
       <MapControlPanel
         selectingPickup={selectingPickup}
         selectingDrop={selectingDrop}
@@ -125,24 +79,40 @@ const TowMap = () => {
         dropLocation={dropLocation}
         pickupAddress={pickupAddress}
         dropAddress={dropAddress}
-        isLoading={isLoading}
+        onReset={handleReset}
+        onToggleFullscreen={toggleFullscreen}
+        isFullscreen={isFullscreen}
       />
 
-      <FloatingQuestionsPanel
-        pickupLocation={pickupLocation}
-        dropLocation={dropLocation}
-        pickupAddress={pickupAddress}
-        dropAddress={dropAddress}
-        onPickupSelect={(location: Location) => handleLocationSelect(location)}
-        onDropSelect={(location: Location) => handleLocationSelect(location)}
-        onSelectingPickup={() => setSelectingPickup(true)}
-        onSelectingDrop={() => setSelectingDrop(true)}
-      />
+      <MapContainer
+        center={[25.6866, -100.3161]}
+        zoom={13}
+        className="w-full h-full"
+        ref={mapRef}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        
+        <MapMarkers
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+          selectingPickup={selectingPickup}
+          selectingDrop={selectingDrop}
+          onLocationSelect={handleLocationSelect}
+          setPickupLocation={setPickupLocation}
+          setDropLocation={setDropLocation}
+          onRouteCalculated={handleRouteCalculated}
+        />
 
-      <LocationSelectionHint
-        isSelectingPickup={selectingPickup}
-        isSelectingDrop={selectingDrop}
-      />
+        <MapUpdater
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
+        />
+
+        <UserLocationMarker visible={showUserLocation} />
+      </MapContainer>
     </motion.div>
   )
 }

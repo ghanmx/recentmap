@@ -1,118 +1,24 @@
-const OSRM_API_URLS = [
-  'https://router.project-osrm.org/route/v1',
-  'http://router.project-osrm.org/route/v1',
-].map((url) => url.replace(/\/+$/, ''))
+import { Coordinates, OSRMResponse } from './osrm/types'
+import { OSRM_API_URLS } from './osrm/constants'
+import { normalizeCoordinate, calculateStraightLineDistance } from './osrm/utils'
+import { tryFetchWithUrls } from './osrm/fetchUtils'
 
-const MIN_REQUEST_INTERVAL = 1100
-const MAX_RETRIES = 3
-const BACKOFF_FACTOR = 2
 let lastRequestTime = 0
 let requestQueue: Promise<any> = Promise.resolve()
 
-interface Coordinates {
-  lat: number
-  lng: number
-}
+const validateAndNormalizeCoordinates = (coords: Coordinates): Coordinates => {
+  const normalizedLng = normalizeCoordinate(coords.lng, true)
+  const normalizedLat = normalizeCoordinate(coords.lat, false)
 
-interface OSRMResponse {
-  routes: {
-    distance: number
-    duration: number
-    geometry: string
-  }[]
-}
+  console.log('Normalized coordinates:', {
+    original: coords,
+    normalized: { lat: normalizedLat, lng: normalizedLng }
+  })
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-const calculateBackoffDelay = (attempt: number): number => {
-  return Math.min(
-    MIN_REQUEST_INTERVAL * Math.pow(BACKOFF_FACTOR, attempt),
-    5000,
-  )
-}
-
-const enforceRateLimit = async () => {
-  const now = Date.now()
-  const timeSinceLastRequest = now - lastRequestTime
-
-  if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
-    await wait(MIN_REQUEST_INTERVAL - timeSinceLastRequest)
+  return {
+    lat: normalizedLat,
+    lng: normalizedLng,
   }
-  lastRequestTime = Date.now()
-}
-
-const calculateStraightLineDistance = (
-  start: Coordinates,
-  end: Coordinates,
-): number => {
-  const R = 6371
-  const dLat = ((end.lat - start.lat) * Math.PI) / 180
-  const dLon = ((end.lng - start.lng) * Math.PI) / 180
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((start.lat * Math.PI) / 180) *
-      Math.cos((end.lat * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2)
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  return R * c
-}
-
-async function tryFetchWithUrls(
-  urls: string[],
-  coordinates: string,
-  options: RequestInit,
-  attempt = 0,
-): Promise<Response> {
-  const errors: Error[] = []
-
-  await enforceRateLimit()
-
-  for (const baseUrl of urls) {
-    try {
-      const url = `${baseUrl}/driving/${coordinates}?overview=full&geometries=polyline`
-      console.log('Attempting request to:', url)
-
-      const response = await fetch(url, {
-        ...options,
-        mode: 'cors',
-        credentials: 'omit',
-        headers: {
-          ...options.headers,
-          'Accept': 'application/json',
-          'Origin': window.location.origin,
-        },
-      })
-
-      if (response.ok) {
-        return response
-      }
-
-      if (response.status === 429) {
-        const backoffDelay = calculateBackoffDelay(attempt)
-        await wait(backoffDelay)
-        if (attempt < MAX_RETRIES) {
-          return tryFetchWithUrls(urls, coordinates, options, attempt + 1)
-        }
-      }
-
-      errors.push(
-        new Error(`Failed response from ${baseUrl}: ${response.status}`),
-      )
-    } catch (error) {
-      console.error('Error making request to', baseUrl, ':', error)
-      errors.push(
-        error instanceof Error
-          ? error
-          : new Error(`Unknown error from ${baseUrl}`),
-      )
-      continue
-    }
-  }
-
-  throw new Error(
-    'All routing services failed. Using fallback straight-line calculation.',
-  )
 }
 
 export async function getRouteFromOSRM(
@@ -123,10 +29,13 @@ export async function getRouteFromOSRM(
   duration: number
   geometry: string
 }> {
-  const coordinates = `${start.lng},${start.lat};${end.lng},${end.lat}`
+  const normalizedStart = validateAndNormalizeCoordinates(start)
+  const normalizedEnd = validateAndNormalizeCoordinates(end)
+  
+  const coordinates = `${normalizedStart.lng},${normalizedStart.lat};${normalizedEnd.lng},${normalizedEnd.lat}`
 
   try {
-    console.log('Starting route calculation:', { start, end })
+    console.log('Starting route calculation:', { normalizedStart, normalizedEnd })
     const result = await new Promise((resolve, reject) => {
       requestQueue = requestQueue
         .then(() =>
@@ -155,11 +64,8 @@ export async function getRouteFromOSRM(
       geometry: data.routes[0].geometry,
     }
   } catch (error) {
-    console.error(
-      'OSRM routing failed, falling back to straight-line calculation:',
-      error,
-    )
-    const straightLineDistance = calculateStraightLineDistance(start, end)
+    console.error('OSRM routing failed, falling back to straight-line calculation:', error)
+    const straightLineDistance = calculateStraightLineDistance(normalizedStart, normalizedEnd)
     const estimatedDuration = straightLineDistance * 60
 
     return {
