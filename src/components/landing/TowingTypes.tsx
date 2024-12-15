@@ -60,7 +60,7 @@ export const TowingTypes = () => {
       >
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold font-heading bg-clip-text text-transparent bg-gradient-to-r from-gray-700 via-gray-600 to-gray-500 mb-4 animate-gradient-flow">
+          <h2 className="text-4xl font-bold font-heading text-gradient mb-4">
             Tipos de Servicio
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -81,10 +81,12 @@ export const TowingTypes = () => {
             >
               <Dialog>
                 <DialogTrigger asChild>
-                  <Card className="w-full p-6 bg-gradient-to-tl from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-700 shadow-lg hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 rounded-xl cursor-pointer">
+                  <Card className="w-full p-6 bg-gradient-to-tl from-gray-100/90 to-gray-50/90 dark:from-gray-800/90 dark:to-gray-700/90 backdrop-blur-sm shadow-lg hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 rounded-xl cursor-pointer border border-gray-200/20">
                     {/* Icon + Title */}
                     <div className="mb-6">
-                      <div className="flex items-center justify-center mb-4">{type.icon}</div>
+                      <div className="flex items-center justify-center mb-4 bg-primary/10 rounded-full p-4 w-20 h-20 mx-auto">
+                        {type.icon}
+                      </div>
                       <h3 className="text-2xl font-semibold text-center text-gray-700 dark:text-gray-300 mb-2">
                         {type.title}
                       </h3>
@@ -103,9 +105,13 @@ export const TowingTypes = () => {
                           <img
                             src={gif}
                             alt={`Servicio tipo ${gifIndex + 1} para ${type.title}`}
-                            className="w-full h-48 object-cover transform transition-transform duration-300 group-hover:scale-110"
+                            className="w-full h-48 object-cover transform transition-transform duration-500 group-hover:scale-110"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                            <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              Ver detalles
+                            </span>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -113,25 +119,28 @@ export const TowingTypes = () => {
                 </DialogTrigger>
 
                 {/* Dialog Content */}
-                <DialogContent className="sm:max-w-[500px] backdrop-filter backdrop-blur-xl bg-white/80 dark:bg-gray-800/90 rounded-lg shadow-xl">
+                <DialogContent className="sm:max-w-[500px] backdrop-blur-xl bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-xl border border-gray-200/20">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-extrabold text-gray-700 dark:text-gray-300">
+                    <DialogTitle className="text-2xl font-extrabold text-gradient">
                       {type.detailedDescription.title}
                     </DialogTitle>
                     <DialogDescription>
                       <div className="mt-4 space-y-4">
                         {/* List Content */}
-                        <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
+                        <ul className="list-none space-y-3 text-gray-700 dark:text-gray-300">
                           {type.detailedDescription.content.map((item, i) => (
-                            <li key={i}>{item}</li>
+                            <li key={i} className="flex items-center space-x-2">
+                              <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                              <span>{item}</span>
+                            </li>
                           ))}
                         </ul>
                         {/* Pricing */}
-                        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                          <p className="font-semibold text-gray-700 dark:text-gray-300">
+                        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                          <p className="font-semibold text-gradient text-lg">
                             Precios Aproximados:
                           </p>
-                          <p className="text-gray-600 dark:text-gray-400">
+                          <p className="text-gray-600 dark:text-gray-400 mt-2">
                             {type.detailedDescription.pricing}
                           </p>
                         </div>
