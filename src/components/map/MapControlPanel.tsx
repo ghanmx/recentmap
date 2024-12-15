@@ -3,9 +3,9 @@ import { RouteStreetInfo } from './RouteStreetInfo'
 import { useToast } from '@/hooks/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from '@/components/ui/card'
-import { Loader2, Maximize2, Minimize2, RefreshCw } from 'lucide-react'
-import { useMapNotifications } from '@/features/map/hooks/useMapNotifications'
 import { Button } from '@/components/ui/button'
+import { Loader2, Maximize2, Minimize2, RefreshCw } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface MapControlPanelProps {
   selectingPickup: boolean
@@ -20,6 +20,8 @@ interface MapControlPanelProps {
   onReset?: () => void
   onToggleFullscreen?: () => void
   isFullscreen?: boolean
+  onTogglePanel?: () => void
+  isPanelVisible?: boolean
 }
 
 export const MapControlPanel = ({
@@ -35,20 +37,27 @@ export const MapControlPanel = ({
   onReset,
   onToggleFullscreen,
   isFullscreen,
+  onTogglePanel,
+  isPanelVisible = true,
 }: MapControlPanelProps) => {
   const { toast } = useToast()
-  const { showLocationSelectionNotification } = useMapNotifications()
 
   const handlePickupClick = () => {
     setSelectingPickup(true)
     setSelectingDrop(false)
-    showLocationSelectionNotification('pickup')
+    toast({
+      title: 'Selecciona punto de recogida',
+      description: 'Haz clic en el mapa para seleccionar la ubicación',
+    })
   }
 
   const handleDropClick = () => {
     setSelectingDrop(true)
     setSelectingPickup(false)
-    showLocationSelectionNotification('drop')
+    toast({
+      title: 'Selecciona punto de entrega',
+      description: 'Haz clic en el mapa para seleccionar la ubicación',
+    })
   }
 
   return (
@@ -80,29 +89,33 @@ export const MapControlPanel = ({
             />
             
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={onReset}
-                className="hover:bg-primary/5"
-                title="Reset Map"
-              >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
+              {onReset && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onReset}
+                  className="hover:bg-primary/5"
+                  title="Reiniciar mapa"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              )}
               
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={onToggleFullscreen}
-                className="hover:bg-primary/5"
-                title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-              >
-                {isFullscreen ? (
-                  <Minimize2 className="h-4 w-4" />
-                ) : (
-                  <Maximize2 className="h-4 w-4" />
-                )}
-              </Button>
+              {onToggleFullscreen && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onToggleFullscreen}
+                  className="hover:bg-primary/5"
+                  title={isFullscreen ? "Salir de pantalla completa" : "Pantalla completa"}
+                >
+                  {isFullscreen ? (
+                    <Minimize2 className="h-4 w-4" />
+                  ) : (
+                    <Maximize2 className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </Card>
