@@ -23,7 +23,7 @@ export const RouteStreetInfo: React.FC<RouteStreetInfoProps> = ({
   if (!pickupLocation && !dropLocation) return null
 
   return (
-    <Draggable nodeRef={nodeRef} handle=".drag-handle">
+    <Draggable nodeRef={nodeRef}>
       <div ref={nodeRef} className="absolute z-[1000] w-full sm:max-w-md">
         <Card className="p-3 sm:p-4 space-y-3 bg-white/95 backdrop-blur-xl shadow-xl transition-all duration-300 hover:shadow-2xl border-2 border-primary/20 hover:border-primary/30">
           <div className="flex items-center justify-between border-b pb-2 mb-2 drag-handle cursor-move bg-primary/5 rounded-lg p-2">
