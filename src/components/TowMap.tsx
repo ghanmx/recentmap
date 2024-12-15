@@ -7,7 +7,7 @@ import { MapUpdater } from './map/MapUpdater'
 import { UserLocationMarker } from './map/UserLocationMarker'
 import { motion } from 'framer-motion'
 import { useToast } from './ui/use-toast'
-import { useTowing } from '@/contexts/towing/TowingContext'
+import { useTowing } from '@/contexts/TowingContext'
 import { Location } from '@/types/location'
 import 'leaflet/dist/leaflet.css'
 
@@ -21,6 +21,7 @@ const TowMap = () => {
   const [dropAddress, setDropAddress] = useState<string>('')
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showUserLocation, setShowUserLocation] = useState(true)
+  const [isPanelVisible, setIsPanelVisible] = useState(true)
   const { toast } = useToast()
   const { updateTowingInfo } = useTowing()
 
@@ -64,11 +65,19 @@ const TowMap = () => {
     setIsFullscreen(prev => !prev)
   }, [])
 
+  const togglePanel = useCallback(() => {
+    setIsPanelVisible(prev => !prev)
+  }, [])
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={`relative w-full ${isFullscreen ? 'h-screen fixed inset-0 z-50' : 'h-[calc(100vh-4rem)]'} rounded-xl overflow-hidden`}
+      className={cn(
+        'relative w-full',
+        isFullscreen ? 'h-screen fixed inset-0 z-50' : 'h-[calc(100vh-4rem)]',
+        'rounded-xl overflow-hidden'
+      )}
     >
       <MapControlPanel
         selectingPickup={selectingPickup}
@@ -82,6 +91,8 @@ const TowMap = () => {
         onReset={handleReset}
         onToggleFullscreen={toggleFullscreen}
         isFullscreen={isFullscreen}
+        onTogglePanel={togglePanel}
+        isPanelVisible={isPanelVisible}
       />
 
       <MapContainer
