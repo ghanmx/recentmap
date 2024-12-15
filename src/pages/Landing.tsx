@@ -8,7 +8,7 @@ import { ContactSection } from '@/components/landing/ContactSection'
 import { FooterSection } from '@/components/landing/FooterSection'
 import { motion } from 'framer-motion'
 
-const Landing = (): JSX.Element => {
+const Landing: React.FC = () => {
   return (
     <motion.div 
       initial={{ opacity: 0 }}

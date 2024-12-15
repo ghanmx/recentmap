@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react'
+import React, { Suspense, lazy } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { TowingWrapper } from '@/components/TowingWrapper'
@@ -8,7 +8,7 @@ import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 
 const TowMap = lazy(() => import('@/features/map/TowMap'))
 
-const Index = (): JSX.Element => {
+const Index: React.FC = () => {
   const methods = useForm()
 
   return (

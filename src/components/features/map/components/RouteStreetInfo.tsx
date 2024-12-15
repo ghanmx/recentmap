@@ -1,7 +1,7 @@
+import React, { useRef } from 'react'
 import { Card } from '@/components/ui/card'
 import { MapPin, Navigation, Loader2 } from 'lucide-react'
 import Draggable from 'react-draggable'
-import { useRef } from 'react'
 
 interface RouteStreetInfoProps {
   pickupLocation: { lat: number; lng: number } | null
@@ -11,21 +11,21 @@ interface RouteStreetInfoProps {
   isLoading?: boolean
 }
 
-export const RouteStreetInfo = ({
+export const RouteStreetInfo: React.FC<RouteStreetInfoProps> = ({
   pickupLocation,
   dropLocation,
   pickupAddress,
   dropAddress,
   isLoading = false,
-}: RouteStreetInfoProps) => {
-  const nodeRef = useRef(null)
+}) => {
+  const nodeRef = useRef<HTMLDivElement>(null)
 
   if (!pickupLocation && !dropLocation) return null
 
   return (
     <Draggable handle=".drag-handle" bounds="parent" nodeRef={nodeRef}>
-      <div ref={nodeRef} className="absolute z-[1000] max-w-md">
-        <Card className="p-4 space-y-3 bg-white/95 backdrop-blur-sm shadow-lg transition-all duration-300 hover:shadow-xl border-blue-100/50">
+      <div ref={nodeRef} className="absolute z-[1000] w-full sm:max-w-md">
+        <Card className="p-3 sm:p-4 space-y-3 bg-white/95 backdrop-blur-xl shadow-xl transition-all duration-300 hover:shadow-2xl border-2 border-primary/20 hover:border-primary/30">
           <div className="flex items-center justify-between border-b pb-2 mb-2 drag-handle cursor-move">
             <div className="font-semibold text-sm text-primary/90">
               Detalles de Ubicación

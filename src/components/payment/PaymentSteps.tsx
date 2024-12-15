@@ -1,3 +1,4 @@
+import React from 'react'
 import { motion } from 'framer-motion'
 
 interface Step {
@@ -10,7 +11,7 @@ interface PaymentStepsProps {
   steps: Step[]
 }
 
-export const PaymentSteps = ({ currentStep, steps }: PaymentStepsProps): JSX.Element => {
+export const PaymentSteps: React.FC<PaymentStepsProps> = ({ currentStep, steps }) => {
   return (
     <div className="space-y-4 mb-6">
       {steps.map((step, index) => (

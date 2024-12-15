@@ -1,3 +1,4 @@
+import React from 'react'
 import { CostItemDisplay } from './CostItemDisplay'
 import { TollInfoDisplay } from '../TollInfoDisplay'
 import { Receipt } from 'lucide-react'
@@ -13,14 +14,14 @@ interface CostSummaryProps {
   requiresInvoice: boolean
 }
 
-export const CostSummary = ({
+export const CostSummary: React.FC<CostSummaryProps> = ({
   subtotal,
   tax,
   finalTotal,
   detectedTolls,
   totalTollCost,
   requiresInvoice,
-}: CostSummaryProps): JSX.Element => {
+}) => {
   return (
     <div className="space-y-4">
       {detectedTolls.length > 0 && (

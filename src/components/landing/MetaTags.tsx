@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const MetaTags = (): JSX.Element => {
+export const MetaTags: React.FC = () => {
   return (
     <>
       <meta charSet="utf-8" />

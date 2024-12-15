@@ -9,7 +9,7 @@ const navItems = [
   { href: '#contact', label: 'Contacto' },
 ]
 
-export const Navigation = (): JSX.Element => {
+export const Navigation: React.FC = (): JSX.Element => {
   return (
     <nav className="hidden md:block">
       <ul className="flex items-center space-x-8">

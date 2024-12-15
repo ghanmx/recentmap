@@ -4,7 +4,7 @@ import { Button } from '../ui/button'
 import { Phone, MapIcon, ArrowLeft } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
-export const Header = (): JSX.Element => {
+export const Header: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
