@@ -20,6 +20,7 @@ const TowMap = () => {
   const [pickupAddress, setPickupAddress] = useState<string>('')
   const [dropAddress, setDropAddress] = useState<string>('')
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showUserLocation, setShowUserLocation] = useState(true)
   const { toast } = useToast()
   const { updateTowingInfo } = useTowing()
 
@@ -110,7 +111,7 @@ const TowMap = () => {
           dropLocation={dropLocation}
         />
 
-        <UserLocationMarker />
+        <UserLocationMarker visible={showUserLocation} />
       </MapContainer>
     </motion.div>
   )

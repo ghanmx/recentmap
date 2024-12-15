@@ -102,8 +102,8 @@ export const MapMarkers = ({
 
       {pickupLocation && dropLocation && (
         <RoutePolyline
-          start={pickupLocation}
-          end={dropLocation}
+          pickupLocation={pickupLocation}
+          dropLocation={dropLocation}
           onRouteCalculated={onRouteCalculated}
         />
       )}

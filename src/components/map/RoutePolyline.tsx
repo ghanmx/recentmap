@@ -6,10 +6,11 @@ import { useTowing } from '../../contexts/TowingContext'
 import { getRouteDetails } from '../../services/routeService'
 import { COMPANY_LOCATION } from '../../utils/priceCalculator'
 import { useToast } from '../../hooks/use-toast'
+import { Location } from '@/types/location'
 
 interface RoutePolylineProps {
-  pickupLocation: { lat: number; lng: number } | null
-  dropLocation: { lat: number; lng: number } | null
+  pickupLocation: Location
+  dropLocation: Location
   onRouteCalculated?: (distance: number) => void
 }
 
@@ -23,12 +24,10 @@ export const RoutePolyline = ({
   const [dropToCompanyRoute, setDropToCompanyRoute] = useState<[number, number][]>([])
   const { updateTowingInfo } = useTowing()
   const { toast } = useToast()
-
-  // Ref para prevenir múltiples ejecuciones simultáneas de fetchRoutes
   const isFetching = useRef(false)
 
   const fetchRoutes = useCallback(async () => {
-    if (!pickupLocation || !dropLocation || isFetching.current) return
+    if (isFetching.current) return
 
     isFetching.current = true
     try {
@@ -77,10 +76,8 @@ export const RoutePolyline = ({
   }, [pickupLocation, dropLocation, updateTowingInfo, onRouteCalculated, toast])
 
   useEffect(() => {
-    if (pickupLocation && dropLocation) {
-      fetchRoutes()
-    }
-  }, [pickupLocation, dropLocation]) // Dependencias para ejecutar solo cuando cambian las ubicaciones
+    fetchRoutes()
+  }, [fetchRoutes])
 
   return (
     <>
