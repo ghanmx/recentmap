@@ -14,7 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          bio: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone_number: string | null
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone_number?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone_number?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      vehicle_requests: {
+        Row: {
+          created_at: string
+          dropoff_location: Json | null
+          id: string
+          payment_status: string | null
+          pickup_location: Json | null
+          requires_maneuver: boolean | null
+          status: string | null
+          truck_type: string
+          updated_at: string
+          user_id: string
+          vehicle_color: string
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_year: string
+        }
+        Insert: {
+          created_at?: string
+          dropoff_location?: Json | null
+          id?: string
+          payment_status?: string | null
+          pickup_location?: Json | null
+          requires_maneuver?: boolean | null
+          status?: string | null
+          truck_type: string
+          updated_at?: string
+          user_id: string
+          vehicle_color: string
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_year: string
+        }
+        Update: {
+          created_at?: string
+          dropoff_location?: Json | null
+          id?: string
+          payment_status?: string | null
+          pickup_location?: Json | null
+          requires_maneuver?: boolean | null
+          status?: string | null
+          truck_type?: string
+          updated_at?: string
+          user_id?: string
+          vehicle_color?: string
+          vehicle_make?: string
+          vehicle_model?: string
+          vehicle_year?: string
+        }
+        Relationships: []
+      }
+      webhooks: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          secret_key: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          secret_key: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          secret_key?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
