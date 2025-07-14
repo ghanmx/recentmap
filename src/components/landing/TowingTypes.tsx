@@ -63,7 +63,7 @@ export const TowingTypes = () => {
           <h2 className="text-4xl font-bold font-heading text-gradient mb-4">
             Tipos de Servicio
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Contamos con diferentes tipos de grúas para adaptarnos a sus necesidades específicas
           </p>
         </div>
@@ -87,10 +87,10 @@ export const TowingTypes = () => {
                       <div className="flex items-center justify-center mb-4 bg-primary/10 rounded-full p-4 w-20 h-20 mx-auto">
                         {type.icon}
                       </div>
-                      <h3 className="text-2xl font-semibold text-center text-gray-700 dark:text-gray-300 mb-2">
+                      <h3 className="text-2xl font-bold font-heading text-center mb-2">
                         {type.title}
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-300 text-center mb-4">
+                      <p className="text-sm text-muted-foreground text-center mb-4">
                         {type.description}
                       </p>
                     </div>
@@ -121,26 +121,26 @@ export const TowingTypes = () => {
                 {/* Dialog Content */}
                 <DialogContent className="sm:max-w-[500px] backdrop-blur-xl bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-xl border border-gray-200/20">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-extrabold text-gradient">
+                    <DialogTitle className="text-2xl font-bold font-heading text-gradient">
                       {type.detailedDescription.title}
                     </DialogTitle>
                     <DialogDescription>
                       <div className="mt-4 space-y-4">
                         {/* List Content */}
-                        <ul className="list-none space-y-3 text-gray-700 dark:text-gray-300">
+                        <ul className="list-none space-y-3 text-foreground">
                           {type.detailedDescription.content.map((item, i) => (
-                            <li key={i} className="flex items-center space-x-2">
+                            <li key={i} className="flex items-center space-x-2 text-sm">
                               <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                               <span>{item}</span>
                             </li>
                           ))}
                         </ul>
                         {/* Pricing */}
-                        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                          <p className="font-semibold text-gradient text-lg">
+                        <div className="mt-6 pt-4 border-t border-border">
+                          <p className="font-bold font-heading text-lg text-primary">
                             Precios Aproximados:
                           </p>
-                          <p className="text-gray-600 dark:text-gray-400 mt-2">
+                          <p className="text-lg font-semibold text-foreground mt-2">
                             {type.detailedDescription.pricing}
                           </p>
                         </div>

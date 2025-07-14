@@ -26,11 +26,11 @@ export const CostEstimation = ({
           <span>Subtotal:</span>
           <span>{formatCurrency(subtotal)}</span>
         </div>
-        <div className="flex justify-between text-sm text-gray-600">
+        <div className="flex justify-between text-sm text-muted-foreground">
           <span>IVA (16%):</span>
           <span>{formatCurrency(tax)}</span>
         </div>
-        <div className="flex justify-between text-lg font-bold pt-2 border-t">
+        <div className="flex justify-between text-lg font-bold font-heading pt-2 border-t border-border">
           <span>Total:</span>
           <span className="text-primary">{formatCurrency(finalTotal)}</span>
         </div>

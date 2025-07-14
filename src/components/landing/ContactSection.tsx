@@ -41,12 +41,12 @@ export const ContactSection = () => {
               <div className="rounded-full bg-primary/10 p-4 mx-auto mb-6 w-16 h-16 flex items-center justify-center">
                 <MapPin className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">Dirección</h3>
+              <h3 className="text-xl font-bold font-heading mb-4">Dirección</h3>
               <a
                 href="https://goo.gl/maps/Bm2taxCFni9G7ZjD6"
                 target="_blank"
                 rel="noreferrer"
-                className="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 México 85D, Autopista Monterrey - Nuevo Laredo
                 <br />
@@ -63,10 +63,10 @@ export const ContactSection = () => {
               <div className="rounded-full bg-primary/10 p-4 mx-auto mb-6 w-16 h-16 flex items-center justify-center">
                 <Phone className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">Teléfono</h3>
+              <h3 className="text-xl font-bold font-heading mb-4">Teléfono</h3>
               <a
                 href="tel:+5218180107110"
-                className="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
+                className="text-lg font-semibold hover:text-primary transition-colors"
               >
                 +52 1 81 8010 7110
               </a>
@@ -81,10 +81,10 @@ export const ContactSection = () => {
               <div className="rounded-full bg-primary/10 p-4 mx-auto mb-6 w-16 h-16 flex items-center justify-center">
                 <Mail className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">Email</h3>
+              <h3 className="text-xl font-bold font-heading mb-4">Email</h3>
               <a
                 href="mailto:gruasmartinezreyes@hotmail.com"
-                className="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors break-words"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors break-words"
               >
                 gruasmartinezreyes@hotmail.com
               </a>

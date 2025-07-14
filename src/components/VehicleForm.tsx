@@ -129,10 +129,10 @@ export const VehicleForm = ({
                 className="hover:no-underline group transition-all duration-300"
               >
                 <motion.div
-                  className="flex items-center gap-2 text-lg font-semibold"
+                  className="flex items-center gap-2 text-lg font-bold font-heading"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <MapPin className="h-5 w-5 text-[#2c5ea8] group-hover:text-primary transition-colors" />
+                  <MapPin className="h-5 w-5 text-primary group-hover:text-primary transition-colors" />
                   <AnimatedFormText>Ubicación</AnimatedFormText>
                 </motion.div>
               </AccordionTrigger>
@@ -162,10 +162,10 @@ export const VehicleForm = ({
             <AccordionItem value="user">
               <AccordionTrigger className="hover:no-underline group transition-all duration-300">
                 <motion.div
-                  className="flex items-center gap-2 text-lg font-semibold"
+                  className="flex items-center gap-2 text-lg font-bold font-heading"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <User className="h-5 w-5 text-[#2c5ea8] group-hover:text-primary transition-colors" />
+                  <User className="h-5 w-5 text-primary group-hover:text-primary transition-colors" />
                   <AnimatedFormText>Información Personal</AnimatedFormText>
                 </motion.div>
               </AccordionTrigger>
@@ -185,10 +185,10 @@ export const VehicleForm = ({
             <AccordionItem value="vehicle">
               <AccordionTrigger className="hover:no-underline group transition-all duration-300">
                 <motion.div
-                  className="flex items-center gap-2 text-lg font-semibold"
+                  className="flex items-center gap-2 text-lg font-bold font-heading"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <Car className="h-5 w-5 text-[#2c5ea8] group-hover:text-primary transition-colors" />
+                  <Car className="h-5 w-5 text-primary group-hover:text-primary transition-colors" />
                   <AnimatedFormText>Detalles del Vehículo</AnimatedFormText>
                 </motion.div>
               </AccordionTrigger>
@@ -211,10 +211,10 @@ export const VehicleForm = ({
             <AccordionItem value="truck">
               <AccordionTrigger className="hover:no-underline group transition-all duration-300">
                 <motion.div
-                  className="flex items-center gap-2 text-lg font-semibold"
+                  className="flex items-center gap-2 text-lg font-bold font-heading"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <Truck className="h-5 w-5 text-[#2c5ea8] group-hover:text-primary transition-colors" />
+                  <Truck className="h-5 w-5 text-primary group-hover:text-primary transition-colors" />
                   <AnimatedFormText>Selección de Grúa</AnimatedFormText>
                 </motion.div>
               </AccordionTrigger>
