@@ -2,10 +2,9 @@ import React from 'react'
 import { motion } from 'framer-motion'
 
 const navItems = [
-  { href: '#intro', label: 'Inicio' },
-  { href: '#about', label: 'Nosotros' },
-  { href: '#Servicios', label: 'Servicios' },
-  { href: '#call-to-action', label: 'Llámanos' },
+  { href: '/', label: 'Inicio' },
+  { href: '/servicios', label: 'Servicios' },
+  { href: '/map', label: 'Solicitar Grúa' },
   { href: '#contact', label: 'Contacto' },
 ]
 

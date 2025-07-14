@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      payment_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          payment_method: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          updated_at: string
+          user_id: string
+          vehicle_request_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          payment_method?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+          user_id: string
+          vehicle_request_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          payment_method?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+          user_id?: string
+          vehicle_request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_vehicle_request_id_fkey"
+            columns: ["vehicle_request_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           bio: string | null

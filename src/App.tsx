@@ -6,6 +6,7 @@ import { AdminPanel } from '@/components/admin/AdminPanel'
 import { Layout } from '@/components/layout/Layout'
 import { TowingProvider } from '@/contexts/towing/TowingContext'
 import Landing from '@/pages/Landing'
+import Services from '@/pages/Services'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/servicios" element={<Services />} />
           <Route path="/map" element={<MapPage />} />
           <Route 
             path="/user" 
