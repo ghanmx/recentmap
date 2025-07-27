@@ -155,10 +155,10 @@ export const CostBreakdown = ({
               key={`total-${selectedTruck.name}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="border-t pt-3 text-lg font-bold flex justify-between items-center"
+              className="border-t pt-3 text-lg font-bold font-heading flex justify-between items-center"
             >
               <span>Total Final</span>
-              <span className={`${
+              <span className={`text-lg font-semibold ${
                 selectedTruck.name === 'Tipo D' ? 'text-orange-500' : 'text-primary'
               }`}>
                 {formatCurrency(finalCost)}

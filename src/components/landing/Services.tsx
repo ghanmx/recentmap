@@ -74,8 +74,8 @@ export const Services = () => {
                 <div className="rounded-full bg-primary/10 p-6 mx-auto mb-6 w-20 h-20 flex items-center justify-center">
                   {service.icon}
                 </div>
-                <h3 className="text-2xl font-semibold mb-4">{service.title}</h3>
-                <p className="text-gray-600 dark:text-gray-300">
+                <h3 className="text-2xl font-bold font-heading mb-4">{service.title}</h3>
+                <p className="text-sm text-muted-foreground">
                   {service.description}
                 </p>
               </Card>

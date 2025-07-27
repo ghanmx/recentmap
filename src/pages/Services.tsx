@@ -110,7 +110,7 @@ const Services: React.FC = () => {
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl font-bold mb-6 text-gray-900 dark:text-white"
+              className="text-4xl font-bold font-heading mb-6 text-foreground"
             >
               Nuestros Servicios de Grúas
             </motion.h1>
@@ -118,7 +118,7 @@ const Services: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-xl text-gray-600 dark:text-gray-300 mb-8"
+              className="text-lg text-muted-foreground mb-8"
             >
               Servicio profesional de grúas con tarifas transparentes y cobertura completa en toda la región
             </motion.p>
@@ -131,7 +131,7 @@ const Services: React.FC = () => {
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white"
+              className="text-3xl font-bold font-heading text-center mb-12 text-foreground"
             >
               Tipos de Grúas Disponibles
             </motion.h2>
@@ -147,7 +147,7 @@ const Services: React.FC = () => {
                   <Card className="h-full">
                     <CardHeader>
                       <div className="flex items-center justify-between mb-2">
-                        <CardTitle className="text-2xl">{truck.name}</CardTitle>
+                        <CardTitle className="text-2xl font-bold font-heading">{truck.name}</CardTitle>
                         <Badge className={truck.color}>{truck.type}</Badge>
                       </div>
                       <CardDescription>{truck.description}</CardDescription>
@@ -159,8 +159,8 @@ const Services: React.FC = () => {
                       </div>
                       
                       <div>
-                        <h4 className="font-medium mb-2">Vehículos compatibles:</h4>
-                        <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                        <h4 className="font-semibold font-heading mb-2">Vehículos compatibles:</h4>
+                        <ul className="text-sm text-muted-foreground space-y-1">
                           {truck.vehicles.map((vehicle, idx) => (
                             <li key={idx} className="flex items-center gap-2">
                               <Car className="h-3 w-3" />
@@ -200,7 +200,7 @@ const Services: React.FC = () => {
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white"
+              className="text-3xl font-bold font-heading text-center mb-8 text-foreground"
             >
               ¿Cómo Calculamos el Costo?
             </motion.h2>
@@ -217,22 +217,22 @@ const Services: React.FC = () => {
                   <div className="grid md:grid-cols-3 gap-4">
                     <div className="text-center p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                       <MapPin className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                      <h3 className="font-semibold mb-2">Distancia Total</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                      <h3 className="font-bold font-heading mb-2">Distancia Total</h3>
+                      <p className="text-sm text-muted-foreground">
                         Empresa → Punto de recogida → Destino → Empresa
                       </p>
                     </div>
                     <div className="text-center p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
                       <Truck className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                      <h3 className="font-semibold mb-2">Tipo de Grúa</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                      <h3 className="font-bold font-heading mb-2">Tipo de Grúa</h3>
+                      <p className="text-sm text-muted-foreground">
                         Según el peso y tamaño de su vehículo
                       </p>
                     </div>
                     <div className="text-center p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
                       <Route className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                      <h3 className="font-semibold mb-2">Peajes Incluidos</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                      <h3 className="font-bold font-heading mb-2">Peajes Incluidos</h3>
+                      <p className="text-sm text-muted-foreground">
                         Todos los peajes del recorrido automáticamente
                       </p>
                     </div>
@@ -241,7 +241,7 @@ const Services: React.FC = () => {
                   <Separator />
 
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Componentes del Costo:</h3>
+                    <h3 className="text-lg font-bold font-heading mb-4">Componentes del Costo:</h3>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded">
                         <div className="flex items-center gap-2">
@@ -331,7 +331,7 @@ const Services: React.FC = () => {
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white"
+              className="text-3xl font-bold font-heading text-center mb-12 text-foreground"
             >
               Preguntas Frecuentes
             </motion.h2>
@@ -357,7 +357,7 @@ const Services: React.FC = () => {
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-3xl font-bold mb-8 text-gray-900 dark:text-white"
+              className="text-3xl font-bold font-heading mb-8 text-foreground"
             >
               ¿Necesitas Ayuda?
             </motion.h2>
@@ -371,8 +371,8 @@ const Services: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold text-primary mb-2">811-123-4567</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <p className="text-2xl font-bold font-heading text-primary mb-2">811-123-4567</p>
+                  <p className="text-sm text-muted-foreground">
                     Respuesta inmediata para emergencias en carretera
                   </p>
                 </CardContent>

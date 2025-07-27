@@ -13,7 +13,7 @@ export const TruckInfoHeader = ({
 }: TruckInfoHeaderProps) => {
   return (
     <div className="space-y-2">
-      <div className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+      <div className="text-lg font-bold font-heading text-foreground flex items-center gap-2">
         <Truck
           className={`w-5 h-5 ${selectedTruck.name === 'Tipo D' ? 'text-orange-500' : 'text-primary'}`}
         />
@@ -26,7 +26,7 @@ export const TruckInfoHeader = ({
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-sm text-gray-600 ml-7"
+          className="text-sm text-muted-foreground ml-7"
         >
           Vehículo seleccionado: {selectedVehicleModel}
         </motion.p>
